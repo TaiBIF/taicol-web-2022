@@ -1,0 +1,216 @@
+@include keyframes(bar_line){
+  0%{width: 0;}
+  100%{width: 100%;}
+}
+@include keyframes(alpha01){
+  0%{@include alpha(0);}
+  100%{@include alpha(1);}
+}
+@include keyframes(alpha-scale){
+  0%{@include alpha(0); @include scale(0.6);}
+  50%{@include alpha(0.5);  @include scale(1.2);}
+  100%{@include alpha(1);  @include scale(1);}
+}
+@include keyframes(animal01){
+  0%{@include alpha(0); transform: translate(20px,15px); }
+  100%{@include alpha(1); transform: translate(0px,0px);}
+}
+@include keyframes(base1){
+  0%{@include alpha(0); transform: translate(0px,15px); }
+  100%{@include alpha(1); transform: translate(0px,0px);}
+}
+@include keyframes(bg-top){
+  0%{@include alpha(0); transform: translate(0px,30px); }
+  100%{@include alpha(1); transform: translate(0px,0px);}
+}
+@include keyframes(float){
+  0%{transform: translate(0px,0px); }
+  50%{transform: translate(0px,25px);}
+  100%{transform: translate(0px,0px);}
+}
+@include keyframes(float01){
+  0%{transform: translate(0px,0px); }
+  25%{transform: translate(-15px,-10px);}
+  50%{transform: translate(-30px,10px);}
+  75%{transform: translate(-15px,-10px);}
+  100%{transform: translate(0px,0px);}
+}
+@include keyframes(float02){
+  0%{transform: translate(0px,0px); }
+  50%{transform: translate(-20px,-15px);}
+  100%{transform: translate(0px,0px);}
+}
+@include keyframes(float03){
+  0%{transform: translate(0px,0px); }
+  50%{transform: translate(20px,15px);}
+  100%{transform: translate(0px,0px);}
+}
+@include keyframes(bg-top-let){
+  0%{@include alpha(0); transform: translate(-30px,0px); }
+  100%{@include alpha(1); transform: translate(0px,0px);}
+}
+@include keyframes(bg-top-right){
+  0%{@include alpha(0); transform: translate(30px,0px); }
+  100%{@include alpha(1); transform: translate(0px,0px);}
+}
+@include keyframes(line01){
+  0%{
+    width: 0; }
+  100%{
+    width: 7.1vw;}
+}
+@include keyframes(line01mb){
+  0%{
+    width: 0; }
+  100%{
+    width: 22.5vw;}
+}
+@include keyframes(cbig-hand1){
+  0%{@include rotate(0);}
+  30%{@include rotate(5deg);}
+  50%{@include rotate(5deg);}
+  100%{@include rotate(0);}
+}
+@include keyframes(cbig-hand2){
+  0%{transform:translateY(0);}
+  50%{transform:translateY(-5px);}
+  100%{transform:translateY(0);}
+}
+@include keyframes(rotate-line1){
+  0%{@include rotate(0);}
+  100%{@include rotate(360deg);}
+}
+@include keyframes(rotate-line2){
+  0%{@include rotate(0);}
+  50%{@include rotate(360deg);}
+  100%{@include rotate(540deg);}
+}
+@include keyframes(bird-move){
+  0%{transform: translate(40px,0px); @include alpha(0);}
+  25%{transform: translate(30px,0px); @include alpha(1);}
+  50%{transform: translate(20px,0px); @include alpha(1);}
+  75%{transform: translate(10px,0px); @include alpha(1);}
+  100%{transform: translate(0px,0px); @include alpha(1);}
+}
+@include keyframes(bird){
+  0%{@include rotate(0); }
+  25%{@include rotate(5deg);}
+  50%{@include rotate(0deg);}
+  75%{@include rotate(5deg); }
+  100%{@include rotate(0deg);}
+}
+@include keyframes(line02){
+  0%{
+    width: 0; }
+  100%{
+    width:100%}
+}
+//pie
+@include keyframes(pie0){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 0.5 440;}
+}
+@include keyframes(pie3){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 13.2 440;}
+}
+@include keyframes(pie4){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 20.1 440;}
+}
+@include keyframes(pie5){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 22 440;}
+}
+@include keyframes(pie10){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 44 440;}
+}
+@include keyframes(pie13){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 57.2 440;}
+}
+@include keyframes(pie15){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 66 440;}
+}
+@include keyframes(pie20){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 88 440;}
+}
+@include keyframes(pie21){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 95 440;}
+}
+@include keyframes(pie25){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 110 440;}
+}
+@include keyframes(pie30){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 132 440;}
+}
+@include keyframes(pie32){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray:141 440;}
+}
+@include keyframes(pie35){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 154 440;}
+}
+@include keyframes(pie40){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 176 440;}
+}
+@include keyframes(pie43){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 190 440;}
+}
+@include keyframes(pie45){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 198 440;}
+}
+@include keyframes(pie50){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 220 440;}
+}
+@include keyframes(pie55){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 242 440;}
+}
+@include keyframes(pie60){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 264 440;}
+}
+@include keyframes(pie65){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 286 440;}
+}
+@include keyframes(pie70){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 308 440;}
+}
+@include keyframes(pie75){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 330 440;}
+}
+@include keyframes(pie80){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 352 440;}
+}
+@include keyframes(pie85){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 374 440;}
+}
+@include keyframes(pie90){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 396 440;}
+}
+@include keyframes(pie95){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 418 440;}
+}
+@include keyframes(pie100){
+  0%{stroke-dasharray: 0 440;}
+  100%{stroke-dasharray: 440 440;}
+}

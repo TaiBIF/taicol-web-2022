@@ -1,0 +1,313 @@
+h2,.h2{
+	font-size: 60px;
+}
+h3,.h3{
+	font-size: 35px;
+}
+h4,.h4{
+	font-size: 28px;
+}
+h5,.h5{
+	font-size: 18px; 
+}
+.marb_10{
+	margin-bottom: 10px;
+}
+.marb_20{
+	margin-bottom: 20px;
+}
+.marb_30{
+	margin-bottom: 30px;
+}
+.marb_40{
+	margin-bottom: 40px;
+}
+.marb_50{
+	margin-bottom: 50px;
+}
+.marb_60{
+	margin-bottom: 60px;
+}
+.marb_80{
+	margin-bottom: 80px;
+}
+.marb_100{
+	margin-bottom: 100px;
+}
+.marr_20{
+	margin-right: 20px;
+}
+.marb_m_0{
+	@media #{$mobile}{
+		margin-bottom: 0px;
+	}
+}
+.m_marb_20{
+	@media #{$mobile}{
+		margin-bottom: 20px;
+	}
+}
+.m_marb_50{
+	@media #{$mobile}{
+		margin-bottom: 50px;
+	}
+}
+.ul{
+	list-style:none;
+}
+.lileft{
+	li{
+		float:left;
+	}
+}
+.bold{
+	font-weight:bold;
+}
+.text_line{
+	text-decoration:underline;
+}
+.align_center{
+	text-align:center;
+}
+.align_left{
+	text-align:left;
+}
+.align_right{
+	text-align:right;
+}
+.m_align_center{
+	@media #{$mobile}{
+		text-align:center;
+	}
+}
+.m_align_left{
+	@media #{$mobile}{
+		text-align:left;
+	}
+}
+.m_align_right{
+	@media #{$mobile}{
+		text-align:right;
+	}
+}
+.img_link{
+    @extend %inline_item;
+	text-align:center;
+	width: 100%;
+	height: 100%;
+	img,>.show_box{
+		max-width: 100%;
+		max-height: 100%;
+		@extend %inline-block;
+		vertical-align:middle;
+	}
+	.span{
+		@extend %inline-block;
+		width:0px;
+		height:100%;
+		vertical-align:middle;
+	}
+}
+.row{
+	margin-left:-10px;
+	margin-right:-10px;
+}
+.col-1{
+	@extend %row_padd;
+	width:$grid/12*1;
+}
+.col-2{
+	@extend %row_padd;
+	width:$grid/12*2;
+}
+.col-3{
+	@extend %row_padd;
+	width:$grid/12*3;
+}
+.col-4{
+	@extend %row_padd;
+	width:$grid/12*4;
+}
+.col-5{
+	@extend %row_padd;
+	width:$grid/12*5;
+}
+.col-6{
+	@extend %row_padd;
+	width:$grid/12*6;
+}
+.col-7{
+	@extend %row_padd;
+	width:$grid/12*7;
+}
+.col-8{
+	@extend %row_padd;
+	width:$grid/12*8;
+}
+.col-9{
+	@extend %row_padd;
+	width:$grid/12*9;
+}
+.col-10{
+	@extend %row_padd;
+	width:$grid/12*10;
+}
+.col-11{
+	@extend %row_padd;
+	width:$grid/12*11;
+}
+.col-12{
+	@extend %row_padd;
+	width:$grid/12*12;
+}
+@media #{$pad}{
+	.row-m{
+		margin-left:-10px;
+		margin-right:-10px;
+	}
+	.col-m-1{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*1;
+	}
+	.col-m-2{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*2;
+	}
+	.col-m-3{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*3;
+	}
+	.col-m-4{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*4;
+	}
+	.col-m-5{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*5;
+	}
+	.col-m-6{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*6;
+	}
+	.col-m-7{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*7;
+	}
+	.col-m-8{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*8;
+	}
+	.col-m-9{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*9;
+	}
+	.col-m-10{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*10;
+	}
+	.col-m-11{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*11;
+	}
+	.col-m-12{
+		padding-left: 10px;
+		padding-right: 10px;
+		width:$grid/12*12;
+	}
+}
+@media #{$mobile}{
+	.row-s{
+		margin-left:-5px;
+		margin-right:-5px;
+	}
+	.col-s-1{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*1;
+	}
+	.col-s-2{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*2;
+	}
+	.col-s-3{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*3;
+	}
+	.col-s-4{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*4;
+	}
+	.col-s-5{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*5;
+	}
+	.col-s-6{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*6;
+	}
+	.col-s-7{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*7;
+	}
+	.col-s-8{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*8;
+	}
+	.col-s-9{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*9;
+	}
+	.col-s-10{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*10;
+	}
+	.col-s-11{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*11;
+	}
+	.col-s-12{
+		padding-left: 5px;
+		padding-right: 5px;
+		width:$grid/12*12;
+	}
+}
+.main{
+	max-width: $main;
+	margin-left:auto;
+	margin-right: auto;
+	padding-left:10px;
+	padding-right:10px;
+
+	@media #{$pad}{
+		padding-left: 20px;
+		padding-right: 20px;  
+	}
+	@media #{$mobile}{
+		padding: 0px 15px;
+	}
+}
+.ovh{
+	overflow: hidden;
+}
+

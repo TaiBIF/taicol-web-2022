@@ -1,0 +1,131 @@
+<div class="header-content">
+	<div class="mb-hambruger">
+		<svg class="ham hamRotate ham4" viewBox="0 0 100 100" width="60">
+			<path
+					class="line top"
+					d="m 70,33 h -40 c 0,0 -8.5,-0.149796 -8.5,8.5 0,8.649796 8.5,8.5 8.5,8.5 h 20 v -20" />
+			<path
+					class="line middle"
+					d="m 70,50 h -40" />
+			<path
+					class="line bottom"
+					d="m 30,67 h 40 c 0,0 8.5,0.149796 8.5,-8.5 0,-8.649796 -8.5,-8.5 -8.5,-8.5 h -20 v 20" />
+		</svg>
+	</div>
+	<div class="flex-box">
+		<a href="#" class="logo">
+			<img src="image/logo.svg" alt="臺灣物種名錄">
+		</a>
+		<!--手機板打開用display: block;-->
+		<ul class="main_menu">
+			<!--目前所在頁面也可在li上面加上class="now"-->
+			<li>
+				<a href="#" class="big_title">
+					關於TaiCOL
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="#" class="big_title">
+					物種樹
+					<span></span>
+				</a>
+			</li>
+			<li>
+				<a href="#" class="big_title">
+					物種名錄
+					<span></span>
+				</a>
+			</li>
+			<li class="mbli ">
+				<p class="big_title">
+					資料工具
+					<span></span>
+				</p>
+				<div class="menu_2">
+					<div class="w_bg">
+						<a href="#">資料下載</a>
+						<a href="#">API</a>
+						<a href="#">學名比對工具</a>
+					</div>
+				</div>
+			</li>
+			<li class="mbli ">
+				<p class="big_title">
+					更多資訊
+					<span></span>
+				</p>
+				<div class="menu_2">
+					<div class="w_bg">
+						<a href="#">最新消息</a>
+						<a href="#">主題文章</a>
+						<a href="#">資料統計</a>
+						<a href="#">資料使用規範</a>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+
+
+<script>
+
+
+
+	$(function (){
+
+
+		// $(window).resize(function(){
+		// 	if($(window).width()>768){
+		// 		$('.main_menu').hide();
+		// 		$('.ham4').removeClass('active')
+		// 	}
+		//
+		// })
+
+		$('.ham4').on('click', function() {
+			if($(window).width()<999){
+				$('.ham4').toggleClass('active');
+				$('.main_menu').slideToggle();
+			}else{
+				$('.ham4').removeClass('active');
+				$('.main_menu').css("display", "flex");
+			}
+		});
+
+		$(window).resize(function(){
+
+			if($(window).width()>=999){
+				$('.main_menu').css("display", "flex");
+			}else{
+				$('.ham4').removeClass('active');
+				$('.main_menu').css("display", "none");
+			}
+		})
+
+
+
+
+
+
+		if ($(window).width() < 960) {
+			$('.mbli').addClass('rd_mb_two_menu_li');
+		}else{
+			$('.mbli').removeClass('rd_mb_two_menu_li');
+		}
+
+
+		$('.rd_mb_two_menu_li').on('click',function (event) {
+
+			if( $(this).closest('li').hasClass('now')){
+				$(this).removeClass('now');
+				$(this).find('.menu_2').slideUp();
+
+			}else{
+				$(this).addClass('now');
+				$(this).find('.menu_2').slideDown();
+			}
+		});
+	});
+</script>

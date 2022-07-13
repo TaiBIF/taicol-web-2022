@@ -1,0 +1,146 @@
+$col_gray:#555555;
+$col_gray_inp:#dddddd;
+$col_yel:#FDD440;
+$col_blue:#4C8DA7;
+$main:1220px;
+$grid:100%;
+$pc_m:"only screen and (max-width: 1599px)";
+$pc_s:"only screen and (max-width: 1279px)";
+$pc:"only screen and (min-width: 1000px)";
+$pad:"only screen and (max-width: 999px)";
+$mobile:"only screen and (max-width: 767px)";
+$nb500:"only screen and (max-width: 500px)";
+$img_path:"../image/";  
+@function img-path($img_path){
+	@return $img_path; 
+}
+/*css3*/
+@mixin keyframes($name){
+	@-webkit-keyframes #{$name} {
+		@content; 
+	}
+  	@-moz-keyframes #{$name} {
+    	@content;
+  	}
+  	@-ms-keyframes #{$name} {
+    	@content;
+  	}
+  	@keyframes #{$name} {
+    	@content;
+  	}
+}
+@mixin transform($transforms){
+	-moz-transform:$transforms;
+	-ms-transform:$transforms;
+	-o-transform:$transforms;
+	-webkit-transform:$transforms;
+	transform:$transforms;
+}
+@mixin scale($scale){
+	@include transform(scale($scale));
+}
+@mixin rotate($rotate){
+	@include transform(rotate($rotate));
+}
+@mixin skew($skew){
+	@include transform(skew($skew));
+}
+@mixin translate($translateX,$translateY){
+	@include transform(translate($translateX,$translateY));
+}
+@mixin transform-origin($origin){
+	-moz-transform-origin:$origin;
+	-ms-transform-origin:$origin;
+	-o-transform-origin:$origin;
+	-webkit-transform-origin:$origin;
+	transform-origin:$origin;
+}
+@mixin transition($transition){
+	transition:$transition;
+	-moz-transition:$transition;
+	-o-transition:$transition;
+	-ms-transition:$transition;
+	-webkit-transition:$transition;
+}
+@mixin bg_change($sec){
+	@include transition(all $sec);
+}
+@mixin bg($img,$center:center,$top:top,$no:no-repeat){
+	background: url("#{$img_path}#{$img}");
+	background-position:$center $top;
+  	background-repeat:$no;
+  	width: image-width("#{$img_path}#{$img}");    
+  	height: image-height("#{$img_path}#{$img}"); 	
+}
+@mixin bg_m($img){
+	background: url("#{$img_path}#{$img}") top center no-repeat;
+  	width: image-width("#{$img_path}#{$img}")/2;    
+  	height: image-height("#{$img_path}#{$img}")/2;
+  	-webkit-background-size:  image-width("#{$img_path}#{$img}")/2 auto;
+  	-o-background-size:  image-width("#{$img_path}#{$img}")/2 auto;
+  	background-size:  image-width("#{$img_path}#{$img}")/2 auto;
+}
+@mixin bg_size($img){
+	-webkit-background-size:  image-width("#{$img_path}#{$img}")/2 auto;
+  	-o-background-size:  image-width("#{$img_path}#{$img}")/2 auto;
+  	background-size:  image-width("#{$img_path}#{$img}")/2 auto;
+}
+@mixin img_position($img){
+    margin-left: image-width("#{$img_path}#{$img}")/-2;    
+    margin-top: image-height("#{$img_path}#{$img}")/-2;
+}
+@mixin alpha($alpha){
+	opacity: $alpha;
+	$alpha-ie: $alpha * 100;
+	filter: alpha(opacity=$alpha-ie); //IE8
+	-moz-opacity:$alpha;
+	-khtml-opacity: $alpha;
+}
+
+@mixin alpha($alpha:1,$ie_alpha:100){
+	opacity:$alpha;
+	-moz-opacity:$alpha;
+	filter:alpha(opacity=$ie_alpha);
+}
+
+@mixin position($position,$z-index){
+	position:$position;
+	z-index:$z-index;
+}
+@mixin xy($top:50%,$left:50%){
+	top:$top;
+	left:$left;
+}
+@mixin rwd($width){
+	@media only screen and(max-width:$width){
+		@content;
+	}
+}
+@mixin ellipsis($height,$line_clamp) {
+  height: $height;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $line_clamp;
+  -webkit-box-orient: vertical;
+  display: -moz-box;
+  -moz-line-clamp: $line_clamp;
+  -moz-box-orient: vertical;
+  display: box;
+  line-clamp: $line_clamp;
+  box-orient: vertical;
+}
+ @mixin img_h($img){
+ 	padding-top: image-height("#{$img_path}#{$img}")/image-width("#{$img_path}#{$img}")*100%;  
+ }
+ @mixin scroll_x{
+	overflow-y: auto;
+    white-space: nowrap;
+    font-size: 0;
+    line-height: 0;
+    letter-spacing: 0;
+}
+ @mixin scroll_item{
+ 	display: inline-block;
+	white-space: nowrap;
+}
