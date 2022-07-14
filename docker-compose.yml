@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  django:
+    build: .
+    container_name: tc-web-django-dev-container
+    image: tc-web-django-dev-image
+    ports:
+      - 8007:8007
+    depends_on:
+      - postgres
+    volumes:
+      - .:/code
+      - ../tc-web-volumes/static:/tc-web-volumes/static
+      - ../tc-web-volumes/media:/tc-web-volumes/media
+      - ../tc-web-volumes/bucket:/bucket
+    command: /srv/start
+    restart: always
+    env_file:
+      - .env
+  postgres:
+    image: postgres:14-alpine
+    shm_size: '1g'
+    container_name: tc-web-postgres-container
+    restart: always
+    volumes:
+      - ../tc-web-volumes/pgdata:/var/lib/postgresql/data/pgdata
+      - ../tc-web-volumes/bucket:/bucket
+      - ../tc-web-volumes/media/archive:/archive
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    env_file:
+     - .env

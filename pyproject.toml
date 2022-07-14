@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "taicol-web"
+version = "0.1.0"
+description = ""
+authors = ["jinyinglee <45194511+jinyinglee@users.noreply.github.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "^4.0.4"
+gunicorn = "^20.1.0"
+django-environ = "^0.8.1"
+psycopg2-binary = "^2.9.3"
+openpyxl = "^3.0.9"
+pandas = "^1.4.2"
+requests = "^2.27.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
