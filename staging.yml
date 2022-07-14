@@ -44,7 +44,7 @@ services:
       - ../tc-web-volumes/media:/tc-web-volumes/media
       - ../tc-web-volumes/logs/nginx:/var/log/nginx
     links:
-      - web:web
+      - django:django
     logging:
       driver: "json-file"
       options:
