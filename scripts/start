@@ -4,7 +4,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-if [ "$WEB_ENV" == "prod" || "$WEB_ENV" == "staging" ]; then
+if [ "$WEB_ENV" == "prod"] || [ "$WEB_ENV" == "staging" ]; then
     python manage.py migrate --no-input
     python manage.py collectstatic --no-input
     gunicorn --bind 0.0.0.0:8001 --timeout 60 conf.wsgi #--chdir=/code
