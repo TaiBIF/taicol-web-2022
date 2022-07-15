@@ -1,0 +1,803 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block body %}
+	<!--pop總表跳匡，打開要幫忙JS隱藏背後捲軸，不然會有兩個捲軸-->
+	<div class="popbox-table" style="display: none;">
+		<div class="rel">
+			<div class="w-bg ">
+				<div class="xxx">
+					<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+						<g id="Group_8961" data-name="Group 8961" transform="translate(-1288 -210)">
+							<g id="Ellipse_145" data-name="Ellipse 145" transform="translate(1288 210)" fill="#fff" stroke="#4c8da7" stroke-width="2">
+								<circle cx="25" cy="25" r="25" stroke="none"/>
+								<circle cx="25" cy="25" r="24" fill="none"/>
+							</g>
+							<g id="Group_7748" data-name="Group 7748" transform="translate(100.696 1061.993) rotate(-45)">
+								<line id="Line_265" data-name="Line 265" x2="25" transform="translate(1429.5 271.5)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+								<line id="Line_266" data-name="Line 266" x2="25" transform="translate(1442.5 259.5) rotate(90)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+							</g>
+						</g>
+					</svg>
+				</div>
+				<div class="title-area">
+					<h2>臺灣與全球物種數比較表 <span></span></h2>
+				</div>
+				<p class="pad-note">
+					請往右滑動 >>>
+				</p>
+				<div class="pad-mb-scro">
+					<!--表格以樣式為主，內容資料應該會更動，就沒有全放-->
+					<table class="table-style1" cellpadding="0" cellspacing="0" border="0">
+						<tr>
+							<td>界</td>
+							<td>門</td>
+							<td>綱</td>
+							<td>全球現有種數</td>
+							<td>臺灣現有種數</td>
+							<td>臺灣特有種比例</td>
+							<td width="22%">臺灣名錄主要提供者</td>
+						</tr>
+						<tr>
+							<td>病毒界</td>
+							<td></td>
+							<td></td>
+							<td>3,186</td>
+							<td>494</td>
+							<td></td>
+							<td>徐亞莉、葉錫東、趙磐華、
+								涂堅、吳和生、黃元品</td>
+						</tr>
+						<tr>
+							<td>細菌界</td>
+							<td></td>
+							<td></td>
+							<td>9,980</td>
+							<td>2,774</td>
+							<td></td>
+							<td>袁國芳、楊秋忠</td>
+						</tr>
+						<tr>
+							<td>古菌界</td>
+							<td></td>
+							<td></td>
+							<td>377</td>
+							<td>10</td>
+							<td></td>
+							<td>賴美津</td>
+						</tr>
+						<tr>
+							<td>原生生物界</td>
+							<td></td>
+							<td></td>
+							<td>2,565</td>
+							<td>1,328</td>
+							<td></td>
+							<td>黃淑芳、吳俊宗 、王建平</td>
+						</tr>
+						<tr>
+							<td>原藻界</td>
+							<td></td>
+							<td></td>
+							<td>21,236</td>
+							<td>1,878</td>
+							<td></td>
+							<td>黃淑芳、吳俊宗 、謝煥儒</td>
+						</tr>
+						<tr>
+							<td>真菌界</td>
+							<td></td>
+							<td></td>
+							<td>146,119</td>
+							<td>6,671</td>
+							<td></td>
+							<td>吳聲華、曾顯雄、楊秋忠、
+								陳啟予
+							</td>
+						</tr>
+						<tr>
+							<td rowspan="5">植物界</td>
+							<td>藻類植物</td>
+							<td></td>
+							<td>ca. 21,015</td>
+							<td>884</td>
+							<td></td>
+							<td>彭鏡毅
+							</td>
+						</tr>
+						<tr>
+							<td>苔蘚植物</td>
+							<td></td>
+							<td>20,789</td>
+							<td>1,663</td>
+							<td></td>
+							<td>蔣鎮宇 、賴明洲
+							</td>
+						</tr>
+						<tr>
+							<td>蕨類植物</td>
+							<td></td>
+							<td>13,219</td>
+							<td>837</td>
+							<td rowspan="3">18.5%</td>
+							<td>郭城孟
+							</td>
+						</tr>
+						<tr>
+							<td>裸子植物</td>
+							<td></td>
+							<td>1,088</td>
+							<td>135</td>
+							<td>彭鏡毅
+							</td>
+						</tr>
+						<tr>
+							<td>顯花植物</td>
+							<td></td>
+							<td>331,369</td>
+							<td>6,902</td>
+							<td>彭鏡毅、謝長富、鍾國芳、
+								林政道
+							</td>
+						</tr>
+						<tr>
+							<td rowspan="18">動物界</td>
+							<td>海綿動物門</td>
+							<td></td>
+							<td>9,092</td>
+							<td>50</td>
+							<td></td>
+							<td>宋克義
+							</td>
+						</tr>
+						<tr>
+							<td>刺胞動物門</td>
+							<td></td>
+							<td>11,148</td>
+							<td>982</td>
+							<td></td>
+							<td>戴昌鳳、羅文增、陳昭倫、
+								鄭有容
+							</td>
+						</tr>
+						<tr>
+							<td>扁形動物門</td>
+							<td></td>
+							<td>18,615</td>
+							<td>193</td>
+							<td></td>
+							<td>施秀惠、陳宣汶
+							</td>
+						</tr>
+						<tr>
+							<td>圓形動物門</td>
+							<td></td>
+							<td>3,455</td>
+							<td>7</td>
+							<td></td>
+							<td>施秀惠
+							</td>
+						</tr>
+						<tr>
+							<td>線形動物門</td>
+							<td></td>
+							<td>356 </td>
+							<td>2</td>
+							<td></td>
+							<td>李香瑩
+							</td>
+						</tr>
+						<tr>
+							<td>鉤頭動物門</td>
+							<td></td>
+							<td>356 </td>
+							<td>2</td>
+							<td></td>
+							<td>陳宣汶
+							</td>
+						</tr>
+						<tr>
+							<td>輪蟲動物門</td>
+							<td></td>
+							<td>2,014 </td>
+							<td>72</td>
+							<td></td>
+							<td>陳宣汶
+							</td>
+						</tr>
+						<tr>
+							<td rowspan="11">節肢動物門</td>
+							<td>介形蟲綱</td>
+							<td>6,307 </td>
+							<td>855</td>
+							<td></td>
+							<td>胡忠恆
+							</td>
+						</tr>
+						<tr>
+							<td>海蜘蛛綱</td>
+							<td>6,307 </td>
+							<td>855</td>
+							<td></td>
+							<td>胡忠恆
+							</td>
+						</tr>
+						<tr>
+							<td>軟甲綱</td>
+							<td>6,307 </td>
+							<td>855</td>
+							<td></td>
+							<td>胡忠恆
+							</td>
+						</tr>
+						<tr>
+							<td>顎足綱</td>
+							<td>6,307 </td>
+							<td>855</td>
+							<td></td>
+							<td>胡忠恆
+							</td>
+						</tr>
+						<tr>
+							<td>蛛形綱</td>
+							<td>6,307 </td>
+							<td>855</td>
+							<td></td>
+							<td>胡忠恆
+							</td>
+						</tr>
+						<tr>
+							<td>倍足綱</td>
+							<td>6,307 </td>
+							<td>855</td>
+							<td></td>
+							<td>胡忠恆
+							</td>
+						</tr>
+						<tr>
+							<td>唇足綱</td>
+							<td>6,307 </td>
+							<td>855</td>
+							<td></td>
+							<td>胡忠恆
+							</td>
+						</tr>
+						<tr>
+							<td>內口綱</td>
+							<td>6,307 </td>
+							<td>855</td>
+							<td></td>
+							<td>胡忠恆
+							</td>
+						</tr>
+						<tr>
+							<td>昆蟲綱</td>
+							<td>6,307 </td>
+							<td>855</td>
+							<td></td>
+							<td>胡忠恆
+							</td>
+						</tr>
+						<tr>
+							<td>鰓足綱</td>
+							<td>6,307 </td>
+							<td>855</td>
+							<td></td>
+							<td>胡忠恆
+							</td>
+						</tr>
+						<tr>
+							<td>肢口綱</td>
+							<td>6,307 </td>
+							<td>855</td>
+							<td></td>
+							<td>胡忠恆
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="page-top">
+		<div class="big-top">
+			<div class="float-dot-yel">
+				<img src="{% static 'image/cir_yel.png' %}">
+			</div>
+			<div class="float-dot-blue">
+				<img src="{% static 'image/cir_blue.png' %}">
+			</div>
+			<div class="top-wave"></div>
+			<div class="path">
+				<a href="{% url 'index' %}">首頁</a> > <p>更多資訊</p> > <p>資料統計</p>
+			</div>
+			<div class="main-box">
+				<div class="pic-right2">
+					<img src="{% static 'image/cont-rightimg2.png' %}">
+				</div>
+
+				<div class="float-dot-yel3">
+					<img src="{% static 'image/cir_yel.png' %}">
+				</div>
+				<div class="float-dot-blue3">
+					<img src="{% static 'image/cir_blue.png' %}">
+				</div>
+				<div class="title-box">
+					<h2>資料統計 <span></span></h2>
+					<p>statistics</p>
+				</div>
+			</div>
+		</div>
+		<div class="statis-3-cont">
+			<div class="main-box">
+				<ul class="statis-3">
+					<li>
+						<div class="titlebox">
+							<div class="cir_icon">
+								<img src="{% static 'image/ssicon01.svg' %}">
+								<div class="cir-line1"></div>
+							</div>
+							<div class="txtbox">
+								<div class="title">
+									<h3>收錄物種數</h3>
+									<div class="markq">
+										<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+											<g id="qs_mark" transform="translate(-1536.736 -1209.631)">
+												<g id="Ellipse_8" data-name="Ellipse 8" transform="translate(1536.736 1209.631)" fill="#fff" stroke="#aaa" stroke-width="1">
+													<circle cx="14" cy="14" r="14" stroke="none"/>
+													<circle cx="14" cy="14" r="13.5" fill="none"/>
+												</g>
+												<text id="_" data-name="?" transform="translate(1545.736 1230.631)" fill="#aaa" font-size="20" font-family="Fredoka-Regular, Fredoka" letter-spacing="0.05em"><tspan x="0" y="0">?</tspan></text>
+											</g>
+										</svg>
+										<div class="hvbubble">
+											<p>包含種下分類群</p>
+										</div>
+									</div>
+								</div>
+								<p>species and infraspecies
+								</p>
+								<!--套數字跑動套件-->
+								<div class="numberbox">
+									64,361
+								</div>
+							</div>
+						</div>
+
+					</li>
+					<li>
+						<div class="titlebox">
+							<div class="cir_icon">
+								<img src="{% static 'image/ssicon02.svg' %}">
+								<div class="cir-line2"></div>
+							</div>
+							<div class="txtbox">
+								<div class="title">
+									<h3>收錄學名數</h3>
+									<div class="markq">
+										<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+											<g id="qs_mark" transform="translate(-1536.736 -1209.631)">
+												<g id="Ellipse_8" data-name="Ellipse 8" transform="translate(1536.736 1209.631)" fill="#fff" stroke="#aaa" stroke-width="1">
+													<circle cx="14" cy="14" r="14" stroke="none"/>
+													<circle cx="14" cy="14" r="13.5" fill="none"/>
+												</g>
+												<text id="_" data-name="?" transform="translate(1545.736 1230.631)" fill="#aaa" font-size="20" font-family="Fredoka-Regular, Fredoka" letter-spacing="0.05em"><tspan x="0" y="0">?</tspan></text>
+											</g>
+										</svg>
+										<div class="hvbubble">
+											<p>包含種上階層學名</p>
+										</div>
+									</div>
+								</div>
+								<p>scientific names</p>
+								<!--套數字跑動套件-->
+								<div class="numberbox">
+									94,575
+								</div>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="titlebox">
+							<div class="cir_icon">
+								<img src="{% static 'image/ssicon03.svg' %}">
+								<div class="cir-line1"></div>
+							</div>
+							<div class="txtbox">
+								<div class="title">
+									<h3>收錄文獻數</h3>
+								</div>
+								<p>references</p>
+								<!--套數字跑動套件-->
+								<div class="numberbox">
+									100,575
+								</div>
+							</div>
+						</div>
+
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="chart-box">
+			<div class="main-box">
+				<div class="boxarea-2-1">
+					<div class="item-p2">
+						<div class="mark-title">
+							<img src="{% static 'image/title-mark.svg' %}">
+							<p>各界物種數統計</p>
+						</div>
+						<!--
+							套件圖表放這裡面，刪除示意img，藍色色碼#85BBD0
+							https://www.chartjs.org/docs/latest/samples/bar/horizontal.html
+						-->
+						<div class="for-canvas">
+							<img src="{% static 'image/chart-img1.png' %}">
+						</div>
+					</div>
+					<div class="item-p1">
+						<div class="mark-title">
+							<img src="{% static 'image/title-mark.svg' %}">
+							<p>各階層數量統計</p>
+						</div>
+						<ul class="stsrank-area">
+							<li class="item rank-1-red">
+								<div class="bg-animate"></div>
+								<div class="left_area">
+									<div class="cir-box">
+										界
+									</div>
+									<p>Kingdom</p>
+								</div>
+								<div class="num">8</div>
+							</li>
+							<li class="item rank-2-org">
+								<div class="bg-animate"></div>
+								<div class="left_area">
+									<div class="cir-box">
+										門
+									</div>
+									<p>Phylum</p>
+								</div>
+								<div class="num">64</div>
+							</li>
+							<li class="item rank-3-yell">
+								<div class="bg-animate"></div>
+								<div class="left_area">
+									<div class="cir-box">
+										綱
+									</div>
+									<p>Class</p>
+								</div>
+								<div class="num">188</div>
+							</li>
+							<li class="item rank-4-green">
+								<div class="bg-animate"></div>
+								<div class="left_area">
+									<div class="cir-box">
+										目
+									</div>
+									<p>Order</p>
+								</div>
+								<div class="num">807</div>
+							</li>
+							<li class="item rank-5-blue">
+								<div class="bg-animate"></div>
+								<div class="left_area">
+									<div class="cir-box">
+										科
+									</div>
+									<p>Family</p>
+								</div>
+								<div class="num">3798</div>
+							</li>
+							<li class="item rank-6-deepblue">
+								<div class="bg-animate"></div>
+								<div class="left_area">
+									<div class="cir-box">
+										屬
+									</div>
+									<p>Genus</p>
+								</div>
+								<div class="num">20719</div>
+							</li>
+							<li class="item rank-7-purple">
+								<div class="bg-animate"></div>
+								<div class="left_area">
+									<div class="cir-box">
+										種
+									</div>
+									<p>Species</p>
+								</div>
+								<div class="num">64538</div>
+							</li>
+
+
+						</ul>
+					</div>
+				</div>
+				<div class="boxarea-1 ">
+					<div class="title-flex">
+						<div class="mark-title">
+							<img src="{% static 'image/title-mark.svg' %}">
+							<p>臺灣各類生物種數與特有比例</p>
+						</div>
+						<div class="color-inf">
+							<div class="blue-sq"></div>
+							<p>特有種</p>
+						</div>
+					</div>
+					<!--
+						這邊因為不確定套件中間放icon會不會很麻煩，有用CSS做出樣式，但數值都是先寫死的
+						修改數值就要透過CSS的stroke-dasharray，440為100%
+						目前有設定的除了現在數值外的，5%一個單位也有設定在circle上的class
+						或者覺得套件比較好的話也可以改成套件，把svg刪除將canvas放進pie層裡面
+					-->
+					<ul class="special-specise">
+						<li>
+							<div class="title-sp">
+								<p>昆蟲 <span></span></p>
+								<div class="num">23,306</div>
+							</div>
+							<div class="pie-box">
+								<div class="pie">
+									<svg width="170" height="170">
+										<circle class="pie32" r="70" cx="85" cy="85" />
+									</svg>
+								</div>
+								<div class="center-iconbox">
+									<div class="center-use">
+										<div class="icon">
+											<img src="{% static 'image/statistic-icon01.svg' %}">
+										</div>
+										<div class="per">32.06%</div>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="title-sp">
+								<p>魚類<span></span></p>
+								<div class="num">3,311 </div>
+							</div>
+							<div class="pie-box">
+								<div class="pie">
+									<svg width="170" height="170">
+										<circle class="pie3" r="70" cx="85" cy="85" />
+									</svg>
+								</div>
+								<div class="center-iconbox">
+									<div class="center-use">
+										<div class="icon">
+											<img src="{% static 'image/statistic-icon02.svg' %}">
+										</div>
+										<div class="per">3.47%</div>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="title-sp">
+								<p>爬蟲類<span></span></p>
+								<div class="num">134</div>
+							</div>
+							<div class="pie-box">
+								<div class="pie">
+									<svg width="170" height="170">
+										<circle class="pie21" r="70" cx="85" cy="85" />
+									</svg>
+								</div>
+								<div class="center-iconbox">
+									<div class="center-use">
+										<div class="icon">
+											<img src="{% static 'image/statistic-icon03.svg' %}">
+										</div>
+										<div class="per">21.64%</div>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="title-sp">
+								<p>真菌(含地衣) <span></span></p>
+								<div class="num">6,405</div>
+							</div>
+							<div class="pie-box">
+								<div class="pie">
+									<svg width="170" height="170">
+										<circle class="pie0" r="70" cx="85" cy="85" />
+									</svg>
+								</div>
+								<div class="center-iconbox">
+									<div class="center-use">
+										<div class="icon">
+											<img src="{% static 'image/statistic-icon04.svg' %}">
+										</div>
+										<div class="per">0.12%</div>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="title-sp">
+								<p>植物 <span></span></p>
+								<div class="num">9,166</div>
+							</div>
+							<div class="pie-box">
+								<div class="pie">
+									<svg width="170" height="170">
+										<circle class="pie13" r="70" cx="85" cy="85" />
+									</svg>
+								</div>
+								<div class="center-iconbox">
+									<div class="center-use">
+										<div class="icon">
+											<img src="{% static 'image/statistic-icon05.svg' %}">
+										</div>
+										<div class="per">13.06%</div>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="title-sp">
+								<p>鳥類 <span></span></p>
+								<div class="num">812</div>
+							</div>
+							<div class="pie-box">
+								<div class="pie">
+									<svg width="170" height="170">
+										<circle class="pie10" r="70" cx="85" cy="85" />
+									</svg>
+								</div>
+								<div class="center-iconbox">
+									<div class="center-use">
+										<div class="icon">
+											<img src="{% static 'image/statistic-icon06.svg' %}">
+										</div>
+										<div class="per">10.47%</div>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="title-sp">
+								<p>哺乳類 <span></span></p>
+								<div class="num">125</div>
+							</div>
+							<div class="pie-box">
+								<div class="pie">
+									<svg width="170" height="170">
+										<circle class="pie43" r="70" cx="85" cy="85" />
+									</svg>
+								</div>
+								<div class="center-iconbox">
+									<div class="center-use">
+										<div class="icon">
+											<img src="{% static 'image/statistic-icon07.svg' %}">
+										</div>
+										<div class="per">43.20%</div>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="title-sp">
+								<p>其他 <span></span></p>
+								<div class="num">17,252</div>
+							</div>
+							<div class="pie-box">
+								<div class="pie">
+									<svg width="170" height="170">
+										<circle class="pie4" r="70" cx="85" cy="85" />
+									</svg>
+								</div>
+								<div class="center-iconbox">
+									<div class="center-use">
+										<div class="icon">
+											<img src="{% static 'image/statistic-icon08.svg' %}">
+										</div>
+										<div class="per">4.57%</div>
+									</div>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div class="boxarea-2-1">
+					<div class="item-p1">
+						<div class="mark-title">
+							<img src="{% static 'image/title-mark.svg' %}">
+							<p>物種來源比例</p>
+						</div>
+						<!--
+							套件圖表放這裡面，刪除示意img，藍色色碼#85BBD0 綠色#BED368 藍綠#74BDB6 黃#FDD440
+							https://www.chartjs.org/docs/latest/samples/other-charts/doughnut.html
+						-->
+						<div class="for-canvas doughnut">
+							<img src="{% static 'image/chart-img2.png' %}">
+						</div>
+					</div>
+					<div class="item-p2">
+						<div class="title-flex-box">
+							<div class="left-box">
+								<div class="mark-title">
+									<img src="{% static 'image/title-mark.svg' %}">
+									<p>臺灣與全球物種數比較</p>
+								</div>
+								<div class="color-inf">
+									<div class="colorbox">
+										<div class="color1"></div>
+										<p>全球現有種數</p>
+									</div>
+									<div class="colorbox">
+										<div class="color2"></div>
+										<p>臺灣現有種數</p>
+									</div>
+								</div>
+							</div>
+							<div class="right-select">
+								<select name="" id="">
+									<option value="">各界比較</option>
+									<option value="">植物界比較</option>
+									<option value="">動物界比較</option>
+									<option value="">節肢動物門比較</option>
+									<option value="">脊索動物門比較</option>
+								</select>
+							</div>
+						</div>
+						<!--
+							套件圖表放這裡面，刪除示意img，藍色色碼#85BBD0
+							https://www.chartjs.org/docs/latest/samples/bar/stacked.html
+						-->
+						<div class="for-canvas">
+							<img src="{% static 'image/chart-img3.png' %}">
+						</div>
+						<a href="#" class="btn-more">
+							<p>查看比較總表</p>
+							<div class="arr">
+								<div class="arline"></div>
+								<div class="arrrot">
+									<img src="{% static 'image/arrlinrot.svg' %}">
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+{% endblock body %}
+{% block script %}
+<script>
+	$(function (){
+
+		gsap.registerPlugin(ScrollTrigger);
+
+		ScrollTrigger.create({
+			trigger: ".boxarea-1",
+			start: "top-=60% top",
+			// markers: true,
+			onEnter:function () {
+				$('.boxarea-1').addClass('vivi')
+			}
+		});
+
+
+	})
+
+	$( ".btn-more" ).click(function() {
+		$('.popbox-table').fadeIn("slow");
+		$('body').addClass("over-h");
+	});
+	$( ".xxx" ).click(function() {
+		$('.popbox-table').fadeOut("slow");
+		$('body').removeClass("over-h");
+	});
+</script>
+{% endblock script %}

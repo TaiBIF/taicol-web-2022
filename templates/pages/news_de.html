@@ -1,0 +1,59 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block body %}
+	<div class="page-top">
+		<div class="big-top">
+			<div class="float-dot-yel">
+				<img src="{% static 'image/cir_yel.png' %}">
+			</div>
+			<div class="float-dot-blue">
+				<img src="{% static 'image/cir_blue.png' %}">
+			</div>
+			<div class="top-wave"></div>
+			<div class="path">
+				<a href="{% url 'index' %}">首頁</a> > <p>更多資訊</p> > <p>最新消息</p>
+			</div>
+			<div class="main-box">
+				<div class="pic-right1">
+					<img src="{% static 'image/cont-rightimg1.png' %}">
+				</div>
+				<div class="pic-right1s">
+					<img src="{% static 'image/cont-rightimg1s.png' %}">
+				</div>
+				<div class="float-dot-yel2">
+					<img src="{% static 'image/cir_yel.png' %}">
+				</div>
+				<div class="float-dot-blue2">
+					<img src="{% static 'image/cir_blue.png' %}">
+				</div>
+				<div class="title-box">
+					<h2>最新消息 <span></span></h2>
+					<p>NEWS</p>
+				</div>
+			</div>
+		</div>
+		<div class="main-box vivi-cont-top">
+			<div class="news-cont-title">
+				<div class="cont-date-flex">
+					<div class="tag blue">名錄增修</div>
+					<div class="date">2022-01-22</div>
+				</div>
+				<h2>感謝吳士緯博士協助修訂寄生蠅科名錄</h2>
+			</div>
+			<div class="editor-box">
+				依據九州大學博士生黃悠然提供O’hara et al. (2020)世界寄生蠅名錄文獻，其中臺灣分布類群由程志中 <a href="#" target="_blank">Jyh Jong Cherng</a>先生協助程式抓取，並由吳士緯博士整理並協助修訂臺灣物種名錄，計新增24學名、12物種中文名、修訂7學名作者、修訂30筆同物異名關係。另依據吳士緯博士整理提供之名錄，由TaiCoL專人協助新增223學名、修訂6筆同物異名關係，以及133筆物種分布資料等。將TaiCoL原有143種寄生蠅科物種名錄擴增至 264種，並包含所有物種學名的原始組合名，總計552筆異名。(部分文字取自吳士緯臉書貼文)
+				<br>
+				<br>
+				<br>
+				<br>
+				依據文獻：O’Hara, J. E., S. J. Henderson & D. M. Wood. 2020. Preliminary checklist of the Tachinidae of the world. Version 2.1. PDF document, 1039 pages.
+			</div>
+			<div class="news-article-btn">
+				<a href="#">上一則</a>
+				<a href="#">回列表</a>
+				<a href="#">下一則</a>
+			</div>
+		</div>
+	</div>
+{% endblock body %}

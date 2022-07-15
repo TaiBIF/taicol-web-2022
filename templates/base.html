@@ -10,6 +10,11 @@
 	<script src="{% static 'js/gsap.min.js' %}" ></script>
 	<script src="{% static 'js/ScrollTrigger.min.js' %}" ></script>
 
+    <style>
+        .disabled-a-link {
+            pointer-events: none;
+          }
+    </style>
     {% block style %}{% endblock style %}
 
 </head>
@@ -39,26 +44,26 @@
                 </svg>
             </div>
             <div class="flex-box">
-                <a href="#" class="logo">
+                <a href="{% url 'index' %}" class="logo">
                     <img src="{% static 'image/logo.svg' %}" alt="臺灣物種名錄">
                 </a>
                 <!--手機板打開用display: block;-->
                 <ul class="main_menu">
                     <!--目前所在頁面也可在li上面加上class="now"-->
                     <li>
-                        <a href="#" class="big_title">
+                        <a href="{% url 'about' %}" class="big_title">
                             關於TaiCOL
                             <span></span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="big_title">
+                        <a href="{% url 'taxon_tree' %}" class="big_title">
                             物種樹
                             <span></span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="big_title">
+                        <a href="{% url 'catalogue' %}" class="big_title">
                             物種名錄
                             <span></span>
                         </a>
@@ -70,9 +75,9 @@
                         </p>
                         <div class="menu_2">
                             <div class="w_bg">
-                                <a href="#">資料下載</a>
-                                <a href="#">API</a>
-                                <a href="#">學名比對工具</a>
+                                <a href="{% url 'download' %}">資料下載</a>
+                                <a href="{% url 'api' %}">API</a>
+                                <a href="{% url 'name_match' %}">學名比對工具</a>
                             </div>
                         </div>
                     </li>
@@ -83,10 +88,10 @@
                         </p>
                         <div class="menu_2">
                             <div class="w_bg">
-                                <a href="#">最新消息</a>
-                                <a href="#">主題文章</a>
-                                <a href="#">資料統計</a>
-                                <a href="#">資料使用規範</a>
+                                <a href="{% url 'news' %}">最新消息</a>
+                                <a href="{% url 'article' %}">主題文章</a>
+                                <a href="{% url 'statistics' %}">資料統計</a>
+                                <a href="{% url 'policy' %}">資料使用規範</a>
                             </div>
                         </div>
                     </li>
@@ -118,49 +123,49 @@
             </div>
             <ul class="site-map">
                 <li>
-                    <a href="#" class="bit-title">
+                    <a href="{% url 'about' %}" class="bit-title">
                         <span></span>
                         <p>關於TaiCOL </p>
                     </a>
-                    <a href="#" class="bit-title">
+                    <a href="{% url 'taxon_tree' %}" class="bit-title">
                         <span></span>
                         <p>物種樹</p>
                     </a>
-                    <a href="#" class="bit-title">
+                    <a href="{% url 'catalogue' %}" class="bit-title">
                         <span></span>
                         <p>物種名錄</p>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="bit-title">
+                    <a href="#" class="bit-title disabled-a-link">
                         <span></span>
                         <p>資料工具</p>
                     </a>
-                    <a href="#" class="ss-title">
+                    <a href="{% url 'download' %}" class="ss-title">
                         <p>資料下載</p>
                     </a>
-                    <a href="#" class="ss-title">
+                    <a href="{% url 'api' %}" class="ss-title">
                         <p>API</p>
                     </a>
-                    <a href="#" class="ss-title">
+                    <a href="{% url 'name_match' %}" class="ss-title">
                         <p>學名比對工具</p>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="bit-title">
+                    <a href="#" class="bit-title disabled-a-link">
                         <span></span>
                         <p>更多資訊</p>
                     </a>
-                    <a href="#" class="ss-title">
+                    <a href="{% url 'news' %}" class="ss-title">
                         <p>最新消息</p>
                     </a>
-                    <a href="#" class="ss-title">
+                    <a href="{% url 'article' %}" class="ss-title">
                         <p>主題文章</p>
                     </a>
-                    <a href="#" class="ss-title">
+                    <a href="{% url 'statistics' %}" class="ss-title">
                         <p>資料統計</p>
                     </a>
-                    <a href="#" class="ss-title">
+                    <a href="{% url 'policy' %}" class="ss-title">
                         <p>資料使用規範</p>
                     </a>
                 </li>
@@ -168,13 +173,13 @@
             <div class="two-related">
                 <div class="itembox">
                     <p>指導單位</p>
-                    <a href="#">
+                    <a href="https://www.forest.gov.tw">
                         <img src="{% static 'image/footer-logo1.png' %}">
                     </a>
                 </div>
                 <div class="itembox">
                     <p>維護單位</p>
-                    <a href="#">
+                    <a href="https://portal.taibif.tw">
                         <img src="{% static 'image/footer-logo2.png' %}">
                     </a>
                 </div>
@@ -188,6 +193,11 @@
 </body>
 <script>
 	$(function (){
+
+        $('.go-topbtn').on('click', function(){
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;	  
+        })    
 
 		$('.ham4').on('click', function() {
 			if($(window).width()<999){
@@ -208,11 +218,6 @@
 				$('.main_menu').css("display", "none");
 			}
 		})
-
-
-
-
-
 
 		if ($(window).width() < 960) {
 			$('.mbli').addClass('rd_mb_two_menu_li');

@@ -1,0 +1,380 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block body %}
+	<div class="page-top">
+		<div class="big-top">
+			<div class="float-dot-yel">
+				<img src="{% static 'image/cir_yel.png' %}">
+			</div>
+			<div class="float-dot-blue">
+				<img src="{% static 'image/cir_blue.png' %}">
+			</div>
+			<div class="top-wave"></div>
+			<div class="path">
+				<a href="{% url 'index' %}">首頁</a> > <p>更多資訊</p> > <p>主題文章</p>
+			</div>
+			<div class="main-box">
+				<div class="pic-right1">
+					<img src="{% static 'image/cont-rightimg1.png' %}">
+				</div>
+				<div class="pic-right1s">
+					<img src="{% static 'image/cont-rightimg1s.png' %}">
+				</div>
+				<div class="float-dot-yel2">
+					<img src="{% static 'image/cir_yel.png' %}">
+				</div>
+				<div class="float-dot-blue2">
+					<img src="{% static 'image/cir_blue.png' %}">
+				</div>
+				<div class="title-box">
+					<h2>主題文章 <span></span></h2>
+					<p>ARTICLES</p>
+				</div>
+			</div>
+		</div>
+		<div class="main-box vivi-cont-top padb-80">
+			<div class="cont-tab-area">
+				<!--目前的選項加上now-->
+				<ul>
+					<li class="now">全部</li>
+					<li>分類系統</li>
+					<li>保育指標</li>
+				</ul>
+			</div>
+			<div class="topic-article-list">
+				<ul>
+					<li>
+						<a href="#">
+							<div class="top-item">
+								<div class="leftbox">
+									<div class="date">
+										<div class="day">04</div>
+										<div class="mon-year">Jan.2022</div>
+									</div>
+									<div class="tag green-blue">
+										分類系統
+									</div>
+								</div>
+								<div class="right-name">
+									洪鈴雅、顏聖紘、邵廣昭
+								</div>
+							</div>
+							<div class="txt">
+								<h3 class="news-title">
+									台灣物種名錄分界說明
+								</h3>
+								<div class="arrgo">
+									<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
+										<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
+											<line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+											<line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+										</g>
+									</svg>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="top-item">
+								<div class="leftbox">
+									<div class="date">
+										<div class="day">04</div>
+										<div class="mon-year">Jan.2022</div>
+									</div>
+									<div class="tag red">
+										保育指標
+									</div>
+								</div>
+								<div class="right-name">
+									洪鈴雅、顏聖紘
+								</div>
+							</div>
+							<div class="txt">
+								<h3 class="news-title">
+									系統分類學的演進
+								</h3>
+								<div class="arrgo">
+									<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
+										<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
+											<line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+											<line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+										</g>
+									</svg>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="top-item">
+								<div class="leftbox">
+									<div class="date">
+										<div class="day">04</div>
+										<div class="mon-year">Jan.2022</div>
+									</div>
+									<div class="tag green-blue">
+										分類系統
+									</div>
+								</div>
+								<div class="right-name">
+									邵廣昭
+								</div>
+							</div>
+							<div class="txt">
+								<h3 class="news-title">
+									台灣物種名錄分界說明
+								</h3>
+								<div class="arrgo">
+									<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
+										<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
+											<line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+											<line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+										</g>
+									</svg>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="top-item">
+								<div class="leftbox">
+									<div class="date">
+										<div class="day">04</div>
+										<div class="mon-year">Jan.2022</div>
+									</div>
+									<div class="tag red">
+										保育指標
+									</div>
+								</div>
+								<div class="right-name">
+									洪鈴雅
+								</div>
+							</div>
+							<div class="txt">
+								<h3 class="news-title">
+									系統分類學的演進
+								</h3>
+								<div class="arrgo">
+									<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
+										<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
+											<line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+											<line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+										</g>
+									</svg>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="top-item">
+								<div class="leftbox">
+									<div class="date">
+										<div class="day">04</div>
+										<div class="mon-year">Jan.2022</div>
+									</div>
+									<div class="tag red">
+										保育指標
+									</div>
+								</div>
+								<div class="right-name">
+									洪鈴雅
+								</div>
+							</div>
+							<div class="txt">
+								<h3 class="news-title">
+									系統分類學的演進
+								</h3>
+								<div class="arrgo">
+									<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
+										<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
+											<line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+											<line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+										</g>
+									</svg>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="top-item">
+								<div class="leftbox">
+									<div class="date">
+										<div class="day">04</div>
+										<div class="mon-year">Jan.2022</div>
+									</div>
+									<div class="tag green-blue">
+										分類系統
+									</div>
+								</div>
+								<div class="right-name">
+									洪鈴雅、顏聖紘、邵廣昭
+								</div>
+							</div>
+							<div class="txt">
+								<h3 class="news-title">
+									台灣物種名錄分界說明
+								</h3>
+								<div class="arrgo">
+									<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
+										<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
+											<line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+											<line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+										</g>
+									</svg>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="top-item">
+								<div class="leftbox">
+									<div class="date">
+										<div class="day">04</div>
+										<div class="mon-year">Jan.2022</div>
+									</div>
+									<div class="tag red">
+										保育指標
+									</div>
+								</div>
+								<div class="right-name">
+									洪鈴雅
+								</div>
+							</div>
+							<div class="txt">
+								<h3 class="news-title">
+									系統分類學的演進
+								</h3>
+								<div class="arrgo">
+									<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
+										<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
+											<line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+											<line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+										</g>
+									</svg>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="top-item">
+								<div class="leftbox">
+									<div class="date">
+										<div class="day">04</div>
+										<div class="mon-year">Jan.2022</div>
+									</div>
+									<div class="tag red">
+										保育指標
+									</div>
+								</div>
+								<div class="right-name">
+									洪鈴雅、顏聖紘、邵廣昭
+								</div>
+							</div>
+							<div class="txt">
+								<h3 class="news-title">
+									系統分類學的演進
+								</h3>
+								<div class="arrgo">
+									<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
+										<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
+											<line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+											<line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+										</g>
+									</svg>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="top-item">
+								<div class="leftbox">
+									<div class="date">
+										<div class="day">04</div>
+										<div class="mon-year">Jan.2022</div>
+									</div>
+									<div class="tag green-blue">
+										分類系統
+									</div>
+								</div>
+								<div class="right-name">
+									顏聖紘、邵廣昭
+								</div>
+							</div>
+							<div class="txt">
+								<h3 class="news-title">
+									台灣物種名錄分界說明
+								</h3>
+								<div class="arrgo">
+									<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
+										<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
+											<line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+											<line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+										</g>
+									</svg>
+								</div>
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<div class="top-item">
+								<div class="leftbox">
+									<div class="date">
+										<div class="day">04</div>
+										<div class="mon-year">Jan.2022</div>
+									</div>
+									<div class="tag green-blue">
+										分類系統
+									</div>
+								</div>
+								<div class="right-name">
+									洪鈴雅、顏聖紘、邵廣昭
+								</div>
+							</div>
+							<div class="txt">
+								<h3 class="news-title">
+									台灣物種名錄分界說明
+								</h3>
+								<div class="arrgo">
+									<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
+										<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
+											<line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+											<line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+										</g>
+									</svg>
+								</div>
+							</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+
+			<div class="page-num">
+				<!--現在位置加now-->
+				<a href="#" class="num">1</a>
+				<a href="#" class="back">
+					<img src="{% static 'image/pagear1.svg' %}">
+					<p>上一頁</p>
+				</a>
+				<a href="#" class="num">2</a>
+				<a href="#" class="num now">3</a>
+				<a href="#" class="num">4</a>
+				<a href="#" class="next">
+					<p>下一頁</p>
+					<img src="{% static 'image/pagear2.svg' %}">
+				</a>
+				<a href="#" class="num">5</a>
+			</div>
+		</div>
+	</div>
+
+
+{% endblock body %}

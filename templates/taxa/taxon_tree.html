@@ -1,0 +1,1064 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block body %}
+	<div class="page-top">
+		<div class="short-top">
+			<div class="path">
+				<a href="{% url 'index' %}">首頁</a> > <p>物種樹</p>
+			</div>
+			<div class="main-box">
+				<div class="float-dot-yel">
+					<img src="{% static 'image/cir_yel.png' %}">
+				</div>
+				<div class="float-dot-blue">
+					<img src="{% static 'image/cir_blue.png' %}">
+				</div>
+				<div class="title-box">
+					<h2>物種樹</h2>
+					<p>TAXON TREE</p>
+				</div>
+			</div>
+		</div>
+		<div class="hot-search-box">
+			<div class="main-box">
+				<h3>熱門搜尋階層</h3>
+				<div class="seach-tag-area">
+					<a href="#">
+						<p>木蘭綱</p>
+					</a>
+					<a href="#">
+						<p>鳥綱</p>
+					</a>
+					<a href="#">
+						<p>爬蟲綱</p>
+					</a>
+					<a href="#">
+						<p>酸桿菌門</p>
+					</a>
+					<a href="#">
+						<p>木蘭綱</p>
+					</a>
+					<a href="#">
+						<p>爬蟲綱</p>
+					</a>
+					<a href="#">
+						<p>酸桿菌門</p>
+					</a>
+
+				</div>
+				<div class="cont-search-bar">
+					<input type="text" placeholder="請輸入關鍵字">
+					<button class="search">
+						<svg id="Group_6882" data-name="Group 6882" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="36.847" height="36.775" viewBox="0 0 36.847 36.775">
+							<defs>
+								<clipPath id="clip-path">
+									<rect id="Rectangle_65" data-name="Rectangle 65" width="36.847" height="36.775" fill="#4c8da7"/>
+								</clipPath>
+							</defs>
+							<g id="Group_135" data-name="Group 135" clip-path="url(#clip-path)">
+								<path id="Path_6196" data-name="Path 6196" d="M0,15.8V13.791c.093-.611.172-1.224.282-1.832A14.8,14.8,0,0,1,11.626.36C12.373.206,13.135.118,13.89,0h1.943c.091.022.182.049.274.065.813.14,1.642.22,2.438.424a14.772,14.772,0,0,1,9.4,21.166c-.407.768-.9,1.489-1.4,2.3a2.517,2.517,0,0,1,.305.233q4.493,4.478,8.985,8.958a3.734,3.734,0,0,1,1.016,1.4v.718a2.258,2.258,0,0,1-.753,1.148,1.856,1.856,0,0,1-2.5-.29q-4.694-4.682-9.383-9.369A1.8,1.8,0,0,1,24,26.422c-.154.116-.212.156-.27.2A14.833,14.833,0,0,1,.359,17.991C.208,17.268.118,16.532,0,15.8m3.673-1.04A11.15,11.15,0,1,0,14.861,3.676,11.17,11.17,0,0,0,3.673,14.762" fill="#4c8da7"/>
+							</g>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="tree-area">
+			<div class="main-box">
+				<ul class="rank-1-red">
+					<li>
+						<!--選到的給now並展開第二層-->
+						<div class="item-box now">
+							<div class="cir-box">
+								界
+							</div>
+							<h2>細菌界  Kingdom Bacteria</h2>
+							<p>8門 15綱 50目 139科 504屬 2774種</p>
+							<div class="arr">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+									</g>
+								</svg>
+							</div>
+						</div>
+						<ul class="rank-2-org" style="display: block;">
+							<li>
+								<div class="item-box">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>酸桿菌門  Phylum Acidobacteria</h2>
+									<p>1綱 1目 1科 1屬 1種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="item-box">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>放線菌門  Phylum Actinobacteria</h2>
+									<p>1綱 8目 31科 86屬 664種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="item-box">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>擬桿菌門  Phylum Bacteroidetes   </h2>
+									<p>3綱 3目 9科 45屬 148種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+							<li>
+								<!--選到的給now並展開第三層-->
+								<div class="item-box now">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>藍菌門  Phylum Cyanobacteria</h2>
+									<p>1綱 6目 16科 60屬 226種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+								<ul class="rank-3-yell" style="display: block;">
+									<li>
+										<!--選到的給now並展開第四層-->
+										<div class="item-box now">
+											<div class="cir-box">
+												綱
+											</div>
+											<h2>藍藻綱  Class Cyanophyceae </h2>
+											<p>6目 16科 60屬 226種</p>
+											<div class="arr">
+												<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+													<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+														<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+														<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+													</g>
+												</svg>
+											</div>
+										</div>
+										<ul class="rank-4-green" style="display: block;">
+											<li>
+												<!--選到的給now並展開第五層-->
+												<div class="item-box now">
+													<div class="cir-box">
+														目
+													</div>
+													<h2>色球藻目  Order Chroococcales</h2>
+													<p>4科 19屬 67種</p>
+													<div class="arr">
+														<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+															<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+															</g>
+														</svg>
+													</div>
+												</div>
+												<ul class="rank-5-blue" style="display: block;">
+													<li>
+														<div class="item-box">
+															<div class="cir-box">
+																科
+															</div>
+															<h2>Family Not assigned</h2>
+															<p>3屬 6種</p>
+															<div class="arr">
+																<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																	<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																		<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																		<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																	</g>
+																</svg>
+															</div>
+														</div>
+													</li>
+													<li>
+														<!--選到的給now並展開第六層-->
+														<div class="item-box now">
+															<div class="cir-box">
+																科
+															</div>
+															<h2>色球藻科  Family Chroococcaceae</h2>
+															<p>2屬 12種</p>
+															<div class="arr">
+																<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																	<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																		<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																		<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																	</g>
+																</svg>
+															</div>
+														</div>
+														<ul class="rank-6-deepblue" style="display: block;">
+															<li>
+																<!--選到的給now並展開第七層-->
+																<div class="item-box now">
+																	<div class="cir-box">
+																		屬
+																	</div>
+																	<h2>色球藻屬  Genus Chroococcus</h2>
+																	<p>10種</p>
+																	<div class="arr">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																			<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																				<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																				<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																			</g>
+																		</svg>
+																	</div>
+																</div>
+																<ul class="rank-7-purple" style="display: block;">
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cimneticus  Ong</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cohaerens  (Breb.) Naegeli</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cohaerens  (Breb.) Naegeli</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cohaerens  (Breb.) Naegeli</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																</ul>
+															</li>
+															<li>
+																<div class="item-box">
+																	<div class="cir-box">
+																		屬
+																	</div>
+																	<h2>Genus Coelospharium</h2>
+																	<p>2種</p>
+																	<div class="arr">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																			<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																				<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																				<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																			</g>
+																		</svg>
+																	</div>
+																</div>
+															</li>
+														</ul>
+													</li>
+												</ul>
+											</li>
+											<li>
+												<div class="item-box">
+													<div class="cir-box">
+														目
+													</div>
+													<h2>真枝藻目  Order Stigonematales </h2>
+													<p>1科 1屬 1種</p>
+													<div class="arr">
+														<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+															<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+															</g>
+														</svg>
+													</div>
+												</div>
+											</li>
+										</ul>
+									</li>
+									<li>
+										<div class="item-box">
+											<div class="cir-box">
+												綱
+											</div>
+											<h2>藍藻綱  Class Cyanophyceae</h2>
+											<p>6目 16科 60屬 226種</p>
+											<div class="arr">
+												<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+													<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+														<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+														<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+													</g>
+												</svg>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<div class="item-box ">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>異常球菌門 Phylum Deinococcota </h2>
+									<p>1綱 6目 16科 60屬 226種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</li>
+					<li >
+						<div class="item-box">
+							<div class="cir-box">
+								界
+							</div>
+							<h2>細菌界  Kingdom Bacteria</h2>
+							<p>8門 15綱 50目 139科 504屬 2774種</p>
+							<div class="arr">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+									</g>
+								</svg>
+							</div>
+						</div>
+						<ul class="rank-2-org">
+							<li>
+								<div class="item-box">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>酸桿菌門  Phylum Acidobacteria</h2>
+									<p>1綱 1目 1科 1屬 1種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="item-box">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>放線菌門  Phylum Actinobacteria</h2>
+									<p>1綱 8目 31科 86屬 664種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="item-box">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>擬桿菌門  Phylum Bacteroidetes   </h2>
+									<p>3綱 3目 9科 45屬 148種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="item-box ">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>藍菌門  Phylum Cyanobacteria</h2>
+									<p>1綱 6目 16科 60屬 226種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+								<ul class="rank-3-yell">
+									<li>
+										<div class="item-box ">
+											<div class="cir-box">
+												綱
+											</div>
+											<h2>藍藻綱  Class Cyanophyceae</h2>
+											<p>6目 16科 60屬 226種</p>
+											<div class="arr">
+												<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+													<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+														<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+														<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+													</g>
+												</svg>
+											</div>
+										</div>
+										<ul class="rank-4-green">
+											<li>
+												<div class="item-box ">
+													<div class="cir-box">
+														目
+													</div>
+													<h2>色球藻目  Order Chroococcales</h2>
+													<p>4科 19屬 67種</p>
+													<div class="arr">
+														<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+															<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+															</g>
+														</svg>
+													</div>
+												</div>
+												<ul class="rank-5-blue">
+													<li>
+														<div class="item-box">
+															<div class="cir-box">
+																科
+															</div>
+															<h2>Family Not assigned</h2>
+															<p>3屬 6種</p>
+															<div class="arr">
+																<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																	<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																		<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																		<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																	</g>
+																</svg>
+															</div>
+														</div>
+													</li>
+													<li>
+														<div class="item-box ">
+															<div class="cir-box">
+																科
+															</div>
+															<h2>色球藻科  Family Chroococcaceae</h2>
+															<p>2屬 12種</p>
+															<div class="arr">
+																<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																	<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																		<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																		<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																	</g>
+																</svg>
+															</div>
+														</div>
+														<ul class="rank-6-deepblue">
+															<li>
+																<div class="item-box ">
+																	<div class="cir-box">
+																		屬
+																	</div>
+																	<h2>色球藻屬  Genus Chroococcus</h2>
+																	<p>10種</p>
+																	<div class="arr">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																			<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																				<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																				<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																			</g>
+																		</svg>
+																	</div>
+																</div>
+																<ul class="rank-7-purple">
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cimneticus  Ong</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cohaerens  (Breb.) Naegeli</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cohaerens  (Breb.) Naegeli</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cohaerens  (Breb.) Naegeli</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																</ul>
+															</li>
+															<li>
+																<div class="item-box">
+																	<div class="cir-box">
+																		屬
+																	</div>
+																	<h2>Genus Coelospharium</h2>
+																	<p>2種</p>
+																	<div class="arr">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																			<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																				<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																				<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																			</g>
+																		</svg>
+																	</div>
+																</div>
+															</li>
+														</ul>
+													</li>
+												</ul>
+											</li>
+											<li>
+												<div class="item-box">
+													<div class="cir-box">
+														目
+													</div>
+													<h2>真枝藻目  Order Stigonematales </h2>
+													<p>1科 1屬 1種</p>
+													<div class="arr">
+														<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+															<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+															</g>
+														</svg>
+													</div>
+												</div>
+											</li>
+										</ul>
+									</li>
+									<li>
+										<div class="item-box">
+											<div class="cir-box">
+												綱
+											</div>
+											<h2>藍藻綱  Class Cyanophyceae</h2>
+											<p>6目 16科 60屬 226種</p>
+											<div class="arr">
+												<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+													<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+														<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+														<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+													</g>
+												</svg>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<div class="item-box ">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>異常球菌門 Phylum Deinococcota </h2>
+									<p>1綱 6目 16科 60屬 226種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+						</ul style=>
+					</li>
+					<li >
+						<div class="item-box">
+							<div class="cir-box">
+								界
+							</div>
+							<h2>細菌界  Kingdom Bacteria</h2>
+							<p>8門 15綱 50目 139科 504屬 2774種</p>
+							<div class="arr">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+									</g>
+								</svg>
+							</div>
+						</div>
+						<ul class="rank-2-org">
+							<li>
+								<div class="item-box">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>酸桿菌門  Phylum Acidobacteria</h2>
+									<p>1綱 1目 1科 1屬 1種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="item-box">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>放線菌門  Phylum Actinobacteria</h2>
+									<p>1綱 8目 31科 86屬 664種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="item-box">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>擬桿菌門  Phylum Bacteroidetes   </h2>
+									<p>3綱 3目 9科 45屬 148種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="item-box ">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>藍菌門  Phylum Cyanobacteria</h2>
+									<p>1綱 6目 16科 60屬 226種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+								<ul class="rank-3-yell">
+									<li>
+										<div class="item-box ">
+											<div class="cir-box">
+												綱
+											</div>
+											<h2>藍藻綱  Class Cyanophyceae</h2>
+											<p>6目 16科 60屬 226種</p>
+											<div class="arr">
+												<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+													<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+														<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+														<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+													</g>
+												</svg>
+											</div>
+										</div>
+										<ul class="rank-4-green">
+											<li>
+												<div class="item-box ">
+													<div class="cir-box">
+														目
+													</div>
+													<h2>色球藻目  Order Chroococcales</h2>
+													<p>4科 19屬 67種</p>
+													<div class="arr">
+														<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+															<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+															</g>
+														</svg>
+													</div>
+												</div>
+												<ul class="rank-5-blue">
+													<li>
+														<div class="item-box">
+															<div class="cir-box">
+																科
+															</div>
+															<h2>Family Not assigned</h2>
+															<p>3屬 6種</p>
+															<div class="arr">
+																<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																	<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																		<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																		<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																	</g>
+																</svg>
+															</div>
+														</div>
+													</li>
+													<li>
+														<div class="item-box ">
+															<div class="cir-box">
+																科
+															</div>
+															<h2>色球藻科  Family Chroococcaceae</h2>
+															<p>2屬 12種</p>
+															<div class="arr">
+																<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																	<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																		<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																		<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																	</g>
+																</svg>
+															</div>
+														</div>
+														<ul class="rank-6-deepblue">
+															<li>
+																<div class="item-box ">
+																	<div class="cir-box">
+																		屬
+																	</div>
+																	<h2>色球藻屬  Genus Chroococcus</h2>
+																	<p>10種</p>
+																	<div class="arr">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																			<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																				<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																				<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																			</g>
+																		</svg>
+																	</div>
+																</div>
+																<ul class="rank-7-purple">
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cimneticus  Ong</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cohaerens  (Breb.) Naegeli</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cohaerens  (Breb.) Naegeli</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																	<li>
+																		<a class="item-box">
+																			<div class="cir-box">
+																				種
+																			</div>
+																			<h2>Chroococcus cohaerens  (Breb.) Naegeli</h2>
+																			<div class="arr">
+																				<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																					<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																						<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																						<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																					</g>
+																				</svg>
+																			</div>
+																		</a>
+																	</li>
+																</ul>
+															</li>
+															<li>
+																<div class="item-box">
+																	<div class="cir-box">
+																		屬
+																	</div>
+																	<h2>Genus Coelospharium</h2>
+																	<p>2種</p>
+																	<div class="arr">
+																		<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+																			<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																				<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																				<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																			</g>
+																		</svg>
+																	</div>
+																</div>
+															</li>
+														</ul>
+													</li>
+												</ul>
+											</li>
+											<li>
+												<div class="item-box">
+													<div class="cir-box">
+														目
+													</div>
+													<h2>真枝藻目  Order Stigonematales </h2>
+													<p>1科 1屬 1種</p>
+													<div class="arr">
+														<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+															<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+																<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+																<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+															</g>
+														</svg>
+													</div>
+												</div>
+											</li>
+										</ul>
+									</li>
+									<li>
+										<div class="item-box">
+											<div class="cir-box">
+												綱
+											</div>
+											<h2>藍藻綱  Class Cyanophyceae</h2>
+											<p>6目 16科 60屬 226種</p>
+											<div class="arr">
+												<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+													<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+														<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+														<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+													</g>
+												</svg>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<div class="item-box ">
+									<div class="cir-box">
+										門
+									</div>
+									<h2>異常球菌門 Phylum Deinococcota </h2>
+									<p>1綱 6目 16科 60屬 226種</p>
+									<div class="arr">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+											<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+												<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+												<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+											</g>
+										</svg>
+									</div>
+								</div>
+							</li>
+						</ul style=>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+{% endblock body %}
+{% block script %}
+<script>
+	$(function (){
+
+		$('.ham4').on('click', function() {
+			$('.ham4').toggleClass('active');
+			$('.main_menu').slideToggle();
+		});
+
+
+		$('.ringbox').on('click',function (event) {
+			if( $(this).hasClass('mb_open')){
+				$(this).removeClass('mb_open');
+
+			}else{
+				$(this).addClass('mb_open');
+
+			}
+
+		});
+
+			if ($(window).width() < 960) {
+				$('.mbli').addClass('rd_mb_two_menu_li');
+			}else{
+				$('.mbli').removeClass('rd_mb_two_menu_li');
+			}
+
+
+		$('.rd_mb_two_menu_li').on('click',function (event) {
+
+			if( $(this).closest('li').hasClass('now')){
+				$(this).removeClass('now');
+				$(this).find('.menu_2').slideUp();
+
+			}else{
+				$(this).addClass('now');
+				$(this).find('.menu_2').slideDown();
+			}
+		});
+	});
+{% endblock script %}
