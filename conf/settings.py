@@ -37,6 +37,7 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 INSTALLED_APPS = [
     'pages',
     'taxa',
+    'ckeditor',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -128,3 +129,9 @@ STATICFILES_DIRS = [default_static_dir, ]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = env('MEDIA_ROOT')
+
+
+# CKEDitor
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_FILENAME_GENERATOR = 'utils.get_filename'

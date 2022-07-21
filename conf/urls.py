@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('pages.urls')),
     path('', include('taxa.urls')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
 ]

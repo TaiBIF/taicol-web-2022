@@ -6,4 +6,5 @@ urlpatterns = [
     path('catalogue', views.catalogue, name='catalogue'),
     path('name/match', views.name_match, name='name_match'),
     path('taxon/tree', views.taxon_tree, name='taxon_tree'),
+    path('taxon', views.taxon, name='taxon'),
 ]

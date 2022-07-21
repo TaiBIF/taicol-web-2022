@@ -11,3 +11,7 @@ def name_match(request):
 
 def taxon_tree(request):
     return render(request, 'taxa/taxon_tree.html')
+
+    
+def taxon(request):
+    return render(request, 'taxa/taxon.html')

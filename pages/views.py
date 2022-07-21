@@ -12,12 +12,20 @@ def article(request):
     return render(request, 'pages/article_list.html')
 
 
+def article_detail(request, article_id):
+    return render(request, 'pages/article_de.html')
+
+
 def download(request):
     return render(request, 'pages/download.html')
 
 
 def news(request):
     return render(request, 'pages/news_list.html')
+
+
+def news_detail(request, news_id):
+    return render(request, 'pages/news_de.html')
 
 
 def statistics(request):
