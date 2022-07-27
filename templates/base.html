@@ -10,25 +10,21 @@
 	<script src="{% static 'js/gsap.min.js' %}" ></script>
 	<script src="{% static 'js/ScrollTrigger.min.js' %}" ></script>
     <link rel="icon" sizes="32x32" type="image/png" href="{% static 'image/logo-removebg.png' %}" />
-
+    {% block head %}{% endblock head %}
     <style>
         .disabled-a-link {
             pointer-events: none;
-          }
+        }
+
+        .d-none {
+            display: none;
+        }
+
     </style>
     {% block style %}{% endblock style %}
-
 </head>
 
-
 <body>
-	<!--如果要用到loading-->
-	<div class="loadingbox" style="display: none;">
-		<img class="center-logo" src="{% static 'image/logo-img.svg' %}" alt="臺灣物種名錄">
-		<div id="loader-wrapper">
-			<div id="loader"></div>
-		</div>
-	</div>
 	<div class="header">
         <div class="header-content">
             <div class="mb-hambruger">

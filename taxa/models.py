@@ -10,3 +10,8 @@ class Expert(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
+
+class SearchStat(models.Model): # 熱門搜尋階層
+    taxon_id = models.CharField(max_length=7, blank=False, null=False)
+    count = models.IntegerField()
+    updated_at = models.DateTimeField(auto_now_add=True)

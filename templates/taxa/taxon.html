@@ -1,6 +1,11 @@
 {% extends 'base.html' %} 
 {% load static %}
 
+{% block head %}
+<script src="{% static 'js/jquery.nice-select.js' %}"></script>
+<link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}">
+{% endblock head %}
+
 {% block style %}
 <style>
 	a.anchor {
@@ -9,7 +14,28 @@
 		top: -115px;
 		visibility: none;
 	}
+
+
+	.nice-select.subject {
+		width: 100%;
+		background: #FFF;
+		border-radius: 5px;
+		border: 1px solid #ddd;
+		padding: 0px 15px;
+		font-size: 16px;
+		height: 40px
+	}
 	
+	.nice-select.subject {
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		background: url("/static/image/ard01.svg") center right 15px no-repeat;
+		background-size: 16px auto;
+		background-color: #FFF
+	}
+
+
 </style>
 {% endblock style %}
 
@@ -50,7 +76,7 @@
 				</div>
 				<div class="error-form">
 					<div class="case-num">
-						針對(tx132456)Sesapa koshunica (Strand, 1917) 回報錯誤
+						針對({{ taxon_id }})Sesapa koshunica (Strand, 1917) 回報錯誤
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
@@ -58,8 +84,7 @@
 					</div>
 					<div class="input-item2">
 						<div class="input-item">
-							<select name="" id="">
-								<option value=""></option>
+							<select class="subject wide" name="subject-select" id="">
 								<option value="">學名和中文名</option>
 								<option value="">照片</option>
 								<option value="">分類資訊</option>
@@ -125,7 +150,7 @@
 									<rect id="Rectangle_65" data-name="Rectangle 65" width="36.847" height="36.775" fill="#4c8da7"/>
 								</clipPath>
 							</defs>
-							<g id="Group_135" data-name="Group 135" clip-path="url(#clip-path)">
+							<g id="Group_135" data-name="Group 135">
 								<path id="Path_6196" data-name="Path 6196" d="M0,15.8V13.791c.093-.611.172-1.224.282-1.832A14.8,14.8,0,0,1,11.626.36C12.373.206,13.135.118,13.89,0h1.943c.091.022.182.049.274.065.813.14,1.642.22,2.438.424a14.772,14.772,0,0,1,9.4,21.166c-.407.768-.9,1.489-1.4,2.3a2.517,2.517,0,0,1,.305.233q4.493,4.478,8.985,8.958a3.734,3.734,0,0,1,1.016,1.4v.718a2.258,2.258,0,0,1-.753,1.148,1.856,1.856,0,0,1-2.5-.29q-4.694-4.682-9.383-9.369A1.8,1.8,0,0,1,24,26.422c-.154.116-.212.156-.27.2A14.833,14.833,0,0,1,.359,17.991C.208,17.268.118,16.532,0,15.8m3.673-1.04A11.15,11.15,0,1,0,14.861,3.676,11.17,11.17,0,0,0,3.673,14.762" fill="#4c8da7"/>
 							</g>
 						</svg>
@@ -597,6 +622,11 @@
 {% endblock body %}
 {% block script %}
 <script>
+
+	$(function(){
+		$('select[name=subject-select]').niceSelect();
+	})
+
 	$( ".mistake-btn" ).click(function() {
 		$('.mistakepop').fadeIn("slow");
 	});

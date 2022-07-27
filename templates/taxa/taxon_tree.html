@@ -1025,40 +1025,6 @@
 <script>
 	$(function (){
 
-		$('.ham4').on('click', function() {
-			$('.ham4').toggleClass('active');
-			$('.main_menu').slideToggle();
-		});
-
-
-		$('.ringbox').on('click',function (event) {
-			if( $(this).hasClass('mb_open')){
-				$(this).removeClass('mb_open');
-
-			}else{
-				$(this).addClass('mb_open');
-
-			}
-
-		});
-
-			if ($(window).width() < 960) {
-				$('.mbli').addClass('rd_mb_two_menu_li');
-			}else{
-				$('.mbli').removeClass('rd_mb_two_menu_li');
-			}
-
-
-		$('.rd_mb_two_menu_li').on('click',function (event) {
-
-			if( $(this).closest('li').hasClass('now')){
-				$(this).removeClass('now');
-				$(this).find('.menu_2').slideUp();
-
-			}else{
-				$(this).addClass('now');
-				$(this).find('.menu_2').slideDown();
-			}
-		});
 	});
+</script>
 {% endblock script %}
