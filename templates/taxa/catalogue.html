@@ -601,15 +601,15 @@
 <script>
 	$(function(){
 		// 進階選項控制
-		let option = '{{ option }}';
-		console.log(option=='1');
-		if (option=='0'){
+		let filter = '{{ filter }}';
+		console.log(filter=='1');
+		if (filter=='0'){
 			$('.select-button').removeClass('now');
 			$('.selection-box').slideUp();
 			$('.more-option-button').removeClass('now');
 			$('.option-box2').slideUp();
 
-		} else if (option=='1'){
+		} else if (filter=='1'){
 			if (!$('.select-button').hasClass('now')){
 				$('.select-button').addClass('now');
 				$('.selection-box').slideDown();
@@ -617,7 +617,7 @@
 			$('.more-option-button').removeClass('now');
 			$('.option-box2').slideUp();
 
-		} else if (option=='2'){
+		} else if (filter=='2'){
 			if (!$('.select-button').hasClass('now')){
 				$('.select-button').addClass('now');
 				$('.selection-box').slideDown();
