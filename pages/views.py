@@ -38,6 +38,14 @@ def api(request):
 
 # ----- DONE ----- #
 
+def custom_page_not_found_view(request, exception):
+    return render(request, "404.html")
+
+
+def custom_error_view(request, exception=None):
+    return render(request, "404.html")
+
+
 def about(request):
     return render(request, 'pages/about.html')
 

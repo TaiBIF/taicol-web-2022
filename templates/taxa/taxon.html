@@ -1,6 +1,18 @@
 {% extends 'base.html' %} 
 {% load static %}
 
+{% block style %}
+<style>
+	a.anchor {
+		display: block;
+		position: relative;
+		top: -115px;
+		visibility: none;
+	}
+	
+</style>
+{% endblock style %}
+
 {% block body %}
 	<!--側邊收和鈕，加上now控制開關-->
 	<div class="all-open-close">
@@ -47,7 +59,17 @@
 					<div class="input-item2">
 						<div class="input-item">
 							<select name="" id="">
-								<option value="請選擇"></option>
+								<option value=""></option>
+								<option value="">學名和中文名</option>
+								<option value="">照片</option>
+								<option value="">分類資訊</option>
+								<option value="">分類階層</option>
+								<option value="">物種資訊</option>
+								<option value="">學名變遷</option>
+								<option value="">文獻</option>
+								<option value="">專家</option>
+								<option value="">相關連結</option>
+								<option value="">變更歷史</option>
 							</select>
 						</div>
 						<div class="input-item">
@@ -115,16 +137,17 @@
 		<div class="species-de-content">
 			<div class="main-box">
 				<div class="sticky-left">
-					<button>- 分類資訊</button>
-					<button>- 分類階層</button>
-					<button>- 物種資訊</button>
-					<button>- 物種學名變遷</button>
-					<button>- 文獻</button>
-					<button>- 專家</button>
-					<button>- 相關連結</button>
-					<button>- 變更歷史</button>
+					<button onclick="document.location=`{% url 'taxon' taxon_id %}#taxon-status`;">- 分類資訊</button>
+					<button onclick="document.location=`{% url 'taxon' taxon_id %}#taxon-rank`;">- 分類階層</button>
+					<button onclick="document.location=`{% url 'taxon' taxon_id %}#taxon-info`;">- 物種資訊</button>
+					<button onclick="document.location=`{% url 'taxon' taxon_id %}#taxon-change`;">- 學名變遷</button>
+					<button onclick="document.location=`{% url 'taxon' taxon_id %}#taxon-ref`;">- 文獻</button>
+					<button onclick="document.location=`{% url 'taxon' taxon_id %}#taxon-expert`;">- 專家</button>
+					<button onclick="document.location=`{% url 'taxon' taxon_id %}#taxon-link`;">- 相關連結</button>
+					<button onclick="document.location=`{% url 'taxon' taxon_id %}#taxon-history`;">- 變更歷史</button>
 				</div>
 				<div class="right-de-box">
+							<a class="anchor" id="taxon-status"></a>
 					<div class="box-2">
 						<div class="left-maininf">
 							<div class="maintxt">
@@ -133,6 +156,7 @@
 								<p>物種編號：434606</p>
 							</div>
 							<div class="class-inf">
+								<a class="anchor" id="taxon-status"></a>
 								<div class="mark-title">
 									<img src="{% static 'image/title-markw.svg' %}">
 									<p>分類資訊</p>
@@ -171,6 +195,7 @@
 							<!--展開時加上now-->
 							<div class="w-box now">
 								<div class="title-click">
+									<a class="anchor" id="taxon-rank"></a>
 									<div class="mark-title">
 										<img src="{% static 'image/title-mark.svg' %}">
 										<p>分類階層</p>
@@ -274,9 +299,10 @@
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
+							<a class="anchor" id="taxon-change"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
-								<p>物種學名變遷</p>
+								<p>學名變遷</p>
 							</div>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -304,6 +330,7 @@
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
+							<a class="anchor" id="taxon-ref"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
 								<p>文獻</p>
@@ -329,6 +356,7 @@
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
+							<a class="anchor" id="taxon-expert"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
 								<p>專家</p>
@@ -370,6 +398,7 @@
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
+							<a class="anchor" id="taxon-link"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
 								<p>相關連結</p>
@@ -499,6 +528,7 @@
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
+							<a class="anchor" id="taxon-history"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
 								<p>變更歷史</p>

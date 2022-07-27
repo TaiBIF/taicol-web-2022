@@ -599,6 +599,37 @@
 {% endblock body %}
 {% block script %}
 <script>
+	$(function(){
+		// 進階選項控制
+		let option = '{{ option }}';
+		console.log(option=='1');
+		if (option=='0'){
+			$('.select-button').removeClass('now');
+			$('.selection-box').slideUp();
+			$('.more-option-button').removeClass('now');
+			$('.option-box2').slideUp();
+
+		} else if (option=='1'){
+			if (!$('.select-button').hasClass('now')){
+				$('.select-button').addClass('now');
+				$('.selection-box').slideDown();
+			}	
+			$('.more-option-button').removeClass('now');
+			$('.option-box2').slideUp();
+
+		} else if (option=='2'){
+			if (!$('.select-button').hasClass('now')){
+				$('.select-button').addClass('now');
+				$('.selection-box').slideDown();
+			}
+			if (!$('.more-option-button').hasClass('now')){
+				$('.more-option-button').addClass('now');
+				$('.option-box2').slideDown();
+			}
+		}
+	});
+
+
 	$('.select-button').on('click',function (event) {
 		if( $(this).hasClass('now')){
 			$(this).removeClass('now');

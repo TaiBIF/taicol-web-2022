@@ -1,0 +1,46 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block style %}
+<style>
+    .go-topbtn {
+        display: none;
+    }
+
+    .footer {
+        position: absolute;
+        bottom: 0;      
+        width: 100%;
+    }
+
+    html, body {
+        max-height: -o-calc(100vh - 95px) !important; /* opera */
+        max-height: -webkit-calc(100vh - 95px) !important; /* google, safari */
+        max-height: -moz-calc(100vh - 95px) !important; /* firefox */    
+    }
+</style>
+{% endblock style %}
+
+{% block body %}
+<div class="page-top">
+    <div class="short-top">
+        <div class="main-box">
+            <div class="float-dot-yel">
+                <img src="{% static 'image/cir_yel.png' %}">
+            </div>
+            <div class="float-dot-blue">
+                <img src="{% static 'image/cir_blue.png' %}">
+            </div>
+            <div class="title-box">
+                <h2>錯誤頁面</h2>
+                <p>ERROR</p>
+            </div>
+        </div>
+    </div>
+    <div class="hot-search-box" style="border-bottom: none;">
+        <div class="main-box">
+            <p>您要求的網址不存在，若有疑問請<a href="mailto:catalogueoflife.taiwan@gmail.com">聯絡我們</a>，謝謝。</p>
+        </div>
+    </div>
+</div>
+{% endblock body %}
