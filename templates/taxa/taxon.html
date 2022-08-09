@@ -4,10 +4,60 @@
 {% block head %}
 <script src="{% static 'js/jquery.nice-select.js' %}"></script>
 <link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}">
+<script src="https://kit.fontawesome.com/b8e586964f.js" crossorigin="anonymous"></script>
+
 {% endblock head %}
 
 {% block style %}
 <style>
+
+	ul.link-left li {
+		word-break: break-word;
+	}
+
+/* Tooltip container */
+.tooltip {
+	position: relative;
+	display: inline-block;
+  }
+  
+  /* Tooltip text */
+  .tooltip .tooltiptext {
+	visibility: hidden;
+	background-color: #EFF5F7;
+	color: #555;
+	padding: 5px 5px;
+	border-radius: 3px;
+	font-weight: normal;
+	font-size: 14px;
+   
+	/* Position the tooltip text - see examples below! */
+	position: absolute;
+	z-index: 1;
+	width: 200px;
+	top: 125%;
+	left: 50%; 
+	margin-left: -100px;
+	word-break: break-word;
+  }
+  
+  .tooltip .tooltiptext::after {
+	content: " ";
+	position: absolute;
+	bottom: 100%;  /* At the top of the tooltip */
+	left: 50%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: transparent transparent #EFF5F7 transparent;
+  }
+  
+  
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .tooltip:hover .tooltiptext {
+	visibility: visible;
+  }
+
 	a.anchor {
 		display: block;
 		position: relative;
@@ -42,7 +92,7 @@
 {% block body %}
 	<!--側邊收和鈕，加上now控制開關-->
 	<div class="all-open-close">
-		<div class="center">
+		<div class="center" onclick="controlAll()">
 			<p>全部</p>
 			<svg xmlns="http://www.w3.org/2000/svg" width="16.828" height="9.828" viewBox="0 0 16.828 9.828">
 				<g id="Group_7699" data-name="Group 7699" transform="translate(1561.442 559.678) rotate(180)">
@@ -76,7 +126,7 @@
 				</div>
 				<div class="error-form">
 					<div class="case-num">
-						針對({{ taxon_id }})Sesapa koshunica (Strand, 1917) 回報錯誤
+						針對({{ taxon_id }}){{ data.sci_name|safe }}回報錯誤
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
@@ -110,13 +160,13 @@
 						<h3>更新通知與否</h3>
 						<div class="radiobox">
 							<div class="flex">
-								<input type="radio">
+								<input type="radio" name="update-required">
 								<p>是</p>
 							</div>
 						</div>
 						<div class="radiobox">
 							<div class="flex">
-								<input type="radio">
+								<input type="radio" name="update-required">
 								<p>否</p>
 							</div>
 						</div>
@@ -176,9 +226,9 @@
 					<div class="box-2">
 						<div class="left-maininf">
 							<div class="maintxt">
-								<h2 class="en">Sesapa koshunica (Strand, 1917)</h2>
-								<h2>恆春瑟美苔蛾</h2>
-								<p>物種編號：434606</p>
+								<h2 class="en">{{ data.sci_name|safe }}</h2>
+								<h2>{{ data.common_name_c|default_if_none:'' }}</h2>
+								<p>物種編號：{{ data.name_id }}</p>
 							</div>
 							<div class="class-inf">
 								<a class="anchor" id="taxon-status"></a>
@@ -186,8 +236,8 @@
 									<img src="{% static 'image/title-markw.svg' %}">
 									<p>分類資訊</p>
 								</div>
-								<p>種 Species</p>
-								<p>接受名 Accepted</p>
+								<p>{{ data.rank_d }}</p>
+								<p>{{ data.status }}</p>
 							</div>
 						</div>
 						<div class="rignt-pic_area">
@@ -215,10 +265,10 @@
 						</div>
 					</div>
 					<!--這裡如果只展開其中一項，要加上style="align-items: flex-start;"-->
-					<div class="box-2 column" >
+					<div class="box-2 column" style="align-items: '';" >
 						<div class="leftbox">
 							<!--展開時加上now-->
-							<div class="w-box now">
+							<div class="w-box w-box-2 now">
 								<div class="title-click">
 									<a class="anchor" id="taxon-rank"></a>
 									<div class="mark-title">
@@ -236,55 +286,14 @@
 								</div>
 								<div class="w-content">
 									<div class="rank-area">
-										<div class="item">
-											<div class="cir-box rank-1-red">
-												界
-											</div>
-											<p>Animalia 動物界</p>
-										</div>
-										<div class="item">
-											<div class="cir-box rank-2-org">
-												門
-											</div>
-											<p>Arthropoda 節肢動物門</p>
-										</div>
-										<div class="item">
-											<div class="cir-box rank-3-yell">
-												綱
-											</div>
-											<p>Insecta 昆蟲綱</p>
-										</div>
-										<div class="item">
-											<div class="cir-box rank-4-green">
-												目
-											</div>
-											<p>Lepidoptera 鱗翅目</p>
-										</div>
-										<div class="item">
-											<div class="cir-box rank-5-blue">
-												科
-											</div>
-											<p>Erebidae 裳蛾科</p>
-										</div>
-										<div class="item">
-											<div class="cir-box rank-6-deepblue">
-												屬
-											</div>
-											<p>Sesapa 瑟美苔蛾屬</p>
-										</div>
-										<div class="item">
-											<div class="cir-box rank-second-gray">
-												亞屬
-											</div>
-											<p>Sesapa 瑟美苔蛾亞屬</p>
-										</div>
+										{{ higher_html_str|safe }}
 									</div>
 								</div>
 							</div>
 						</div>
 						<div class="rightbox">
 							<!--展開時加上now-->
-							<div class="w-box now">
+							<div class="w-box w-box-2 now">
 								<div class="title-click">
 									<div class="mark-title">
 										<img src="{% static 'image/title-mark.svg' %}">
@@ -301,21 +310,41 @@
 								</div>
 								<div class="w-content">
 									<div class="green-tag-box">
-										<div class="item">
-											臺灣特有
-										</div>
-										<div class="item">
-											原生
-										</div>
-										<div class="item">
-											陸生
-										</div>
+										{{ info_html_str|safe }}
 									</div>
 									<div class="inf-short">
-										<p>保育類：第 II 級 珍貴稀有保育類野生動物</p>
-										<p>臺灣紅皮書：易受害 VU</p>
-										<p>IUCN：易受害 VU</p>
-										<p>CITES：附錄 II 族群數量稀少須有效管制</p>
+										{% if data.protected_category  %}
+										<p>保育類：{{ data.protected_category }} 
+											{% if data.protected_note %}
+											<i class="far fa-exclamation-circle tooltip" style="color: #4C8DA7">
+											<span class="tooltiptext">{{ data.protected_note|safe }}</span>
+											{% endif %}
+										</i></p>
+										{% endif %}										
+										{% if data.red_category  %}
+										<p>臺灣紅皮書：{{ data.red_category }} 
+											{% if data.red_note %}
+											<i class="far fa-exclamation-circle tooltip" style="color: #4C8DA7">
+											<span class="tooltiptext">{{ data.red_note|safe }}</span>
+											{% endif %}
+										</i></p>
+										{% endif %}
+										{% if data.iucn_category  %}
+										<p>IUCN：{{ data.iucn_category }} 
+											{% if data.iucn_note %}
+											<i class="far fa-exclamation-circle tooltip" style="color: #4C8DA7">
+											<span class="tooltiptext">{{ data.iucn_note|safe }}</span>
+											{% endif %}
+										</i></p>
+										{% endif %}
+										{% if data.cites_listing  %}
+										<p>CITES：{{ data.cites_listing }} 
+											{% if data.cites_note %}
+											<i class="far fa-exclamation-circle tooltip" style="color: #4C8DA7">
+											<span class="tooltiptext">{{ data.cites_note|safe }}</span>
+											{% endif %}
+										</i></p>
+										{% endif %}
 									</div>
 								</div>
 							</div>
@@ -340,6 +369,10 @@
 						</div>
 						<div class="w-content">
 							<div class="namebox">
+								{% for n in name_changes %}
+								<p>{{ n|safe }}</p>
+								{% endfor %}
+								<!--
 								<p>
 									Miltochrista koshunica	Strand, 1917 ; Volynkin,2019
 								</p>
@@ -349,6 +382,7 @@
 								<p>
 									Sesapa koshunica－Wu, 2019
 								</p>
+								-->
 							</div>
 						</div>
 					</div>
@@ -371,10 +405,9 @@
 						</div>
 						<div class="w-content">
 							<ul class="book-list">
-								<li>Wu, S. 2019. Reassessment of the generic definition of Sesapa Walker, 1854, with descriptions of two new species of Taiwan (Erebidae, Arctiinae, Lithosiini). Tinea 25 (Suppl.): 75–83</li>
-								<li>Wu, S. 2019. Reassessment of the generic definition of Sesapa Walker, 1854, with descriptions of two new species of Taiwan (Erebidae, Arctiinae, Lithosiini). Tinea 25 (Suppl.): 75–83</li>
-								<li>Wu, S. 2019. Reassessment of the generic definition of Sesapa Walker, 1854, with descriptions of two new species of Taiwan (Erebidae, Arctiinae, Lithosiini). Tinea 25 (Suppl.): 75–83</li>
-								<li>Wu, S. 2019. Reassessment of the generic definition of Sesapa Walker, 1854, with descriptions of two new species of Taiwan (Erebidae, Arctiinae, Lithosiini). Tinea 25 (Suppl.): 75–83</li>
+								{% for r in refs %}
+									<li>{{ r|safe }}</li>
+								{% endfor %}
 							</ul>
 						</div>
 					</div>
@@ -398,26 +431,15 @@
 
 						<div class="w-content">
 							<div class="scro-m">
+								{% for e in experts %}
 								<ul class="expert-li">
-									<li>吳士緯 </li>
-									<li>Wu,Shipher Shih-Wei</li>
-									<li>Lepidotera</li>
-									<li>shipher@gmail.com</li>
+									<li>{{ e.name|default_if_none:'' }}</li>
+									<li>{{ e.name_e|default_if_none:'' }}</li>
+									<li>{{ e.taxon_group_agg|default_if_none:'' }}</li>
+									<li>{{ e.email|default:'' }}</li>
 								</ul>
-								<ul class="expert-li">
-									<li>顏聖紘 </li>
-									<li>Yen,Shen-Horn</li>
-									<li>Lepidotera</li>
-									<li></li>
-								</ul>
-								<ul class="expert-li">
-									<li>陳小名 </li>
-									<li>Wu,Shipher Shih-Wei</li>
-									<li>Lepidotera</li>
-									<li>shipher@gmail.com</li>
-								</ul>
+								{% endfor %}
 							</div>
-
 						</div>
 					</div>
 					<!--展開時加上now-->
@@ -439,9 +461,14 @@
 						</div>
 						<div class="w-content">
 							<ul class="link-left">
+							{% for l in links %}
 							<li>
-								<p>Wikidata：Q13533254</p>
-								<a href="#" target="_blank">
+								{% if l.title == "自然攝影中心" or l.title == "Amphibian Species of the World" %}
+								<p>{{ l.title }}：{{ l.id }}</p>
+								{% else %}
+								<p>{{ l.title }}：{{ l.suffix }}</p>
+								{% endif %}
+								<a href="{{ l.href }}{{ l.suffix }}" target="_blank">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
 										<defs>
 											<clipPath id="clip-path">
@@ -457,6 +484,8 @@
 									</svg>
 								</a>
 							</li>
+							{% endfor %}
+							<!--
 							<li>
 								<p>Wikidata：Q13533254</p>
 								<a href="#" target="_blank">
@@ -547,6 +576,7 @@
 									</svg>
 								</a>
 							</li>
+							-->
 						</ul>
 						</div>
 					</div>
@@ -622,8 +652,36 @@
 {% endblock body %}
 {% block script %}
 <script>
+	function controlAll(){
+		
+		if($('.w-box.now').length == 0){
+			console.log('a')
+			$('.w-box').addClass('now')
+			$('.all-open-close').removeClass('now')
+		} else {
+			console.log('b')
+			$('.w-box').removeClass('now')
+			$('.all-open-close').addClass('now')
+
+		}
+	}
 
 	$(function(){
+		
+		// 收和控制
+		$('.w-box .title-click').click(function(){
+			if ($(this).parent('.w-box').hasClass('now')){
+				$(this).parent('.w-box').removeClass('now')
+			} else {
+				$(this).parent('.w-box').addClass('now')
+			}
+			if ($('.w-box-2.now').length==1){
+				$('.box-2.column').css('align-items','flex-start')
+			} else {
+				$('.box-2.column').css('align-items','')
+			}
+		})
+
 		$('select[name=subject-select]').niceSelect();
 	})
 

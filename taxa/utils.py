@@ -20,6 +20,17 @@ db_settings = {
     "db": env('DB_DBNAME'),
 }
 
+link_map = {}
+conn = pymysql.connect(**db_settings)
+query = "SELECT source, title, url_prefix FROM api_links"
+with conn.cursor() as cursor:
+    cursor.execute(query)
+    links = cursor.fetchall()
+    for l in links:
+        link_map[l[0]] = {'title': l[1], 'url_prefix': l[2]}
+
+
+
 kingdom_map = {}
 conn = pymysql.connect(**db_settings)
 query = "SELECT tn.name, at.taxon_id, at.common_name_c FROM taxon_names tn\
@@ -44,3 +55,29 @@ rank_map_c = {1: '域', 2: '總界', 3: '界', 4: '亞界', 5: '下界', 6: '超
 alien_map_c = {'native': '原生','naturalized':'歸化','invasive':'入侵','cultured':'栽培豢養'}
 
 status_map_c = {'accepted': '有效', 'not-accepted': '無效', 'undetermined': '未決', 'misapplied': '誤用'}
+status_map_taxon_c = {'accepted': {'en-us': 'Accepted', 'zh-tw': '接受名'}, 'not-accepted': {'en-us': 'Not accepted', 'zh-tw': '無效'}, 
+                      'undetermined': {'en-us': 'Undetermined', 'zh-tw': '未決'}, 'misapplied': {'en-us': 'Misapplied', 'zh-tw': '誤用'}}
+
+rank_color_map = { 3: 'rank-1-red', 12: 'rank-2-org', 18: 'rank-3-yell', 22: 'rank-4-green', 26: 'rank-5-blue', 
+                  30: 'rank-6-deepblue', 34: 'rank-7-purple'}
+
+is_map_c = {'is_endemic':'臺灣特有','is_terrestrial':'陸生','is_freshwater':'淡水','is_brackish':'半鹹水','is_marine':'海水'}
+
+# 台灣紅皮書
+redlist_map_c = {
+  'NEX': '滅絕', 'NEW': '野外滅絕', 'NRE': '區域滅絕', 'NCR': '極危', 'NEN': '瀕危', 'NVU': '易危', 'NNT': '接近受脅',
+  'NLC': '暫無危機', 'NDD': '資料缺乏', 'NA': '不適用', 'NE': '未評估'
+}
+
+iucn_map_c = {
+  'EX': '滅絕', 'EW': '野外滅絕', 'RE': '區域滅絕', 'CR': '極危', 'EN': '瀕危', 'VU': '易危', 'CD': '依賴保育', 'NT': '接近受脅',
+  'LC': '暫無危機', 'DD': '資料缺乏', 'NA': '不適用', 'NE': '未評估'
+}
+
+
+cites_map_c = { '1': '附錄 I 有滅種威脅須嚴格管制','2':'附錄 II 族群數量稀少須有效管制','3':'附錄 III 特定國家指定有效管制','NC':'NC 無'}
+
+
+protected_map_c = {'I': '瀕臨絕種野生動物', 'II': '珍貴稀有野生動物', 'III': '其他應予保育之野生動物'}
+
+# 一）瀕臨絕種野生動物。 （二）珍貴稀有野生動物。 （三）其他應予保育之野生動物。
