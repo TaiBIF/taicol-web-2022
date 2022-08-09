@@ -70,8 +70,8 @@ def get_autocomplete_taxon(request):
             query = f"""SELECT at.taxon_id, CONCAT_WS (' ',tn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))
                         FROM taxon_names tn
                         JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
-                        WHERE tn.name like '%{keyword_str}%' OR 
-                            at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%'"""
+                        WHERE tn.deleted_at IS NULL (tn.name like '%{keyword_str}%' OR 
+                            at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
             conn = pymysql.connect(**db_settings)
             with conn.cursor() as cursor:
                 cursor.execute(query)
@@ -82,7 +82,7 @@ def get_autocomplete_taxon(request):
 
 
 def get_conditioned_query(req, from_url=False):
-    condition = ''
+    condition = 'tn.deleted_at IS NULL'
 
     if keyword := req.get('keyword'):
         keyword_type = req.get('name-select','contain')
@@ -92,7 +92,7 @@ def get_conditioned_query(req, from_url=False):
             keyword_str = f"LIKE '{keyword}%'"
         else:
             keyword_str = f"LIKE '%{keyword}%'"
-        condition = f"""(tn.name {keyword_str} OR at.common_name_c {keyword_str} OR at.alternative_name_c {keyword_str})"""
+        condition += f""" AND (tn.name {keyword_str} OR at.common_name_c {keyword_str} OR at.alternative_name_c {keyword_str})"""
 
     # is_ 系列
     is_list = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine']
