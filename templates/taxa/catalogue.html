@@ -564,7 +564,7 @@
 								<h3>原生/外來性</h3>
 								<div class="blue-line"></div>
 							</div>
-							<div class="item-box alien-box">
+							<div class="item-box alien_type-box">
 							</div>
 						</li>
 						<li>
@@ -687,6 +687,8 @@
 
 	function changeFacet(facet,value,from_url=false,page=1,from_mb_select=false){
 
+		console.log(facet,value,$('input[name=hidden-value]').val(),$('input[name=hidden-facet]').val())
+
 		$(".facet-btn").removeClass('now');
 		$(`button.facet-${facet}-${value}`).addClass('now');
 		$('input[name=hidden-value]').val(value);
@@ -724,6 +726,8 @@
 				var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
 				history.pushState(null, '', newRelativePathQuery);
 			}
+
+			console.log(query_str)
 
 			$.ajax({
 				url: "{% url 'update_catalogue_table' %}",
@@ -927,6 +931,10 @@
 
 			$('.loadingbox').removeClass('d-none');
 
+			if (query_str.startsWith('?')){
+				query_str = query_str.substring(1)
+			}
+
 			$.ajax({
 				url: "{% url 'catalogue' %}",
 				data: query_str + '&csrfmiddlewaretoken=' +  '{{ csrf_token }}',
@@ -940,7 +948,7 @@
 				$('.table-style1').html('')
 				$('.button-two').hide()
 				$('.result-flexbox').hide()
-				$('.kingdom-box, .rank-box, .endemic-box, .status-box, .alien-box').html('')
+				$('.kingdom-box, .rank-box, .endemic-box, .status-box, .alien_type-box').html('')
 
 				$('#total-count').parent('p').removeClass('d-none');
 				$('.loadingbox').addClass('d-none');
@@ -1014,12 +1022,12 @@
 
 					if (results.count.alien_type.length>0){
 						for (let i = 0; i < results.count.alien_type.length; i++) {
-							$('.alien-box').append(`<button class="facet-btn facet-alien_type-${results.count.alien_type[i]['category']}" onclick="changeFacet('alien_type','${results.count.alien_type[i]['category']}')">
+							$('.alien_type-box').append(`<button class="facet-btn facet-alien_type-${results.count.alien_type[i]['category']}" onclick="changeFacet('alien_type','${results.count.alien_type[i]['category']}')">
 													${results.count.alien_type[i]['category_c']}(${results.count.alien_type[i]['count']})</button>`)
 						}
-						$('select[name=mb-select]').append(`<option value="alien">原生/外來性</option>`)
+						$('select[name=mb-select]').append(`<option value="alien_type">原生/外來性</option>`)
 					} else {
-						$('.alien-box').parent('li').hide()
+						$('.alien_type-box').parent('li').hide()
 					}
 
 

@@ -5,6 +5,13 @@
 <script src="{% static 'js/jquery.nice-select.js' %}"></script>
 <link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}">
 <script src="https://kit.fontawesome.com/b8e586964f.js" crossorigin="anonymous"></script>
+<link rel=stylesheet type="text/css" href="{% static 'slick/slick-theme.css' %}">
+<link rel=stylesheet type="text/css" href="{% static 'slick/slick.css' %}">
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+<script src="{% static 'slick/slick.min.js' %}" ></script>
+<script src="{% static 'slick/slick.js' %}" ></script>
 
 {% endblock head %}
 
@@ -85,6 +92,54 @@
 		background-color: #FFF
 	}
 
+
+	/* 照片輪播 */
+	/* Next & previous buttons */
+		.right-
+		.arr-left, .arr-right {
+			cursor: pointer;
+			position: absolute;
+			top: 50%;
+			width: auto;
+			padding: 16px;
+			margin-top: -22px;
+			color: white;
+			font-weight: bold;
+			font-size: 18px;
+			transition: 0.6s ease;
+			border-radius: 0 3px 3px 0;
+			user-select: none;
+		}
+		
+		/* Caption text */
+		.text {
+			color: lightgrey;
+			font-size: 15px;
+			padding: 8px 12px;
+			position: absolute;
+			bottom: 8px;
+			width: 100%;
+			text-align: right;
+		}
+
+		
+
+		/* Fading animation */
+		.fade {
+			animation-name: fade;
+			animation-duration: 2s;
+		}
+		
+		@keyframes fade {
+			from {opacity: .4} 
+			to {opacity: 1}
+		}
+		
+		/* On smaller screens, decrease text size */
+		@media only screen and (max-width: 300px) {
+			.text {font-size: 11px}
+		}
+		
 
 </style>
 {% endblock style %}
@@ -187,12 +242,35 @@
 			</div>
 		</div>
 	</div>
+	<div class="popbox imagepop" style="display: none;">
+		<div class="rel">
+			<div class="w-bg">
+				<div class="xx">
+					<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+						<g id="Group_8961" data-name="Group 8961" transform="translate(-1288 -210)">
+							<g id="Ellipse_145" data-name="Ellipse 145" transform="translate(1288 210)" fill="#fff" stroke="#4c8da7" stroke-width="2">
+								<circle cx="25" cy="25" r="25" stroke="none"/>
+								<circle cx="25" cy="25" r="24" fill="none"/>
+							</g>
+							<g id="Group_7748" data-name="Group 7748" transform="translate(100.696 1061.993) rotate(-45)">
+								<line id="Line_265" data-name="Line 265" x2="25" transform="translate(1429.5 271.5)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+								<line id="Line_266" data-name="Line 266" x2="25" transform="translate(1442.5 259.5) rotate(90)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+							</g>
+						</g>
+					</svg>
+				</div>
+				<div class="title-area" style="margin-bottom: 0">
+					<img src="">
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<div class="page-top">
 		<div class="splist-search-box de">
 			<div class="main-box">
 				<div class="cont-search-bar">
-					<input type="text" placeholder="請輸入關鍵字">
+					<input type="text" name="keyword" placeholder="請輸入關鍵字">
 					<button class="search">
 						<svg id="Group_6882" data-name="Group 6882" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="36.847" height="36.775" viewBox="0 0 36.847 36.775">
 							<defs>
@@ -242,24 +320,26 @@
 						</div>
 						<div class="rignt-pic_area">
 							<button class="mistake-btn">回報<br>錯誤</button>
-							<div class="pic-area">
-								<div class="arr-left">
-
+							<div class="pic-area" style="min-height: 100%">
+								{% if data.images|length > 1 %}
+								<div class="arr-left" onclick="plusSlides(-1)">
 								</div>
-								<div class="arr-right">
-
+								<div class="arr-right" onclick="plusSlides(+1)">
 								</div>
+								{% endif %}
 								<!--套輪播，或淡入淡出換圖，看哪個比較方便-->
 								<div class="picbox-all" >
 									<!--一個picbox是一組，建議尺寸為860*560或430*280-->
-									<div class="picbox" >
+									{% for img in data.images %}
+									<div class="picbox mySlides fade">
 										<div class="rel">
 											<div class="posa">
-												<img src="{% static 'image/de-pic.png' %}">
+												<img src="{{ img.src|safe }}">
+												<div class="text">{{ img.author|safe }}</div>
 											</div>
 										</div>
 									</div>
-
+									{% endfor %}
 								</div>
 							</div>
 						</div>
@@ -652,8 +732,36 @@
 {% endblock body %}
 {% block script %}
 <script>
+
+	let slideIndex = 1;
+	showSlides(slideIndex);
+
+	function plusSlides(n) {
+		console.log('he')
+		showSlides(slideIndex += n);
+		console.log('he', slideIndex)
+
+	}
+
+	function currentSlide(n) {
+	showSlides(slideIndex = n);
+	}
+
+	function showSlides(n) {
+	let i;
+	let slides = document.getElementsByClassName("mySlides");
+	console.log(slides)
+	if (n > slides.length) {slideIndex = 1}    
+	if (n < 1) {slideIndex = slides.length}
+	for (i = 0; i < slides.length; i++) {
+	slides[i].style.display = "none";  
+	}
+	slides[slideIndex-1].style.display = "block";  
+	}
+
 	function controlAll(){
-		
+
+	
 		if($('.w-box.now').length == 0){
 			console.log('a')
 			$('.w-box').addClass('now')
@@ -667,7 +775,19 @@
 	}
 
 	$(function(){
+		// 照片
+
+
 		
+
+		$('.search').click(function(){
+			if ($('input[name=keyword]').val()==''){
+				alert('請輸入關鍵字')
+			} else {
+				window.location = '/catalogue?keyword=' + $('input[name=keyword]').val()
+
+			}
+		})
 		// 收和控制
 		$('.w-box .title-click').click(function(){
 			if ($(this).parent('.w-box').hasClass('now')){
@@ -691,5 +811,18 @@
 	$( ".xx" ).click(function() {
 		$('.mistakepop').fadeOut("slow");
 	});
+
+
+	$( ".imagepop .xx" ).click(function() {
+		$('.imagepop').fadeOut("slow");
+	});
+
+
+	$( ".mySlides img" ).click(function() {
+		console.log('je')
+		$('.imagepop').fadeIn("slow");
+		$('.imagepop img').attr("src",this.src);
+	});
+
 </script>
 {% endblock script %}

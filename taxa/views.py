@@ -15,7 +15,7 @@ import datetime
 from taxa.models import Expert
 from django.contrib.postgres.aggregates import StringAgg
 import time
-
+import requests
 
 db_settings = {
     "host": env('DB_HOST'),
@@ -24,6 +24,7 @@ db_settings = {
     "password": env('DB_PASSWORD'),
     "db": env('DB_DBNAME'),
 }
+
 
 
 def download_search_results(request):
@@ -324,8 +325,10 @@ def catalogue(request):
     keyword = request.GET.get('keyword', '')
     if request.method == 'POST':
         req = request.POST
+        print(req)
         offset = 10 * (int(req.get('page',1))-1)
         condition, path_join, conserv_join = get_conditioned_query(req, from_url=True)
+        print(condition)
         # 先計算一次
         first_query = f"""SELECT count(distinct(at.taxon_id)) 
                             FROM taxon_names tn 
@@ -440,6 +443,9 @@ def taxon(request, taxon_id):
     data = {}
     experts = []
     links = []
+    print(taxon_id)
+    print(db_settings)
+
 
     query = f"""SELECT tn.name, concat_WS(' ', an.formatted_name, an.name_author ) as sci_name, 
                 at.common_name_c, at.accepted_taxon_name_id as name_id, at.rank_id,
@@ -448,9 +454,10 @@ def taxon(request, taxon_id):
                 at.is_marine, at.alien_type,
                 ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, 
                 ac.red_category, ac.red_note, ac.protected_category, ac.protected_note,
-                tn.original_taxon_name_id, at.links
+                tn.original_taxon_name_id, at.links, anc.namecode
                 FROM api_taxon at 
                 LEFT JOIN api_names an ON at.accepted_taxon_name_id =  an.taxon_name_id 
+                LEFT JOIN api_namecode anc ON at.accepted_taxon_name_id =  anc.taxon_name_id 
                 JOIN ranks r ON at.rank_id = r.id
                 JOIN api_taxon_usages atu ON at.taxon_id = atu.taxon_id
                 LEFT JOIN api_taxon_tree att ON at.taxon_id = att.taxon_id
@@ -461,10 +468,23 @@ def taxon(request, taxon_id):
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
         cursor.execute(query)
+        print(query)
         results = cursor.fetchone()
+        print(results)
         if results:
             for i in range(len(cursor.description)):
                 data[cursor.description[i][0]] = results[i]
+            # 照片
+            data['images'] = []
+            if data['namecode']:
+                url = 'https://data.taieol.tw/eol/endpoint/image/species/{}'.format(data['namecode'])
+                r = requests.get(url)
+                img = r.json()
+                print(img)
+                for ii in img:
+                    foto = {'author':ii['author'], 'src':ii['image_big']}
+                    data['images'].append(foto)
+
             # 學名
             if data['rank_id'] == 47:
                 query = f"WITH view as (SELECT tnhp.taxon_name_id, CONCAT_WS(' ',an.formatted_name, an.name_author ) as sci_name FROM taxon_name_hybrid_parent tnhp \
@@ -599,21 +619,36 @@ def taxon(request, taxon_id):
             query = f"""SELECT atu.taxon_name_id, CONCAT_WS(' ', an.formatted_name, an.name_author), ac.author, atu.status,
                         ru.status, JSON_EXTRACT(ru.properties, '$.is_in_taiwan') 
                         FROM api_taxon_usages atu 
-                        JOIN api_names an ON an.taxon_name_id = atu.taxon_name_id
-                        JOIN reference_usages ru ON ru.id = atu.reference_usage_id
-                        JOIN api_citations ac ON ac.reference_id = ru.reference_id
+                        LEFT JOIN api_names an ON an.taxon_name_id = atu.taxon_name_id
+                        LEFT JOIN reference_usages ru ON ru.id = atu.reference_usage_id
+                        LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
                         WHERE atu.taxon_id = '{taxon_id}'"""
             with conn.cursor() as cursor:
                 cursor.execute(query)
                 names = cursor.fetchall()
                 names = pd.DataFrame(names, columns=['taxon_name_id','sci_name','ref','taxon_status','ru_status','is_taiwan'])
                 names = names.sort_values('taxon_status', ascending=False)
+                names = names.replace({None:''})
                 for n in names.taxon_name_id.unique():
                     # 如果是原始組合名
                     if n == data['original_taxon_name_id']:
-                        name_changes += [f"{names[names.taxon_name_id==n]['sci_name'].values[0]}; {('; ').join(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref)}"]
+                        if len(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref):
+                            ref_list = [r for r in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref if r ]
+                            ref_str = ('; ').join(ref_list)
+                            if ref_str:
+                                name_changes += [f"{names[names.taxon_name_id==n]['sci_name'].values[0]}; {ref_str}"]
+                        else:
+                            name_changes += [names[names.taxon_name_id==n]['sci_name'].values[0]]
                     elif not len(names[(names.taxon_name_id==n)&(names.ru_status=='misapplied')]):
-                        name_changes += [f"{names[names.taxon_name_id==n]['sci_name'].values[0]}: {('; ').join(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref)}"]
+                        if len(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref):
+                            ref_list = [r for r in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref if r ]
+                            ref_str = ('; ').join(ref_list)
+                            if ref_str:
+                                name_changes += [f"{names[names.taxon_name_id==n]['sci_name'].values[0]}: {ref_str}"]
+                            else:
+                                name_changes += [names[names.taxon_name_id==n]['sci_name'].values[0]]
+                        else:
+                            name_changes += [names[names.taxon_name_id==n]['sci_name'].values[0]]
 
                 # TODO 誤用名待測試
             # 相關連結
