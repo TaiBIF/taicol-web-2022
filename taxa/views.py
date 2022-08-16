@@ -1,3 +1,4 @@
+from ctypes.wintypes import tagSIZE
 from unittest import result
 from django.shortcuts import render
 from taxa.utils import *
@@ -12,10 +13,13 @@ import re
 import glob
 import os
 import datetime
-from taxa.models import Expert
+from taxa.models import Expert, SearchStat
 from django.contrib.postgres.aggregates import StringAgg
 import time
 import requests
+from django.db.models import F
+from django.utils import timezone
+
 
 db_settings = {
     "host": env('DB_HOST'),
@@ -68,11 +72,19 @@ def get_autocomplete_taxon(request):
     names = []
     if keyword_str := request.POST.get('keyword'):
         if len(keyword_str) > 2 or any(re.findall(r'[\u4e00-\u9fff]+', keyword_str)): # 避免太多
-            query = f"""SELECT at.taxon_id, CONCAT_WS (' ',tn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))
-                        FROM taxon_names tn
-                        JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
-                        WHERE tn.deleted_at IS NULL (tn.name like '%{keyword_str}%' OR 
-                            at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
+            if request.POST.get('from_tree'):
+                query = f"""SELECT at.taxon_id, CONCAT_WS (' ',tn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))
+                    FROM taxon_names tn
+                    JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
+                    JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
+                    WHERE tn.deleted_at IS NULL AND (tn.name like '%{keyword_str}%' OR 
+                        at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
+            else:
+                query = f"""SELECT at.taxon_id, CONCAT_WS (' ',tn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))
+                            FROM taxon_names tn
+                            JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
+                            WHERE tn.deleted_at IS NULL AND (tn.name like '%{keyword_str}%' OR 
+                                at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
             conn = pymysql.connect(**db_settings)
             with conn.cursor() as cursor:
                 cursor.execute(query)
@@ -225,13 +237,14 @@ def get_query_data(condition, conserv_join, offset, response):
     with conn.cursor() as cursor:
         cursor.execute(query)
         results = cursor.fetchall()
-        if results:
-            results = pd.DataFrame(results, columns=['taxon_id','simple_name','rank','name','common_name_c','status','is_endemic','alien_type','path'])
+        results = pd.DataFrame(results, columns=['taxon_id','simple_name','rank','name','common_name_c','status','is_endemic','alien_type','path'])
+        if len(results):
             results = results.drop(columns=['simple_name'])
             results = results.drop_duplicates()
             results = results.reset_index()
             results['kingdom'] = 3
             results['taxon_group'] = 0
+            higher_taxa = pd.DataFrame(columns=['taxon_id','rank_id','name'])
             p = []
             for i in results.index:
                 if results.iloc[i].path:
@@ -244,16 +257,16 @@ def get_query_data(condition, conserv_join, offset, response):
                         results.loc[i,'taxon_group'] = higher[-1]
                     else: # 取科
                         results.loc[i,'taxon_group'] = 26
-            query = f"SELECT t.taxon_id, t.rank_id, CONCAT_WS(' ', t.common_name_c, tn.name) \
-                    FROM api_taxon t \
-                    JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
-                    WHERE t.taxon_id IN ({str(p).replace('[','').replace(']','')}) AND t.rank_id IN (3,12,18,22,26)"
-
-            with conn.cursor() as cursor:
-                cursor.execute(query)
-                higher_taxa = cursor.fetchall()
-                higher_taxa = pd.DataFrame(higher_taxa, columns=['taxon_id','rank_id','name'])
-                # 界
+            if p:
+                query = f"SELECT t.taxon_id, t.rank_id, CONCAT_WS(' ', t.common_name_c, tn.name) \
+                        FROM api_taxon t \
+                        JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
+                        WHERE t.taxon_id IN ({str(p).replace('[','').replace(']','')}) AND t.rank_id IN (3,12,18,22,26)"
+                with conn.cursor() as cursor:
+                    cursor.execute(query)
+                    higher_taxa = cursor.fetchall()
+                    higher_taxa = pd.DataFrame(higher_taxa, columns=['taxon_id','rank_id','name'])
+                    # 界
             kingdoms = higher_taxa[(higher_taxa.rank_id==3)].taxon_id.to_list()
             for i in results.index:
                 if results.iloc[i].path:
@@ -320,15 +333,12 @@ def update_catalogue_table(request):
 
 
 def catalogue(request):
-    # from 進階搜尋
     response = {}
     keyword = request.GET.get('keyword', '')
     if request.method == 'POST':
         req = request.POST
-        print(req)
         offset = 10 * (int(req.get('page',1))-1)
         condition, path_join, conserv_join = get_conditioned_query(req, from_url=True)
-        print(condition)
         # 先計算一次
         first_query = f"""SELECT count(distinct(at.taxon_id)) 
                             FROM taxon_names tn 
@@ -432,10 +442,6 @@ def name_match(request):
     return render(request, 'taxa/name_match.html')
 
 
-def taxon_tree(request):
-    return render(request, 'taxa/taxon_tree.html')
-
-    
 def taxon(request, taxon_id):
     higher_html_str = ''
     info_html_str = ''
@@ -443,8 +449,6 @@ def taxon(request, taxon_id):
     data = {}
     experts = []
     links = []
-    print(taxon_id)
-    print(db_settings)
 
 
     query = f"""SELECT tn.name, concat_WS(' ', an.formatted_name, an.name_author ) as sci_name, 
@@ -468,9 +472,7 @@ def taxon(request, taxon_id):
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
         cursor.execute(query)
-        print(query)
         results = cursor.fetchone()
-        print(results)
         if results:
             for i in range(len(cursor.description)):
                 data[cursor.description[i][0]] = results[i]
@@ -480,7 +482,6 @@ def taxon(request, taxon_id):
                 url = 'https://data.taieol.tw/eol/endpoint/image/species/{}'.format(data['namecode'])
                 r = requests.get(url)
                 img = r.json()
-                print(img)
                 for ii in img:
                     foto = {'author':ii['author'], 'src':ii['image_big']}
                     data['images'].append(foto)
@@ -673,10 +674,179 @@ def taxon(request, taxon_id):
                         links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix']}]
             for s in ['wikispecies','discoverlife','taibif','inat','irmng']:
                 links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'], 'suffix': data['name']}]
-
-
             # 全部都接 wikispecies,discoverlife,taibif,inat,irmng
+            # 變更歷史
+            taxon_history = []
+            query = f"""SELECT ath.type, CONCAT_WS(' ' , ac.author, ac.content), ath.created_at
+                        FROM api_taxon_history ath 
+                        LEFT JOIN reference_usages ru ON ru.id = ath.reference_usage_id
+                        LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
+                        WHERE ath.taxon_id = '{taxon_id}'"""
+            with conn.cursor() as cursor:
+                cursor.execute(query)
+                th = cursor.fetchall()
+                taxon_history = [t[0] for t in th]
+
+
+
 
     return render(request, 'taxa/taxon.html', {'taxon_id': taxon_id, 'data': data, 'higher_html_str': higher_html_str, 'links': links,
-                                               'info_html_str': info_html_str, 'refs': refs, 'experts': experts, 'name_changes': name_changes})
+                                               'info_html_str': info_html_str, 'refs': refs, 'experts': experts, 'name_changes': name_changes,
+                                               'taxon_history': taxon_history})
 
+
+def taxon_tree(request):
+    # 第一層 kingdom
+    conn = pymysql.connect(**db_settings)
+    kingdom_dict = []
+    with conn.cursor() as cursor:
+        for k in kingdom_map.keys():
+            query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
+                    JOIN api_taxon at ON att.taxon_id = at.taxon_id
+                    WHERE att.path LIKE '%{k}%' and at.rank_id > 3
+                    GROUP BY at.rank_id ORDER BY at.rank_id ASC;
+                """
+            cursor.execute(query)
+            stats = cursor.fetchall()
+            spp = 0
+            stat_str = ''
+            for s in stats:
+                r_id = s[1]
+                if r_id <= 46 and r_id >= 35:
+                    spp += s[0]
+                elif r_id == 47:
+                    stat_str += f"{spp}種下 {s[0]}{rank_map_c[r_id]}"
+                else:
+                    stat_str += f"{s[0]}{rank_map_c[r_id]} "
+            kingdom_dict += [{'taxon_id': k, 'name': f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",'stat': stat_str.strip()}]
+    search_stat = SearchStat.objects.all().order_by('-count')[:6]
+    s_taxon = [s.taxon_id for s in search_stat]
+    if s_taxon:
+        query = f"""SELECT DISTINCT(at.taxon_id), at.common_name_c, an.formatted_name
+                    FROM api_taxon at
+                    JOIN api_names an ON at.accepted_taxon_name_id= an.taxon_name_id 
+                    WHERE at.taxon_id IN ({str(s_taxon).replace('[','').replace(']','')});"""
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            tags = cursor.fetchall()
+            search_stat = []
+            for t in tags:
+                if t[1]:
+                    search_stat.append({'taxon_id': t[0], 'name': t[1]})
+                else:
+                    search_stat.append({'taxon_id': t[0], 'name': t[2]})
+    cursor.close()
+
+    return render(request, 'taxa/taxon_tree.html', {'kingdom_dict':kingdom_dict, 'search_stat': search_stat})
+
+def get_sub_tree(request):
+    taxon_id = request.POST.get('taxon_id')
+    sub_dict = get_tree_stat(taxon_id)
+    return HttpResponse(json.dumps(sub_dict), content_type='application/json') 
+
+
+def get_taxon_path(request):
+    taxon_id = request.POST.get('taxon_id')
+    conn = pymysql.connect(**db_settings)
+    path = []
+
+    if taxon_id:
+        query = f"""SELECT path FROM api_taxon_tree WHERE taxon_id = '{taxon_id}';"""
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            ps = cursor.fetchone()
+            if ps:
+                ps = ps[0].split('>')
+                path = [p for p in ps if p != taxon_id]
+
+    # sub_dict_list = []
+    # for t in Reverse(path):
+    #     sub_dict_list.append(get_tree_stat(t))
+    return HttpResponse(json.dumps(Reverse(path)), content_type='application/json') 
+
+
+def get_sub_tree_list(request):
+    sub_dict_list = []
+    taxon_id = request.POST.getlist('taxon_id[]')
+    for t in taxon_id:
+        sub_dict_list.append(get_tree_stat(t))
+    return HttpResponse(json.dumps(sub_dict_list), content_type='application/json') 
+
+
+
+def Reverse(lst):
+    new_lst = lst[::-1]
+    return new_lst
+ 
+
+def get_tree_stat(taxon_id):
+    sub_dict = {}
+    sub_titles = []
+
+    conn = pymysql.connect(**db_settings)
+
+    query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id, 
+                SUBSTRING_INDEX(SUBSTRING_INDEX(att.path, '>{taxon_id}', 1), '>', -1) AS p_group 
+                FROM api_taxon_tree att 
+                JOIN api_taxon at ON att.taxon_id = at.taxon_id
+                WHERE att.path LIKE '%>{taxon_id}%' AND at.rank_id > (SELECT rank_id from api_taxon WHERE taxon_id = '{taxon_id}')
+                GROUP BY at.rank_id, p_group;
+            """
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        sub_stat = cursor.fetchall()
+        sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id'])
+    query = f"""SELECT at.taxon_id, at.rank_id, CONCAT_WS(' ',at.common_name_c, r.display ->> '$."en-us"' ,an.formatted_name),
+                r.display ->> '$."zh-tw"'
+                FROM api_taxon_tree att 
+                JOIN api_taxon at ON att.taxon_id = at.taxon_id
+                JOIN ranks r ON at.rank_id = r.id
+                JOIN api_names an ON at.accepted_taxon_name_id= an.taxon_name_id 
+                WHERE att.parent_taxon_id = '{taxon_id}' ORDER BY at.rank_id DESC;"""
+    with conn.cursor() as cursor:
+        cursor.execute(query)
+        sub_titles = cursor.fetchall()
+        # 下一層的rank有可能不一樣
+    for st in sub_titles:
+        rank_c = st[3]
+        if st[1] in [3,12,18,22,26,30,34]:
+            rank_color = rank_color_map[st[1]]
+        else:
+            rank_color = 'rank-second-gray'
+        stat_str = ''
+        spp = 0
+        stats = sub_stat[(sub_stat.taxon_id==st[0])&(sub_stat.rank_id!=st[1])]
+        for i in stats.index:
+            s = sub_stat.iloc[i]
+            if s['count'] > 0:
+                r_id = s.rank_id
+                if r_id <= 46 and r_id >= 35:
+                    spp += s['count']
+                elif r_id == 47:
+                    if spp > 0:
+                        stat_str += f"{spp}種下 {s['count']}{rank_map_c[r_id]}"
+                    else:
+                        stat_str += f"{s['count']}{rank_map_c[r_id]}"
+                else:
+                    stat_str += f"{s['count']}{rank_map_c[r_id]} "
+        if spp > 0 and '種下' not in stat_str:
+            # 如果沒有47 最後要把種下加回去
+            stat_str += f"{spp}種下"
+        if rank_c not in sub_dict.keys():
+            sub_dict[rank_c] = {}
+            sub_dict[rank_c]['data'] = [{'taxon_id': st[0],'rank_id':st[1],'name':st[2], 'stat':stat_str.strip()}]
+            sub_dict[rank_c]['rank_color'] = rank_color
+            sub_dict[rank_c]['taxon_id'] = taxon_id
+        else:
+            sub_dict[rank_c]['data'] += [{'taxon_id': st[0],'rank_id':st[1],'name':st[2], 'stat':stat_str.strip()}]
+            sub_dict[rank_c]['taxon_id'] = taxon_id
+    return sub_dict
+
+
+def update_search_stat(request):
+    if taxon_id := request.POST.get('taxon_id'):
+        obj, created = SearchStat.objects.update_or_create(
+            taxon_id=taxon_id, count=F('count') + 1, updated_at=timezone.now(),
+            defaults={'count': 1},
+        )
+    return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
