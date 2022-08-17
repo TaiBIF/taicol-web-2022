@@ -483,7 +483,7 @@ def taxon(request, taxon_id):
                 r = requests.get(url)
                 img = r.json()
                 for ii in img:
-                    foto = {'author':ii['author'], 'src':ii['image_big']}
+                    foto = {'author':ii['author'], 'src':ii['image_big'], 'provider':ii['provider']}
                     data['images'].append(foto)
 
             # 學名
@@ -687,12 +687,28 @@ def taxon(request, taxon_id):
                 th = cursor.fetchall()
                 taxon_history = [t[0] for t in th]
 
+            self_html_str = ""
+            if data['rank_id'] in [3,12,18,22,26,30,34]:
+                self_html_str += f""" 
+								<div class="r-cir-box {rank_color_map[data['rank_id']]}">
+									 {rank_map_c[data['rank_id']]}
+								</div> 
+								<span class="r-name">{data['common_name_c']}<span>
+                                    """
+            else:
+                self_html_str += f"""
+                <div class="r-cir-box rank-second-gray">
+                    {rank_map_c[h[0]]}
+                </div>
+                <span class="r-name">{data['common_name_c']}<span>
+                """
+
 
 
 
     return render(request, 'taxa/taxon.html', {'taxon_id': taxon_id, 'data': data, 'higher_html_str': higher_html_str, 'links': links,
                                                'info_html_str': info_html_str, 'refs': refs, 'experts': experts, 'name_changes': name_changes,
-                                               'taxon_history': taxon_history})
+                                               'taxon_history': taxon_history, 'self_html_str': self_html_str})
 
 
 def taxon_tree(request):
