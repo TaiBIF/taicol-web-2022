@@ -18,6 +18,143 @@
 {% block style %}
 <style>
 
+	.pic-area {
+		width: 100%;
+		background: #FFF;
+		padding: 10px;
+		overflow: hidden;
+		position: relative
+	}
+	
+
+	.pic-area .arr-right {
+		cursor: pointer;
+		position: absolute;
+		top: 50%;
+		margin-top: -30px;
+		right: 0;
+		z-index: 5;
+		width: 30px;
+		height: 60px;
+		background: url("/static/image/pic-arrr.svg") top left no-repeat;
+		transition: all .3s;
+		-moz-transition: all .3s;
+		-o-transition: all .3s;
+		-ms-transition: all .3s;
+		-webkit-transition: all .3s
+	}
+	
+	@media only screen and (min-width: 1000px) {
+		.pic-area .arr-right:hover {
+			background: url("/static/image/pic-arrrs.svg") top left no-repeat;
+			transition: all .3s;
+			-moz-transition: all .3s;
+			-o-transition: all .3s;
+			-ms-transition: all .3s;
+			-webkit-transition: all .3s
+		}
+	}
+	
+
+	.pic-area .arr-left {
+		cursor: pointer;
+		position: absolute;
+		top: 50%;
+		margin-top: -30px;
+		left: 0;
+		z-index: 5;
+		width: 30px;
+		height: 60px;
+		background: url("/static/image/pic-arrl.svg") top left no-repeat;
+		transition: all .3s;
+		-moz-transition: all .3s;
+		-o-transition: all .3s;
+		-ms-transition: all .3s;
+		-webkit-transition: all .3s
+	}
+	
+	@media only screen and (min-width: 1000px) {
+		.pic-area .arr-left:hover {
+			background: url("/static/image/pic-arrls.svg") top left no-repeat;
+			transition: all .3s;
+			-moz-transition: all .3s;
+			-o-transition: all .3s;
+			-ms-transition: all .3s;
+			-webkit-transition: all .3s
+		}
+	}
+
+	.wrap-box {
+		text-align: left;
+		margin-top: 5px;
+		margin-bottom: 5px;
+	}
+
+	.image-title {
+		color: #4C8DA7;
+		font-size: 24px;
+		line-height: 30px;
+		font-weight: 500;
+		text-align: left;
+	}
+
+	.r-cir-box {
+		float: left;
+		width: 30px;
+		height: 30px;
+		display: flex;
+		border-radius: 50%;
+		margin-right: 10px;
+		font-size: 14px;
+		align-items: center;
+		justify-content: center;
+		flex: 0 0 30px;
+		color: #FFF;
+	}
+
+	.r-cir-box.rank-1-red {
+		background: #FF7E7E;
+	}
+
+	.r-cir-box.rank-2-org {
+		background: #FF9E57;
+	}
+
+	.r-cir-box.rank-3-yell {
+		background: #FFC400;
+	}
+
+	.r-cir-box.rank-4-green {
+		background: #A6D368;
+	}
+
+	.r-cir-box.rank-5-blue {
+		background: #77CBED;
+	}
+
+	.r-cir-box.rank-6-deepblue {
+		background: #64A0D3;
+	}
+
+	.r-cir-box.rank-7-purple {
+		background: #B991E2;
+	}
+
+	.r-cir-box.rank-second-gray {
+		background: #555;
+	}
+	
+
+	.r-name {
+		font-size: 18px;
+		font-weight: normal;
+		margin-right: 15px;
+		color: #555;
+		line-height: 30px;
+	}
+
+	/**/
+
 	ul.link-left li {
 		word-break: break-word;
 	}
@@ -180,6 +317,7 @@
 					<h2>回報錯誤 <span></span></h2>
 				</div>
 				<div class="error-form">
+					<form>
 					<div class="case-num">
 						針對({{ taxon_id }}){{ data.sci_name|safe }}回報錯誤
 					</div>
@@ -221,7 +359,7 @@
 						</div>
 						<div class="radiobox">
 							<div class="flex">
-								<input type="radio" name="update-required">
+								<input type="radio" name="update-required" checked>
 								<p>否</p>
 							</div>
 						</div>
@@ -236,15 +374,15 @@
 							<input type="text" >
 						</div>
 					</div>
+					</form>
 					<button class="send-btn">確認送出</button>
-
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="popbox imagepop" style="display: none;">
-		<div class="rel">
-			<div class="w-bg">
+	<div class="popbox imagepop" style="display: none; ">
+		<div class="rel" style=" display: block; overflow: auto">
+			<div class="w-bg" style="margin: auto">
 				<div class="xx">
 					<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
 						<g id="Group_8961" data-name="Group 8961" transform="translate(-1288 -210)">
@@ -259,8 +397,41 @@
 						</g>
 					</svg>
 				</div>
-				<div class="title-area" style="margin-bottom: 0">
-					<img src="">
+				<div class="title-area" style="margin-bottom: 0;">
+					<ul style="list-style: none">
+						<li><p class="image-title" >{{ data.sci_name|safe }}</p></li>
+						<li>
+							<div class="wrap-box">
+								{{ self_html_str|safe }}
+								<!--
+								<div class="r-cir-box">
+									界
+								</div> 
+								<span class="r-name">{{ data.common_name_c }}<span>-->
+							</div>
+						</li>
+					</ul>
+					<div class="pic-area">
+						{% if data.images|length > 1 %}
+						<div class="arr-left" onclick="plusSlides(-1)">
+						</div>
+						<div class="arr-right" onclick="plusSlides(+1)">
+						</div>
+						{% endif %}
+						<img id="spe-image" style="width: 100%; margin: 10px 0;" src="">
+					</div>
+					<div class="mark-title">
+						<img src="{% static 'image/title-mark.svg' %}">
+						<p>作者：<span id="image_author"></span></p>
+					</div>
+					<div class="mark-title">
+						<img src="{% static 'image/title-mark.svg' %}">
+						<p>典藏者：<span id="image_provider"></span></p>
+					</div>
+					<div class="mark-title">
+						<img src="{% static 'image/title-mark.svg' %}">
+						<p>照片提供：<a id="image_link" href="#">臺灣生命大百科</a></p>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -300,7 +471,7 @@
 					<button onclick="document.location=`{% url 'taxon' taxon_id %}#taxon-history`;">- 變更歷史</button>
 				</div>
 				<div class="right-de-box">
-							<a class="anchor" id="taxon-status"></a>
+					<a class="anchor" id="taxon-status"></a>
 					<div class="box-2">
 						<div class="left-maininf">
 							<div class="maintxt">
@@ -322,24 +493,36 @@
 							<button class="mistake-btn">回報<br>錯誤</button>
 							<div class="pic-area" style="min-height: 100%">
 								{% if data.images|length > 1 %}
-								<div class="arr-left" onclick="plusSlides(-1)">
-								</div>
-								<div class="arr-right" onclick="plusSlides(+1)">
-								</div>
+									<div class="arr-left" onclick="plusSlides(-1)">
+									</div>
+									<div class="arr-right" onclick="plusSlides(+1)">
+									</div>
 								{% endif %}
 								<!--套輪播，或淡入淡出換圖，看哪個比較方便-->
 								<div class="picbox-all" >
 									<!--一個picbox是一組，建議尺寸為860*560或430*280-->
-									{% for img in data.images %}
-									<div class="picbox mySlides fade">
-										<div class="rel">
-											<div class="posa">
-												<img src="{{ img.src|safe }}">
-												<div class="text">{{ img.author|safe }}</div>
+									{% if data.images|length > 0  %}
+										{% for img in data.images %}
+										<div class="picbox mySlides fade">
+											<div class="rel">
+												<div class="posa">
+													<img src="{{ img.src|safe }}">
+													<div class="text image_author" >{{ img.author|safe }}</div>
+													<div class="image_provider" style="display: none">{{ img.provider|safe }}</div>
+												</div>
 											</div>
 										</div>
-									</div>
-									{% endfor %}
+										{% endfor %}
+									{% else %}
+										<div class="picbox mySlides fade">
+											<div class="rel">
+												<div class="posa">
+													<img class="nopic" src="{% static 'image/no_pic.png' %}">
+													<div class="text"></div>
+												</div>
+											</div>
+										</div>
+									{% endif %}
 								</div>
 							</div>
 						</div>
@@ -678,6 +861,7 @@
 							</div>
 						</div>
 						<div class="w-content">
+							{{ taxon_history }}
 							<div class="scro-m">
 							<table class="history-edit" cellspacing="0" cellpadding="0" border="0">
 								<tr>
@@ -737,37 +921,35 @@
 	showSlides(slideIndex);
 
 	function plusSlides(n) {
-		console.log('he')
 		showSlides(slideIndex += n);
-		console.log('he', slideIndex)
-
 	}
 
 	function currentSlide(n) {
-	showSlides(slideIndex = n);
+		showSlides(slideIndex = n);
 	}
 
 	function showSlides(n) {
-	let i;
-	let slides = document.getElementsByClassName("mySlides");
-	console.log(slides)
-	if (n > slides.length) {slideIndex = 1}    
-	if (n < 1) {slideIndex = slides.length}
-	for (i = 0; i < slides.length; i++) {
-	slides[i].style.display = "none";  
-	}
-	slides[slideIndex-1].style.display = "block";  
+		let i;
+		let slides = document.getElementsByClassName("mySlides");
+		if (n > slides.length) {slideIndex = 1}    
+		if (n < 1) {slideIndex = slides.length}
+		for (i = 0; i < slides.length; i++) {
+			slides[i].style.display = "none";  
+		}
+		slides[slideIndex-1].style.display = "block";  
+		// 修改popup裡面的照片
+		$('.imagepop #spe-image').attr("src",$('.mySlides:visible img').attr('src'));
+		$('.imagepop #image_author').html($('.mySlides:visible img').next('.image_author').html());
+		$('.imagepop #image_provider').html($('.mySlides:visible img').next('.image_provider').html());
 	}
 
 	function controlAll(){
 
 	
 		if($('.w-box.now').length == 0){
-			console.log('a')
 			$('.w-box').addClass('now')
 			$('.all-open-close').removeClass('now')
 		} else {
-			console.log('b')
 			$('.w-box').removeClass('now')
 			$('.all-open-close').addClass('now')
 
@@ -818,10 +1000,11 @@
 	});
 
 
-	$( ".mySlides img" ).click(function() {
-		console.log('je')
+	$( ".mySlides img" ).not('.nopic').click(function() {
 		$('.imagepop').fadeIn("slow");
-		$('.imagepop img').attr("src",this.src);
+		$('.imagepop #spe-image').attr("src",this.src);
+		$('.imagepop #image_author').html($(this).next('.image_author').html());
+		$('.imagepop #image_provider').html($(this).next().next('.image_provider').html());
 	});
 
 </script>
