@@ -320,7 +320,7 @@ span.anchor {
 		</div>
 		<div class="tree-area">
 			<div class="main-box">
-				<ul class="rank-1-red">
+				<ul class="rank-1-red" style="display: block;">
 					<!--選到的給now並展開第二層-->
 					{% for k in kingdom_dict %}
 					<li>
@@ -411,11 +411,9 @@ span.anchor {
 			
 		}
 
-
-		if ($( item ).hasClass('now') ) {
+		if ($( item ).next('ul').css('display') =='block' ) {
 			$( item ).removeClass('now')
 			$( item ).nextAll('ul').css('display','none')
-
 		} else {
 			$( item ).addClass('now');
 			$( item ).nextAll('ul').css('display','block')
@@ -560,6 +558,9 @@ span.anchor {
 				}
 			}
 			document.location=`#${keyword_taxon_id}`
+			if (!$(`div[data-taxon="${keyword_taxon_id}"]`).hasClass('now')){
+			$(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')}
+
 			$('.loadingbox').addClass('d-none');
 		})
 		.fail(function( xhr, status, errorThrown ) {
