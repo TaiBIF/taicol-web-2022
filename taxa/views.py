@@ -866,3 +866,179 @@ def update_search_stat(request):
             defaults={'count': 1},
         )
     return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
+
+
+def get_match_result(request):
+    response = {}
+    response['page'] = {}
+    namecode_list = []
+    best = request.POST.get('best','yes')
+    name = request.POST.get('name')
+    page = int(request.POST.get('page', 1))
+    
+    # 用loop取得name match結果 每頁10筆
+    if name:
+        name = name.splitlines()
+        names = []
+        names = [n for n in name if n not in names and n] # 排除重複 & 空值
+        response['page']['current_page'] = page
+        response['page']['total_page'] = math.ceil(len(names) / 10)
+        response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
+
+        names = ('|').join(names[(page-1)*10:page*10])
+        url = f"{env('NOMENMATCH_ROOT')}"
+        # url = 'http://host.docker.internal:8080/api.php'
+        result = requests.post(url, data = {
+            'names': names,
+            'best': best,
+            'format': 'json',
+            'source': 'taicol'
+        })
+        if result.status_code == 200:
+            result = result.json()
+            df = pd.DataFrame(result['data'])
+            df['r'] = df[0].apply(lambda x: pd.json_normalize(x, 'results', ['search_term', 'matched_clean']))
+            df_flat = pd.DataFrame()
+            for i in df.index:
+                yi = df.iloc[i].r
+                if len(yi):
+                    for yii in range(len(yi)):
+                        if yi.accepted_namecode[yii]:
+                            namecode_list.append(yi.accepted_namecode[yii])
+                        df_flat = df_flat.append(yi.loc[yii])
+                else:
+                    df_flat = df_flat.append({'search_term': df.iloc[i,0]['search_term']},ignore_index=True)
+            df = df_flat
+            #JOIN taxon
+            if namecode_list:
+                query = f""" SELECT at.accepted_taxon_name_id, at.is_endemic, at.alien_type, at.is_terrestrial, 
+                             at.is_freshwater, at.is_brackish, at.is_marine,
+                             at.taxon_id, ac.protected_category, ac.red_category, ac.iucn_category, ac.cites_listing,
+                             at.rank_id, an.formatted_name, at.common_name_c
+                            FROM api_taxon at
+                            LEFT JOIN api_conservation ac ON ac.taxon_id = at.taxon_id
+                            JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
+                            WHERE at.accepted_taxon_name_id IN ({','.join(namecode_list)})
+                        """
+                conn = pymysql.connect(**db_settings)
+                with conn.cursor() as cursor:
+                    cursor.execute(query)
+                    info = cursor.fetchall()
+                    info = pd.DataFrame(info, columns=['accepted_namecode','is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine',
+                                                        'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c'])
+                    info = info.astype({'accepted_namecode': 'str'})
+                    # print(info, df_flat)
+                    df = df.merge(info,how='left')
+                    df = df.replace({np.nan: '', None: ''})
+                    df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
+                    # taxon group
+                    for i in df.index:
+                        current_rank = df.iloc[i].rank_id
+                        # print(current_rank)
+                        if current_rank:
+                            if current_rank <= 3:
+                                df.loc[i,'taxon_group'] = ''
+                            elif current_rank < 30: # 屬以上取上層:
+                                higher = [h for h in [3,12,18,22,26] if h < current_rank]
+                                df.loc[i,'taxon_group'] = df.loc[i,rank_map[higher[-1]].lower()] 
+                            else: #取科
+                                df.loc[i,'taxon_group'] = df.loc[i,'family'] 
+                        else:
+                            df.loc[i,'taxon_group'] = ''
+                    df['rank'] = df['rank_id'].apply(lambda x: rank_map_c[x] if x else '')
+                    df['alien_type'] = df['alien_type'].apply(lambda x: alien_map_c[x] if x else '')
+                    df['is_endemic'] = df['is_endemic'].apply(lambda x: '臺灣特有' if x == 1 else '')
+            df = df.replace({np.nan: '', None: ''})
+            response['data'] = json.loads(df.to_json(orient='records'))
+
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
+
+def download_match_results(request):
+    best = request.POST.get('best','yes')
+    name = request.POST.get('name')
+    file_format = request.POST.get('file_format','csv')
+    final_df = pd.DataFrame()
+    # 用loop取得name match結果 每頁30筆
+    if name:
+        name = name.splitlines()
+        t_names = []
+        t_names = [n for n in name if n not in t_names and n] # 排除重複 & 空值
+        total_page = math.ceil(len(t_names) / 30)
+        for page in range(total_page): 
+            namecode_list = []
+            names = ('|').join(t_names[page*30:(page+1)*30])
+            df = pd.DataFrame()
+            url = f"{env('NOMENMATCH_ROOT')}"
+            # url = 'http://host.docker.internal:8080/api.php'
+            result = requests.post(url, data = {
+                'names': names,
+                'best': best,
+                'format': 'json',
+                'source': 'taicol'
+            })
+            if result.status_code == 200:
+                result = result.json()
+                df = pd.DataFrame(result['data'])
+                df['r'] = df[0].apply(lambda x: pd.json_normalize(x, 'results', ['search_term', 'matched_clean']))
+                df_flat = pd.DataFrame()
+                for i in df.index:
+                    yi = df.iloc[i].r
+                    if len(yi):
+                        for yii in range(len(yi)):
+                            if yi.accepted_namecode[yii]:
+                                namecode_list.append(yi.accepted_namecode[yii])
+                            df_flat = df_flat.append(yi.loc[yii])
+                    else:
+                        df_flat = df_flat.append({'search_term': df.iloc[i,0]['search_term']},ignore_index=True)
+                df = df_flat
+                #JOIN taxon
+                if namecode_list:
+                    query = f""" SELECT at.accepted_taxon_name_id, at.is_endemic, at.alien_type, at.is_terrestrial, 
+                                at.is_freshwater, at.is_brackish, at.is_marine,
+                                at.taxon_id, ac.protected_category, ac.red_category, ac.iucn_category, ac.cites_listing,
+                                at.rank_id, an.formatted_name, at.common_name_c
+                                FROM api_taxon at
+                                LEFT JOIN api_conservation ac ON ac.taxon_id = at.taxon_id
+                                JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
+                                WHERE at.accepted_taxon_name_id IN ({','.join(namecode_list)})
+                            """
+                    conn = pymysql.connect(**db_settings)
+                    with conn.cursor() as cursor:
+                        cursor.execute(query)
+                        info = cursor.fetchall()
+                        info = pd.DataFrame(info, columns=['accepted_namecode','is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine',
+                                                            'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c'])
+                        info = info.astype({'accepted_namecode': 'str'})
+                        # print(info, df_flat)
+                        df = df.merge(info,how='left')
+                        df = df.replace({np.nan: '', None: ''})
+                        df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
+                        df['rank'] = df['rank_id'].apply(lambda x: rank_map[x] if x else '')
+                        df.loc[df.taxon_id!='','is_endemic'] = df.loc[df.taxon_id.notnull(),'is_endemic'].apply(lambda x: 1 if x == 1 else 0)
+                df = df.replace({np.nan: '', None: ''})
+                final_df = final_df.append(df)
+    # 移除不需要的欄位
+    cols = ["search_term","matched","common_name_c","kingdom","phylum","class","order","family","genus","rank","is_endemic","alien_type",
+            "is_terrestrial","is_freshwater","is_brackish","is_marine","protected_category","red_category","iucn_category","cites_listing","taxon_id"]
+    # [c for c in cols if c in final_df.keys()]
+    final_df = final_df[[c for c in cols if c in final_df.keys()]]
+    final_df = final_df.rename(columns={
+        "search_term":"查詢字串","matched":"比對結果","common_name_c":"中文名","kingdom":"界","phylum":"門","class":"綱","order":"目","family":"科",
+        "genus":"屬","rank":"階層","is_endemic":"臺灣特有",
+        "alien_type":"原生/外來性","is_terrestrial":"陸生","is_freshwater":"淡水","is_brackish":"半鹹水","is_marine":"海水",
+        "protected_category":"保育類","red_category":"臺灣紅皮書",
+        "iucn_category":"IUCN評估","cites_listing":"CITES附錄","taxon_id":"Taxon ID"
+    })
+
+    if file_format == 'json':
+        response = HttpResponse(content_type="application/json")
+        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.json'
+        final_df.to_json(response, orient='records')
+    else:
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.csv'
+        final_df.to_csv(response, index=False)
+
+    return response
+
