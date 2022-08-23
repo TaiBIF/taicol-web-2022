@@ -274,6 +274,13 @@
 {% endblock style %}
 
 {% block body %}
+<div class="loadingbox d-none">
+	<img class="center-logo" src="{% static 'image/logo-img.svg' %}" alt="臺灣物種名錄">
+	<div id="loader-wrapper">
+		<div id="loader"></div>
+	</div>
+</div>
+
 	<!--側邊收和鈕，加上now控制開關-->
 	<div class="all-open-close">
 		<div class="center" onclick="controlAll()">
@@ -309,7 +316,8 @@
 					<h2>回報錯誤 <span></span></h2>
 				</div>
 				<div class="error-form">
-					<form>
+					<form id="errorForm">
+					<input type="hidden" name="taxon_id" value="{{ taxon_id }}">
 					<div class="case-num">
 						針對({{ taxon_id }}){{ data.sci_name|safe }}回報錯誤
 					</div>
@@ -319,39 +327,39 @@
 					</div>
 					<div class="input-item2">
 						<div class="input-item">
-							<select class="subject wide" name="subject-select" id="">
-								<option value="">學名和中文名</option>
-								<option value="">照片</option>
-								<option value="">分類資訊</option>
-								<option value="">分類階層</option>
-								<option value="">物種資訊</option>
-								<option value="">學名變遷</option>
-								<option value="">文獻</option>
-								<option value="">專家</option>
-								<option value="">相關連結</option>
-								<option value="">變更歷史</option>
+							<select class="subject wide" name="type" id="">
+								<option value="1">學名和中文名</option>
+								<option value="2">照片</option>
+								<option value="3">分類資訊</option>
+								<option value="4">分類階層</option>
+								<option value="5">物種資訊</option>
+								<option value="6">學名變遷</option>
+								<option value="7">文獻</option>
+								<option value="8">專家</option>
+								<option value="9">相關連結</option>
+								<option value="10">變更歷史</option>
 							</select>
 						</div>
 						<div class="input-item">
-							<input type="text" placeholder="請輸入主旨">
+							<input type="text" name="title" placeholder="請輸入主旨">
 						</div>
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
 						<p>錯誤描述</p>
 					</div>
-					<textarea name="" id=""></textarea>
+					<textarea name="description" id="" style="font-size: 16px"></textarea>
 					<div class="notice">
 						<h3>更新通知與否</h3>
 						<div class="radiobox">
 							<div class="flex">
-								<input type="radio" name="update-required">
+								<input type="radio" name="notify" checked>
 								<p>是</p>
 							</div>
 						</div>
 						<div class="radiobox">
 							<div class="flex">
-								<input type="radio" name="update-required" checked>
+								<input type="radio" name="notify">
 								<p>否</p>
 							</div>
 						</div>
@@ -359,15 +367,15 @@
 					<div class="input-item2">
 						<div class="input-item">
 							<p>聯絡姓名</p>
-							<input type="text" >
+							<input type="text" name="name">
 						</div>
 						<div class="input-item">
 							<p>聯絡信箱</p>
-							<input type="text" >
+							<input type="text" name="email">
 						</div>
 					</div>
 					</form>
-					<button class="send-btn">確認送出</button>
+					<button class="send-btn feedback">確認送出</button>
 				</div>
 			</div>
 		</div>
@@ -395,11 +403,6 @@
 						<li>
 							<div class="wrap-box">
 								{{ self_html_str|safe }}
-								<!--
-								<div class="r-cir-box">
-									界
-								</div> 
-								<span class="r-name">{{ data.common_name_c }}<span>-->
 							</div>
 						</li>
 					</ul>
@@ -627,17 +630,6 @@
 								{% for n in name_changes %}
 								<p>{{ n|safe }}</p>
 								{% endfor %}
-								<!--
-								<p>
-									Miltochrista koshunica	Strand, 1917 ; Volynkin,2019
-								</p>
-								<p>
-									Miltochrista dentifascia－Chang, 1989；Wang & Fan, 1994；Chen, 2011(誤用)
-								</p>
-								<p>
-									Sesapa koshunica－Wu, 2019
-								</p>
-								-->
 							</div>
 						</div>
 					</div>
@@ -740,98 +732,6 @@
 								</a>
 							</li>
 							{% endfor %}
-							<!--
-							<li>
-								<p>Wikidata：Q13533254</p>
-								<a href="#" target="_blank">
-									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
-										<defs>
-											<clipPath id="clip-path">
-												<rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"/>
-											</clipPath>
-										</defs>
-										<g id="link-icon" transform="translate(0 0.359)">
-											<g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
-												<path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"/>
-												<path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"/>
-											</g>
-										</g>
-									</svg>
-								</a>
-							</li>
-							<li>
-								<p>GBIF：1813078</p>
-								<a href="#" target="_blank">
-									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
-										<defs>
-											<clipPath id="clip-path">
-												<rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"/>
-											</clipPath>
-										</defs>
-										<g id="link-icon" transform="translate(0 0.359)">
-											<g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
-												<path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"/>
-												<path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"/>
-											</g>
-										</g>
-									</svg>
-								</a>
-							</li>
-							<li>
-								<p>iNaturalist：735895</p>
-								<a href="#" target="_blank">
-									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
-										<defs>
-											<clipPath id="clip-path">
-												<rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"/>
-											</clipPath>
-										</defs>
-										<g id="link-icon" transform="translate(0 0.359)">
-											<g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
-												<path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"/>
-												<path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"/>
-											</g>
-										</g>
-									</svg>
-								</a>
-							</li>
-							<li>
-								<p>IRMNG：11249390</p>
-								<a href="#" target="_blank">
-									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
-										<defs>
-											<clipPath id="clip-path">
-												<rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"/>
-											</clipPath>
-										</defs>
-										<g id="link-icon" transform="translate(0 0.359)">
-											<g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
-												<path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"/>
-												<path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"/>
-											</g>
-										</g>
-									</svg>
-								</a>
-							</li>
-							<li>
-								<p>LepIndex：38888</p>
-								<a href="#" target="_blank">
-									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
-										<defs>
-											<clipPath id="clip-path">
-												<rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"/>
-											</clipPath>
-										</defs>
-										<g id="link-icon" transform="translate(0 0.359)">
-											<g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
-												<path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"/>
-												<path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"/>
-											</g>
-										</g>
-									</svg>
-								</a>
-							</li>
-							-->
 						</ul>
 						</div>
 					</div>
@@ -909,6 +809,17 @@
 {% block script %}
 <script>
 
+    //https://emailregex.com
+    function ValidateEmail(inputText) {
+		let mailformat = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+		if (inputText.match(mailformat)) {
+		  return true
+		} else {
+		  return false
+		}
+	  }
+  
+
 	let slideIndex = 1;
 	showSlides(slideIndex);
 
@@ -950,7 +861,43 @@
 
 	$(function(){
 		// 照片
+		let cols = ['title','description','notify','name','email']
+		$('.feedback').click(function(){
+			let checked = true;
+			for (c of cols){
+				if ($(`.error-form input[name=${c}]`).val()==''){
+					checked = false;
+				}
+			}
+			if (!ValidateEmail($(`.error-form input[name=${c}]`).val())){
+				checked = false;
+			}
+			if (checked){
+				$('.loadingbox').removeClass('d-none');
+				$.ajax({
+					url: "{% url 'send_feedback' %}",
+					data:  $('#errorForm').serialize() + '&csrfmiddlewaretoken=' + '{{ csrf_token }}',
+					type: 'POST',
+					dataType : 'json',
+				})
+				.done(function(results) {
+					$('.loadingbox').addClass('d-none');
+					alert('回報已送出，謝謝您！');
+					$('.mistakepop').fadeOut("slow");
+		
+				})
+				.fail(function( xhr, status, errorThrown ) {
+					$('.loadingbox').addClass('d-none');
+					alert('發生未知錯誤！請聯絡管理員')
+					console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
+				}) 
+		
 
+			} else {
+				alert('請檢查表格是否填寫完整，或電子郵件格式是否正確')
+			}
+
+		})
 
 		
 

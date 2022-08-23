@@ -16,4 +16,5 @@ urlpatterns = [
     path('update_search_stat', views.update_search_stat, name='update_search_stat'),
     path('get_match_result', views.get_match_result, name='get_match_result'),
     path('download_match_results', views.download_match_results, name='download_match_results'),
+    path('send_feedback', views.send_feedback, name='send_feedback'),
 ]

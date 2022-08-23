@@ -13,7 +13,7 @@ import re
 import glob
 import os
 import datetime
-from taxa.models import Expert, SearchStat
+from taxa.models import Expert, Feedback, SearchStat
 from django.contrib.postgres.aggregates import StringAgg
 import time
 import requests
@@ -698,7 +698,7 @@ def taxon(request, taxon_id):
             else:
                 self_html_str += f"""
                 <div class="r-cir-box rank-second-gray">
-                    {rank_map_c[h[0]]}
+                    {rank_map_c[data['rank_id']]}
                 </div>
                 <span class="r-name">{data['common_name_c']}<span>
                 """
@@ -1042,3 +1042,21 @@ def download_match_results(request):
 
     return response
 
+
+
+def send_feedback(request):
+    req = request.POST
+    date_str = timezone.now()+datetime.timedelta(hours=8)
+    date_str = date_str.strftime('%Y/%m/%d')
+    Feedback.objects.create(
+        taxon_id = req.get('taxon_id'),
+        type = int(req.get('type',1)),
+        title = req.get('title'),
+        description = req.get('description'),
+        notify = True if req.get('notify') == 'on' else False,
+        name = req.get('name'),
+        email = req.get('email'),
+        response = f"<p>{req.get('name')} 先生/小姐您好，</p><p>收到您{date_str}於TaiCOL的留言：</p><p>『{req.get('description')}』</p><p>回覆如下：</p>",
+    )
+
+    return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
