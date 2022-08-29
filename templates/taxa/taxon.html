@@ -472,7 +472,7 @@
 							<div class="maintxt">
 								<h2 class="en">{{ data.sci_name|safe }}</h2>
 								<h2>{{ data.common_name_c|default_if_none:'' }}</h2>
-								<p>物種編號：{{ data.name_id }}</p>
+								<p>物種編號：{{ taxon_id }}</p>
 							</div>
 							<div class="class-inf">
 								<a class="anchor" id="taxon-status"></a>
@@ -753,8 +753,8 @@
 							</div>
 						</div>
 						<div class="w-content">
-							{{ taxon_history }}
 							<div class="scro-m">
+								{% if taxon_history|length > 0 %}
 							<table class="history-edit" cellspacing="0" cellpadding="0" border="0">
 								<tr>
 									<td>日期</td>
@@ -762,39 +762,17 @@
 									<td width="50%">文獻</td>
 									<td>編輯者</td>
 								</tr>
-								<tr>
-									<td>2019-10-28 <br>
-										00:21:29
-									</td>
-									<td>修改學名，錯誤訂正</td>
-									<td>Wu, S. 2019. Reassessment of the generic definition of Sesapa Walker, 1854, with descriptions of two new species of Taiwan (Erebidae, Arctiinae, Lithosiini). Tinea 25 (Suppl.): 75–83</td>
-									<td>吳士緯 </td>
-								</tr>
-								<tr>
-									<td>2019-10-28<br>
-										00:21:29
-									</td>
-									<td>增加文獻</td>
-									<td>Wu, S. 2019. Reassessment of the generic definition of Sesapa Walker, 1854, with descriptions of two </td>
-									<td>陳小名</td>
-								</tr>
-								<tr>
-									<td>2019-10-28<br>
-										00:21:29
-									</td>
-									<td>增加文獻</td>
-									<td>Wu, S. 2019. Reassessment of the generic definition of Sesapa Walker, 1854, with descriptions of two </td>
-									<td>陳小名</td>
-								</tr>
-								<tr>
-									<td>2019-10-28<br>
-										00:21:29
-									</td>
-									<td>增加文獻</td>
-									<td>Wu, S. 2019. Reassessment of the generic definition of Sesapa Walker, 1854, with descriptions of two </td>
-									<td>陳小名</td>
-								</tr>
+								{% for t in taxon_history %}
+									<tr>
+										<td>{{ t.datetime|safe }}
+										</td>
+										<td>{{ t.type }} {{ t.content|default_if_none:''|safe }}</td>
+										<td>{{ t.ref|safe }}</td>
+										<td></td>
+									</tr>
+								{% endfor %}
 							</table>
+							{% endif %}
 						</div>
 						</div>
 					</div>
@@ -860,6 +838,8 @@
 	}
 
 	$(function(){
+
+		
 		// 照片
 		let cols = ['title','description','notify','name','email']
 		$('.feedback').click(function(){
@@ -899,14 +879,18 @@
 
 		})
 
-		
+		$(document).on('keypress', function(e) {
+			if (e.which === 13 )
+			{
+				$( ".search" ).trigger( "click" );
+			}
+		});
 
 		$('.search').click(function(){
 			if ($('input[name=keyword]').val()==''){
 				alert('請輸入關鍵字')
 			} else {
 				window.location = '/catalogue?keyword=' + $('input[name=keyword]').val()
-
 			}
 		})
 		// 收和控制

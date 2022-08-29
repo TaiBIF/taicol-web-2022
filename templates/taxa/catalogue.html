@@ -93,6 +93,9 @@
 		}
 	}
 
+
+	.nice-select .list { max-height: 400px; overflow-y: scroll; }
+
 	.nice-select.select-box {
 		margin-right: 10px !important;
 		-webkit-appearance: none !important;
@@ -123,6 +126,7 @@
 	.nice-select.select-box .list, .nice-select.mb-select .list {
 		left: 0 !important;
 		right: 0 !important;
+		
 	}
 	  
 	.select-box span.current {
@@ -687,8 +691,6 @@
 
 	function changeFacet(facet,value,from_url=false,page=1,from_mb_select=false){
 
-		console.log(facet,value,$('input[name=hidden-value]').val(),$('input[name=hidden-facet]').val())
-
 		$(".facet-btn").removeClass('now');
 		$(`button.facet-${facet}-${value}`).addClass('now');
 		$('input[name=hidden-value]').val(value);
@@ -717,7 +719,7 @@
 			// 只修改表格內容，不修改facet
 			$('.loadingbox').removeClass('d-none');
 
-			let query_str = $('form').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
+			let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
 					'&name-select=' + $('select[name=name-select] option:selected').val() +
 					'&page=' + page + '&total_page=' + total_page + '&facet=' + $('input[name=hidden-facet]').val() + 
 					'&value=' + $('input[name=hidden-value]').val()
@@ -726,8 +728,6 @@
 				var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
 				history.pushState(null, '', newRelativePathQuery);
 			}
-
-			console.log(query_str)
 
 			$.ajax({
 				url: "{% url 'update_catalogue_table' %}",
@@ -904,7 +904,7 @@
 			});
 
 		} else {
-			query_str = $('form').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
+			query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
 			'&name-select=' + $('select[name=name-select] option:selected').val() 
 			var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
 			history.pushState(null, '', newRelativePathQuery);
@@ -923,10 +923,12 @@
 		}
 
 		if (!has_search_parm) {
-			alert('請至少輸入一個搜尋項目')
+			alert('請至少輸入一個搜尋項目');
+			window.enterPressed = false;
 
 		} else if ((!isValidDate($('input[name=date]').val()))&($('input[name=date]').val()!='')){
-			alert('日期格式錯誤，應為yyyy-mm-dd')
+			alert('日期格式錯誤，應為yyyy-mm-dd');
+			window.enterPressed = false;
 		} else {
 
 			$('.loadingbox').removeClass('d-none');
@@ -942,6 +944,7 @@
 				dataType : 'json',
 			})
 			.done(function(results) {
+				window.enterPressed = false;
 				// 清空頁碼 & facet
 				$('.page-num').remove()
 				$('.mb-cataselect').remove()
@@ -1137,6 +1140,19 @@
 	}
 
 	$(function(){
+
+		// 按 enter 直接查詢
+		window.enterPressed = false;
+
+		 $(document).on('keypress', function(e) {
+			if (e.which === 13 && !window.enterPressed)
+			{
+				window.enterPressed = true;
+				getData();
+			}
+		});
+		
+
 		// 如果直接從帶有參數網址列進入
 		changeAction(); 
 
