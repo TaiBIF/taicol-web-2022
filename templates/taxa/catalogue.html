@@ -9,6 +9,10 @@
 {% endblock head %}
 {% block style %}
 <style>
+.f-bold {
+	font-weight: bold !important;
+}
+
 	@media only screen and (max-width: 767px) {
 		.ui-autocomplete {
 			max-width: 100%;
@@ -257,9 +261,51 @@
 								<div class="input-item select-170">
 									<select class="wide" name="rank-select">
 										<option value="none"></option>
-										{% for key, value in ranks.items %}
-											<option value="{{ key }}">{{ value }}</option>
-										{% endfor %}
+										<option value="34">種</option>
+										<option value="35">亞種</option>
+										<option value="37">變種</option>
+										<option value="40">型</option>
+										<option value="38">亞變種</option>
+										<option value="36">雜交亞種</option>
+										<option value="39">雜交變種</option>
+										<option value="42">特別品型</option>
+										<option value="30">屬</option>
+										<option value="31">亞屬</option>
+										<option value="32">組|節</option>
+										<option value="33">亞組|亞節</option>
+										<option value="26">科</option>
+										<option value="27">亞科</option>
+										<option value="28">族</option>
+										<option value="29">亞族</option>
+										<option value="22">目</option>
+										<option value="23">亞目</option>
+										<option value="24">下目</option>
+										<option value="25">超科|總科</option>
+										<!--<option value="">系</option>-->
+										<!--<option value="">組</option>-->
+										<option value="18">綱</option>
+										<option value="19">亞綱</option>
+										<option value="20">下綱</option>
+										<option value="21">超目|總目</option>
+										<option value="12">門</option>
+										<option value="13">亞門</option>
+										<option value="14">下門</option>
+										<!--<option value="">小門</option>-->
+										<!--<option value="">微門</option>-->
+										<option value="17">超綱|總綱</option>
+										<option value="7">部|類</option>
+										<option value="8">亞部|亞類</option>
+										<option value="9">下部|下類</option>
+										<option value="10">小部|小類</option>
+										<option value="11">超門|總門</option>
+										<option value="3">界</option>
+										<option value="4">亞界</option>
+										<!--<option value="">支</option>-->
+										<option value="5">下界</option>
+										<option value="6">超部|總部</option>
+										<option value="1">域</option>
+										<option value="2">總界</option>
+										<!--<option value="">亞域</option>-->					
 									</select>
 								</div>							
 								<div class="alread-select">
@@ -509,7 +555,7 @@
 									<div class="icon">
 										<img src="{% static 'image/cald.svg' %}">
 									</div>
-									<input type="text" placeholder="1990-01-01" name="date">
+									<input type="date" placeholder="1990-01-01" name="date">
 								</div>
 							</div>
 						</div>
@@ -665,6 +711,10 @@
 		$('select[name=name-select]').niceSelect('update'); 
 		$('select[name=rank-select]').val('');
 		$('select[name=rank-select]').niceSelect('update'); 
+		r_array = [1,3,7,12,18,22,26,30,34]
+		for( r of r_array){
+			$(`.list li[data-value=${r}]`).addClass('f-bold')
+		}
 		$('select[name=date-select]').val('gl');
 		$('select[name=date-select]').niceSelect('update'); 
 		$('.alread-select').html('')
@@ -710,9 +760,10 @@
 
 	function updateData(page, from_url=false){
 
+	
 		let total_page = $('input[name=total_page]').val();
-		if ((!isValidDate($('input[name=date]').val()))&($('input[name=date]').val()!='')){
-			alert('日期格式錯誤，應為yyyy-mm-dd')
+		if (($('input[name=date]').val()!='')&(!isValidDate($('input[name=date]').val()))){
+			alert('日期格式錯誤')
 		} else {
 
 			// 從facet或頁碼點選
@@ -839,6 +890,7 @@
 	}
 
 	function getData(from_url){
+
 		let query_str;
 		let facet = '';
 		let value = '';
@@ -916,18 +968,17 @@
 		let has_search_parm = false;
 		for (const [key, value] of newUrlParams) {
 			if (params.includes(key)&newUrlParams.get(key)!=''){
-				console.log(key);
 				has_search_parm = true;
 				break
 			}
 		}
 
 		if (!has_search_parm) {
-			alert('請至少輸入一個搜尋項目');
+			alert('請至少輸入一個搜尋項目，若有輸入日期必須填入完整年月日');
 			window.enterPressed = false;
 
 		} else if ((!isValidDate($('input[name=date]').val()))&($('input[name=date]').val()!='')){
-			alert('日期格式錯誤，應為yyyy-mm-dd');
+			alert('日期格式錯誤');
 			window.enterPressed = false;
 		} else {
 
@@ -974,7 +1025,6 @@
 					</div>`)
 
 					$('select[name=mb-select]').on('change', function() {
-						console.log(this.value)
 						let opt_str = $(`.${this.value}-box`).html();
 						opt_str = opt_str.replaceAll('button','option')
 						$('select[name=mb-select-sub]').html('<option value=""></option>')
@@ -1195,6 +1245,11 @@
 
 		// 選項設定
 		$('select[name=rank-select]').niceSelect();
+		// bold
+		r_array = [1,3,7,12,18,22,26,30,34]
+		for( r of r_array){
+			$(`.list li[data-value=${r}]`).addClass('f-bold')
+		}
 		$('select[name=name-select]').niceSelect();
 		$('select[name=date-select]').niceSelect();
 
