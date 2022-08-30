@@ -119,9 +119,9 @@ def get_conditioned_query(req, from_url=False):
         c = 1
         for r in rank:
             if c == 1:
-                r_str = 'at.rank_id = ' + r
+                r_str = 'tn.rank_id = ' + r
             else:
-                r_str += ' OR at.rank_id = ' + r
+                r_str += ' OR tn.rank_id = ' + r
             c += 1
         if 'OR' in r_str:
             r_str = f" AND ({r_str})"
@@ -194,16 +194,16 @@ def get_conditioned_query(req, from_url=False):
         conserv_join = "LEFT JOIN api_conservation ac ON ac.taxon_id = at.taxon_id"
 
     # 較高分類群
-    path_join = ''
+    # path_join = ''
     if higher_taxon_id := req.get('taxon_group_id'):
-        path_join = "LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id"
+        # path_join = "LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id"
         condition +=  f' AND att.path like "%>{higher_taxon_id}%"'
 
     if not from_url:
         if facet := req.get('facet'):
             value = req.get('value')
             if facet == 'rank':
-                condition += f" AND at.rank_id = {int(value)}"
+                condition += f" AND tn.rank_id = {int(value)}"
             elif facet == 'kingdom':
                 path_join = "LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id"
                 condition +=  f' AND att.path like "%>{value}%"'
@@ -217,12 +217,12 @@ def get_conditioned_query(req, from_url=False):
     if condition.startswith(' AND'):
         condition = condition[4:]
 
-    base = f"""SELECT tn.id, at.taxon_id, atu.status
+    base = f"""
                 FROM taxon_names tn 
                 JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
                 JOIN api_taxon at ON atu.taxon_id = at.taxon_id
+                LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
                 {conserv_join}
-                {path_join}
                 WHERE {condition}
             """
     return base
@@ -231,16 +231,13 @@ def get_conditioned_query(req, from_url=False):
 
 def get_query_data(base, offset, response):
     conn = pymysql.connect(**db_settings)
-    # TODO 如果是誤用，只回傳可以對到正確taxon_id的資料 path的地方也要重寫
-    query = f"""WITH base_query AS ({base})
+    base = base.split('WHERE')
+    query = f"""
                 SELECT distinct(at.taxon_id), tn.name, tn.rank_id, an.formatted_name, at.common_name_c, atu.status,
                     at.is_endemic, at.alien_type, att.path   
-                FROM taxon_names tn 
-                JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
-                JOIN api_taxon at ON atu.taxon_id = at.taxon_id
+                {base[0]}
                 JOIN api_names an ON an.taxon_name_id = tn.id
-                LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
-                INNER JOIN base_query ON ((atu.taxon_name_id = base_query.id) AND (atu.status = base_query.status) AND (at.taxon_id = base_query.taxon_id))
+                WHERE {base[1]}
                 ORDER BY tn.name LIMIT 10 OFFSET {offset} 
             """
     with conn.cursor() as cursor:
@@ -314,15 +311,17 @@ def update_catalogue_table(request):
     req = request.POST
     page = int(req.get('page', 1))
     base = get_conditioned_query(req)
+    print(base)
 
     # pagination
     response['page'] = {}
     if req.get('facet'):
-        first_query = f"WITH base AS ({base}) SELECT COUNT(*) FROM base"
+        first_query = f"SELECT COUNT(distinct tn.id, at.id, atu.status) {base}"
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             cursor.execute(first_query)
             count = cursor.fetchone()
+            response['total_count'] = count[0]
             response['page']['total_page'] = math.ceil((count[0]) / 10)
             conn.close()
     else:
@@ -346,86 +345,34 @@ def catalogue(request):
         req = request.POST
         offset = 10 * (int(req.get('page',1))-1)
         base = get_conditioned_query(req, from_url=True)
-        first_query = f"WITH base AS ({base}) SELECT COUNT(*) FROM base"
+        conn = pymysql.connect(**db_settings)
+        count_query = f"""SELECT distinct tn.id, at.id, atu.status, tn.rank_id, at.alien_type, at.is_endemic, SUBSTRING(att.path, -7, 7)
+                        {base}
+                        """
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
-            cursor.execute(first_query)
-            count = cursor.fetchone()
+            cursor.execute(count_query)
+            count = pd.DataFrame(cursor.fetchall(),columns=['taxon_name_id','t_id','status','rank','alien_type','is_endemic','kingdom'])
             conn.close()
-        if count[0] > 0:
-            total_count = count[0]
-            count_query = f"""
-                            WITH base_query AS ({base}) (
-                                SELECT count(distinct tn.id, at.taxon_id, atu.status) as `value`, tn.rank_id as `category`, 'rank' as `facet`
-                                FROM taxon_names tn 
-                                JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
-                                JOIN api_taxon at ON atu.taxon_id = at.taxon_id
-                            	INNER JOIN base_query ON ((atu.taxon_name_id = base_query.id) AND (atu.status = base_query.status) AND (at.taxon_id = base_query.taxon_id))
-                                GROUP BY tn.rank_id 
-                                UNION
-                                SELECT count(distinct tn.id, at.taxon_id, atu.status) as `value`, atu.status as `category`, 'status' as `facet`
-                                FROM taxon_names tn 
-                                JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
-                                JOIN api_taxon at ON atu.taxon_id = at.taxon_id
-                            	INNER JOIN base_query ON ((atu.taxon_name_id = base_query.id) AND (atu.status = base_query.status) AND (at.taxon_id = base_query.taxon_id))
-                                GROUP BY atu.status
-                                UNION
-                                SELECT count(distinct tn.id, at.taxon_id, atu.status) as `value`, at.alien_type as `category`, 'alien_type' as `facet`
-                                FROM taxon_names tn 
-                                JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
-                                JOIN api_taxon at ON atu.taxon_id = at.taxon_id
-                            	INNER JOIN base_query ON ((atu.taxon_name_id = base_query.id) AND (atu.status = base_query.status) AND (at.taxon_id = base_query.taxon_id))
-                                GROUP BY at.alien_type
-                                UNION
-                                SELECT count(distinct tn.id, at.taxon_id, atu.status) as `value`, at.alien_type as `category`, 'alien_type' as `facet`
-                                FROM taxon_names tn 
-                                JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
-                                JOIN api_taxon at ON atu.taxon_id = at.taxon_id
-                            	INNER JOIN base_query ON ((atu.taxon_name_id = base_query.id) AND (atu.status = base_query.status) AND (at.taxon_id = base_query.taxon_id))
-                                GROUP BY at.alien_type
-                                UNION
-                                SELECT count(distinct tn.id, at.taxon_id, atu.status) as `value`, at.is_endemic as `category`, 'is_endemic' as `facet`
-                                FROM taxon_names tn 
-                                JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
-                                JOIN api_taxon at ON atu.taxon_id = at.taxon_id
-                            	INNER JOIN base_query ON ((atu.taxon_name_id = base_query.id) AND (atu.status = base_query.status) AND (at.taxon_id = base_query.taxon_id))
-                                GROUP BY at.is_endemic
-                                UNION
-                                SELECT count(distinct tn.id, at.taxon_id, atu.status) as `value` , SUBSTRING(att.path, -7, 7) AS kingdom, 'kingdom' as `facet`
-                                FROM taxon_names tn 
-                                JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
-                                JOIN api_taxon at ON atu.taxon_id = at.taxon_id
-                                JOIN api_names an ON an.taxon_name_id = tn.id
-                                LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
-                            	INNER JOIN base_query ON ((atu.taxon_name_id = base_query.id) AND (atu.status = base_query.status) AND (at.taxon_id = base_query.taxon_id))
-                                GROUP BY kingdom) ORDER BY category;
-                            """
-            conn = pymysql.connect(**db_settings)
-            with conn.cursor() as cursor:
-                cursor.execute(count_query)
-                count = cursor.fetchall()
-                conn.close()
-            if count:
-                response['count'] = {}
-                # 左側統計 界, 階層, 原生/特有性, 地位
-                count = pd.DataFrame(count, columns=['count','category','facet'])
-                count.loc[count.facet=='is_endemic','category_c'] = count.loc[count.facet=='is_endemic','category'].apply(lambda x: '臺灣特有' if x == '1' or x == 1 else None)
-                count.loc[count.facet=='alien_type','category_c'] = count.loc[count.facet=='alien_type','category'].apply(lambda x: alien_map_c[x] if x else None)
-                count.loc[count.facet=='status','category_c'] = count.loc[count.facet=='status','category'].apply(lambda x: status_map_c[x] if x else None)
-                count.loc[count.facet=='rank','category_c'] = count.loc[count.facet=='rank','category'].apply(lambda x: rank_map_c[int(x)])
-                count.loc[count.facet=='kingdom','category_c'] = count.loc[count.facet=='kingdom','category'].apply(lambda x: kingdom_map[x]['common_name_c'] if x in kingdom_map.keys() else None)
-                count = count.replace({np.nan: '', None: ''})
-                count = count[~count.category.isin([None,''])]
-                facet = ['is_endemic','alien_type','status','kingdom','rank']
-                for f in facet:
-                    response['count'][f] = json.loads(count[(count.facet==f)&(count.category_c!='')].to_json(orient='records'))
-                response['count']['total'] = [{'count':total_count}]
-                # pagination
-                response['page'] = {}
-                response['page']['total_page'] = math.ceil((response['count']['total'][0]['count']) / 10)
-                response['page']['current_page'] = offset / 10 + 1
-                response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
-                response = get_query_data(base, offset, response)
+        if len(count):
+            response['count'] = {}
+            # 左側統計 界, 階層, 原生/特有性, 地位
+            count['is_endemic_c'] = count['is_endemic'].apply(lambda x: '臺灣特有' if x == '1' or x == 1 else None)
+            count['alien_type_c'] = count['alien_type'].apply(lambda x: alien_map_c[x] if x else None)
+            count['status_c'] = count['status'].apply(lambda x: status_map_c[x] if x else None)
+            count['rank_c'] = count['rank'].apply(lambda x: rank_map_c[int(x)])
+            count['kingdom_c'] = count['kingdom'].apply(lambda x: kingdom_map[x]['common_name_c'] if x in kingdom_map.keys() else None)
+            count = count.replace({np.nan: '', None: ''})
+            facet = ['is_endemic','alien_type','status','kingdom','rank']
+            for f in facet:
+                response['count'][f] = count[~count[f"{f}_c"].isin([None,''])].groupby([f,f"{f}_c"])['t_id'].count().reset_index().rename(columns={'t_id':'count',f:'category', f"{f}_c":'category_c'}).to_dict('records')
+            response['count']['total'] = [{'count':len(count)}]
+            # pagination
+            response['page'] = {}
+            response['page']['total_page'] = math.ceil((response['count']['total'][0]['count']) / 10)
+            response['page']['current_page'] = offset / 10 + 1
+            response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
+            response = get_query_data(base, offset, response)
         else:
             response = {'count': {'total':[{'count':0}]},'page': {'total_page':0, 'page_list': []},'data':[]}
         return HttpResponse(json.dumps(response), content_type='application/json')
@@ -724,8 +671,6 @@ def taxon(request, taxon_id):
                             name_changes += [f"{names[names.taxon_name_id==n]['sci_name'].values[0]}: {ref_str}"]
                         else:
                             name_changes += [names[names.taxon_name_id==n]['sci_name'].values[0]]
-
-                # TODO 誤用名待測試
             # 相關連結
             # ncbi如果超過一個就忽略
             if data['links']:

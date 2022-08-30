@@ -741,21 +741,30 @@
 
 	function changeFacet(facet,value,from_url=false,page=1,from_mb_select=false){
 
-		$(".facet-btn").removeClass('now');
-		$(`button.facet-${facet}-${value}`).addClass('now');
-		$('input[name=hidden-value]').val(value);
-		$('input[name=hidden-facet]').val(facet);
+		// 如果是本來就active的facet則改為沒有facet
+		if ($(`button.facet-${facet}-${value}`).hasClass('now')){
+			// 改回沒有facet
+			$(".facet-btn").removeClass('now');
+			$('input[name=hidden-value]').val('');
+			$('input[name=hidden-facet]').val('');
+			getData(false);
+		} else {
+			$(".facet-btn").removeClass('now');
+			$(`button.facet-${facet}-${value}`).addClass('now');
+			$('input[name=hidden-value]').val(value);
+			$('input[name=hidden-facet]').val(facet);
 
-		// 手機選單但不要cause onchange
-		if (!from_mb_select){
-			$('select[name=mb-select]').val(facet);
-			$('select[name=mb-select]').niceSelect('update');
-			$('select[name=mb-select]').trigger('change')
-			$('select[name=mb-select-sub]').val($(`option.facet-${facet}-${value}`).text().trim());
-			$('select[name=mb-select-sub]').niceSelect('update');
+			// 手機選單但不要cause onchange
+			if (!from_mb_select){
+				$('select[name=mb-select]').val(facet);
+				$('select[name=mb-select]').niceSelect('update');
+				$('select[name=mb-select]').trigger('change')
+				$('select[name=mb-select-sub]').val($(`option.facet-${facet}-${value}`).text().trim());
+				$('select[name=mb-select-sub]').niceSelect('update');
+			}
+			updateData(page, from_url);
 		}
-
-		updateData(page, from_url);
+		
 	}
 
 	function updateData(page, from_url=false){
@@ -788,6 +797,8 @@
 			})
 			.done(function(results) {
 				$('.loadingbox').addClass('d-none');
+				// 修改共幾筆
+				$('#total-count').html(results['total_count']);
 				// 清空頁碼
 				$('.page-num').remove()
 				$('.table-style1').html(`<tr>
@@ -1025,19 +1036,37 @@
 					</div>`)
 
 					$('select[name=mb-select]').on('change', function() {
-						let opt_str = $(`.${this.value}-box`).html();
-						opt_str = opt_str.replaceAll('button','option')
-						$('select[name=mb-select-sub]').html('<option value=""></option>')
-						$('select[name=mb-select-sub]').append(opt_str)
-						$('select[name=mb-select-sub]').niceSelect('update');
+						if ($('select[name=mb-select] option:selected').text() != ''){
+							let opt_str = $(`.${this.value}-box`).html();
+							opt_str = opt_str.replaceAll('button','option')
+							$('select[name=mb-select-sub]').html('<option value=""></option>')
+							$('select[name=mb-select-sub]').append(opt_str)
+							$('select[name=mb-select-sub]').niceSelect('update');
+						} else {
+							// 如果選擇空的則清空 但目前的判斷可能在他們完全還沒有選擇的時候就清空
+							if ($(".facet-btn").hasClass('now')){
+								$(".facet-btn").removeClass('now');
+								$('input[name=hidden-value]').val('');
+								$('input[name=hidden-facet]').val('');
+								getData(false);
+							}
+						}
 					});
 
 					$('select[name=mb-select-sub]').on('change', function(){
-						// 確認沒有重複
+
 						if ($('select[name=mb-select-sub] option:selected').text() != ''){
 							// changeFacet
 							let f_str = $('select[name=mb-select-sub] option:selected').attr('class');
-							changeFacet(f_str.split(' ')[1].split('-')[1],f_str.split(' ')[1].split('-')[2],from_mb_select=true)
+							changeFacet(f_str.split(' ')[1].split('-')[1],f_str.split(' ')[1].split('-')[2],false,1,true)
+						} else {
+						// 如果選擇空的則清空
+							if ($(".facet-btn").hasClass('now')){
+								$(".facet-btn").removeClass('now');
+								$('input[name=hidden-value]').val('');
+								$('input[name=hidden-facet]').val('');
+								getData(false);
+							}
 						}
 					})
 			
@@ -1150,13 +1179,11 @@
 						`)
 					}
 
-
 					if (results.page.current_page==1){
 						$('.back').attr("onclick","");
 					} else if (results.page.current_page==results.page.total_page){
 						$('.next').attr("onclick","");
 					}
-						
 						
 					let html = ''
 					for (let i = 0; i < results.page.page_list.length; i++) {
@@ -1174,7 +1201,7 @@
 
 					// 從網址進入如果有facet
 					if((facet != '') & (value != '')){
-						changeFacet(facet, value, from_url=true, page=page)
+						changeFacet(facet, value, true, page, false)
 					}
 
 				} else {
@@ -1184,6 +1211,7 @@
 			.fail(function( xhr, status, errorThrown ) {
 			$('.loadingbox').addClass('d-none');
 			alert('發生未知錯誤！請聯絡管理員')
+			window.enterPressed = false;
 			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
 			}) 
 		}
