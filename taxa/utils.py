@@ -34,7 +34,7 @@ with conn.cursor() as cursor:
 kingdom_map = {}
 conn = pymysql.connect(**db_settings)
 query = "SELECT tn.name, at.taxon_id, at.common_name_c FROM taxon_names tn\
-         JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id WHERE tn.rank_id = 3"
+         JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id WHERE tn.rank_id = 3 ORDER BY tn.name"
 with conn.cursor() as cursor:
     cursor.execute(query)
     kingdom = cursor.fetchall()

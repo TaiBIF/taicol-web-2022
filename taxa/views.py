@@ -1,5 +1,3 @@
-from ctypes.wintypes import tagSIZE
-from unittest import result
 from django.shortcuts import render
 from taxa.utils import *
 from django.http import HttpResponse
@@ -219,26 +217,13 @@ def get_conditioned_query(req, from_url=False):
     if condition.startswith(' AND'):
         condition = condition[4:]
 
-    # 加上 misapplied
-    condition_1 = condition + ' AND (atu.status != "misapplied")'
-    condition_2 = condition + ' AND atu.status = "misapplied" AND atu.correct_taxon_id IS NOT NULL'
-
-
     base = f"""SELECT tn.id, at.taxon_id, atu.status
                 FROM taxon_names tn 
                 JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
                 JOIN api_taxon at ON atu.taxon_id = at.taxon_id
                 {conserv_join}
                 {path_join}
-                WHERE {condition_1}
-                UNION
-                SELECT tn.id, atu.correct_taxon_id, atu.status
-                FROM taxon_names tn 
-                JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
-                JOIN api_taxon at ON atu.taxon_id = at.taxon_id
-                {conserv_join}
-                {path_join}
-                WHERE {condition_2}
+                WHERE {condition}
             """
     return base
 
@@ -362,8 +347,6 @@ def catalogue(request):
         offset = 10 * (int(req.get('page',1))-1)
         base = get_conditioned_query(req, from_url=True)
         first_query = f"WITH base AS ({base}) SELECT COUNT(*) FROM base"
-        print('-------------')
-        print(first_query)
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             cursor.execute(first_query)
@@ -417,8 +400,6 @@ def catalogue(request):
                             	INNER JOIN base_query ON ((atu.taxon_name_id = base_query.id) AND (atu.status = base_query.status) AND (at.taxon_id = base_query.taxon_id))
                                 GROUP BY kingdom) ORDER BY category;
                             """
-            print('-------------')
-            print(count_query)
             conn = pymysql.connect(**db_settings)
             with conn.cursor() as cursor:
                 cursor.execute(count_query)
@@ -864,8 +845,7 @@ def get_taxon_path(request):
             cursor.execute(query)
             ps = cursor.fetchone()
             if ps:
-                ps = ps[0].split('>')
-                path = [p for p in ps if p != taxon_id]
+                path = ps[0].split('>')
     conn.close()
     # sub_dict_list = []
     # for t in Reverse(path):
@@ -909,15 +889,16 @@ def get_tree_stat(taxon_id):
                 r.display ->> '$."zh-tw"'
                 FROM api_taxon_tree att 
                 JOIN api_taxon at ON att.taxon_id = at.taxon_id
+                JOIN taxon_names tn ON at.accepted_taxon_name_id = tn.id
                 JOIN ranks r ON at.rank_id = r.id
                 JOIN api_names an ON at.accepted_taxon_name_id= an.taxon_name_id 
-                WHERE att.parent_taxon_id = '{taxon_id}' ORDER BY at.rank_id DESC;"""
+                WHERE att.parent_taxon_id = '{taxon_id}' ORDER BY at.rank_id DESC, tn.name;"""
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
         cursor.execute(query)
         sub_titles = cursor.fetchall()
         # 下一層的rank有可能不一樣
-    conn.close()
+        conn.close()
     for st in sub_titles:
         rank_c = st[3]
         if st[1] in [3,12,18,22,26,30,34]:
@@ -956,10 +937,10 @@ def get_tree_stat(taxon_id):
 
 def update_search_stat(request):
     if taxon_id := request.POST.get('taxon_id'):
-        obj, created = SearchStat.objects.update_or_create(
-            taxon_id=taxon_id, count=F('count') + 1, updated_at=timezone.now(),
-            defaults={'count': 1},
-        )
+        if SearchStat.objects.filter(taxon_id=taxon_id).exists():
+            ss = SearchStat.objects.filter(taxon_id=taxon_id).update(count=F('count')+1,updated_at=timezone.now())
+        else:
+            ss = SearchStat.objects.create(taxon_id=taxon_id,count=1)
     return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
 
 
