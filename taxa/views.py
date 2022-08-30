@@ -52,7 +52,7 @@ def download_search_results(request):
         cursor.execute(query)
         tids = cursor.fetchall()
         tids = [t[0] for t in tids]
-    conn.close()
+        conn.close()
     df = df[df.taxon_id.isin(tids)]
 
     if file_format == 'json':
@@ -88,9 +88,9 @@ def get_autocomplete_taxon(request):
             with conn.cursor() as cursor:
                 cursor.execute(query)
                 results = cursor.fetchall()
+                conn.close()
                 for r in results:
                     names += [{'label': r[1], 'value': r[0]}]
-            conn.close()
     return HttpResponse(json.dumps(names), content_type='application/json') 
 
 
@@ -277,7 +277,7 @@ def get_query_data(base, offset, response):
                     cursor.execute(query)
                     higher_taxa = cursor.fetchall()
                     higher_taxa = pd.DataFrame(higher_taxa, columns=['taxon_id','rank_id','name'])
-                conn.close()
+                    conn.close()
                     # 界
             kingdoms = higher_taxa[(higher_taxa.rank_id==3)].taxon_id.to_list()
             for i in results.index:
@@ -324,7 +324,7 @@ def update_catalogue_table(request):
             cursor.execute(first_query)
             count = cursor.fetchone()
             response['page']['total_page'] = math.ceil((count[0]) / 10)
-        conn.close()
+            conn.close()
     else:
         response['page']['total_page'] = int(req.get('total_page'))
 
@@ -351,7 +351,7 @@ def catalogue(request):
         with conn.cursor() as cursor:
             cursor.execute(first_query)
             count = cursor.fetchone()
-        conn.close()
+            conn.close()
         if count[0] > 0:
             total_count = count[0]
             count_query = f"""
@@ -404,7 +404,7 @@ def catalogue(request):
             with conn.cursor() as cursor:
                 cursor.execute(count_query)
                 count = cursor.fetchall()
-            conn.close()
+                conn.close()
             if count:
                 response['count'] = {}
                 # 左側統計 界, 階層, 原生/特有性, 地位
@@ -497,9 +497,9 @@ def taxon(request, taxon_id):
                 with conn.cursor() as cursor:
                     cursor.execute(query)
                     n = cursor.fetchone()
+                    conn.close()
                     if n:
                         data['sci_name'] = n[0] 
-                conn.close()
             data['status'] = f"{status_map_taxon_c[data['status']]['zh-tw']} {status_map_taxon_c[data['status']]['en-us']}"
             is_list = ['is_endemic','alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine']
             for i in is_list:
@@ -524,7 +524,7 @@ def taxon(request, taxon_id):
                 cursor.execute(query)
                 refs_r = cursor.fetchall()
                 refs = [r[1] for r in refs_r if r[1] not in refs]
-            conn.close()
+                conn.close()
             
             # 保育資訊
             if c_cites := data['cites_listing']:
@@ -659,7 +659,7 @@ def taxon(request, taxon_id):
                         cursor.execute(query)
                         usage_refs = cursor.fetchall()
                         usage_refs = pd.DataFrame(usage_refs, columns=['reference_id','ref'])
-                    conn.close()
+                        conn.close()
                 # names = names.append(usage_refs).reset_index(drop=True)
                 for n in names.taxon_name_id.unique():
                     # 如果是原始組合名
@@ -795,6 +795,7 @@ def taxon_tree(request):
                 """
             cursor.execute(query)
             stats = cursor.fetchall()
+            conn.close()
             spp = 0
             stat_str = ''
             for s in stats:
@@ -806,7 +807,6 @@ def taxon_tree(request):
                 else:
                     stat_str += f"{s[0]}{rank_map_c[r_id]} "
             kingdom_dict += [{'taxon_id': k, 'name': f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",'stat': stat_str.strip()}]
-    conn.close()
     search_stat = SearchStat.objects.all().order_by('-count')[:6]
     s_taxon = [s.taxon_id for s in search_stat]
     if s_taxon:
@@ -818,13 +818,13 @@ def taxon_tree(request):
         with conn.cursor() as cursor:
             cursor.execute(query)
             tags = cursor.fetchall()
+            conn.close()
             search_stat = []
             for t in tags:
                 if t[1]:
                     search_stat.append({'taxon_id': t[0], 'name': t[1]})
                 else:
                     search_stat.append({'taxon_id': t[0], 'name': t[2]})
-        conn.close()
 
     return render(request, 'taxa/taxon_tree.html', {'kingdom_dict':kingdom_dict, 'search_stat': search_stat})
 
@@ -844,9 +844,9 @@ def get_taxon_path(request):
         with conn.cursor() as cursor:
             cursor.execute(query)
             ps = cursor.fetchone()
+            conn.close()
             if ps:
                 path = ps[0].split('>')
-    conn.close()
     # sub_dict_list = []
     # for t in Reverse(path):
     #     sub_dict_list.append(get_tree_stat(t))
@@ -884,7 +884,7 @@ def get_tree_stat(taxon_id):
         cursor.execute(query)
         sub_stat = cursor.fetchall()
         sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id'])
-    conn.close()
+        conn.close()
     query = f"""SELECT at.taxon_id, at.rank_id, CONCAT_WS(' ',at.common_name_c, r.display ->> '$."en-us"' ,an.formatted_name),
                 r.display ->> '$."zh-tw"'
                 FROM api_taxon_tree att 
