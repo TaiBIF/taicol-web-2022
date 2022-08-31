@@ -731,8 +731,8 @@ def taxon_tree(request):
     # 第一層 kingdom
     conn = pymysql.connect(**db_settings)
     kingdom_dict = []
-    with conn.cursor() as cursor:
-        for k in kingdom_map.keys():
+    for k in kingdom_map.keys():
+        with conn.cursor() as cursor:
             query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
                     JOIN api_taxon at ON att.taxon_id = at.taxon_id
                     WHERE att.path LIKE '%{k}%' and at.rank_id > 3
