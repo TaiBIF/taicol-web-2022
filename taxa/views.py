@@ -194,7 +194,6 @@ def get_conditioned_query(req, from_url=False):
 
     # 較高分類群
     # path_join = ''
-    print(req)
     if higher_taxon_id := req.get('taxon_group'):
         # path_join = "LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id"
         condition +=  f' AND att.path like "%>{higher_taxon_id}%"'
@@ -311,7 +310,6 @@ def update_catalogue_table(request):
     req = request.POST
     page = int(req.get('page', 1))
     base = get_conditioned_query(req)
-    print(base)
 
     # pagination
     response['page'] = {}
