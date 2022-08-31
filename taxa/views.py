@@ -729,9 +729,9 @@ def taxon(request, taxon_id):
 
 def taxon_tree(request):
     # 第一層 kingdom
-    conn = pymysql.connect(**db_settings)
     kingdom_dict = []
     for k in kingdom_map.keys():
+        conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
                     JOIN api_taxon at ON att.taxon_id = at.taxon_id
