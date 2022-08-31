@@ -69,28 +69,27 @@ def download_search_results(request):
 
 def get_autocomplete_taxon(request):
     names = []
-    if keyword_str := request.POST.get('keyword','').strip():
-        if len(keyword_str) > 2 or any(re.findall(r'[\u4e00-\u9fff]+', keyword_str)): # 避免太多
-            if request.POST.get('from_tree'):
-                query = f"""SELECT at.taxon_id, CONCAT_WS (' ',tn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))
-                    FROM taxon_names tn
-                    JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
-                    JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
-                    WHERE tn.deleted_at IS NULL AND (tn.name like '%{keyword_str}%' OR 
-                        at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
-            else:
-                query = f"""SELECT at.taxon_id, CONCAT_WS (' ',tn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))
-                            FROM taxon_names tn
-                            JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
-                            WHERE tn.deleted_at IS NULL AND (tn.name like '%{keyword_str}%' OR 
-                                at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
-            conn = pymysql.connect(**db_settings)
-            with conn.cursor() as cursor:
-                cursor.execute(query)
-                results = cursor.fetchall()
-                conn.close()
-                for r in results:
-                    names += [{'label': r[1], 'value': r[0]}]
+    if keyword_str := request.GET.get('keyword','').strip():
+        if request.GET.get('from_tree'):
+            query = f"""SELECT at.taxon_id, CONCAT_WS (' ',tn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))
+                FROM taxon_names tn
+                JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
+                JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
+                WHERE tn.deleted_at IS NULL AND (tn.name like '%{keyword_str}%' OR 
+                    at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
+        else:
+            query = f"""SELECT at.taxon_id, CONCAT_WS (' ',tn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))
+                        FROM taxon_names tn
+                        JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
+                        WHERE tn.deleted_at IS NULL AND (tn.name like '%{keyword_str}%' OR 
+                            at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
+        conn = pymysql.connect(**db_settings)
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            results = cursor.fetchall()
+            conn.close()
+            for r in results:
+                names += [{'text': r[1], 'id': r[0]}]
     return HttpResponse(json.dumps(names), content_type='application/json') 
 
 
@@ -195,7 +194,8 @@ def get_conditioned_query(req, from_url=False):
 
     # 較高分類群
     # path_join = ''
-    if higher_taxon_id := req.get('taxon_group_id'):
+    print(req)
+    if higher_taxon_id := req.get('taxon_group'):
         # path_join = "LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id"
         condition +=  f' AND att.path like "%>{higher_taxon_id}%"'
 
@@ -455,16 +455,18 @@ def taxon(request, taxon_id):
                 elif data[i] == 1:
                     info_html_str += f'<div class="item">{is_map_c[i]}</div>'
             # 文獻
-            query = f"SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content)\
+            query = f"(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year\
                     FROM api_taxon_usages atu \
                     JOIN reference_usages ru ON atu.reference_usage_id = ru.id \
                     JOIN `references` r ON ru.reference_id = r.id \
                     JOIN api_citations c ON ru.reference_id = c.reference_id \
                     WHERE atu.taxon_id = '{taxon_id}' and r.id != 153 and ru.status != '' GROUP BY r.id \
                     UNION  \
-                    SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content) FROM taxon_names tn \
+                    SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year FROM taxon_names tn \
                     JOIN api_citations c ON tn.reference_id = c.reference_id     \
-                    WHERE tn.id IN (SELECT taxon_name_id FROM api_taxon_usages WHERE taxon_id = '{taxon_id}' ) "  
+                    JOIN `references` r ON c.reference_id = r.id \
+                    WHERE tn.id IN (SELECT taxon_name_id FROM api_taxon_usages WHERE taxon_id = '{taxon_id}' )) \
+                    ORDER BY publish_year DESC "  
                     # 不給TaiCOL backbone 還要給taxon_names底下的
             conn = pymysql.connect(**db_settings)
             with conn.cursor() as cursor:
@@ -674,7 +676,11 @@ def taxon(request, taxon_id):
             # 相關連結
             # ncbi如果超過一個就忽略
             if data['links']:
-                tmp_links = json.loads(data['links'])
+                xx = json.loads(data['links'])
+                tmp_links = []
+                for tl in xx:
+                    if tl not in tmp_links:
+                        tmp_links.append(tl)
                 ncbi_count = 0
                 for t in tmp_links:
                     if t["source"] == 'ncbi':

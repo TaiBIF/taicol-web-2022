@@ -3,79 +3,89 @@
 {% block head %}
 <script src="{% static 'js/jquery.nice-select.js' %}"></script>
 <link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}">
-<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}" />
-<script src="{% static 'js/jquery-ui.js' %}"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 
 {% endblock head %}
 {% block style %}
 <style>
-.f-bold {
-	font-weight: bold !important;
-}
 
-	@media only screen and (max-width: 767px) {
-		.ui-autocomplete {
-			max-width: 100%;
-		}
+
+	.select2-container--default .select2-search--dropdown .select2-search__field {
+		border: 0
 	}
-	
-	.ui-autocomplete {
-		max-height: 200px;
-		overflow-y: auto;
-		overflow-x: hidden;
-		width: 100%;
-		max-width: 460px;
-		position: absolute !important;
-		z-index: 9 !important;
-		display: block;
-		float: left !important;
-		padding: 0 !important;
-		margin-top: 4px;
-		list-style: none !important;
-		font-size: 16px !important;
-		text-align: left !important;
-		line-height: 40px !important;
-		background-color: #fff !important;
+
+	.select2-search__field {
+		font-size: 18px;
+		color: #555;
+	}
+
+	.select2-search--dropdown {
+		padding: 4px 15px 4px 15px;
+	}
+
+	.select2-dropdown  {
+		color: #555;
 		border-radius: 5px;
 		border: solid 1px #ddd;
-		-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175) !important;
-		background-clip: padding-box !important;
-	  }
-	  
-	  .ui-autocomplete > li > div {
-		display: block !important;
-		padding: 0 18px !important;
-		clear: both !important;
-		font-weight: normal !important;
-		line-height: 40px !important;
-		color: #555 !important;
-	  }
-	  
-	  .ui-state-hover,
-	  .ui-state-active,
-	  .ui-state-focus {
-		text-decoration: none !important;
-		color: #555 !important;
-		background-color: #f6f6f6 !important;
-		cursor: pointer !important;
-	  }
-	  
-	  .ui-helper-hidden-accessible {
-		border: 0 !important;
-		clip: rect(0 0 0 0) !important;
-		height: 1px !important;
-		margin: -1px !important;
-		overflow: hidden !important;
-		padding: 0 !important;
-		position: absolute !important;
-		width: 1px !important;
-	  }
-	  
+		font-size: 18px;
+		text-align: left;
+		line-height: 30px;
+		margin-top: 2px;
+	}
+
+	.select2-container--default .select2-results__option--highlighted[aria-selected] {
+		color: #555 ;
+		background-color: #f6f6f6 ;
+   }
+	.select2-container--default .select2-results__option {
+		padding-left: 15px;
+		color: #555 ;
+   }
+
+   
+	#select2-keyword-container {
+		margin: 0
+	}
+
+	
+	.select2-container--default .select2-selection--single {
+		border: 0;
+	}
+
+	.select2-container .select2-selection--single {
+		background: #FFF;
+		border-radius: 5px;
+		border: 1px solid #ddd;
+		padding: 0px 10px;
+		font-size: 16px;
+		height: 40px;
+		width: 460px;
+		max-width: 100%;
+	}
+
+	span.select2-selection.select2-selection--single {
+        outline: none;
+    }
+
+
+	.select2-selection__arrow b {
+		display:none !important;
+	}
+	.select2-container .select2-selection--single		{
+		display: flex;
+		align-items: center;
+	}
+
+
+	.f-bold {
+		font-weight: bold !important;
+	}
 
 	.result-area {
 		min-height: 300px
 	}
-
 
 	.nice-select.wide {
 		width: 100% !important;
@@ -249,9 +259,8 @@
 								<p>較高分類群</p>
 							</div>
 							<div class="input-item">
-								<input type="text" name="taxon_group" id="taxon_group">
-								<input type="hidden" name="taxon_group_id" id="taxon_group_id">
-							</div>			  
+								<select class="taxon_group" id="taxon_group"></select>
+							</div>
 						</div>
 						<div class="item-box">
 							<div class="left-title">
@@ -642,7 +651,7 @@
 {% block script %}
 <script>
 	// 要有其中之一存在才送出
-	let params = ['keyword','taxon_group_id','rank','is_endemic',
+	let params = ['keyword','taxon_group','rank','is_endemic',
 				  'alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine',
 				  'protected_category','red_category','iucn_category','cites','date']
 
@@ -718,7 +727,8 @@
 		$('select[name=date-select]').val('gl');
 		$('select[name=date-select]').niceSelect('update'); 
 		$('.alread-select').html('')
-		$('input[name=taxon_group_id]').val('')  
+		$('#taxon_group').val('');
+		$('#taxon_group').trigger('change');
 	}
 
 	function isValidDate(dateString) {
@@ -782,7 +792,8 @@
 			let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
 					'&name-select=' + $('select[name=name-select] option:selected').val() +
 					'&page=' + page + '&total_page=' + total_page + '&facet=' + $('input[name=hidden-facet]').val() + 
-					'&value=' + $('input[name=hidden-value]').val()
+					'&value=' + $('input[name=hidden-value]').val()  + "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
+					"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
 
 			if (!from_url){
 				var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
@@ -942,12 +953,18 @@
 			});
 
 			// val 系列
-			let vs = ['keyword','taxon_group_id','date','taxon_group']
+			let vs = ['keyword','date']
 			vs.forEach(function(v) {
 				if (urlParams.get(v)) {
 					$(`input[name=${v}]`).val(urlParams.get(v))
 				}
 			});
+
+			// taxon group
+			if (urlParams.get('taxon_group')){
+				$('#taxon_group').append(`<option value="${urlParams.get('taxon_group')}">${urlParams.get('taxon_group_str')}</option>`)
+				$('[name=taxon_group]').val(urlParams.get('taxon_group'));
+			}
 
 			// is 系列
 			let is = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine']
@@ -968,7 +985,8 @@
 
 		} else {
 			query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
-			'&name-select=' + $('select[name=name-select] option:selected').val() 
+			'&name-select=' + $('select[name=name-select] option:selected').val() + "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
+			"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
 			var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
 			history.pushState(null, '', newRelativePathQuery);
 		}
@@ -1218,6 +1236,61 @@
 	}
 
 	$(function(){
+		// 較高分類群 autocomplete
+		$("#taxon_group").select2({
+			language: {
+				"noResults": function(){
+					return "查無結果";
+				},		 
+				searching: function(params) {
+					if (params.term != undefined){
+						if (params.term.match(/[\u3400-\u9FBF]/)){
+							if (params.term.length >1){
+								return '查詢中...';
+							}
+						} else if (params.term.trim().length  > 2){
+							return '查詢中...';
+						} else {
+							throw false;  
+						}					
+					}
+				}
+			},		
+			ajax: {
+				dataType: 'json',
+				data: function (params) {
+					if (params.term.match(/[\u3400-\u9FBF]/)){
+						if (params.term.length >1){
+							return {
+								keyword: params.term,
+								from_tree: 'true'
+								};
+						}
+					} else if (params.term.trim().length  > 2){
+						return {
+							keyword: params.term,
+							from_tree: 'false'
+							};
+	
+					} else {
+						throw false;  
+					}
+				},			  
+				jsonpCallback: 'jsonCallback',
+				url: '{% url "get_autocomplete_taxon" %}',
+				processResults: function (data) {
+					return {
+						results: $.map(data, function (item) {
+							return {
+								text: item.text,
+								id: item.id,
+							}
+						})
+					};
+				}
+			}
+		});
+		
 
 		// 按 enter 直接查詢
 		window.enterPressed = false;
@@ -1238,38 +1311,6 @@
 		window.onpopstate = function(event) {
 			changeAction();
 		};
-
-		// 較高分類群 autocomplete
-		
-		var $taxon_group = $("#taxon_group").autocomplete({
-            source: 
-			function (request, response) {
-                $.ajax({
-                    method: 'POST',
-                    dataType: 'json',
-					data: {'keyword': $('input[name=taxon_group]').val(), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
-                    jsonpCallback: 'jsonCallback',
-                    url: '{% url "get_autocomplete_taxon" %}'
-                })
-                .done(function(data){
-                    response(data);
-                });
-            },
-			minLength: 0,
-			change: function(event,ui){
-			  // only allow deployments in the list
-			  $(this).val((ui.item ? ui.item.label : ""));
-			  $( "#taxon_group_id" ).val((ui.item ? ui.item.value : ""));
-			},      
-			select: function( event, ui ) {
-				$( "#taxon_group" ).val( ui.item.label );
-				$( "#taxon_group_id" ).val( ui.item.value );
-				return false;
-			}
-		  }).focus(function () {
-			$(this).autocomplete("search", "");
-		  });
-		
 
 		// 選項設定
 		$('select[name=rank-select]').niceSelect();

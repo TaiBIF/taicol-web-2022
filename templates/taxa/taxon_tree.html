@@ -2,14 +2,101 @@
 {% load static %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}" />
-<script src="{% static 'js/jquery-ui.js' %}"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 {% endblock head %}
 
 
 {% block style %}
 <style>
+
+	.cont-search-bar {
+		border-radius: 20px;
+	}
+
+	.select2-container--default .select2-search--dropdown .select2-search__field {
+		border: 0
+	}
+
+	.select2-search__field {
+		font-size: 18px;
+		color: #555;
+	}
+
+	.select2-search--dropdown {
+	padding: 4px 20px 4px 20px;
+	}
+
+	.select2-dropdown  {
+		color: #555;
+		border-radius: 5px;
+		border: solid 1px #ddd;
+		font-size: 18px;
+		text-align: left;
+		line-height: 30px;
+		margin-top: 2px;
+	}
+
+	.select2-container--default .select2-results__option--highlighted[aria-selected] {
+		color: #555 ;
+		background-color: #f6f6f6 ;
+   }
+	.select2-container--default .select2-results__option {
+		padding-left: 20px;
+		color: #555 ;
+   }
+
+   
+	#select2-keyword-container {
+		margin: 0
+	}
+
+	.select2-selection__placeholder {
+		color: #FF0000;
+		font-size: 18px	
+	}
+	
+	#keyword {
+		width: 100%
+	}
+
+	.select2-container .select2-selection--single		{
+		display: flex;
+		align-items: center;
+	}
+
+	.select2-container--default .select2-selection--single {
+		border: 0;
+	}
+
+	.select2-container .select2-selection--single {
+		height: 60px;
+		padding-left: 20px;
+		background: url("/static/image/search_icon.svg") center right 20px no-repeat;
+		background-size: 24px;
+
+	}
+
+	@media only screen and (max-width: 1279px) {
+		.select2-container .select2-selection--single {
+			height: 50px;
+			padding-left: 20px
+		}
+	}
+	
+	@media only screen and (max-width: 767px) {
+		.select2-container .select2-selection--single {
+			font-size: 16px
+		}
+	}
+	
+
+	.select2-selection__arrow b{
+		display:none !important;
+	}
+	
+
 span.anchor {
 	display: block;
 	position: relative;
@@ -17,70 +104,6 @@ span.anchor {
 	visibility: none;
 }
 
-
-	/* seach dropdown */
-	@media only screen and (max-width: 767px) {
-		.ui-autocomplete {
-			max-width: 100%;
-		}
-	}
-	
-	.ui-autocomplete {
-		max-height: 200px;
-		overflow-y: auto;
-		overflow-x: hidden;
-		max-width: 1240px;
-		width: 95%;
-		position: absolute !important;
-		z-index: 30 !important;
-		display: block;
-		float: left !important;
-		padding: 0 !important;
-		margin-top: 4px;
-		list-style: none !important;
-		font-size: 18px !important;
-		text-align: left !important;
-		line-height: 40px !important;
-		background-color: #fff !important;
-		border-radius: 5px;
-		border: solid 1px #ddd;
-		-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175) !important;
-		background-clip: padding-box !important;
-	  }
-	  
-	  .ui-autocomplete > li > div {
-		display: block !important;
-		padding: 0 18px !important;
-		clear: both !important;
-		font-weight: normal !important;
-		line-height: 40px !important;
-		color: #555 !important;
-	  }
-	  
-	  .ui-state-hover,
-	  .ui-state-active,
-	  .ui-state-focus {
-		text-decoration: none !important;
-		color: #555 !important;
-		background-color: #f6f6f6 !important;
-		cursor: pointer !important;
-	  }
-	  
-	  .ui-helper-hidden-accessible {
-		border: 0 !important;
-		clip: rect(0 0 0 0) !important;
-		height: 1px !important;
-		margin: -1px !important;
-		overflow: hidden !important;
-		padding: 0 !important;
-		position: absolute !important;
-		width: 1px !important;
-	  }
-
-
-	.item-box h2 {
-		z-index: 20
-	}
 
 	/* loading box 調整 */
 
@@ -301,8 +324,12 @@ span.anchor {
 				</div>
 				{% endif %}
 				<div class="cont-search-bar">
+					<select class="keyword" id="keyword" data-placeholder="請輸入關鍵字"></select>
+					<!--
 					<input type="text" name="keyword" id="keyword" placeholder="請輸入關鍵字">
-					<input type="hidden" name="keyword_taxon_id" id="keyword_taxon_id">
+					<input type="hidden" name="keyword_taxon_id" id="keyword_taxon_id">-->
+					
+					<!--
 					<button class="search">
 						<svg id="Group_6882" data-name="Group 6882" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="36.847" height="36.775" viewBox="0 0 36.847 36.775">
 							<defs>
@@ -315,6 +342,7 @@ span.anchor {
 							</g>
 						</svg>
 					</button>
+					-->
 				</div>
 			</div>
 		</div>
@@ -420,14 +448,77 @@ span.anchor {
 		}
 	}
 	
+	
 
 	$(function (){
-
 		// 關鍵字 autocomplete
-		
+		$("#keyword").select2({
+			language: {
+				"noResults": function(){
+					return "查無結果";
+				},		 
+				searching: function(params) {
+					if (params.term != undefined){
+						if (params.term.match(/[\u3400-\u9FBF]/)){
+							if (params.term.length >1){
+								return '查詢中...';
+							}
+						} else if (params.term.trim().length  > 2){
+							return '查詢中...';
+						} else {
+							throw false;  
+						}					
+					}
+				}
+			},		
+			ajax: {
+				dataType: 'json',
+				data: function (params) {
+					if (params.term.match(/[\u3400-\u9FBF]/)){
+						if (params.term.length >1){
+							return {
+								keyword: params.term,
+								from_tree: 'true'
+								};
+						}
+					} else if (params.term.trim().length  > 2){
+						return {
+							keyword: params.term,
+							from_tree: 'true'
+							};
+	
+					} else {
+						throw false;  
+					}
+				},			  
+				jsonpCallback: 'jsonCallback',
+				url: '{% url "get_autocomplete_taxon" %}',
+				processResults: function (data) {
+					return {
+						results: $.map(data, function (item) {
+							return {
+								text: item.text,
+								id: item.id,
+							}
+						})
+					};
+				}
+			}
+		});
+
+
+		$('#keyword').on('select2:select', function (e) {
+			var data = e.params.data;
+			searchClick(data.id)
+		  });
+		  
+
+		/*
 		var $keyword = $("#keyword").autocomplete({
             source: 
 			function (request, response) {
+				// 字數&中英文的判斷改放這裡
+				$('.loadingbox').removeClass('d-none');
                 $.ajax({
                     method: 'POST',
                     dataType: 'json',
@@ -437,6 +528,7 @@ span.anchor {
                 })
                 .done(function(data){
                     response(data);
+					$('.loadingbox').addClass('d-none');
                 });
             },
 			minLength: 0,
@@ -448,69 +540,88 @@ span.anchor {
 			select: function( event, ui ) {
 				$( "#keyword" ).val( ui.item.label );
 				$( "#keyword_taxon_id" ).val( ui.item.value );
+				if ($('input[name=keyword_taxon_id]').val()==''){
+					alert('請輸入關鍵字')
+				} else {
+					searchClick($('input[name=keyword_taxon_id]').val())
+				}	
 				return false;
-			}
+			},
+			focus: function (event, ui) {
+				$( "#keyword" ).val( ui.item.label );
+				$( "#keyword_taxon_id" ).val( ui.item.value );
+				// Prevent the default focus behavior.
+				event.preventDefault();
+				  // or return false;
+			}			
 		  }).focus(function () {
 			$(this).autocomplete("search", "");
-		  });
+		  });*/
 		
-		$('.search').click(function(){
+		/*$('.search').click(function(){
 			if ($('input[name=keyword_taxon_id]').val()==''){
 				alert('請輸入關鍵字')
 			} else {
 				searchClick($('input[name=keyword_taxon_id]').val())
 			}
-		})
+		})*/
 
 	});
 
 	function searchClick(keyword_taxon_id){
-						// 搜尋下方的樹
-				// 先查path 如果已經在樹上就不要再查詢
-				// 已經有存在 只需要打開
-				if ($(`div [data-taxon="${keyword_taxon_id}"`).length > 0) {
-					$(`div [data-taxon="${keyword_taxon_id}"`).parent().parent('ul').css('display','block');
-					document.location=`#${keyword_taxon_id}`
-				} else {
-					$('.loadingbox').removeClass('d-none');
-					$.ajax({
-						url: "{% url 'get_taxon_path' %}",
-						data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
-								'taxon_id': keyword_taxon_id},
-						type: 'POST',
-						dataType : 'json',
-					})
-					.done(function(results) {
-						fetch_taxon = []
-						for (r of results){
-							if ($(`div[data-taxon="${r}"]`).length==0 |  $(`div[data-taxon="${r}"]`).data('fetched')=="0"){
-								fetch_taxon.push(r)
-							}
-						}
-						if (fetch_taxon.length > 0){
-							fetchSubList(fetch_taxon, keyword_taxon_id)
-						} else {
-							$('.loadingbox').addClass('d-none');
-						}
-					})
-					.fail(function( xhr, status, errorThrown ) {
-						$('.loadingbox').addClass('d-none');
-						alert('發生未知錯誤！請聯絡管理員')
-						console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
-					}) 
-	
+		// 關閉所有的樹
+		$('.main-box .item-box').removeClass('now');
+		$('.main-box ul').not('.rank-1-red').css('display','none');
+		// 搜尋下方的樹
+		// 先查path 如果已經在樹上就不要再查詢
+		// 已經有存在 只需要打開
+		if ($(`div [data-taxon="${keyword_taxon_id}"`).length > 0) {
+			$(`div [data-taxon="${keyword_taxon_id}"`).parent().parents('ul').css('display','block');
+			if (!$(`div[data-taxon="${keyword_taxon_id}"]`).hasClass('now')){
+				$(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')}	
+			$(`div [data-taxon="${keyword_taxon_id}"`).nextAll('ul').css('display','block');
+			document.location=`#${keyword_taxon_id}`
+		} else {
+			$('.loadingbox').removeClass('d-none');
+			$.ajax({
+				url: "{% url 'get_taxon_path' %}",
+				data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
+						'taxon_id': keyword_taxon_id},
+				type: 'POST',
+				dataType : 'json',
+			})
+			.done(function(results) {
+				fetch_taxon = []
+				for (r of results){
+					if ($(`div[data-taxon="${r}"]`).length==0 |  $(`div[data-taxon="${r}"]`).data('fetched')=="0"){
+						fetch_taxon.push(r)
+					}
 				}
-				// 加入搜尋次數
-				$.ajax({
-					url: "{% url 'update_search_stat' %}",
-					data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
-							'taxon_id': keyword_taxon_id},
-					type: 'POST',
-					dataType : 'json',
-				})
-				.done(function(results) {
-					console.log('done')
-				})
+				//fetch_taxon.push(keyword_taxon_id)
+				if (fetch_taxon.length > 0){
+					fetchSubList(fetch_taxon, keyword_taxon_id)
+				} else {
+					$('.loadingbox').addClass('d-none');
+				}
+			})
+			.fail(function( xhr, status, errorThrown ) {
+				$('.loadingbox').addClass('d-none');
+				alert('發生未知錯誤！請聯絡管理員')
+				console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
+			}) 
+
+		}
+		// 加入搜尋次數
+		$.ajax({
+			url: "{% url 'update_search_stat' %}",
+			data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
+					'taxon_id': keyword_taxon_id},
+			type: 'POST',
+			dataType : 'json',
+		})
+		.done(function(results) {
+			console.log('done')
+		})
 	}
 
 
@@ -523,7 +634,6 @@ span.anchor {
 			dataType : 'json',
 		})
 		.done(function(results) {
-
 			$('.loadingbox').addClass('d-none');
 			for (var r = 0; r < results.length; r++) {
 				let html_str;
@@ -557,10 +667,10 @@ span.anchor {
 					$(item).after(html_str)
 				}
 			}
-			document.location=`#${keyword_taxon_id}`
 			if (!$(`div[data-taxon="${keyword_taxon_id}"]`).hasClass('now')){
 			$(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')}
 
+			document.location=`#${keyword_taxon_id}`
 			$('.loadingbox').addClass('d-none');
 		})
 		.fail(function( xhr, status, errorThrown ) {
