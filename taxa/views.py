@@ -687,7 +687,9 @@ def taxon(request, taxon_id):
                 if ncbi_count > 1:
                     use_ncbi = False
                 for t in tmp_links:
-                    if t["source"] == 'nc':
+                    if t["source"] in ["antwiki","mycobank","worms","powo","tropicos","lpsn","adw","fishbase_order","gisd"]:
+                        links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': data['name'], 'hidden_name': True}]
+                    elif t["source"] == 'nc':
                         links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('=')[1].split('&')[0]}]
                     elif t["source"] == 'amphibiansoftheworld':
                         links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('/')[-1]}]
@@ -696,7 +698,7 @@ def taxon(request, taxon_id):
                     elif t["source"] == 'ncbi' and use_ncbi:
                         links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix']}]
             for s in ['wikispecies','discoverlife','taibif','inat','irmng']:
-                links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'], 'suffix': data['name']}]
+                links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] , 'hidden_name': True}]
             # 全部都接 wikispecies,discoverlife,taibif,inat,irmng
             # 變更歷史
             query = f"""SELECT ath.type, ath.content, CONCAT_WS(' ' , ac.author, ac.content), ath.created_at
