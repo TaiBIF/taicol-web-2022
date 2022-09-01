@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from taxa.utils import *
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 import json
 from conf.settings import env
 import pymysql
@@ -18,6 +18,7 @@ import requests
 from django.db.models import F
 from django.utils import timezone
 from django.core.mail import send_mail
+import threading
 
 
 db_settings = {
@@ -1090,7 +1091,19 @@ def send_feedback(request):
     )
     email_body = f'您好\n  \n 網站有新的錯誤回報\n  \n 請至管理後台查看： {request.scheme}://{request.META["HTTP_HOST"]}/admin/taxa/feedback/'
 
-    send_mail('[TaiCOL]網站錯誤回報', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
-
+    trigger_send_mail(email_body)
 
     return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
+
+
+
+def trigger_send_mail(email_body):
+    task = threading.Thread(target=bk_send_mail, args=(email_body,))
+    # task.daemon = True
+    task.start()
+    return JsonResponse({"status": 'success'}, safe=False)
+
+
+def bk_send_mail(email_body):
+    # send_mail('[TaiCOL]網站錯誤回報', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
+    send_mail('[TaiCOL]網站錯誤回報', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])

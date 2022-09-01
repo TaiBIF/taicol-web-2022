@@ -856,7 +856,7 @@
 				checked = false;
 			}
 			if (checked){
-				$('.loadingbox').removeClass('d-none');
+				//$('.loadingbox').removeClass('d-none');
 				$.ajax({
 					url: "{% url 'send_feedback' %}",
 					data:  $('#errorForm').serialize() + '&csrfmiddlewaretoken=' + '{{ csrf_token }}',
@@ -864,10 +864,10 @@
 					dataType : 'json',
 				})
 				.done(function(results) {
-					$('.loadingbox').addClass('d-none');
-					alert('回報已送出，謝謝您！');
+					//$('.loadingbox').addClass('d-none');
 					$('.mistakepop').fadeOut("slow");
-		
+					alert('回報已送出，謝謝您！');
+
 				})
 				.fail(function( xhr, status, errorThrown ) {
 					$('.loadingbox').addClass('d-none');
