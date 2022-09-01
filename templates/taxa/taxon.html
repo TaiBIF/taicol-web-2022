@@ -713,7 +713,7 @@
 								{% if l.title == "自然攝影中心" or l.title == "Amphibian Species of the World" %}
 								<p>{{ l.title }}：{{ l.id }}</p>
 								{% elif l.hidden_name %}
-								<p>{{ l.title }}</p>
+								<p>{{ l.title }}：{{ data.f_name|safe }}</p>
 								{% else %}
 								<p>{{ l.title }}：{{ l.suffix }}</p>
 								{% endif %}

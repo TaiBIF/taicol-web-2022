@@ -396,7 +396,7 @@ def taxon(request, taxon_id):
     name_changes = []
     taxon_history = []
 
-    query = f"""SELECT tn.name, concat_WS(' ', an.formatted_name, an.name_author ) as sci_name, 
+    query = f"""SELECT tn.name, an.formatted_name as f_name, concat_WS(' ', an.formatted_name, an.name_author ) as sci_name, 
                 at.common_name_c, at.accepted_taxon_name_id as name_id, at.rank_id,
                 CONCAT(r.display ->> '$."zh-tw"', ' ', r.display ->> '$."en-us"') as rank_d,
                 atu.status, att.path, at.is_endemic, at.is_terrestrial, at.is_freshwater, at.is_brackish,
