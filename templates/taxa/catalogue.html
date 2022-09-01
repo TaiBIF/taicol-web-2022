@@ -1225,7 +1225,7 @@
 					$('select[name=mb-select-sub]').niceSelect();
 
 					// 從網址進入如果有facet
-					if((facet != '') & (value != '')){
+					if((facet != '') & (value != '') & (facet != null) & (value != null)){
 						changeFacet(facet, value, true, page, false)
 					}
 
