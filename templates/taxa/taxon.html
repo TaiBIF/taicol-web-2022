@@ -353,13 +353,13 @@
 						<h3>更新通知與否</h3>
 						<div class="radiobox">
 							<div class="flex">
-								<input type="radio" name="notify" checked>
+								<input type="radio" name="notify" value="yes" checked>
 								<p>是</p>
 							</div>
 						</div>
 						<div class="radiobox">
 							<div class="flex">
-								<input type="radio" name="notify">
+								<input type="radio" name="notify" value="no">
 								<p>否</p>
 							</div>
 						</div>
@@ -851,6 +851,7 @@
 					checked = false;
 				}
 			}
+			if ($('input[name=notify]'))
 			if (!ValidateEmail($(`.error-form input[name=${c}]`).val())){
 				checked = false;
 			}

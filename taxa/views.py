@@ -17,6 +17,7 @@ import time
 import requests
 from django.db.models import F
 from django.utils import timezone
+from django.core.mail import send_mail
 
 
 db_settings = {
@@ -1082,10 +1083,14 @@ def send_feedback(request):
         type = int(req.get('type',1)),
         title = req.get('title'),
         description = req.get('description'),
-        notify = True if req.get('notify') == 'on' else False,
+        notify = True if req.get('notify') == 'yes' else False,
         name = req.get('name'),
         email = req.get('email'),
         response = f"<p>{req.get('name')} 先生/小姐您好，</p><p>收到您{date_str}於TaiCOL的留言：</p><p>『{req.get('description')}』</p><p>回覆如下：</p>",
     )
+    email_body = f'您好\n  \n 網站有新的錯誤回報\n  \n 請至管理後台查看： {request.scheme}://{request.META["HTTP_HOST"]}/admin/taxa/feedback/'
+
+    send_mail('[TaiCOL]網站錯誤回報', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
+
 
     return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
