@@ -788,13 +788,17 @@
 			// 從facet或頁碼點選
 			// 只修改表格內容，不修改facet
 			$('.loadingbox').removeClass('d-none');
-
+			
 			let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
 					'&name-select=' + $('select[name=name-select] option:selected').val() +
 					'&page=' + page + '&total_page=' + total_page + '&facet=' + $('input[name=hidden-facet]').val() + 
-					'&value=' + $('input[name=hidden-value]').val()  + "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
+					'&value=' + $('input[name=hidden-value]').val()  
+					
+			if ( $('#taxon_group').select2('data').length > 0 ){
+				query_str = query_str
+					+ "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
 					"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
-
+			}
 			if (!from_url){
 				var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
 				history.pushState(null, '', newRelativePathQuery);
@@ -985,8 +989,11 @@
 
 		} else {
 			query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
-			'&name-select=' + $('select[name=name-select] option:selected').val() + "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
-			"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
+			'&name-select=' + $('select[name=name-select] option:selected').val() 
+			if ($('#taxon_group').select2('data').length > 0){
+				query_str = query_str + "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
+						"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
+			}
 			var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
 			history.pushState(null, '', newRelativePathQuery);
 		}
