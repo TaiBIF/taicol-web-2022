@@ -668,7 +668,10 @@ span.anchor {
 				}
 			}
 			if (!$(`div[data-taxon="${keyword_taxon_id}"]`).hasClass('now')){
-			$(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')}
+				$(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')
+			}
+			$(`div [data-taxon="${keyword_taxon_id}"`).parent().parents('ul').css('display','block');
+			$(`div [data-taxon="${keyword_taxon_id}"`).nextAll('ul').css('display','block');
 
 			document.location=`#${keyword_taxon_id}`
 			$('.loadingbox').addClass('d-none');
