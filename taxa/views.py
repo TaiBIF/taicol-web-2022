@@ -545,21 +545,23 @@ def taxon(request, taxon_id):
             # 需確認是不是原始組合名
             new_refs = []
             query = f"""SELECT atu.taxon_name_id, an.formatted_name, an.name_author, ac.short_author, atu.status,
-                        ru.status, JSON_EXTRACT(ru.properties, '$.is_in_taiwan'), tn.nomenclature_id, tn.publish_year, ru.per_usages,
-                        ru.reference_id, tn.reference_id
+                        ru.status, JSON_EXTRACT(ru.properties, '$.is_in_taiwan'), tn.nomenclature_id, 
+                        tn.publish_year, ru.per_usages,
+                        ru.reference_id, tn.reference_id, r.publish_year
                         FROM api_taxon_usages atu 
                         LEFT JOIN api_names an ON an.taxon_name_id = atu.taxon_name_id
                         LEFT JOIN reference_usages ru ON ru.id = atu.reference_usage_id
+                        JOIN `references` r ON r.id = ru.reference_id
                         LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
                         JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                        WHERE atu.taxon_id = '{taxon_id}'"""
+                        WHERE atu.taxon_id = '{taxon_id}' and ru.reference_id != 153"""
             conn = pymysql.connect(**db_settings)
             with conn.cursor() as cursor:
                 cursor.execute(query)
                 names = cursor.fetchall()
                 conn.close()
                 names = pd.DataFrame(names, columns=['taxon_name_id','sci_name','author','ref','taxon_status','ru_status',
-                                                     'is_taiwan','nomenclature_id','publish_year','per_usages','reference_id', 'o_reference_id'])
+                                                     'is_taiwan','nomenclature_id','publish_year','per_usages','reference_id', 'o_reference_id','r_publish_year'])
                 names = names.sort_values('publish_year', ascending=False)
                 names = names.replace({None:''})
                 names['per_usages'] = names['per_usages'].apply(json.loads)
@@ -573,14 +575,15 @@ def taxon(request, taxon_id):
                         if p.get('reference_id') not in new_refs and p.get('reference_id') not in names.reference_id:
                             new_refs.append(p.get('reference_id'))
                 if new_refs:
-                    query = f"""SELECT ac.reference_id, ac.short_author
+                    query = f"""SELECT ac.reference_id, ac.short_author, r.publish_year
                                 FROM api_citations ac 
+                                JOIN `references` r ON r.id = ac.reference_id
                                 WHERE ac.reference_id IN ({str(new_refs).replace('[','').replace(']','')})"""
                     conn = pymysql.connect(**db_settings)
                     with conn.cursor() as cursor:
                         cursor.execute(query)
                         usage_refs = cursor.fetchall()
-                        usage_refs = pd.DataFrame(usage_refs, columns=['reference_id','ref'])
+                        usage_refs = pd.DataFrame(usage_refs, columns=['reference_id','ref','publish_year'])
                         conn.close()
                 # names = names.append(usage_refs).reset_index(drop=True)
                 for n in names.taxon_name_id.unique():
@@ -591,61 +594,77 @@ def taxon(request, taxon_id):
                         if len(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref):
                             # ref_list = [r for r in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref if r ]
                             for r in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].index:
-                                if names.iloc[r].ref:
-                                    ref_list += [[names.iloc[r].ref, names.iloc[r].reference_id]]
+                                if names.loc[r].ref:
+                                    ref_list += [[names.loc[r].ref, names.loc[r].reference_id, names.loc[r].r_publish_year]]
                             # per_usages
                         for pu in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].per_usages:
                             for ppu in pu:
-                                current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
-                                if ppu.get('pro_parte'):
-                                    current_ref += ', pro parte'
-                                if current_ref not in ref_list:
-                                    ref_list.append([current_ref,ppu.get('reference_id')])
-                        ref_list = [f"<a href='https://nametool.taicol.tw/references/{r[1]}' target='_blank'>{r[0]}</a>" for r in ref_list]
+                                if not ppu.get('is_from_published_ref', False):
+                                    current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
+                                    current_year = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'publish_year'].values[0]
+                                    if ppu.get('pro_parte'):
+                                        current_ref += ', pro parte'
+                                    if current_ref not in ref_list:
+                                        ref_list.append([current_ref,ppu.get('reference_id')],current_year)
+                        ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year']).drop_duplicates().sort_values('year')
+                        ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                         ref_str = ('; ').join(ref_list)
                         if ref_str:
-                            name_changes += [f"{names[names.taxon_name_id==n]['sci_name'].values[0]}; {ref_str}"]
+                            name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]}; {ref_str}", names[names.taxon_name_id==n]['r_publish_year'].min()]]
                         else:
-                            name_changes += [names[names.taxon_name_id==n]['sci_name'].values[0]]
+                            name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0], names[names.taxon_name_id==n]['r_publish_year'].min()]]
                     # 如果是誤用名
                     elif len(names[(names.taxon_name_id==n)&(names.ru_status=='misapplied')]):
                         if len(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')&(names.is_taiwan==1)].ref):
                             # ref_list += [r for r in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')&(names.is_taiwan==1)].ref if r ]
                             for r in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')&(names.is_taiwan==1)].index:
-                                if names.iloc[r].ref:
-                                    ref_list += [[names.iloc[r].ref, names.iloc[r].reference_id]]
+                                if names.loc[r].ref:
+                                    ref_list += [[names.loc[r].ref, names.loc[r].reference_id, names.loc[r].publish_year]]
                         for pu in names[(names.taxon_name_id==n)&(names.ru_status=='misapplied')].per_usages:
                             for ppu in pu:
-                                current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
-                                if ppu.get('pro_parte'):
-                                    current_ref += ', pro parte'
-                                if current_ref not in ref_list:
-                                    ref_list.append([current_ref,ppu.get('reference_id')])
-                        ref_list = [f"<a href='https://nametool.taicol.tw/references/{r[1]}' target='_blank'>{r[0]}</a>" for r in ref_list]
+                                if not ppu.get('is_from_published_ref', False):
+                                    current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
+                                    current_year = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'publish_year'].values[0]
+                                    if ppu.get('pro_parte'):
+                                        current_ref += ', pro parte'
+                                    if current_ref not in ref_list:
+                                        ref_list.append([current_ref,ppu.get('reference_id'),current_year])
+                        ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year']).drop_duplicates().sort_values('year')
+                        min_year = ref_list.year.min()
+                        # 決定排序的publish_year
+                        ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                         ref_str = ('; ').join(ref_list)
                         if ref_str:
-                            name_changes += [f"{names[names.taxon_name_id==n]['sci_name'].values[0]} (誤用): {ref_str}"]
+                            name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]} (誤用): {ref_str}",min_year]]
                         else:
-                            name_changes += [names[names.taxon_name_id==n]['sci_name'].values[0] + ' (誤用)']
+                            name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0] + ' (誤用)', '']]
                     elif not len(names[(names.taxon_name_id==n)&(names.ru_status=='misapplied')]):
                         if len(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref):
                             # ref_list = [r for r in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref if r ]
                             for r in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].index:
-                                if names.iloc[r].ref:
-                                    ref_list += [[names.iloc[r].ref, names.iloc[r].reference_id]]
+                                if names.loc[r].ref:
+                                    ref_list += [[names.loc[r].ref, names.loc[r].reference_id, names.loc[r].r_publish_year]]
                         for pu in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].per_usages:
                             for ppu in pu:
-                                current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
-                                if ppu.get('pro_parte'):
-                                    current_ref += ', pro parte'
-                                if current_ref not in ref_list:
-                                    ref_list.append([current_ref,ppu.get('reference_id')])
-                        ref_list = [f"<a href='https://nametool.taicol.tw/references/{r[1]}' target='_blank'>{r[0]}</a>" for r in ref_list]
+                                if not ppu.get('is_from_published_ref', False):
+                                    current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
+                                    current_year = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'publish_year'].values[0]
+                                    if ppu.get('pro_parte'):
+                                        current_ref += ', pro parte'
+                                    if current_ref not in ref_list:
+                                        ref_list.append([current_ref,ppu.get('reference_id'),current_year])
+                        ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year']).drop_duplicates().sort_values('year')
+                        # 決定排序的publish_year
+                        ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
+                        # ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1])}' target='_blank'>{r[0]}</a>" for r in ref_list]
                         ref_str = ('; ').join(ref_list)
                         if ref_str:
-                            name_changes += [f"{names[names.taxon_name_id==n]['sci_name'].values[0]}: {ref_str}"]
+                            name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]}: {ref_str}",names[names.taxon_name_id==n]['publish_year'].min()]]
                         else:
-                            name_changes += [names[names.taxon_name_id==n]['sci_name'].values[0]]
+                            name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0], names[names.taxon_name_id==n]['publish_year'].min()]]
+            if name_changes:
+                name_changes = pd.DataFrame(name_changes, columns=['name_str','year']).sort_values('year')
+                name_changes = name_changes.name_str.to_list()
             # 文獻
             get_ref_list = new_refs + names.reference_id.to_list()
             if get_ref_list:
@@ -661,18 +680,19 @@ def taxon(request, taxon_id):
                         WHERE tn.id IN (SELECT taxon_name_id FROM api_taxon_usages WHERE taxon_id = '{taxon_id}' )) \
                         ORDER BY author ASC, publish_year DESC "  
             else:
-                query = f"(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year\
+                query = f"(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year, c.author\
                         FROM api_taxon_usages atu \
                         JOIN reference_usages ru ON atu.reference_usage_id = ru.id \
                         JOIN `references` r ON ru.reference_id = r.id \
                         JOIN api_citations c ON ru.reference_id = c.reference_id \
                         WHERE atu.taxon_id = '{taxon_id}' and r.id != 153 and ru.status != '' GROUP BY r.id \
                         UNION  \
-                        SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year FROM taxon_names tn \
+                        SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year, c.author \
+                        FROM taxon_names tn \
                         JOIN api_citations c ON tn.reference_id = c.reference_id     \
                         JOIN `references` r ON c.reference_id = r.id \
                         WHERE tn.id IN (SELECT taxon_name_id FROM api_taxon_usages WHERE taxon_id = '{taxon_id}' )) \
-                        ORDER BY publish_year DESC "  
+                        ORDER BY author ASC, publish_year DESC "  
             # 不給TaiCOL backbone 還要給taxon_names底下的
             conn = pymysql.connect(**db_settings)
             with conn.cursor() as cursor:
