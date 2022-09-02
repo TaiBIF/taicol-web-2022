@@ -34,7 +34,7 @@ with conn.cursor() as cursor:
 kingdom_map = {}
 conn = pymysql.connect(**db_settings)
 query = "SELECT tn.name, at.taxon_id, at.common_name_c FROM taxon_names tn\
-         JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id WHERE tn.rank_id = 3"
+         JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id WHERE tn.rank_id = 3 ORDER BY tn.name"
 with conn.cursor() as cursor:
     cursor.execute(query)
     kingdom = cursor.fetchall()
@@ -81,3 +81,18 @@ cites_map_c = { '1': '附錄 I 有滅種威脅須嚴格管制','2':'附錄 II �
 protected_map_c = {'I': '瀕臨絕種野生動物', 'II': '珍貴稀有野生動物', 'III': '其他應予保育之野生動物'}
 
 # 一）瀕臨絕種野生動物。 （二）珍貴稀有野生動物。 （三）其他應予保育之野生動物。
+
+taxon_history_map = {0: '有效名變更',
+    1: '新增同物異名',
+    2: '新增文獻',
+    4: '分類階層更新',
+    6: '刪除Taxon',
+    7: '新增中文名',
+    8: '新增屬性',
+    9: '移除屬性',
+    10: '修改屬性',
+    11: '新增保育資訊',
+    12: '移除保育資訊',
+    13: '修改保育資訊',
+    14: '新增屬性',
+    15: '移除屬性'}

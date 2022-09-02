@@ -3,75 +3,89 @@
 {% block head %}
 <script src="{% static 'js/jquery.nice-select.js' %}"></script>
 <link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}">
-<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}" />
-<script src="{% static 'js/jquery-ui.js' %}"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 
 {% endblock head %}
 {% block style %}
 <style>
-	@media only screen and (max-width: 767px) {
-		.ui-autocomplete {
-			max-width: 100%;
-		}
+
+
+	.select2-container--default .select2-search--dropdown .select2-search__field {
+		border: 0
 	}
-	
-	.ui-autocomplete {
-		max-height: 200px;
-		overflow-y: auto;
-		overflow-x: hidden;
-		width: 100%;
-		max-width: 460px;
-		position: absolute !important;
-		z-index: 9 !important;
-		display: block;
-		float: left !important;
-		padding: 0 !important;
-		margin-top: 4px;
-		list-style: none !important;
-		font-size: 16px !important;
-		text-align: left !important;
-		line-height: 40px !important;
-		background-color: #fff !important;
+
+	.select2-search__field {
+		font-size: 18px;
+		color: #555;
+	}
+
+	.select2-search--dropdown {
+		padding: 4px 15px 4px 15px;
+	}
+
+	.select2-dropdown  {
+		color: #555;
 		border-radius: 5px;
 		border: solid 1px #ddd;
-		-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175) !important;
-		background-clip: padding-box !important;
-	  }
-	  
-	  .ui-autocomplete > li > div {
-		display: block !important;
-		padding: 0 18px !important;
-		clear: both !important;
-		font-weight: normal !important;
-		line-height: 40px !important;
-		color: #555 !important;
-	  }
-	  
-	  .ui-state-hover,
-	  .ui-state-active,
-	  .ui-state-focus {
-		text-decoration: none !important;
-		color: #555 !important;
-		background-color: #f6f6f6 !important;
-		cursor: pointer !important;
-	  }
-	  
-	  .ui-helper-hidden-accessible {
-		border: 0 !important;
-		clip: rect(0 0 0 0) !important;
-		height: 1px !important;
-		margin: -1px !important;
-		overflow: hidden !important;
-		padding: 0 !important;
-		position: absolute !important;
-		width: 1px !important;
-	  }
-	  
+		font-size: 18px;
+		text-align: left;
+		line-height: 30px;
+		margin-top: 2px;
+	}
+
+	.select2-container--default .select2-results__option--highlighted[aria-selected] {
+		color: #555 ;
+		background-color: #f6f6f6 ;
+   }
+	.select2-container--default .select2-results__option {
+		padding-left: 15px;
+		color: #555 ;
+   }
+
+   
+	#select2-keyword-container {
+		margin: 0
+	}
+
+	
+	.select2-container--default .select2-selection--single {
+		border: 0;
+	}
+
+	.select2-container .select2-selection--single {
+		background: #FFF;
+		border-radius: 5px;
+		border: 1px solid #ddd;
+		padding: 0px 10px;
+		font-size: 16px;
+		height: 40px;
+		width: 460px;
+		max-width: 100%;
+	}
+
+	span.select2-selection.select2-selection--single {
+        outline: none;
+    }
+
+
+	.select2-selection__arrow b {
+		display:none !important;
+	}
+	.select2-container .select2-selection--single		{
+		display: flex;
+		align-items: center;
+	}
+
+
+	.f-bold {
+		font-weight: bold !important;
+	}
 
 	.result-area {
 		min-height: 300px
 	}
-
 
 	.nice-select.wide {
 		width: 100% !important;
@@ -92,6 +106,9 @@
 			margin-bottom: 10px !important;
 		}
 	}
+
+
+	.nice-select .list { max-height: 400px; overflow-y: scroll; }
 
 	.nice-select.select-box {
 		margin-right: 10px !important;
@@ -123,6 +140,7 @@
 	.nice-select.select-box .list, .nice-select.mb-select .list {
 		left: 0 !important;
 		right: 0 !important;
+		
 	}
 	  
 	.select-box span.current {
@@ -241,9 +259,8 @@
 								<p>較高分類群</p>
 							</div>
 							<div class="input-item">
-								<input type="text" name="taxon_group" id="taxon_group">
-								<input type="hidden" name="taxon_group_id" id="taxon_group_id">
-							</div>			  
+								<select class="taxon_group" id="taxon_group"></select>
+							</div>
 						</div>
 						<div class="item-box">
 							<div class="left-title">
@@ -253,9 +270,51 @@
 								<div class="input-item select-170">
 									<select class="wide" name="rank-select">
 										<option value="none"></option>
-										{% for key, value in ranks.items %}
-											<option value="{{ key }}">{{ value }}</option>
-										{% endfor %}
+										<option value="34">種</option>
+										<option value="35">亞種</option>
+										<option value="37">變種</option>
+										<option value="40">型</option>
+										<option value="38">亞變種</option>
+										<option value="36">雜交亞種</option>
+										<option value="39">雜交變種</option>
+										<option value="42">特別品型</option>
+										<option value="30">屬</option>
+										<option value="31">亞屬</option>
+										<option value="32">組|節</option>
+										<option value="33">亞組|亞節</option>
+										<option value="26">科</option>
+										<option value="27">亞科</option>
+										<option value="28">族</option>
+										<option value="29">亞族</option>
+										<option value="22">目</option>
+										<option value="23">亞目</option>
+										<option value="24">下目</option>
+										<option value="25">超科|總科</option>
+										<!--<option value="">系</option>-->
+										<!--<option value="">組</option>-->
+										<option value="18">綱</option>
+										<option value="19">亞綱</option>
+										<option value="20">下綱</option>
+										<option value="21">超目|總目</option>
+										<option value="12">門</option>
+										<option value="13">亞門</option>
+										<option value="14">下門</option>
+										<option value="15">微門</option>
+										<option value="16">小門</option>
+										<option value="17">超綱|總綱</option>
+										<option value="7">部|類</option>
+										<option value="8">亞部|亞類</option>
+										<option value="9">下部|下類</option>
+										<option value="10">小部|小類</option>
+										<option value="11">超門|總門</option>
+										<option value="3">界</option>
+										<option value="4">亞界</option>
+										<!--<option value="">支</option>-->
+										<option value="5">下界</option>
+										<option value="6">超部|總部</option>
+										<option value="1">域</option>
+										<option value="2">總界</option>
+										<!--<option value="">亞域</option>-->					
 									</select>
 								</div>							
 								<div class="alread-select">
@@ -505,7 +564,7 @@
 									<div class="icon">
 										<img src="{% static 'image/cald.svg' %}">
 									</div>
-									<input type="text" placeholder="1990-01-01" name="date">
+									<input type="date" placeholder="1990-01-01" name="date">
 								</div>
 							</div>
 						</div>
@@ -592,7 +651,7 @@
 {% block script %}
 <script>
 	// 要有其中之一存在才送出
-	let params = ['keyword','taxon_group_id','rank','is_endemic',
+	let params = ['keyword','taxon_group','rank','is_endemic',
 				  'alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine',
 				  'protected_category','red_category','iucn_category','cites','date']
 
@@ -661,10 +720,15 @@
 		$('select[name=name-select]').niceSelect('update'); 
 		$('select[name=rank-select]').val('');
 		$('select[name=rank-select]').niceSelect('update'); 
+		r_array = [1,3,7,12,18,22,26,30,34]
+		for( r of r_array){
+			$(`.list li[data-value=${r}]`).addClass('f-bold')
+		}
 		$('select[name=date-select]').val('gl');
 		$('select[name=date-select]').niceSelect('update'); 
 		$('.alread-select').html('')
-		$('input[name=taxon_group_id]').val('')  
+		$('#taxon_group').val('');
+		$('#taxon_group').trigger('change');
 	}
 
 	function isValidDate(dateString) {
@@ -687,47 +751,58 @@
 
 	function changeFacet(facet,value,from_url=false,page=1,from_mb_select=false){
 
-		console.log(facet,value,$('input[name=hidden-value]').val(),$('input[name=hidden-facet]').val())
+		// 如果是本來就active的facet則改為沒有facet
+		if ($(`button.facet-${facet}-${value}`).hasClass('now')){
+			// 改回沒有facet
+			$(".facet-btn").removeClass('now');
+			$('input[name=hidden-value]').val('');
+			$('input[name=hidden-facet]').val('');
+			getData(false);
+		} else {
+			$(".facet-btn").removeClass('now');
+			$(`button.facet-${facet}-${value}`).addClass('now');
+			$('input[name=hidden-value]').val(value);
+			$('input[name=hidden-facet]').val(facet);
 
-		$(".facet-btn").removeClass('now');
-		$(`button.facet-${facet}-${value}`).addClass('now');
-		$('input[name=hidden-value]').val(value);
-		$('input[name=hidden-facet]').val(facet);
-
-		// 手機選單但不要cause onchange
-		if (!from_mb_select){
-			$('select[name=mb-select]').val(facet);
-			$('select[name=mb-select]').niceSelect('update');
-			$('select[name=mb-select]').trigger('change')
-			$('select[name=mb-select-sub]').val($(`option.facet-${facet}-${value}`).text().trim());
-			$('select[name=mb-select-sub]').niceSelect('update');
+			// 手機選單但不要cause onchange
+			if (!from_mb_select){
+				$('select[name=mb-select]').val(facet);
+				$('select[name=mb-select]').niceSelect('update');
+				$('select[name=mb-select]').trigger('change')
+				$('select[name=mb-select-sub]').val($(`option.facet-${facet}-${value}`).text().trim());
+				$('select[name=mb-select-sub]').niceSelect('update');
+			}
+			updateData(page, from_url);
 		}
-
-		updateData(page, from_url);
+		
 	}
 
 	function updateData(page, from_url=false){
 
+	
 		let total_page = $('input[name=total_page]').val();
-		if ((!isValidDate($('input[name=date]').val()))&($('input[name=date]').val()!='')){
-			alert('日期格式錯誤，應為yyyy-mm-dd')
+		if (($('input[name=date]').val()!='')&(!isValidDate($('input[name=date]').val()))){
+			alert('日期格式錯誤')
 		} else {
 
 			// 從facet或頁碼點選
 			// 只修改表格內容，不修改facet
 			$('.loadingbox').removeClass('d-none');
-
-			let query_str = $('form').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
+			
+			let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
 					'&name-select=' + $('select[name=name-select] option:selected').val() +
 					'&page=' + page + '&total_page=' + total_page + '&facet=' + $('input[name=hidden-facet]').val() + 
-					'&value=' + $('input[name=hidden-value]').val()
-
+					'&value=' + $('input[name=hidden-value]').val()  
+					
+			if ( $('#taxon_group').select2('data').length > 0 ){
+				query_str = query_str
+					+ "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
+					"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
+			}
 			if (!from_url){
 				var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
 				history.pushState(null, '', newRelativePathQuery);
 			}
-
-			console.log(query_str)
 
 			$.ajax({
 				url: "{% url 'update_catalogue_table' %}",
@@ -737,6 +812,8 @@
 			})
 			.done(function(results) {
 				$('.loadingbox').addClass('d-none');
+				// 修改共幾筆
+				$('#total-count').html(results['total_count']);
 				// 清空頁碼
 				$('.page-num').remove()
 				$('.table-style1').html(`<tr>
@@ -839,6 +916,7 @@
 	}
 
 	function getData(from_url){
+
 		let query_str;
 		let facet = '';
 		let value = '';
@@ -879,12 +957,18 @@
 			});
 
 			// val 系列
-			let vs = ['keyword','taxon_group_id','date','taxon_group']
+			let vs = ['keyword','date']
 			vs.forEach(function(v) {
 				if (urlParams.get(v)) {
 					$(`input[name=${v}]`).val(urlParams.get(v))
 				}
 			});
+
+			// taxon group
+			if (urlParams.get('taxon_group')){
+				$('#taxon_group').append(`<option value="${urlParams.get('taxon_group')}">${urlParams.get('taxon_group_str')}</option>`)
+				$('[name=taxon_group]').val(urlParams.get('taxon_group'));
+			}
 
 			// is 系列
 			let is = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine']
@@ -904,8 +988,12 @@
 			});
 
 		} else {
-			query_str = $('form').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
+			query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
 			'&name-select=' + $('select[name=name-select] option:selected').val() 
+			if ($('#taxon_group').select2('data').length > 0){
+				query_str = query_str + "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
+						"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
+			}
 			var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
 			history.pushState(null, '', newRelativePathQuery);
 		}
@@ -916,17 +1004,18 @@
 		let has_search_parm = false;
 		for (const [key, value] of newUrlParams) {
 			if (params.includes(key)&newUrlParams.get(key)!=''){
-				console.log(key);
 				has_search_parm = true;
 				break
 			}
 		}
 
 		if (!has_search_parm) {
-			alert('請至少輸入一個搜尋項目')
+			alert('請至少輸入一個搜尋項目，若有輸入日期必須填入完整年月日');
+			window.enterPressed = false;
 
 		} else if ((!isValidDate($('input[name=date]').val()))&($('input[name=date]').val()!='')){
-			alert('日期格式錯誤，應為yyyy-mm-dd')
+			alert('日期格式錯誤');
+			window.enterPressed = false;
 		} else {
 
 			$('.loadingbox').removeClass('d-none');
@@ -942,6 +1031,7 @@
 				dataType : 'json',
 			})
 			.done(function(results) {
+				window.enterPressed = false;
 				// 清空頁碼 & facet
 				$('.page-num').remove()
 				$('.mb-cataselect').remove()
@@ -971,20 +1061,37 @@
 					</div>`)
 
 					$('select[name=mb-select]').on('change', function() {
-						console.log(this.value)
-						let opt_str = $(`.${this.value}-box`).html();
-						opt_str = opt_str.replaceAll('button','option')
-						$('select[name=mb-select-sub]').html('<option value=""></option>')
-						$('select[name=mb-select-sub]').append(opt_str)
-						$('select[name=mb-select-sub]').niceSelect('update');
+						if ($('select[name=mb-select] option:selected').text() != ''){
+							let opt_str = $(`.${this.value}-box`).html();
+							opt_str = opt_str.replaceAll('button','option')
+							$('select[name=mb-select-sub]').html('<option value=""></option>')
+							$('select[name=mb-select-sub]').append(opt_str)
+							$('select[name=mb-select-sub]').niceSelect('update');
+						} else {
+							// 如果選擇空的則清空 但目前的判斷可能在他們完全還沒有選擇的時候就清空
+							if ($(".facet-btn").hasClass('now')){
+								$(".facet-btn").removeClass('now');
+								$('input[name=hidden-value]').val('');
+								$('input[name=hidden-facet]').val('');
+								getData(false);
+							}
+						}
 					});
 
 					$('select[name=mb-select-sub]').on('change', function(){
-						// 確認沒有重複
+
 						if ($('select[name=mb-select-sub] option:selected').text() != ''){
 							// changeFacet
 							let f_str = $('select[name=mb-select-sub] option:selected').attr('class');
-							changeFacet(f_str.split(' ')[1].split('-')[1],f_str.split(' ')[1].split('-')[2],from_mb_select=true)
+							changeFacet(f_str.split(' ')[1].split('-')[1],f_str.split(' ')[1].split('-')[2],false,1,true)
+						} else {
+						// 如果選擇空的則清空
+							if ($(".facet-btn").hasClass('now')){
+								$(".facet-btn").removeClass('now');
+								$('input[name=hidden-value]').val('');
+								$('input[name=hidden-facet]').val('');
+								getData(false);
+							}
 						}
 					})
 			
@@ -1097,13 +1204,11 @@
 						`)
 					}
 
-
 					if (results.page.current_page==1){
 						$('.back').attr("onclick","");
 					} else if (results.page.current_page==results.page.total_page){
 						$('.next').attr("onclick","");
 					}
-						
 						
 					let html = ''
 					for (let i = 0; i < results.page.page_list.length; i++) {
@@ -1120,8 +1225,8 @@
 					$('select[name=mb-select-sub]').niceSelect();
 
 					// 從網址進入如果有facet
-					if((facet != '') & (value != '')){
-						changeFacet(facet, value, from_url=true, page=page)
+					if((facet != '') & (value != '') & (facet != null) & (value != null)){
+						changeFacet(facet, value, true, page, false)
 					}
 
 				} else {
@@ -1131,12 +1236,81 @@
 			.fail(function( xhr, status, errorThrown ) {
 			$('.loadingbox').addClass('d-none');
 			alert('發生未知錯誤！請聯絡管理員')
+			window.enterPressed = false;
 			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
 			}) 
 		}
 	}
 
 	$(function(){
+		// 較高分類群 autocomplete
+		$("#taxon_group").select2({
+			language: {
+				"noResults": function(){
+					return "查無結果";
+				},		 
+				searching: function(params) {
+					if (params.term != undefined){
+						if (params.term.match(/[\u3400-\u9FBF]/)){
+							if (params.term.length >1){
+								return '查詢中...';
+							}
+						} else if (params.term.trim().length  > 2){
+							return '查詢中...';
+						} else {
+							throw false;  
+						}					
+					}
+				}
+			},		
+			ajax: {
+				dataType: 'json',
+				data: function (params) {
+					if (params.term.match(/[\u3400-\u9FBF]/)){
+						if (params.term.length >1){
+							return {
+								keyword: params.term,
+								from_tree: 'true'
+								};
+						}
+					} else if (params.term.trim().length  > 2){
+						return {
+							keyword: params.term,
+							from_tree: 'false'
+							};
+	
+					} else {
+						throw false;  
+					}
+				},			  
+				jsonpCallback: 'jsonCallback',
+				url: '{% url "get_autocomplete_taxon" %}',
+				processResults: function (data) {
+					return {
+						results: $.map(data, function (item) {
+							return {
+								text: item.text,
+								id: item.id,
+							}
+						})
+					};
+				}
+			}
+		});
+		
+
+		// 按 enter 直接查詢
+		window.enterPressed = false;
+
+		 $(document).on('keypress', function(e) {
+			if (e.which === 13 && !window.enterPressed)
+			{
+				window.enterPressed = true;
+				getData();
+			}
+		});
+		
+
 		// 如果直接從帶有參數網址列進入
 		changeAction(); 
 
@@ -1145,40 +1319,13 @@
 			changeAction();
 		};
 
-		// 較高分類群 autocomplete
-		
-		var $taxon_group = $("#taxon_group").autocomplete({
-            source: 
-			function (request, response) {
-                $.ajax({
-                    method: 'POST',
-                    dataType: 'json',
-					data: {'keyword': $('input[name=taxon_group]').val(), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
-                    jsonpCallback: 'jsonCallback',
-                    url: '{% url "get_autocomplete_taxon" %}'
-                })
-                .done(function(data){
-                    response(data);
-                });
-            },
-			minLength: 0,
-			change: function(event,ui){
-			  // only allow deployments in the list
-			  $(this).val((ui.item ? ui.item.label : ""));
-			  $( "#taxon_group_id" ).val((ui.item ? ui.item.value : ""));
-			},      
-			select: function( event, ui ) {
-				$( "#taxon_group" ).val( ui.item.label );
-				$( "#taxon_group_id" ).val( ui.item.value );
-				return false;
-			}
-		  }).focus(function () {
-			$(this).autocomplete("search", "");
-		  });
-		
-
 		// 選項設定
 		$('select[name=rank-select]').niceSelect();
+		// bold
+		r_array = [1,3,7,12,18,22,26,30,34]
+		for( r of r_array){
+			$(`.list li[data-value=${r}]`).addClass('f-bold')
+		}
 		$('select[name=name-select]').niceSelect();
 		$('select[name=date-select]').niceSelect();
 
