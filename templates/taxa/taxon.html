@@ -10,6 +10,23 @@
 {% block style %}
 <style>
 
+	.species-de-content .right-de-box .book-list li:nth-child(1) a {
+		padding-top: 5px
+	}
+	
+	.species-de-content .right-de-box .book-list li:nth-child(even) a {
+		color: #4C8DA7
+	}
+
+	.species-de-content .right-de-box .book-list li:nth-child(even) a:hover {
+		color: #5caccc
+	}
+	
+	.species-de-content .right-de-box .book-list li:last-child  a{
+		border-bottom: 0
+	}
+	
+
 	.pic-area {
 		width: 100%;
 		background: #FFF;
@@ -653,7 +670,7 @@
 						<div class="w-content">
 							<ul class="book-list">
 								{% for r in refs %}
-									<li>{{ r|safe }}</li>
+									<li><a href="https://nametool.taicol.tw/references/{{ r.0 }}" target="_blank">{{ r.1|safe }}</a></li>
 								{% endfor %}
 							</ul>
 						</div>
@@ -713,7 +730,7 @@
 								{% if l.title == "自然攝影中心" or l.title == "Amphibian Species of the World" %}
 								<p>{{ l.title }}：{{ l.id }}</p>
 								{% elif l.hidden_name %}
-								<p>{{ l.title }}：{{ data.f_name|safe }}</p>
+								<p>{{ l.title }}</p>
 								{% else %}
 								<p>{{ l.title }}：{{ l.suffix }}</p>
 								{% endif %}

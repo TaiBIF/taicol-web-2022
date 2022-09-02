@@ -39,15 +39,8 @@ def download_search_results(request):
     latest_f = max(files, key=os.path.getctime)
     df = pd.read_csv(latest_f)
     # subset by taxon_id
-    condition, path_join, conserv_join = get_conditioned_query(req, from_url=True) # 不考慮facet選項
-    # 先計算一次
-    query = f"""SELECT distinct(at.taxon_id)
-                        FROM taxon_names tn 
-                        JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
-                        JOIN api_taxon at ON atu.taxon_id = at.taxon_id
-                        {conserv_join}
-                        {path_join}
-                        WHERE {condition}"""
+    base = get_conditioned_query(req, from_url=True) # 不考慮facet選項
+    query = f"""SELECT distinct(at.taxon_id) {base}"""
     conn = pymysql.connect(**db_settings)
     tids = []
     with conn.cursor() as cursor:
@@ -454,27 +447,7 @@ def taxon(request, taxon_id):
                     info_html_str += f'<div class="item">{alien_map_c[a_type]}</div>'
                 elif data[i] == 1:
                     info_html_str += f'<div class="item">{is_map_c[i]}</div>'
-            # 文獻
-            query = f"(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year\
-                    FROM api_taxon_usages atu \
-                    JOIN reference_usages ru ON atu.reference_usage_id = ru.id \
-                    JOIN `references` r ON ru.reference_id = r.id \
-                    JOIN api_citations c ON ru.reference_id = c.reference_id \
-                    WHERE atu.taxon_id = '{taxon_id}' and r.id != 153 and ru.status != '' GROUP BY r.id \
-                    UNION  \
-                    SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year FROM taxon_names tn \
-                    JOIN api_citations c ON tn.reference_id = c.reference_id     \
-                    JOIN `references` r ON c.reference_id = r.id \
-                    WHERE tn.id IN (SELECT taxon_name_id FROM api_taxon_usages WHERE taxon_id = '{taxon_id}' )) \
-                    ORDER BY publish_year DESC "  
-                    # 不給TaiCOL backbone 還要給taxon_names底下的
-            conn = pymysql.connect(**db_settings)
-            with conn.cursor() as cursor:
-                cursor.execute(query)
-                refs_r = cursor.fetchall()
-                refs = [r[1] for r in refs_r if r[1] not in refs]
-                conn.close()
-            
+
             # 保育資訊
             if c_cites := data['cites_listing']:
                 c_list = c_cites.split('/')
@@ -567,9 +540,10 @@ def taxon(request, taxon_id):
                                 """
             else:
                 experts = Expert.objects.filter(taxon_id=taxon_id)
-            
+
             # 學名變遷
             # 需確認是不是原始組合名
+            new_refs = []
             query = f"""SELECT atu.taxon_name_id, an.formatted_name, an.name_author, ac.short_author, atu.status,
                         ru.status, JSON_EXTRACT(ru.properties, '$.is_in_taiwan'), tn.nomenclature_id, tn.publish_year, ru.per_usages,
                         ru.reference_id, tn.reference_id
@@ -594,7 +568,6 @@ def taxon(request, taxon_id):
                 names['author'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/references/{x.o_reference_id}", target="_blank">{x.author}</a>' if x.o_reference_id else x.author, axis=1)
                 names['sci_name'] = names.apply(lambda x: f'{x.sci_name} {x.author}' if x.author else x.sci_name, axis=1)
                 # 如果per_usages中有其他ref則補上
-                new_refs = []
                 for pp in names['per_usages']:
                     for p in pp:
                         if p.get('reference_id') not in new_refs and p.get('reference_id') not in names.reference_id:
@@ -673,6 +646,41 @@ def taxon(request, taxon_id):
                             name_changes += [f"{names[names.taxon_name_id==n]['sci_name'].values[0]}: {ref_str}"]
                         else:
                             name_changes += [names[names.taxon_name_id==n]['sci_name'].values[0]]
+            # 文獻
+            get_ref_list = new_refs + names.reference_id.to_list()
+            if get_ref_list:
+                query = f"(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year, c.author\
+                        FROM api_citations c \
+                        JOIN `references` r ON c.reference_id = r.id \
+                        WHERE c.reference_id IN ({str(get_ref_list).replace('[','').replace(']','')}) GROUP BY r.id \
+                        UNION  \
+                        SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year, c.author \
+                        FROM taxon_names tn \
+                        JOIN api_citations c ON tn.reference_id = c.reference_id     \
+                        JOIN `references` r ON c.reference_id = r.id \
+                        WHERE tn.id IN (SELECT taxon_name_id FROM api_taxon_usages WHERE taxon_id = '{taxon_id}' )) \
+                        ORDER BY author ASC, publish_year DESC "  
+            else:
+                query = f"(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year\
+                        FROM api_taxon_usages atu \
+                        JOIN reference_usages ru ON atu.reference_usage_id = ru.id \
+                        JOIN `references` r ON ru.reference_id = r.id \
+                        JOIN api_citations c ON ru.reference_id = c.reference_id \
+                        WHERE atu.taxon_id = '{taxon_id}' and r.id != 153 and ru.status != '' GROUP BY r.id \
+                        UNION  \
+                        SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year FROM taxon_names tn \
+                        JOIN api_citations c ON tn.reference_id = c.reference_id     \
+                        JOIN `references` r ON c.reference_id = r.id \
+                        WHERE tn.id IN (SELECT taxon_name_id FROM api_taxon_usages WHERE taxon_id = '{taxon_id}' )) \
+                        ORDER BY publish_year DESC "  
+            # 不給TaiCOL backbone 還要給taxon_names底下的
+            conn = pymysql.connect(**db_settings)
+            with conn.cursor() as cursor:
+                cursor.execute(query)
+                refs_r = cursor.fetchall()
+                refs = [[r[0],r[1]] for r in refs_r if [r[0],r[1]] not in refs]
+                conn.close()
+            
             # 相關連結
             # ncbi如果超過一個就忽略
             if data['links']:
@@ -700,7 +708,7 @@ def taxon(request, taxon_id):
                     elif t["source"] == 'ncbi' and use_ncbi:
                         links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix']}]
             for s in ['wikispecies','discoverlife','taibif','inat','irmng']:
-                links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] , 'hidden_name': True}]
+                links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'], 'hidden_name': True}]
             # 全部都接 wikispecies,discoverlife,taibif,inat,irmng
             # 變更歷史
             query = f"""SELECT ath.type, ath.content, CONCAT_WS(' ' , ac.author, ac.content), ath.created_at
