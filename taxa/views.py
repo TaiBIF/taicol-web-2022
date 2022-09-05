@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from taxa.utils import *
 from django.http import HttpResponse,JsonResponse
 import json
@@ -20,6 +20,7 @@ from django.utils import timezone
 from django.core.mail import send_mail
 import threading
 
+from django.contrib import messages
 
 db_settings = {
     "host": env('DB_HOST'),

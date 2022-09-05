@@ -1,0 +1,10 @@
+{% extends "admin/change_form.html" %}
+
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+     
+    <div class="submit-row">
+      <input type="submit" value="儲存並寄送回覆信件" name="_button_x">
+    </div>
+{% endblock %}
+
