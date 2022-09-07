@@ -612,9 +612,9 @@ def taxon(request, taxon_id):
                             ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                             ref_str = ('; ').join(ref_list)
                             if ref_str:
-                                name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]}; {ref_str}", names[names.taxon_name_id==n]['r_publish_year'].min()]]
+                                name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]}; {ref_str}", names[names.taxon_name_id==n]['publish_year'].min()]]
                             else:
-                                name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0], names[names.taxon_name_id==n]['r_publish_year'].min()]]
+                                name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0], names[names.taxon_name_id==n]['publish_year'].min()]]
                         # 如果是誤用名
                         elif len(names[(names.taxon_name_id==n)&(names.ru_status=='misapplied')]):
                             if len(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')&(names.is_taiwan==1)].ref):
@@ -640,6 +640,7 @@ def taxon(request, taxon_id):
                                 name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]} (誤用): {ref_str}",min_year]]
                             else:
                                 name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0] + ' (誤用)', '']]
+                        # 不是誤用名
                         elif not len(names[(names.taxon_name_id==n)&(names.ru_status=='misapplied')]):
                             if len(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref):
                                 # ref_list = [r for r in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref if r ]
