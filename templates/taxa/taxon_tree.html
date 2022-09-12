@@ -10,6 +10,84 @@
 
 {% block style %}
 <style>
+	.item-box .checkmark {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 20px;
+		width: 20px;
+		background-color: #FFF;
+		border-radius: 3px;
+		border: 1px solid #ddd
+	}
+	
+	.item-box .check-item:hover input~.checkmark {
+		border: 1px solid #4C8DA7
+	}
+	
+	.item-box .check-item input:checked~.checkmark {
+		background-color: #4C8DA7
+	}
+	
+	.item-box .checkmark:after {
+		content: "";
+		position: absolute;
+		display: none
+	}
+	
+	.item-box .check-item input:checked~.checkmark:after {
+		display: block
+	}
+	
+	.item-box .check-item .checkmark:after {
+		left: 6px;
+		top: 1px;
+		width: 5px;
+		height: 10px;
+		border: solid white;
+		border-width: 0 2px 2px 0;
+		-webkit-transform: rotate(45deg);
+		-ms-transform: rotate(45deg);
+		transform: rotate(45deg)
+	}
+	
+	.item-box.check-set {
+		margin-bottom: 0
+	}
+	
+	@media only screen and (max-width: 767px) {
+		.item-box.check-set {
+			margin-bottom: 5px
+		}
+	}
+
+	.item-box.check-set .right-check {
+		margin-top: 5px
+	}
+	
+	.item-box .right-check {
+		display: flex;
+		margin-top: 10px;
+		flex-wrap: wrap
+	}
+	
+	.item-box .check-item {
+		display: block;
+		position: relative;
+		padding-left: 30px;
+		cursor: pointer;
+		font-size: 16px;
+		line-height: 20px;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		margin-right: 20px;
+		color: #555;
+		margin-top: 15px;
+		margin-left: 20px
+	}
+	
 
 	.cont-search-bar {
 		border-radius: 20px;
@@ -344,6 +422,14 @@ span.anchor {
 					</button>
 					-->
 				</div>
+				<div class="item-box check-set">
+					<div class="right-check">
+						<label class="check-item">栽培豢養
+							<input type="checkbox" name="cultured" style="display:none" checked>
+							<span class="checkmark"></span>
+						</label>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="tree-area">
@@ -386,13 +472,20 @@ span.anchor {
 	}
 
 	function getSubList(item){
+		let cultured = 'off';
+		if ($('input[name="cultured"]').is(':checked')){
+			cultured = 'on';
+		}
+		//$('.main-box .item-box').removeClass('now');
 		if ($(item).data('fetched')=="0"){
 			$('.loadingbox').removeClass('d-none');
 			$.ajax({
 				url: "{% url 'get_sub_tree' %}",
 				data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
 						'taxon_id': $(item).data('taxon'),
-						'rank_id': $(item).data('rank')},
+						'rank_id': $(item).data('rank'),
+						'cultured': cultured
+						},
 				type: 'POST',
 				dataType : 'json',
 			})
@@ -439,7 +532,7 @@ span.anchor {
 			
 		}
 
-		if ($( item ).next('ul').css('display') =='block' ) {
+		if (($( item ).next('ul').css('display') =='block')|( ($( item ).next('ul').length ==0)&($( item ).hasClass('now'))) ) {
 			$( item ).removeClass('now')
 			$( item ).nextAll('ul').css('display','none')
 		} else {
@@ -451,6 +544,81 @@ span.anchor {
 	
 
 	$(function (){
+
+		// 栽培豢養
+		$('input[name="cultured"]').change(function() {
+			let current_taxon_id;
+			if ($('.main-box .item-box.now').length >0){
+				current_taxon_id = $('.main-box .item-box.now').data('taxon')
+			} else {
+				// 清空autocomplete
+				$( "#keyword" ).val('').trigger('change');
+
+			}
+			if(this.checked) {
+				$('.tree-area .main-box').html(`
+				<ul class="rank-1-red" style="display: block;">
+					{% for k in kingdom_dict %}
+					<li>
+						<span class="anchor" id="{{ k.taxon_id }}" ></span>
+						<div class="item-box" data-fetched="0" data-taxon="{{ k.taxon_id }}" data-rank="3" onclick="getSubList(this)">
+							<div class="cir-box">
+								界
+							</div>
+							<h2 onclick="redirectTaxonPage(event, '{{ k.taxon_id }}')">{{ k.name|safe }}</h2>
+							<p>{{ k.stat }}</p>
+							<div class="arr">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+									</g>
+								</svg>
+							</div>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>`)
+				// 後續
+				if (current_taxon_id){
+					searchClick(current_taxon_id)
+				}
+				
+			} else {
+				$('.tree-area .main-box').html(`
+				<ul class="rank-1-red" style="display: block;">
+					{% for k in kingdom_dict_c %}
+					<li>
+						<span class="anchor" id="{{ k.taxon_id }}" ></span>
+						<div class="item-box" data-fetched="0" data-taxon="{{ k.taxon_id }}" data-rank="3" onclick="getSubList(this)">
+							<div class="cir-box">
+								界
+							</div>
+							<h2 onclick="redirectTaxonPage(event, '{{ k.taxon_id }}')">{{ k.name|safe }}</h2>
+							<p>{{ k.stat }}</p>
+							<div class="arr">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+									</g>
+								</svg>
+							</div>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>`)
+				// 後續
+
+				if (current_taxon_id){
+					searchClick(current_taxon_id)
+				} 
+
+			
+			}
+		});
+		
+
 		// 關鍵字 autocomplete
 		$("#keyword").select2({
 			language: {
@@ -474,17 +642,24 @@ span.anchor {
 			ajax: {
 				dataType: 'json',
 				data: function (params) {
+					let cultured = 'off';
+					if ($('input[name="cultured"]').is(':checked')){
+						cultured = 'on';
+					}
+		
 					if (params.term.match(/[\u3400-\u9FBF]/)){
 						if (params.term.length >1){
 							return {
 								keyword: params.term,
-								from_tree: 'true'
+								from_tree: 'true',
+								cultured: cultured
 								};
 						}
 					} else if (params.term.trim().length  > 2){
 						return {
 							keyword: params.term,
-							from_tree: 'true'
+							from_tree: 'true',
+							cultured: cultured
 							};
 	
 					} else {
@@ -511,64 +686,14 @@ span.anchor {
 			var data = e.params.data;
 			searchClick(data.id)
 		  });
-		  
-
-		/*
-		var $keyword = $("#keyword").autocomplete({
-            source: 
-			function (request, response) {
-				// 字數&中英文的判斷改放這裡
-				$('.loadingbox').removeClass('d-none');
-                $.ajax({
-                    method: 'POST',
-                    dataType: 'json',
-					data: {'keyword': $('input[name=keyword]').val(), 'csrfmiddlewaretoken': '{{ csrf_token }}', 'from_tree': 'true'},
-                    jsonpCallback: 'jsonCallback',
-                    url: '{% url "get_autocomplete_taxon" %}'
-                })
-                .done(function(data){
-                    response(data);
-					$('.loadingbox').addClass('d-none');
-                });
-            },
-			minLength: 0,
-			change: function(event,ui){
-			  // only allow deployments in the list
-			  $(this).val((ui.item ? ui.item.label : ""));
-			  $( "#keyword_taxon_id" ).val((ui.item ? ui.item.value : ""));
-			},      
-			select: function( event, ui ) {
-				$( "#keyword" ).val( ui.item.label );
-				$( "#keyword_taxon_id" ).val( ui.item.value );
-				if ($('input[name=keyword_taxon_id]').val()==''){
-					alert('請輸入關鍵字')
-				} else {
-					searchClick($('input[name=keyword_taxon_id]').val())
-				}	
-				return false;
-			},
-			focus: function (event, ui) {
-				$( "#keyword" ).val( ui.item.label );
-				$( "#keyword_taxon_id" ).val( ui.item.value );
-				// Prevent the default focus behavior.
-				event.preventDefault();
-				  // or return false;
-			}			
-		  }).focus(function () {
-			$(this).autocomplete("search", "");
-		  });*/
-		
-		/*$('.search').click(function(){
-			if ($('input[name=keyword_taxon_id]').val()==''){
-				alert('請輸入關鍵字')
-			} else {
-				searchClick($('input[name=keyword_taxon_id]').val())
-			}
-		})*/
 
 	});
 
 	function searchClick(keyword_taxon_id){
+		let cultured = 'off';
+		if ($('input[name="cultured"]').is(':checked')){
+			cultured = 'on';
+		}
 		// 關閉所有的樹
 		$('.main-box .item-box').removeClass('now');
 		$('.main-box ul').not('.rank-1-red').css('display','none');
@@ -586,7 +711,8 @@ span.anchor {
 			$.ajax({
 				url: "{% url 'get_taxon_path' %}",
 				data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
-						'taxon_id': keyword_taxon_id},
+						'taxon_id': keyword_taxon_id,
+						'cultured': cultured},
 				type: 'POST',
 				dataType : 'json',
 			})
@@ -612,6 +738,7 @@ span.anchor {
 
 		}
 		// 加入搜尋次數
+		// TODO 如果是從
 		$.ajax({
 			url: "{% url 'update_search_stat' %}",
 			data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
@@ -626,10 +753,15 @@ span.anchor {
 
 
 	function fetchSubList(fetch_taxon, keyword_taxon_id){
+		let cultured = 'off';
+		if ($('input[name="cultured"]').is(':checked')){
+			cultured = 'on';
+		}
 		$.ajax({
 			url: "{% url 'get_sub_tree_list' %}",
 			data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
-					'taxon_id': fetch_taxon},
+					'taxon_id': fetch_taxon,
+					'cultured': cultured},
 			type: 'POST',
 			dataType : 'json',
 		})
@@ -670,6 +802,7 @@ span.anchor {
 			if (!$(`div[data-taxon="${keyword_taxon_id}"]`).hasClass('now')){
 				$(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')
 			}
+			$(`div[data-taxon="${keyword_taxon_id}"]`).data('fetched','1');
 			$(`div [data-taxon="${keyword_taxon_id}"`).parent().parents('ul').css('display','block');
 			$(`div [data-taxon="${keyword_taxon_id}"`).nextAll('ul').css('display','block');
 
