@@ -64,20 +64,24 @@ def download_search_results(request):
 
 
 def get_autocomplete_taxon(request):
+
     names = []
     if keyword_str := request.GET.get('keyword','').strip():
+        cultured_condition = ''
+        if request.GET.get('cultured') != 'on':
+            cultured_condition = ' AND (at.alien_type != "cultured" or at.alien_type is null)'
         if request.GET.get('from_tree'):
             query = f"""SELECT at.taxon_id, CONCAT_WS (' ',tn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))
                 FROM taxon_names tn
                 JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
                 JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
-                WHERE tn.deleted_at IS NULL AND (tn.name like '%{keyword_str}%' OR 
+                WHERE tn.deleted_at IS NULL {cultured_condition} AND (tn.name like '%{keyword_str}%' OR 
                     at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
         else:
             query = f"""SELECT at.taxon_id, CONCAT_WS (' ',tn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))
                         FROM taxon_names tn
                         JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
-                        WHERE tn.deleted_at IS NULL AND (tn.name like '%{keyword_str}%' OR 
+                        WHERE tn.deleted_at IS NULL {cultured_condition}  AND (tn.name like '%{keyword_str}%' OR 
                             at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
@@ -769,27 +773,41 @@ def taxon(request, taxon_id):
 def taxon_tree(request):
     # 第一層 kingdom
     kingdom_dict = []
+    kingdom_dict_c = []
     for k in kingdom_map.keys():
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
-            query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
+            query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id, at.alien_type FROM api_taxon_tree att 
                     JOIN api_taxon at ON att.taxon_id = at.taxon_id
                     WHERE att.path LIKE '%{k}%' and at.rank_id > 3
-                    GROUP BY at.rank_id ORDER BY at.rank_id ASC;
+                    GROUP BY at.rank_id, at.alien_type ORDER BY at.rank_id ASC;
                 """
             cursor.execute(query)
             stats = cursor.fetchall()
             conn.close()
+            stats = pd.DataFrame(stats, columns=['count','rank_id','alien_type'])
+            stats_c = stats[stats.alien_type!='cultured'].drop(columns=['alien_type']).reset_index(drop=True).sort_values('rank_id')
             spp = 0
             stat_str = ''
-            for s in stats:
-                r_id = s[1]
-                if r_id <= 46 and r_id >= 35:
-                    spp += s[0]
-                elif r_id == 47:
-                    stat_str += f"{spp}種下 {s[0]}{rank_map_c[r_id]}"
+            for sr in stats_c.rank_id.unique():
+                c = stats_c[stats_c.rank_id==sr]['count'].sum()
+                if sr <= 46 and sr >= 35:
+                    spp += c
+                elif sr == 47:
+                    stat_str += f"{spp}種下 {c}{rank_map_c[sr]}"
                 else:
-                    stat_str += f"{s[0]}{rank_map_c[r_id]} "
+                    stat_str += f"{c}{rank_map_c[sr]} "
+            kingdom_dict_c += [{'taxon_id': k, 'name': f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",'stat': stat_str.strip()}]
+            spp = 0
+            stat_str = ''
+            for sr in stats.rank_id.unique():
+                c = stats[stats.rank_id==sr]['count'].sum()
+                if sr <= 46 and sr >= 35:
+                        spp += c
+                elif sr == 47:
+                    stat_str += f"{spp}種下 {c}{rank_map_c[sr]}"
+                else:
+                    stat_str += f"{c}{rank_map_c[sr]} "
             kingdom_dict += [{'taxon_id': k, 'name': f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",'stat': stat_str.strip()}]
     search_stat = SearchStat.objects.all().order_by('-count')[:6]
     s_taxon = [s.taxon_id for s in search_stat]
@@ -810,20 +828,20 @@ def taxon_tree(request):
                 else:
                     search_stat.append({'taxon_id': t[0], 'name': t[2]})
 
-    return render(request, 'taxa/taxon_tree.html', {'kingdom_dict':kingdom_dict, 'search_stat': search_stat})
+    return render(request, 'taxa/taxon_tree.html', {'kingdom_dict':kingdom_dict, 'search_stat': search_stat, 'kingdom_dict_c': kingdom_dict_c})
 
 def get_sub_tree(request):
     taxon_id = request.POST.get('taxon_id')
-    sub_dict = get_tree_stat(taxon_id)
+    cultured = request.POST.get('cultured')
+    sub_dict = get_tree_stat(taxon_id,cultured)
     return HttpResponse(json.dumps(sub_dict), content_type='application/json') 
 
 
 def get_taxon_path(request):
     taxon_id = request.POST.get('taxon_id')
-    conn = pymysql.connect(**db_settings)
     path = []
-
     if taxon_id:
+        conn = pymysql.connect(**db_settings)
         query = f"""SELECT path FROM api_taxon_tree WHERE taxon_id = '{taxon_id}';"""
         with conn.cursor() as cursor:
             cursor.execute(query)
@@ -831,17 +849,28 @@ def get_taxon_path(request):
             conn.close()
             if ps:
                 path = ps[0].split('>')
-    # sub_dict_list = []
-    # for t in Reverse(path):
-    #     sub_dict_list.append(get_tree_stat(t))
+                if request.POST.get('cultured') != 'on':
+                    query = f"""SELECT taxon_id FROM api_taxon WHERE (alien_type != 'cultured' or alien_type is null) 
+                                and taxon_id in ({str(path).replace('[','').replace(']','')})
+                                order by rank_id desc;"""
+                    conn = pymysql.connect(**db_settings)
+                    with conn.cursor() as cursor:
+                        cursor.execute(query)
+                        t_ids = cursor.fetchall()
+                        conn.close()
+                        path = [t[0] for t in t_ids]
+
     return HttpResponse(json.dumps(Reverse(path)), content_type='application/json') 
 
 
 def get_sub_tree_list(request):
     sub_dict_list = []
     taxon_id = request.POST.getlist('taxon_id[]')
+    cultured = request.POST.get('cultured')
+    
     for t in taxon_id:
-        sub_dict_list.append(get_tree_stat(t))
+        sub_dict_list.append(get_tree_stat(t,cultured))
+    
     return HttpResponse(json.dumps(sub_dict_list), content_type='application/json') 
 
 
@@ -851,23 +880,27 @@ def Reverse(lst):
     return new_lst
  
 
-def get_tree_stat(taxon_id):
+def get_tree_stat(taxon_id,cultured):
     sub_dict = {}
     sub_titles = []
 
+    cultured_condition = ''
+    if cultured != 'on':
+        cultured_condition = ' AND (at.alien_type != "cultured" or at.alien_type is null)'
     conn = pymysql.connect(**db_settings)
 
     query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id, 
                 SUBSTRING_INDEX(SUBSTRING_INDEX(att.path, '>{taxon_id}', 1), '>', -1) AS p_group 
                 FROM api_taxon_tree att 
                 JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                WHERE att.path LIKE '%>{taxon_id}%' AND at.rank_id > (SELECT rank_id from api_taxon WHERE taxon_id = '{taxon_id}')
+                WHERE att.path LIKE '%>{taxon_id}%' {cultured_condition} AND at.rank_id > (SELECT rank_id from api_taxon WHERE taxon_id = '{taxon_id}')
                 GROUP BY at.rank_id, p_group;
             """
     with conn.cursor() as cursor:
         cursor.execute(query)
         sub_stat = cursor.fetchall()
         sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id'])
+        sub_stat = sub_stat.sort_values('rank_id')
         conn.close()
     query = f"""SELECT at.taxon_id, at.rank_id, CONCAT_WS(' ',at.common_name_c, r.display ->> '$."en-us"' ,an.formatted_name),
                 r.display ->> '$."zh-tw"'
@@ -876,7 +909,7 @@ def get_tree_stat(taxon_id):
                 JOIN taxon_names tn ON at.accepted_taxon_name_id = tn.id
                 JOIN ranks r ON at.rank_id = r.id
                 JOIN api_names an ON at.accepted_taxon_name_id= an.taxon_name_id 
-                WHERE att.parent_taxon_id = '{taxon_id}' ORDER BY at.rank_id DESC, tn.name;"""
+                WHERE att.parent_taxon_id = '{taxon_id}' {cultured_condition} ORDER BY at.rank_id DESC, tn.name;"""
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
         cursor.execute(query)
