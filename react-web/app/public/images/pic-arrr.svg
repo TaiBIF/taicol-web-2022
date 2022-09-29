@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30" height="60" viewBox="0 0 30 60">
+  <defs>
+    <clipPath id="clipPath">
+      <rect id="Rectangle_4167" data-name="Rectangle 4167" width="30" height="60" transform="translate(1099 544)" fill="#4c8da7"/>
+    </clipPath>
+  </defs>
+  <g id="pic-arrr" transform="translate(-1550 -539)">
+    <g id="pic-arrr-2" data-name="pic-arrr" transform="translate(451 -5)" opacity="0.39" clipPath="url(#clipPath)">
+      <circle id="Ellipse_98" data-name="Ellipse 98" cx="30" cy="30" r="30" transform="translate(1099 544)" fill="#4c8da7"/>
+    </g>
+    <g id="Group_7697" data-name="Group 7697" transform="translate(1012.5 2124.5) rotate(-90)">
+      <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#fff" strokeLinecap="round" strokeWidth="2"/>
+      <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#fff" strokeLinecap="round" strokeWidth="2"/>
+    </g>
+  </g>
+</svg>
