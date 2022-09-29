@@ -1,5 +1,7 @@
 import {New,Category} from 'src/db/models/news';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
+import { Op } from 'sequelize';
+import type { whereConditionProp } from 'src/types/frontend';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { cid,page } = req.query;
@@ -8,16 +10,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const limit: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
   const offset = pageNumber > 1 ? (pageNumber - 1) * limit : 0;
 
-  let where = {}
+  let where:whereConditionProp = { publish:true}
 
   if (cid && cid != 'all') {
     where = {
-      publish:true,
+      ...where,
       CategoryId:cid
     }
   }
   else {
-    where = {publish:true}
+    where = {...where,CategoryId:{[Op.ne]:null}}
   }
 
   const news = await New.findAndCountAll({

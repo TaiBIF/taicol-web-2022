@@ -102,3 +102,7 @@ export type CompareTableDataProps = {
   taiwanCount: number;
   twProvider: string;
 }
+
+export type whereConditionProp = {
+    [key: string]: any
+}
