@@ -8,7 +8,7 @@ import React from 'react';
 const SubmitPanel: React.VFC<{}> = () => {
 
 	return (
-		<Grid item xs={12} textAlign="right">
+		<Grid item xs={12} marginTop={4} textAlign="right">
 			<Button type="submit" variant="contained" sx={{ marginRight: 3.5 }}>
 				Save
 			</Button>
