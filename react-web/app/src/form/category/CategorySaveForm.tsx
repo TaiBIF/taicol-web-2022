@@ -12,6 +12,7 @@ import GenerateFields from '../components/GenerateFields'
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { CategoryTypes } from 'src/types';
+import SubmitPanel from 'src/form/components/SubmitPanel';
 import {mutate} from 'swr'
 
 type UpdateFormValues = z.infer<typeof updateCategoryFormSchema>;
@@ -61,6 +62,7 @@ const SaveCategoryForm: React.VFC<Props> = (props) => {
 			<FormProvider {...methods}>
 				<form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
 					<GenerateFields fields={props?.defaultValues?.id ? CategoryUpdateFormFields : CategoryCreateFormFields} />
+          <SubmitPanel />
 				</form>
 			</FormProvider>
 		</CardContent>
