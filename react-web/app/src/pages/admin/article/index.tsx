@@ -130,7 +130,7 @@ const ArticleListPage: React.FC = () => {
 
 	if (data) {
     rows = data.rows.map((row) => {
-      const category = row.Category.name  || '';
+      const category = row?.Category?.name  || '';
 
 			return {
         ...row,
