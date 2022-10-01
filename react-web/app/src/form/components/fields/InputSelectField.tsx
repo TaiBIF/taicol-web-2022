@@ -13,7 +13,7 @@ import type { InputSelectFieldProps } from 'src/types';
 
 type Props = InputSelectFieldProps & SxProps;
 
-export const InputSelectField: React.VFC<Props> = ({ name, gridSize, label, options,disabled = false,async = false }) => {
+export const InputSelectField: React.VFC<Props> = ({ name, gridSize, label, error = false,errorMessage, options,disabled = false,async = false }) => {
 	const {
 		control,
 		formState: { errors },

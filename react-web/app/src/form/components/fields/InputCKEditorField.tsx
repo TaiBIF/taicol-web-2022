@@ -3,23 +3,19 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import Editor from 'src/lib/ckeditor5/ckeditor';
 import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { InputCkeditorFieldProps } from 'src/types';
+import FormHelperText from '@mui/material/FormHelperText';
 
-type Props = {
-  name: string;
-  label: string;
-};
-
-const InputCKEditorField: React.VFC<Props> = ({ name, ...props }) => {
+const InputCKEditorField: React.VFC<InputCkeditorFieldProps> = ({ name,label, error = false,errorMessage , ...props }) => {
 	const {
     control,
     setValue,
-		formState: { errors },
   } = useFormContext();
-
-	const errorMessage = errors?.[name]?.message?.toString() || '';
 
 	return (
     <Grid item xs={12} sm={12} >
+      <Typography variant="h6" gutterBottom component="div">{label}</Typography>
       <Controller
         control={control}
         name={name}
@@ -49,36 +45,7 @@ const InputCKEditorField: React.VFC<Props> = ({ name, ...props }) => {
                   uploadUrl: '/api/admin/upload'
               },
 
-              toolbar: {
-                items: [
-                  'code',
-                  'undo',
-                  'redo',
-                  '|',
-                  'heading',
-                  'bold',
-                  'italic',
-                  'link',
-                  'bulletedList',
-                  'numberedList',
-                  '|',
-                  'outdent',
-                  'indent',
-                  '|',
-                  'alignment',
-                  'blockQuote',
-                  'insertTable',
-                  'highlight',
-                  'fontSize',
-                  'fontFamily',
-                  'fontColor',
-                  'imageUpload',
-                  'mediaEmbed',
-                  'CKFinder',
-                  'horizontalLine'
-                ]
-                ,shouldNotGroupWhenFull: true
-              },
+
               language: 'zh',
               image: {
                   toolbar: [
@@ -97,6 +64,7 @@ const InputCKEditorField: React.VFC<Props> = ({ name, ...props }) => {
               placeholder: 'Click here to start typing'
             }}
             />
+            {error && <FormHelperText>{errorMessage}</FormHelperText>}
           </div>
         )}
       />

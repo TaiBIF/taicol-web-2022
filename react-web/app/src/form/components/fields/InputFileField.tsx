@@ -8,7 +8,6 @@ import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import type { TextFieldProps } from '@mui/material';
 import Button, { ButtonProps } from '@mui/material/Button';
 import type { InputTextFieldProps } from 'src/types';
 
@@ -41,7 +40,7 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 	},
 }));
 
-export const InputFileField: React.VFC<Props> = ({ gridSize, ...props }) => {
+export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,errorMessage, ...props }) => {
 	const {
     control,
     setValue,
@@ -49,8 +48,6 @@ export const InputFileField: React.VFC<Props> = ({ gridSize, ...props }) => {
 	} = useFormContext();
 
 	const [uploadFiles, setUploadFiles] = useState<string[]>([]);
-	const errorMessage = errors?.[props.name]?.message?.toString() || '';
-	const error: boolean = !!errors[props.name];
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData();

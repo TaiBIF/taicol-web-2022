@@ -4,30 +4,30 @@ import CardContent from '@mui/material/CardContent';
 // ** Zod Imports
 import { z } from 'zod';
 
-import { ApidocFormFields,ApiParamsFormFields } from './ApidocFormFields';
+import { ApiResponseFields } from './ApidocFormFields';
 import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { saveApidocFormSchema } from './saveApidocFormSchema';
+import { createApidocResponseFormSchema,updateApidocResponseFormSchema } from './saveApidocFormSchema';
 import GenerateFields from '../components/GenerateFields'
-import GenerateDynamicFields from '../components/GenerateDynamicFields'
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useSWRConfig } from 'swr';
 import SubmitPanel from 'src/form/components/SubmitPanel';
 
-type SaveFormValues = z.infer<typeof saveApidocFormSchema>;
+type CreateFormValues = z.infer<typeof createApidocResponseFormSchema>;
+type UpdateFormValues = z.infer<typeof updateApidocResponseFormSchema>;
 
 type Props = {
-	defaultValues?: SaveFormValues | null;
+	defaultValues?: UpdateFormValues | null;
 };
-const ApidocBaseForm: React.VFC<Props> = (props) => {
+const ApidocResponseForm: React.VFC<Props> = (props) => {
 	// ** State
 	const router = useRouter();
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { mutate } = useSWRConfig()
-	const methods = useForm<SaveFormValues>({
+	const methods = useForm<CreateFormValues | UpdateFormValues>({
 		defaultValues: props.defaultValues ? props.defaultValues : {},
-		resolver: zodResolver(saveApidocFormSchema),
+		resolver: zodResolver(props?.defaultValues?.id ? updateApidocResponseFormSchema : createApidocResponseFormSchema),
   });
 
 	const {
@@ -35,8 +35,8 @@ const ApidocBaseForm: React.VFC<Props> = (props) => {
 		formState: { errors },
 	} = methods;
 
-  const onSubmit: SubmitHandler<SaveFormValues> = async (values) => {
-		const res = await fetch('/api/admin/apidoc/save', {
+  const onSubmit: SubmitHandler<CreateFormValues | UpdateFormValues> = async (values) => {
+		const res = await fetch('/api/admin/apidoc/response/save', {
 			method: 'POST',
 			headers: {
 				Accept: 'application/json',
@@ -50,17 +50,16 @@ const ApidocBaseForm: React.VFC<Props> = (props) => {
     if(result.status){
       enqueueSnackbar('Success', { variant: 'success' });
 
-        mutate(`/api/admin/apiinfo/info`)
+      mutate(`/api/admin/apiinfo/response/info`)
+      router.push('/admin/apidoc/response');
     }
 	};
 
-  console.log('errors', errors);
 	return (
 		<CardContent>
 			<FormProvider {...methods}>
-				<form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-          <GenerateFields fields={ApidocFormFields} />
-          <GenerateDynamicFields dynamicFields={ApiParamsFormFields} name={'params'} />
+        <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+            <GenerateFields fields={ApiResponseFields} />
           <SubmitPanel />
 				</form>
 			</FormProvider>
@@ -68,4 +67,4 @@ const ApidocBaseForm: React.VFC<Props> = (props) => {
 	);
 };
 
-export default ApidocBaseForm;
+export default ApidocResponseForm;

@@ -7,15 +7,13 @@ import Grid from '@mui/material/Grid';
 
 type Props = InputTextFieldProps;
 
-export const InputTextField: React.VFC<Props> = ({ name, endAdornment, gridSize,disabled = false,handleOnChange, ...props }) => {
+export const InputTextField: React.VFC<Props> = ({ name, endAdornment, gridSize, error = false,errorMessage ,disabled = false,handleOnChange, ...props }) => {
 	const {
     control,
     setValue,
     getValues,
-		formState: { errors },
 	} = useFormContext();
 
-	const errorMessage = errors?.[name]?.message?.toString() || '';
 
   return (
     <Grid item xs={12} sm={gridSize} >
@@ -28,13 +26,13 @@ export const InputTextField: React.VFC<Props> = ({ name, endAdornment, gridSize,
             disabled={disabled}
             value={value || ''}
             {...props}
-            onChange={handleOnChange ? (e:React.ChangeEvent<HTMLInputElement>) => handleOnChange(e,getValues,setValue,onChange) : onChange} // send value to hook form
+            onChange={handleOnChange ? (e: React.ChangeEvent<HTMLInputElement>) => handleOnChange(e, getValues, setValue, onChange) : onChange} // send value to hook form
             inputRef={ref}
             InputLabelProps={{ shrink: true }}
             InputProps={{
               endAdornment: endAdornment,
             }}
-            error={!!errors[name]}
+            error={error}
             helperText={errorMessage}
           />
         )}

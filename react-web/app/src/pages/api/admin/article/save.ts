@@ -9,7 +9,7 @@ type ResponseData = {
 };
 
 export default async (req: NextApiRequest, res: NextApiResponse<ResponseData>) => {
-  console.log('here')
+
   if (req.method != "POST") res.status(403);
 
   const mode = req.body.id  ? 'update' : 'create';

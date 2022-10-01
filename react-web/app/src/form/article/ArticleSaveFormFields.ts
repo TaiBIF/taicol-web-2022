@@ -1,14 +1,5 @@
 import { InputTextFieldProps, InputSelectFieldProps } from 'src/types';
-import {OptionProp} from 'src/types'
 import { getCategories } from 'src/api';
-
-export type ArticleSaveFields = {
-	id: number;
-	title: OptionProp;
-	author: string;
-	description: string;
-	category: string;
-};
 
 export const ArticleSaveFormFields: Array<InputTextFieldProps | InputSelectFieldProps> = [
 	{ name: 'publish', type: 'switch', label: '發佈' },

@@ -28,7 +28,7 @@ const menus:Menu[] = [
       },
       {
         title: 'API',
-        href: 'http://web-staging.taicol.tw/api'
+        href: '/apidoc'
       },
       {
         title: '學名比對工具',

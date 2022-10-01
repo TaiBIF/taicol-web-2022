@@ -15,6 +15,8 @@ type Field = {
 	gridSize?: number;
   type: string;
   disabled?: boolean;
+  error?: boolean;
+  errorMessage?: string;
   handleOnChange?:handleOnChange
 } & SxProps;
 
@@ -41,3 +43,10 @@ export type InputCheckboxFieldProps = {} & Field;
 export type InputRadioFieldProps = {} & Field;
 
 export type InputDateFieldProps = {} & Field;
+
+export type InputCkeditorFieldProps = {
+  name: string;
+  label: string;
+  error: boolean;
+  errorMessage: string;
+};

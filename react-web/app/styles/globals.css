@@ -27,3 +27,7 @@ code[class*='language-'] {
   white-space: normal !important;
   word-wrap: break-word !important;
 }
+
+code {
+  color:#555;
+}
