@@ -44,11 +44,11 @@ code {
 
 @keyframes scroll2 {
   from {
-    transform: translateX(0%)
+    transform: translateX(-100%)
   }
 
   to {
-    transform: translateX(100%)
+    transform: translateX(0%)
   }
 }
 
@@ -61,4 +61,9 @@ code {
 
 .markq:hover .hvbubble {
   display:block;
+}
+@media  (max-width: 1024px) { /* big landscape tablets, laptops, and desktops */
+  .header .main_menu {
+    display:none !important;
+  }
 }
