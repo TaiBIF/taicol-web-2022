@@ -11,14 +11,16 @@ const Home = () => {
 
     ScrollTrigger.create({
       trigger: '.section-2-statistics',
-			start: "top-=60% top",
-      toggleClass: "vivi"
+			start: "top-=60%",
+      toggleClass: "vivi",
+      once: true,
     });
 
     ScrollTrigger.create({
       trigger: '.section-3-news',
 			start: "top-=40% top",
-      toggleClass: "vivi"
+      toggleClass: "vivi",
+      once: true,
     });
   }, [])
 

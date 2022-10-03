@@ -39,7 +39,7 @@ const TaxonCountSection: React.VFC = () => {
   const data:Array<[string, number]> = [["reference", 243], ["taxon", 60214], ["name", 86950]]
 
   return (
-    <section className="section-2-statistics vivi" >
+    <section className="section-2-statistics" >
 			<div className="maq-area">
 				<div className="marquee" >
           <span>STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS

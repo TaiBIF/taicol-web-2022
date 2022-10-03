@@ -2,7 +2,7 @@ import LatestNewsList from './LatestNewsList'
 
 const LatestNewsListSection = () => {
   return (
-      <section className='section-3-news vivi'>
+      <section className='section-3-news'>
         <div className="bg-wave">
 				<img src="/images/bg-wave2.svg"/>
         </div>
