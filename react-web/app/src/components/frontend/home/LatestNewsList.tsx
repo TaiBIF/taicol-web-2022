@@ -52,11 +52,11 @@ const LatestNewsList: React.VFC = () => {
         </div>
         <ul className="news-tab-index">
           <li
-            className={!selectedCategory ? 'now' : ''}
+            className={selectedCategory =='all' ? 'now' : ''}
             onClick={() => handleCategoryClick('all')}>
             全部
 
-            <div className="liney"></div>
+            <div className={selectedCategory === 'all' ? "liney w-full" : 'liney'}></div>
           </li>
           {categories?.map((category:CategoryDataProps,index:number) => {
             return <li
@@ -64,7 +64,7 @@ const LatestNewsList: React.VFC = () => {
               onClick={() => handleCategoryClick(category.id)}
               className={selectedCategory === category.id ? 'now' : ''}>
               {category.name}
-              <div className="liney"></div>
+              <div className={selectedCategory === category.id ? "liney w-full" : 'liney'}></div>
             </li>
           })}
         </ul>
