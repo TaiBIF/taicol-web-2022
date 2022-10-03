@@ -78,6 +78,7 @@
     "draft-js": "^0.11.7",
     "emailjs": "^4.0.1",
     "formidable": "^2.0.1",
+    "gsap": "^3.11.2",
     "install": "^0.13.0",
     "mdi-material-ui": "^7.1.0",
     "moment": "^2.29.4",
