@@ -74,7 +74,7 @@ const TaxonCountSection: React.VFC = () => {
                   return <TaxonCount {...taxonCount} key={`taxon-count-${index}`} />
                 })}
               </ul>
-              <MoreButton label={'more statistics'} href='#' />
+              <MoreButton label={'more statistics'} href='/statistics' />
 						</div>
 					</div>
 				</div>
