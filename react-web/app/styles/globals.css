@@ -31,3 +31,34 @@ code[class*='language-'] {
 code {
   color:#555;
 }
+
+@keyframes scroll1 {
+  from {
+    transform: translateX(0%)
+  }
+
+  to {
+    transform: translateX(-100%)
+  }
+}
+
+@keyframes scroll2 {
+  from {
+    transform: translateX(0%)
+  }
+
+  to {
+    transform: translateX(100%)
+  }
+}
+
+.marquee{
+  animation: scroll1 60s linear infinite;
+}
+.marquee--long {
+  animation: scroll2 60s linear infinite;
+}
+
+.markq:hover .hvbubble {
+  display:block;
+}
