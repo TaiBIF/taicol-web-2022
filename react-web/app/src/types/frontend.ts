@@ -1,8 +1,11 @@
 export type TaxonCountProps = {
   img: string;
   title: string;
+  enTitle: string | React.ReactNode;
   count: number;
   type:string;
+  CircleClassName: string;
+  tooltip?: string;
 }
 
 export type NewsDataProps = {

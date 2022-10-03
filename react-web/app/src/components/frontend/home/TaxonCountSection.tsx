@@ -8,20 +8,29 @@ const taxonCountList:TaxonCountProps[] = [
   {
     img: '/images/cancer01.png',
     title: '收錄物種數',
+    enTitle:<>SPECIES AND <br/>INFRASPECIES</>,
     count: 0,
-    type:'taxon'
+    type: 'taxon',
+    CircleClassName: 'cir-line1',
+    tooltip: '包含種下分類群',
+
   },
   {
     img: '/images/ssicon02.svg',
     title: '收錄學名數',
+    enTitle:'SCIENTIFIC NAMES',
     count: 0,
-    type:'name'
+    type:'name',
+    CircleClassName: 'cir-line2',
+    tooltip: '包含種上階層學名',
   },
   {
     img: '/images/ssicon03.svg',
     title: '收錄文獻數',
+    enTitle:'REFERENCES',
     count: 0,
-    type:'reference'
+    type:'reference',
+    CircleClassName: 'cir-line1',
   }
 ]
 const TaxonCountSection: React.VFC = () => {
@@ -30,7 +39,7 @@ const TaxonCountSection: React.VFC = () => {
   const data:Array<[string, number]> = [["reference", 243], ["taxon", 60214], ["name", 86950]]
 
   return (
-    <section className="section-2-statistics vivi">
+    <section className="section-2-statistics vivi" >
 			<div className="maq-area">
 				<div className="marquee" >
           <span>STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS
