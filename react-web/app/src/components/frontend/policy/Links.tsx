@@ -15,8 +15,8 @@ const Links: React.VFC<Props> = (props) => {
         <div className="arr">
           <svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
             <g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
-              <line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-width="2"></line>
-              <line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-width="2"></line>
+              <line id="Line_177" data-name="Line 177" x2="6" y2="6" transform="translate(-0.071 -0.035)" fill="none" stroke="#FFFFFF" stroke-linecap="round" strokeWidth="2"></line>
+              <line id="Line_178" data-name="Line 178" x1="6" y2="6" transform="translate(5.929 -0.035)" fill="none" stroke="#FFFFFF" stroke-linecap="round" strokeWidth="2"></line>
             </g>
           </svg>
         </div>

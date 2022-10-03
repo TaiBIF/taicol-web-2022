@@ -79,8 +79,8 @@ const AdvancedSearchForm: React.VFC = () => {
         <div className="arr" onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}>
           <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
             <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-              <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#FFF" stroke-linecap="round" stroke-width="2"></line>
-              <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#FFF" stroke-linecap="round" stroke-width="2"></line>
+              <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#FFF" stroke-linecap="round" strokeWidth="2"></line>
+              <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#FFF" stroke-linecap="round" strokeWidth="2"></line>
             </g>
           </svg>
         </div>
@@ -179,8 +179,8 @@ const AdvancedSearchForm: React.VFC = () => {
 							<p>更多項目</p>
 							<svg xmlns="http://www.w3.org/2000/svg" width="15.043" height="15.043" viewBox="0 0 15.043 15.043">
 								<g id="plussvg" transform="translate(-1553.5 -534.5)">
-									<line id="Line_211" data-name="Line 211" x1="13.043" transform="translate(1554.5 542.021)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"></line>
-									<line className="minus" id="Line_213" data-name="Line 213" x1="13.043" transform="translate(1561.021 535.5) rotate(90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"></line>
+									<line id="Line_211" data-name="Line 211" x1="13.043" transform="translate(1554.5 542.021)" fill="none" stroke="#fff" stroke-linecap="round" strokeWidth="2"></line>
+									<line className="minus" id="Line_213" data-name="Line 213" x1="13.043" transform="translate(1561.021 535.5) rotate(90)" fill="none" stroke="#fff" stroke-linecap="round" strokeWidth="2"></line>
 								</g>
 							</svg>
 
