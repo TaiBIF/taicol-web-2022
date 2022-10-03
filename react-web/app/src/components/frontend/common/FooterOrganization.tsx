@@ -6,13 +6,13 @@ const FooterOrganization: React.VFC = () => {
     <div className="two-related">
         <div className="itembox">
             <p>指導單位</p>
-            <a href="https://www.forest.gov.tw">
+            <a target='_blank' href="https://www.forest.gov.tw">
                 <img src="/images/footer-logo1.png"/>
             </a>
         </div>
         <div className="itembox">
             <p>維護單位</p>
-            <a href="https://portal.taibif.tw">
+            <a target='_blank' href="https://portal.taibif.tw">
                 <img src="/images/footer-logo2.png"/>
             </a>
         </div>
