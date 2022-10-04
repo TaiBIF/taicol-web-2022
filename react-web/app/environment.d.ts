@@ -19,8 +19,7 @@ declare global {
 			NEXT_PUBLIC_PAGINATE_LIMIT: string;
       NEXT_PUBLIC_API_URL: string;
       NEXT_PUBLIC_DOMAIN: string;
-      DEFAULT_ADMIN_EMAIL: string;
-      DEFAULT_ADMIN_PASSWORD: string;
+      NEXT_PUBLIC_IFRAME_URL: string;
 		}
 	}
 }

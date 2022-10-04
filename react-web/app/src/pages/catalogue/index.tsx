@@ -1,19 +1,21 @@
-import BannerWithOutIcon from 'src/components/frontend/common/BannerWithOutIcon'
-import React from 'react'
-import SearchForm from 'src/components/frontend/catalogue/SearchForm'
-import AdvancedSearchForm from 'src/components/frontend/catalogue/AdvancedSearchForm'
+import React, { useRef, useState } from 'react'
+import IframeResizer from 'iframe-resizer-react'
 
-const breadcrumbs = [
-  { title: '首頁', href: '/' },
-  {title: '物種名錄'},
-]
-const CataloguePage:React.VFC = () => {
+const CataloguePage: React.VFC = () => {
+  const iframeRef = useRef(null)
+
+/**
+values:  'bodyOffset' | 'bodyScroll' | 'documentElementOffset' | 'documentElementScroll' |
+         'max' | 'min' | 'grow' | 'lowestElement' | 'taggedElement'
+          */
   return (
-    <div className="page-top">
-      <BannerWithOutIcon title='CATALOGUE' zhTWTitle='物種名錄' breadcrumbs={breadcrumbs}/>
-      <SearchForm />
-      <AdvancedSearchForm/>
-    </div>
+    <IframeResizer
+        forwardRef={iframeRef}
+        autoResize={false}
+        src={`${process.env.NEXT_PUBLIC_IFRAME_URL}/catalogue?filter=1`}
+        style={{ width: '1px', minWidth: '100%', height: '1800px', border: 'none' }}
+      />
+
   )
 }
 
