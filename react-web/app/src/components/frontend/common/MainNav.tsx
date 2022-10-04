@@ -1,4 +1,5 @@
 import React from 'react';
+import { isTablet,isMobile,isDesktop } from 'react-device-detect';
 
 type Menu = {
   title: string,
@@ -13,11 +14,11 @@ const menus:Menu[] = [
   },
   {
     title: '物種樹',
-    href: 'http://web-staging.taicol.tw/taxon/tree'
+    href: '/taxon/tree'
   },
   {
     title: '物種名錄',
-    href: '/catalogue?filter=1'
+    href: '/catalogue'
   },
   {
     title: '資料工具',
@@ -32,7 +33,7 @@ const menus:Menu[] = [
       },
       {
         title: '學名比對工具',
-        href: 'http://web-staging.taicol.tw/name/match'
+        href: '/name/match'
       },
     ]
   },
@@ -63,7 +64,7 @@ const MainNav: React.VFC = () => {
 
   return (
 
-    <ul className="main_menu flex">
+    <ul className={isDesktop ? "main_menu flex" : "main_menu block"}>
       {menus?.map((menu: Menu, index: number) => {
           return menu?.children ? <li className="mbli" key={`main-menu-${index}`}>
             <p className="big_title">

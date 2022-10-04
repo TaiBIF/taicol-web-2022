@@ -62,8 +62,23 @@ code {
 .markq:hover .hvbubble {
   display:block;
 }
+.iframe-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+
+}
+
+.iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh
+}
+
 @media  (max-width: 1024px) { /* big landscape tablets, laptops, and desktops */
   .header .main_menu {
-    display:none !important;
+    display:block;
   }
 }
