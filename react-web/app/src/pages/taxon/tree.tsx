@@ -5,6 +5,7 @@ const TaxonTree: React.VFC = () => {
   const iframeRef = useRef(null)
 
   return (
+
     <IframeResizer
         forwardRef={iframeRef}
         autoResize={false}
