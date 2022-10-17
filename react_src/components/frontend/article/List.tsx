@@ -13,7 +13,7 @@ const ArticleItem: React.FC = () => {
   const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/admin/category?type=article`;
   const { data:articleList } = useSWR<ArticleListProps>(GET_ARTICLE_LIST_URL,fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL,fetcher);
-  const pageSize: number = parseInt(process.env.PAGINATE_LIMIT as string);
+  const pageSize: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
 
   React.useEffect(() => {
     if (articleList) {
@@ -21,6 +21,7 @@ const ArticleItem: React.FC = () => {
     }
   }, [articleList])
 
+  console.log('total',total)
 
   const handleCategoryClick = (categoryId:string | number) => {
     setSelectCategory(categoryId)
@@ -51,7 +52,7 @@ const ArticleItem: React.FC = () => {
 			</div>
 
 			<div className="page-num">
-				{total && 
+				{total > 1 &&
         Array.from(Array(total).keys()).map((index: number) => {
           const pageNumber = index + 1;
 
@@ -72,7 +73,6 @@ const ArticleItem: React.FC = () => {
                 <img src="/static/image/pagear2.svg"/>
                 <p>下一頁</p>
                 </a>
-              {link}
             </>
           return link
         })

@@ -10,7 +10,7 @@ const DownloadItem: React.FC = () => {
   const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/admin/category?type=download`;
   const { data:downloadList } = useSWR<DownloadDataProps[]>(GET_ARTICLE_LIST_URL,fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL,fetcher);
-  const pageSize: number = parseInt(process.env.PAGINATE_LIMIT as string);
+  const pageSize: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
 
 
   const handleCategoryClick = (categoryId:string | number) => {
