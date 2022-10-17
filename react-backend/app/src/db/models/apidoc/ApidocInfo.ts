@@ -18,15 +18,15 @@ ApidocInfo.init(
 		},
 		title: {
 			type: new DataTypes.STRING(256),
-			allowNull: false,
+			allowNull: true,
 		},
 		url: {
 			type: new DataTypes.STRING(256),
-			allowNull: false,
+			allowNull: true,
     },
     combine_url: {
 			type: new DataTypes.STRING(256),
-			allowNull: false,
+			allowNull: true,
 
     }
 	},

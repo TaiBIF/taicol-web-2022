@@ -66,7 +66,14 @@ const ApiDocPage = () => {
 	const router = useRouter();
 	const { id } = router.query;
   const [value, setValue] = useState<string>('information')
-  const { data: apiDoc, isValidating: isInfoValidating } = useSWR<ResponseProps>(`/api/admin/apidoc/info` );
+  const { data: apiDoc, isValidating: isInfoValidating } = useSWR<ResponseProps>(`/api/admin/apidoc/info`, {
+  revalidateOnFocus: false,
+  revalidateOnMount:false,
+  revalidateOnReconnect: false,
+  refreshWhenOffline: false,
+  refreshWhenHidden: false,
+  refreshInterval: 0
+});
 
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     setValue(newValue)
