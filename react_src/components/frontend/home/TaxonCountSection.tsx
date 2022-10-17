@@ -32,6 +32,21 @@ const taxonCountList:TaxonCountProps[] = [
     CircleClassName: 'cir-line1',
   }
 ]
+
+type style = {
+  [key: string]: string 
+}
+
+const marqueeStyle:style = {
+  "--tw": "50ch",
+  "--ad": "30s"
+}
+
+const marqueeLongStyle:style = {
+  "--tw": "50ch",
+  "--ad": "30s"
+}
+
 const TaxonCountSection: React.FC = () => {
   //const { data } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/web/stat/index`)
 
@@ -40,12 +55,12 @@ const TaxonCountSection: React.FC = () => {
   return (
     <section className="section-2-statistics" >
 			<div className="maq-area">
-				<div className="marquee" >
+				<div className="marquee" style={marqueeStyle}>
           <span>STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS
           </span>
 				</div>
 
-				<div className="marquee marquee--long" >
+				<div className="marquee marquee--long"  style={marqueeLongStyle}>
           <span>STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS
           </span>
 				</div>
