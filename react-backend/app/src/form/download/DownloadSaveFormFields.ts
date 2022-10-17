@@ -16,5 +16,5 @@ export const DownloadSaveFormFields: Array<InputTextFieldProps | InputSelectFiel
 	{ name: 'CategoryId', type: 'select', label: '目錄', options: getCategories('download'),async:true},
 	{ name: 'title', type: 'text', label: '標題'},
 	{ name: 'description', type: 'text', label: '描述' },
-	{ name: 'file', type: 'file', label: '檔案',accept:'.pdf,csv,.doc,.docx,.xsl,.xslx' },
+	{ name: 'file', type: 'file', label: '檔案',accept:'.pdf,.csv,.doc,.docx,.xls,.xlsx' },
 ];
