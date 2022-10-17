@@ -43,7 +43,7 @@ CustomDocument.getInitialProps = async ctx => {
         (
           <App
             {...props} // @ts-ignore
-            emotionCache={cache}
+            //emotionCache={cache}
           />
         )
     })
