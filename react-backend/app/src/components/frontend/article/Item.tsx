@@ -13,7 +13,7 @@ const ArticleItem: React.VFC<ArticleDataProps> = (props) => {
           <div className="leftbox">
             <div className="date">
             <div className="day">{date.format('DD')}</div>
-            <div className="mon-year">{date.format('ddd')}.{date.format('YYYY')}</div>
+            <div className="mon-year">{date.format('MMM')}.{date.format('YYYY')}</div>
             </div>
           <div className={`tag`} style={{ backgroundColor: `${Category.color}`}}>
             {Category.name}

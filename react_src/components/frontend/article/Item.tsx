@@ -1,10 +1,12 @@
 import * as React from 'react';
 import type { ArticleDataProps } from '../types'
 import * as moment from 'moment';
+import validateColor from "validate-color";
 
 const ArticleItem: React.FC<ArticleDataProps> = (props) => {
   const {   title, author, Category,updatedAt,slug } = props
   const date = moment(new Date(updatedAt))
+  const categoryBackgroundColor = Category.color  && validateColor(Category.color) ? Category.color : "black"
 
   return (
     <li>
@@ -13,9 +15,9 @@ const ArticleItem: React.FC<ArticleDataProps> = (props) => {
           <div className="leftbox">
             <div className="date">
             <div className="day">{date.format('DD')}</div>
-            <div className="mon-year">{date.format('ddd')}.{date.format('YYYY')}</div>
+            <div className="mon-year">{date.format('MMM')}.{date.format('YYYY')}</div>
             </div>
-          <div className={`tag`} style={{ backgroundColor: `${Category.color}`}}>
+          <div className={`tag`}  style={{backgroundColor: categoryBackgroundColor}}>
             {Category.name}
             </div>
           </div>

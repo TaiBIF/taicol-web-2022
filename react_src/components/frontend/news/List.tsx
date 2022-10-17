@@ -12,7 +12,7 @@ const NewsItem: React.FC = () => {
   const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/admin/category?type=news`;
   const { data:newsList } = useSWR<NewsListProps>(GET_NEWS_LIST_URL,fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL,fetcher);
-  const pageSize: number = parseInt(process.env.PAGINATE_LIMIT as string);
+  const pageSize: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
 
   React.useEffect(() => {
     if (newsList) {
@@ -73,7 +73,6 @@ const NewsItem: React.FC = () => {
                 <img src="/static/image/pagear2.svg"/>
                 <p>下一頁</p>
                 </a>
-              {link}
             </>
           return link
         })

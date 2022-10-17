@@ -1667,10 +1667,10 @@
     "svg.resize.js" "^1.4.3"
     "svg.select.js" "^3.0.1"
 
-"apexcharts@^3.18.0":
-  "integrity" "sha512-Bi3aq35xWntI71JlywXTBBAOhuKTbB4wijKw4ClkIAFV904YDkHPIJ8N9LcZq9fvVb0VX1AEmyOFBOB2Vwsuew=="
-  "resolved" "https://registry.npmjs.org/apexcharts/-/apexcharts-3.35.5.tgz"
-  "version" "3.35.5"
+"apexcharts@^3.18.0", "apexcharts@^3.36.0":
+  "integrity" "sha512-9r7M/SOfnYS1g4G1gmRRgeIN1Oj+ct1S0G6PpMPPD3F4jGHgWl5EzxqvoQkk3vpTxN8MbZB5ZHWIAQvPuFiA+w=="
+  "resolved" "https://registry.npmjs.org/apexcharts/-/apexcharts-3.36.0.tgz"
+  "version" "3.36.0"
   dependencies:
     "svg.draggable.js" "^2.2.2"
     "svg.easing.js" "^2.0.0"

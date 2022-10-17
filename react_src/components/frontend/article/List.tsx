@@ -21,8 +21,6 @@ const ArticleItem: React.FC = () => {
     }
   }, [articleList])
 
-  console.log('total',total)
-
   const handleCategoryClick = (categoryId:string | number) => {
     setSelectCategory(categoryId)
     setPage(1)
