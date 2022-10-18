@@ -2,7 +2,7 @@ from taxa.models import Expert
 import pandas as pd 
 import pymysql
 from conf.settings import env
-
+import numpy as np
 
 db_settings = {
     "host": env('DB_HOST'),
@@ -46,6 +46,7 @@ lack = lack[['taxon_group']].sort_values('taxon_group').drop_duplicates()
 df = df[df.taxon_id.notnull()]
 df = df.reset_index()
 
+df = df.replace({np.nan: '', None: ''})
 
 for i in df.index:
     row = df.iloc[i]
