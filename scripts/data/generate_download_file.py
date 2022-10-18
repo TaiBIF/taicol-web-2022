@@ -195,6 +195,7 @@ query = """SELECT distinct(tn.id), n.name, tn.rank_id, tn.name, an.name_author, 
            LEFT JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
            LEFT JOIN api_names an ON an.taxon_name_id = tn.id
            LEFT JOIN api_citations c ON tn.reference_id = c.reference_id
+           WHERE tn.deleted_at IS NULL
         """
 conn = pymysql.connect(**db_settings)
 with conn.cursor() as cursor:
@@ -210,6 +211,7 @@ names = names.merge(taxon, on='taxon_id', how='left')
 # 階層, common_name_c, alternative_name_c, is_fossil, is_terrestrial, is_freshwater, is_brackish, is_marine
 # TODO 之後要確認如果學名使用有多筆的情況
 notaxon = names[names.taxon_id.isnull()]
+
 
 query = """SELECT ru.properties ->> '$.common_names', ru.properties ->> '$.is_fossil', ru.properties ->> '$.is_terrestrial',
            ru.properties ->> '$.is_freshwater', ru.properties ->> '$.is_brackish', ru.properties ->> '$.is_marine', 
@@ -355,3 +357,7 @@ names = names.replace({np.nan: '', None: ''})
 today = datetime.now() + timedelta(hours=8)
 
 names.to_csv(f"物種名錄_學名_{today.strftime('%Y%m%d')}.csv",index=False)
+
+
+
+
