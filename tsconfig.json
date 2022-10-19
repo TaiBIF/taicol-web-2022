@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "rootDir": "react_src",
+    "outDir": "./static/",
+    "jsx": "react",
+    "lib": ["es6", "dom"],
+    "module": "commonjs",
+    "target": "es5",
+    "esModuleInterop": false,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "./react_src"
+  ],
+}

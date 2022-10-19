@@ -7,10 +7,10 @@ urlpatterns = [
     path('about', views.about, name='about'),
     path('policy', views.policy, name='policy'),
     path('article', views.article, name='article'),
-    path('article/<article_id>', views.article_detail, name='article_detail'),
+    path('article/<slug>', views.article_detail, name='article_detail'),
     path('download', views.download, name='download'),
     path('news', views.news, name='news'),
-    path('news/<news_id>', views.news_detail, name='news_detail'),
+    path('news/<slug>', views.news_detail, name='news_detail'),
     path('statistics', views.statistics, name='statistics'),
     path('api', views.api, name='api'),
 ]

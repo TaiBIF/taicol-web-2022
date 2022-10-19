@@ -1,0 +1,356 @@
+.nice-select {
+  color: #555;
+  -webkit-tap-highlight-color: transparent;
+  background-color: #fff;
+  border-radius: 5px;
+  border: solid 1px #ddd;
+  box-sizing: border-box;
+  clear: both;
+  cursor: pointer;
+  display: block;
+  float: left;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: normal;
+  height: 42px;
+  line-height: 40px;
+  outline: none;
+  padding-left: 18px;
+  padding-right: 30px;
+  position: relative;
+  text-align: left !important;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  white-space: nowrap;
+  width: auto;
+}
+
+.nice-select:hover {
+  border-color: #dbdbdb;
+}
+
+/*  .nice-select:active, .nice-select.open, .nice-select:focus {
+    border-color: #999; }*/
+
+.nice-select:after {
+  /*border-bottom: 2px solid #999;
+  border-right: 2px solid #999;*/
+  content: '';
+  display: block;
+  height: 5px;
+  margin-top: -4px;
+  pointer-events: none;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  -webkit-transform-origin: 66% 66%;
+  -ms-transform-origin: 66% 66%;
+  transform-origin: 66% 66%;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+  -webkit-transition: all 0.15s ease-in-out;
+  transition: all 0.15s ease-in-out;
+  width: 5px;
+}
+
+.nice-select.open:after {
+  -webkit-transform: rotate(-135deg);
+  -ms-transform: rotate(-135deg);
+  transform: rotate(-135deg);
+}
+
+.nice-select.open .list {
+  opacity: 1;
+  pointer-events: auto;
+  -webkit-transform: scale(1) translateY(0);
+  -ms-transform: scale(1) translateY(0);
+  transform: scale(1) translateY(0);
+}
+
+.nice-select.disabled {
+  border-color: #ededed;
+  color: #999;
+  pointer-events: none;
+}
+
+.nice-select.disabled:after {
+  border-color: #cccccc;
+}
+
+/*
+  .nice-select.wide {
+    width: 100%; }*/
+
+.nice-select.wide .list {
+  left: 0 !important;
+  right: 0 !important;
+}
+
+.nice-select.right {
+  float: right;
+}
+
+.nice-select.right .list {
+  left: auto;
+  right: 0;
+}
+
+.nice-select.small {
+  font-size: 12px;
+  height: 36px;
+  line-height: 34px;
+}
+
+.nice-select.small:after {
+  height: 4px;
+  width: 4px;
+}
+
+.nice-select.small .option {
+  line-height: 34px;
+  min-height: 34px;
+}
+
+.nice-select .list {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 0 1px rgba(68, 68, 68, 0.11);
+  box-sizing: border-box;
+  margin-top: 4px;
+  opacity: 0;
+  max-height: 200px;
+  overflow-y: auto !important;
+  padding: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  -webkit-transform-origin: 50% 0;
+  -ms-transform-origin: 50% 0;
+  transform-origin: 50% 0;
+  -webkit-transform: scale(0.75) translateY(-21px);
+  -ms-transform: scale(0.75) translateY(-21px);
+  transform: scale(0.75) translateY(-21px);
+  -webkit-transition: all 0.2s cubic-bezier(0.5, 0, 0, 1.25), opacity 0.15s ease-out;
+  transition: all 0.2s cubic-bezier(0.5, 0, 0, 1.25), opacity 0.15s ease-out;
+  z-index: 9;
+}
+
+.nice-select .list:hover .option:not(:hover) {
+  background-color: transparent !important;
+}
+
+.nice-select .option {
+  cursor: pointer;
+  font-weight: 400;
+  line-height: 40px;
+  list-style: none;
+  min-height: 40px;
+  outline: none;
+  padding-left: 18px;
+  padding-right: 29px;
+  text-align: left;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.nice-select .option:hover,
+.nice-select .option.focus,
+.nice-select .option.selected.focus {
+  background-color: #f6f6f6;
+}
+
+/*
+    .nice-select .option.selected {
+      font-weight: bold; }
+      */
+.nice-select .option.disabled {
+  background-color: transparent;
+  color: #999;
+  cursor: default;
+}
+
+.no-csspointerevents .nice-select .list {
+  display: none;
+}
+
+.no-csspointerevents .nice-select.open .list {
+  display: block;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+  border: 0
+}
+
+.select2-search__field {
+  font-size: 18px;
+  color: #555;
+}
+
+.select2-search--dropdown {
+  padding: 4px 15px 4px 15px;
+}
+
+.select2-dropdown {
+  color: #555;
+  border-radius: 5px;
+  border: solid 1px #ddd;
+  font-size: 18px;
+  text-align: left;
+  line-height: 30px;
+  margin-top: 2px;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  color: #555;
+  background-color: #f6f6f6;
+}
+
+.select2-container--default .select2-results__option {
+  padding-left: 15px;
+  color: #555;
+}
+
+
+#select2-keyword-container {
+  margin: 0
+}
+
+
+.select2-container--default .select2-selection--single {
+  border: 0;
+}
+
+.select2-container .select2-selection--single {
+  background: #FFF;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  padding: 0px 10px;
+  font-size: 16px;
+  height: 40px;
+  width: 460px;
+  max-width: 100%;
+}
+
+span.select2-selection.select2-selection--single {
+  outline: none;
+}
+
+
+.select2-selection__arrow b {
+  display: none !important;
+}
+
+.select2-container .select2-selection--single {
+  display: flex;
+  align-items: center;
+}
+
+
+.f-bold {
+  font-weight: bold !important;
+}
+
+.result-area {
+  min-height: 300px
+}
+
+.nice-select.wide {
+  width: 100% !important;
+  padding: 0px 15px !important;
+  font-size: 16px !important;
+  height: 40px !important;
+  max-width: 460px !important;
+  background: url("/images/ard01.svg") center right 15px no-repeat;
+  background-size: 16px auto !important;
+  background-color: #FFF !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+@media only screen and (max-width: 767px) {
+  .nice-select.wide {
+    margin-bottom: 10px !important;
+  }
+}
+
+
+.nice-select .list {
+  max-height: 400px;
+  overflow-y: scroll;
+}
+
+.nice-select.select-box {
+  margin-right: 10px !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  height: 60px !important;
+  width: 170px !important;
+  flex: 0 0 170px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 30px !important;
+  background: url("/images/ard01.svg") center right 20px no-repeat !important;
+  background-size: 16px auto !important;
+  padding: 0px 20px !important;
+  color: #888 !important;
+  font-size: 18px !important;
+}
+
+@media only screen and (max-width: 767px) {
+  .nice-select.select-box {
+    font-size: 16px !important;
+    width: 100% !important;
+    height: 50px !important;
+    flex: initial !important;
+    margin-right: 0px !important;
+  }
+}
+
+.nice-select.select-box .list,
+.nice-select.mb-select .list {
+  left: 0 !important;
+  right: 0 !important;
+
+}
+
+.select-box span.current {
+  line-height: 60px;
+}
+
+
+.nice-select.mb-select {
+  background: #FFF;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  padding: 0px 15px;
+  font-size: 16px;
+  height: 40px;
+  width: calc(50% - 5px);
+  max-width: 460px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url("/images/ard01.svg") center right 15px no-repeat;
+  background-size: 16px auto;
+  background-color: #FFF
+}
+
+
+/* loading box 調整 */
+
+.loadingbox {
+  margin-top: -80px
+}
+
+@media only screen and (max-width: 999px) {
+  .loadingbox {
+    margin-top: -60px
+  }
+}
