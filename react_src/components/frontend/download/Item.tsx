@@ -19,7 +19,7 @@ const DownloadItem: React.FC<DownloadDataProps> = (props) => {
       </div>
       <div className="right-file">
         {file && file.split(",").map((file, index) => {
-          const ext = file.split('.').pop() as string
+          const ext = file.split('.').pop()?.toUpperCase() as string
           const className = exts.includes(ext) ? ext : 'txt'
           return <a href={file} className={`${className} uppercase`} target="_blank" download={file} key={`file-${index}`}>{ext}</a>
         })}
