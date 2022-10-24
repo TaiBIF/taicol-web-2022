@@ -17,6 +17,10 @@ Download.init(
 			autoIncrement: true,
 			primaryKey: true,
 		},
+		type: {
+			type: new DataTypes.STRING(45),
+			allowNull: false,
+		},
 		title: {
 			type: new DataTypes.STRING(256),
 			allowNull: false,
