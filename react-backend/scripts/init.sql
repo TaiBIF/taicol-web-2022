@@ -184,6 +184,7 @@ CREATE TABLE `downloads` (
   `title` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `file` varchar(2000) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
   `publish` tinyint(1) NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
