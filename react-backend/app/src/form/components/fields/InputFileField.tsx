@@ -90,7 +90,7 @@ export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,error
                   hidden
                   type="file"
                   onChange={onChange}
-                  accept={props.accept ? props.accept : "image/png, image/jpeg"}
+                  accept={props.accept ? props.accept : ""}
                   id={`upload-image-${props.name}`}
                 />
               )}

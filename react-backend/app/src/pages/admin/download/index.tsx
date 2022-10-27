@@ -34,6 +34,14 @@ const getHeadCells = (url: string) => {
       flex: 1,
     },
     {
+      field: 'type',
+      headerName: 'File Type',
+      type: 'string',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
       field: 'title',
       headerName: 'Title',
       type: 'string',
@@ -53,17 +61,17 @@ const getHeadCells = (url: string) => {
       field: 'file',
       headerName: 'File',
       type: 'string',
-      align: 'left',
+      align: 'center',
       headerAlign: 'center',
       flex: 1,
       renderCell: (params) => {
         if (params.row.file) {
-          return <div className='flex flex-col'>
+          return <div className='flex flex-col items-center'>
             {params.row.file.split(",").map((file: string) => {
               return (
                 <>
                   <a className='my-2' href={file} target="_blank" rel="noreferrer">
-                    {file}
+                    檔案
                   </a>
                 </>
               )
