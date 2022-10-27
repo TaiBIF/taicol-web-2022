@@ -5,6 +5,7 @@ const share = {
   CategoryId:z.string().or(z.number()),
   file: z.string().nonempty( { message: errors.NON_EMPTY }),
 	title: z.string().nonempty( { message: errors.NON_EMPTY }),
+	type: z.string().nonempty( { message: errors.NON_EMPTY }),
 	description: z.string().nonempty( { message: errors.NON_EMPTY }),
   publish:z.boolean().default(true)
 };

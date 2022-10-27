@@ -5,7 +5,7 @@ import * as moment from 'moment';
 const exts = ['pdf','txt','csv']
 
 const DownloadItem: React.FC<DownloadDataProps> = (props) => {
-  const {   title, file,updatedAt,description } = props
+  const {   title, file,updatedAt,description,type } = props
   const date = moment(new Date(updatedAt))
 
   return (
@@ -19,7 +19,7 @@ const DownloadItem: React.FC<DownloadDataProps> = (props) => {
       </div>
       <div className="right-file">
         {file && file.split(",").map((file, index) => {
-          const ext = file.split('.').pop() as string
+          const ext =  type.toUpperCase() as string
           const className = exts.includes(ext) ? ext : 'txt'
           return <a href={file} className={`${className} uppercase`} target="_blank" download={file} key={`file-${index}`}>{ext}</a>
         })}

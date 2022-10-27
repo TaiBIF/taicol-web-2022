@@ -184,6 +184,7 @@ CREATE TABLE `downloads` (
   `title` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `file` varchar(2000) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
   `publish` tinyint(1) NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
@@ -267,7 +268,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,NULL,'Admin','','$2b$10$XOEreA9uG7A9RhOVcXyBduLAZaDZ.L8PDwd8VO20vcQcp4j9tq/jC','','admin','admin@ink.net.tw',NULL,'2022-08-22 14:05:04','2022-09-25 03:26:51','active');
+INSERT INTO `users` (id,name,first_name,last_name,password,phone,status,role,email,image,createdAt,updatedAt) VALUES (1,NULL,'Admin','','$2b$10$XOEreA9uG7A9RhOVcXyBduLAZaDZ.L8PDwd8VO20vcQcp4j9tq/jC','','active','admin','admin@ink.net.tw',NULL,'2022-08-22 14:05:04','2022-09-25 03:26:51');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
