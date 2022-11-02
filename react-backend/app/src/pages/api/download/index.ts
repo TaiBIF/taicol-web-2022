@@ -19,6 +19,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const download = await Download.findAll({
     where: where,
 		include:[{model:Category,attributes:['id']}],
+    order: [
+      ['id', 'DESC']
+    ]
 	});
 
 	res.status(200).json(download);

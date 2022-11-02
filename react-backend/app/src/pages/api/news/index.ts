@@ -27,6 +27,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 		include:[{model:Category,attributes:['name','color']}],
     offset: offset,
 		limit: limit,
+    order: [
+      ['published_date', 'DESC']
+    ]
 	});
 
 	res.status(200).json(news);
