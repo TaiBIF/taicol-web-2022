@@ -20,5 +20,6 @@ export const ArticleSaveFormFields: Array<InputTextFieldProps | InputSelectField
   } },
 	{ name: 'CategoryId', type: 'select', label: '目錄', options: getCategories('article'),async:true},
 	{ name: 'author', type: 'text', label: '作者' },
+	{ name: 'publishedDate', type: 'datepicker', label: '日期' },
 	{ name: 'description', type: 'editor', label: '描述' },
 ];

@@ -23,7 +23,8 @@ export type CategoryDataProps = {
 
 export type NewsDataProps = {
 	id: number;
-	title: string;
+  title: string;
+  publishedDate: string;
   description: string;
   category: string;
   Category: {
@@ -35,6 +36,7 @@ export type ArticleDataProps = {
 	id: number;
 	title: string;
   description: string;
+  publishedDate: string;
   author: string;
   category: string;
   Category: {

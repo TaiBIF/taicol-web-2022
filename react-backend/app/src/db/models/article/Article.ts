@@ -8,6 +8,7 @@ class Article extends Model {
 	declare author: string;
 	declare title: string;
 	declare description: string;
+  declare published_date: Date;
 }
 
 Article.init(
@@ -16,6 +17,10 @@ Article.init(
 			type: DataTypes.INTEGER.UNSIGNED,
 			autoIncrement: true,
 			primaryKey: true,
+		},
+		publishedDate: {
+			type: new DataTypes.DATE,
+			allowNull: false,
 		},
 		author: {
 			type: new DataTypes.STRING(256),

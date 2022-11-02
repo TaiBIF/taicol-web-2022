@@ -5,10 +5,9 @@ import AddIcon from '@mui/icons-material/Add';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Typography from '@mui/material/Typography';
 
 import type { InputTextFieldProps, InputSelectFieldProps,InputFileFieldProps,InputCkeditorFieldProps } from 'src/types';
-import { InputTextField, InputSelectField, InputHiddenField,InputSwitchField,InputFileField } from 'src/form/components/fields';
+import { InputTextField, InputSelectField, InputHiddenField,InputSwitchField,InputFileField,InputDatepickerField } from 'src/form/components/fields';
 import dynamic from "next/dynamic";
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useEffect } from 'react';
@@ -97,6 +96,9 @@ const GenerateDynamicFields: React.VFC<Props> = (props) => {
                         break;
                       case 'file':
                         return <InputFileField {...(input as InputFileFieldProps)}  error={error} errorMessage={errorMessage} key={input.name} />;
+                        break;
+                      case 'datepicker':
+                        return <InputDatepickerField {...(input as InputTextFieldProps)} key={`input_${index}_${input.name}`} error={error} errorMessage={errorMessage}  />;
                         break;
                       default:
                           return (

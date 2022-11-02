@@ -59,13 +59,21 @@ const getHeadCells = (url: string) => {
       flex: 1,
     },
     {
+      field: 'publishedDate',
+      headerName: 'Date',
+      type: 'string',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
       field: 'actions',
       headerName: 'Action',
       type: 'string',
       align: 'right',
       headerAlign: 'center',
       flex: 1,
-      renderCell: (params) => {
+      renderCell: (params:any) => {
         const onClick = (event: React.MouseEvent<HTMLElement>, action: ActionTypes) => {
           event.stopPropagation(); // don't select this row after clicking
 
@@ -134,6 +142,7 @@ const ArticleListPage: React.FC = () => {
 
 			return {
         ...row,
+        publishedDate: new Date(row.publishedDate).toISOString().split('T')[0],
         description: shortDescription(row.description, 100),
         category: category,
 			};

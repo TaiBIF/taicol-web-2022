@@ -2,7 +2,7 @@
 import Grid from '@mui/material/Grid';
 
 import type { InputTextFieldProps, InputSelectFieldProps, InputFileFieldProps, InputCkeditorFieldProps } from 'src/types';
-import { InputTextField, InputSelectField, InputHiddenField,InputSwitchField,InputFileField } from 'src/form/components/fields';
+import { InputTextField, InputSelectField, InputHiddenField,InputSwitchField,InputFileField,InputDatepickerField } from 'src/form/components/fields';
 import dynamic from "next/dynamic";
 import { useFormContext } from 'react-hook-form';
 
@@ -48,6 +48,9 @@ const GenerateField: React.VFC<Props> = (props) => {
             break;
           case 'file':
             return <InputFileField {...(input as InputFileFieldProps)} key={`input_${index}_${input.name}`} error={error} errorMessage={errorMessage}  />;
+            break;
+          case 'datepicker':
+            return <InputDatepickerField {...(input as InputTextFieldProps)} key={`input_${index}_${input.name}`} error={error} errorMessage={errorMessage}  />;
             break;
           default:
               return (
