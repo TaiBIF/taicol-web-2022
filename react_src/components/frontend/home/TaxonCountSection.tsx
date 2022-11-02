@@ -5,7 +5,7 @@ import MoreButton from '../common/MoreButton'
 
 const taxonCountList:TaxonCountProps[] = [
   {
-    img: '/static/image/cancer01.png',
+    img: '/static/image/ssicon01.svg',
     title: '收錄物種數',
     enTitle:<>SPECIES AND <br/>INFRASPECIES</>,
     count: 0,
