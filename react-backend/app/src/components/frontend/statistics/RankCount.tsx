@@ -3,7 +3,7 @@ import {RankProps} from 'src/types/frontend'
 
 const RankCount: React.VFC<RankProps> = (props) => {
   const { zhTWTitle, enTitle, count, className } = props;
-
+  console.log(props)
   return (
     <li className={`item ${className}`}>
       <div className="bg-animate"></div>

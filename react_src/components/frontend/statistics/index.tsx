@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Banner from '../common/Banner'
-import ClassCountStatisics from './RankCountStatisics'
+import RankCountStatisics from './RankCountStatisics'
 import SpeciesCountStatisics from './SpeciesCountStatisics'
 import useSWR from 'swr';
 import { useEffect } from 'react';
@@ -9,7 +9,8 @@ import { CompareType } from './options'
 import SpeciesAndEndemicRatiosStatisics from './SpeciesAndEndemicRatiosStatisics'
 import SourceDoughnutChart from './SourceDoughnutChart'
 import { getTotal } from '../utils/helper'
-import TaiwanSpeciesAndEndemicCompareGlobalStatisics  from './TaiwanSpeciesAndEndemicCompareGlobalStatisics'
+import TaiwanSpeciesAndEndemicCompareGlobalStatisics from './TaiwanSpeciesAndEndemicCompareGlobalStatisics'
+import TaxonCountSection from './TaxonCountSection'
 import { speciesOptions } from './options'
 import PopupTable from './PopupTable'
 import { fetcher } from '../utils/helper'
@@ -114,17 +115,18 @@ const StatisticsPage: React.FC = () => {
 
       setRankCounts(rankData)
   }
-  const formatEndemicCountData = (props: (string | number)[][],total:number): void => {
+  const formatEndemicCountData = (props: (string | number)[][]): void => {
       const endemicData:EndemicProps[] = props.map((item: (string | number)[]):EndemicProps => {
         const image = endemicInfo.find((r) => r.endemic === item[0])?.image || ''
         const name = item[0] as string
         const count = item[1] as number
+        const total = item[2] as number
 
         return {
           name: name,
           image: image,
           count: count,
-          ratio: (count/total*100).toFixed(2)
+          ratio: ( (count/total)*100).toFixed(2)
         }
       })
 
@@ -210,9 +212,8 @@ const StatisticsPage: React.FC = () => {
   useEffect(() => {
     if (data) {
       formatRankCountData(data.rank_count)
-      const endemicTotal = getTotal(data.endemic_count)
 
-      formatEndemicCountData(data.endemic_count, endemicTotal)
+      formatEndemicCountData(data.endemic_count)
       formatSourceCountData(data.source_count)
       formatSpeciesCompareCountData(data[speciesCompare])
       formatKingdomCountData(data.kingdom_count)
@@ -220,25 +221,16 @@ const StatisticsPage: React.FC = () => {
     }
   }, [data,speciesCompare])
 
-  console.log('kingdomCounts',kingdomCounts)
-  console.log('rankCounts',rankCounts)
-  console.log('kingdomCounts',kingdomCounts)
-  console.log('endemicCounts',endemicCounts)
-  console.log('speciesCompareCounts',speciesCompareCounts)
   return (<>
     <div className="page-top">
       <Banner title='STATISTICS' zhTWTitle='資料統計' breadcrumbs={breadcrumbs} picType={'crap'} />
-      <div className="statis-3-cont">
-        <div className="main-box">
-          <ul className="statis-3">
-
-          </ul>
-        </div>
+      
+        <TaxonCountSection />
         <div className="chart-box">
           <div className="main-box">
             <div className="boxarea-2-1">
                 <SpeciesCountStatisics data={kingdomCounts} />
-                <ClassCountStatisics data={rankCounts} />
+                <RankCountStatisics data={rankCounts} />
             </div>
             <SpeciesAndEndemicRatiosStatisics data={endemicCounts} />
 
@@ -252,7 +244,6 @@ const StatisticsPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
     </div>
     <PopupTable show={showCompareTable} handleShowCompareTableClick={handleShowCompareTableClick} data={speciesCompareTableData} />
   </>)
