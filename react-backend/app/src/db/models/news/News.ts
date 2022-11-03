@@ -9,7 +9,7 @@ class New extends Model {
 	declare slug: string;
   declare description: string;
   declare publish: boolean;
-  declare published_date: Date;
+  declare publishedDate: Date;
 }
 
 New.init(

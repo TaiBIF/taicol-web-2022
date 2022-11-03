@@ -12,7 +12,7 @@ export type NewsDataProps = {
   title: string,
   description: string,
   slug:string,
-  updatedAt: string;
+  publishedDate: string;
   Category: {
     name: string,
     color: string,
@@ -24,7 +24,7 @@ export type ArticleDataProps = {
   title: string,
   author: string,
   slug:string,
-  updatedAt: string;
+  publishedDate: string;
   Category: {
     name: string,
     color: string,

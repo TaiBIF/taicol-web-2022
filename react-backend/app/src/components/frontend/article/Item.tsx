@@ -1,10 +1,13 @@
 import React from 'react';
 import type { ArticleDataProps } from 'src/types/frontend'
 import moment from 'moment';
+import validateColor from "validate-color";
+
 
 const ArticleItem: React.VFC<ArticleDataProps> = (props) => {
-  const {   title, author, Category,updatedAt } = props
-  const date = moment(new Date(updatedAt))
+  const {   title, author, Category,publishedDate } = props
+  const date = moment(new Date(publishedDate))
+  const categoryBackgroundColor = Category.color  && validateColor(Category.color) ? Category.color : "black"
 
   return (
     <li>
@@ -15,7 +18,7 @@ const ArticleItem: React.VFC<ArticleDataProps> = (props) => {
             <div className="day">{date.format('DD')}</div>
             <div className="mon-year">{date.format('MMM')}.{date.format('YYYY')}</div>
             </div>
-          <div className={`tag`} style={{ backgroundColor: `${Category.color}`}}>
+          <div className={`tag`} style={{ backgroundColor: categoryBackgroundColor}}>
             {Category.name}
             </div>
           </div>

@@ -23,8 +23,11 @@ export type ArticleDataProps = {
   category: string,
   title: string,
   author: string,
+  authorInfo: string,
   slug:string,
   updatedAt: string;
+  description: string,
+  publishedDate: string,
   Category: {
     name: string,
     color: string,

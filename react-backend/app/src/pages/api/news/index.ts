@@ -28,7 +28,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     offset: offset,
 		limit: limit,
     order: [
-      ['published_date', 'DESC']
+      ['publishedDate', 'DESC']
     ]
 	});
 
