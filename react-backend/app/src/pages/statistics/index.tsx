@@ -67,22 +67,19 @@ const sourceInfo:SourceInfoProps[] = [
 const kingdomInfo:KingdomInfoProps[] = [
   { kingdom: 'Viruses',chineseName:'病毒' },
   { kingdom: 'Bacteria',chineseName:'細菌界' },
-  { kingdom: 'Archae',chineseName:'古菌界' },
+  { kingdom: 'Archaea',chineseName:'古菌界' },
   { kingdom: 'Protozoa',chineseName:'原生生物界' },
   { kingdom: 'Chromista',chineseName:'原藻界' },
-  { kingdom: 'Fungi',chineseName:'直菌界' },
+  { kingdom: 'Fungi',chineseName:'真菌界' },
   { kingdom: 'Plantae',chineseName:'植物界' },
   { kingdom: 'Animalia',chineseName:'動物界' },
 ]
-
 
 const breadcrumbs = [
   { title: '首頁', href: '/' },
   {title: '更多資訊'},
   {title: '資料統計'}
 ]
-
-
 const Statistics: React.VFC = () => {
 
   const [speciesCompareTableData, setSpeciesCompareTableData] = React.useState<CompareTableDataProps[]>([]);

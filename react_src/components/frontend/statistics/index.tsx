@@ -76,14 +76,11 @@ const kingdomInfo:KingdomInfoProps[] = [
   { kingdom: 'Animalia',chineseName:'動物界' },
 ]
 
-
 const breadcrumbs = [
   { title: '首頁', href: '/' },
   {title: '更多資訊'},
   {title: '資料統計'}
 ]
-
-
 const StatisticsPage: React.FC = () => {
 
   const [speciesCompareTableData, setSpeciesCompareTableData] = React.useState<CompareTableDataProps[]>([]);
@@ -151,6 +148,7 @@ const StatisticsPage: React.FC = () => {
       const kingdomData:KingdomProps[] = props.map((item: (string | number)[]):KingdomProps => {
         const name = item[0] as string
         const count = item[1] as number
+        
         const chineseName = kingdomInfo.find((r) => r.kingdom == name)?.chineseName || ''
         return {
           name: [chineseName,name],
