@@ -112,23 +112,23 @@ const StatisticsPage: React.FC = () => {
 
       setRankCounts(rankData)
   }
+  
   const formatEndemicCountData = (props: (string | number)[][]): void => {
-    const endemicData: EndemicProps[] = kingdomInfo.map((kingdom: KingdomInfoProps): EndemicProps => {
-      const endemic = props.find((item: (string | number)[]) => kingdom.kingdom == item[0])
-      const image = endemic ? endemicInfo.find((r) => r.endemic === endemic[0])?.image || '' : ''
-      const name = endemic ? endemic[0] as string : ''
-      const count =endemic ? endemic[1] as number : 0
-      const total =endemic ? endemic[2] as number : 0
-    
-      return {
-        name: name,
-        image: image,
-        count: count,
-        ratio: ( (count/total)*100).toFixed(2)
-      }
-    });
-      
-    setEndemicCounts(endemicData)
+      const endemicData:EndemicProps[] = props.map((item: (string | number)[]):EndemicProps => {
+        const image = endemicInfo.find((r) => r.endemic === item[0])?.image || ''
+        const name = item[0] as string
+        const count = item[1] as number
+        const total = item[2] as number
+
+        return {
+          name: name,
+          image: image,
+          count: count,
+          ratio: ( (count/total)*100).toFixed(2)
+        }
+      })
+
+      setEndemicCounts(endemicData)
   }
   const formatSpeciesCompareCountData = (props: (string | number| null)[][]): void => {
       const speciesCompareData:SpeciesCompareProps[] = props.map((item: (string | number| null)[]):SpeciesCompareProps => {
