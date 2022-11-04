@@ -5319,7 +5319,7 @@
   dependencies:
     "ua-parser-js" "^1.0.2"
 
-"react-dom@^15.5.x || ^16.x || ^17.x || ^18.x", "react-dom@^16.8.0 || ^17 || ^18", "react-dom@^16.8.0 || ^17.0.0 || ^18.0.0", "react-dom@^16.9.0 || ^17 || ^18", "react-dom@^17.0.0 || ^18.0.0", "react-dom@^17.0.2 || ^18", "react-dom@^17.0.2 || ^18.0.0", "react-dom@^17.0.2 || ^18.0.0-0", "react-dom@>= 0.14.0", "react-dom@>=0.14.0", "react-dom@>=16.3.3", "react-dom@>=16.6.0", "react-dom@>=16.8.0", "react-dom@0.13.x || 0.14.x || ^15.0.0-0 || 15.x.x || ^16.0.0-0 || ^16.x.x || ^17.x.x || ^18.x.x", "react-dom@17.0.2":
+"react-dom@^15.5.x || ^16.x || ^17.x || ^18.x", "react-dom@^16.8.0 || ^17 || ^18", "react-dom@^16.8.0 || ^17.0.0 || ^18.0.0", "react-dom@^16.9.0 || ^17 || ^18", "react-dom@^17.0.0 || ^18.0.0", "react-dom@^17.0.2 || ^18", "react-dom@^17.0.2 || ^18.0.0", "react-dom@^17.0.2 || ^18.0.0-0", "react-dom@>= 0.14.0", "react-dom@>= 16.9.0", "react-dom@>=0.14.0", "react-dom@>=16.3.3", "react-dom@>=16.6.0", "react-dom@>=16.8.0", "react-dom@0.13.x || 0.14.x || ^15.0.0-0 || 15.x.x || ^16.0.0-0 || ^16.x.x || ^17.x.x || ^18.x.x", "react-dom@17.0.2":
   "integrity" "sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA=="
   "resolved" "https://registry.npmjs.org/react-dom/-/react-dom-17.0.2.tgz"
   "version" "17.0.2"
@@ -5408,7 +5408,7 @@
     "loose-envify" "^1.4.0"
     "prop-types" "^15.6.2"
 
-"react@^15.5.x || ^16.x || ^17.x || ^18.x", "react@^16.11.0 || ^17.0.0 || ^18.0.0", "react@^16.13.1 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17 || ^18", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.9.0 || ^17 || ^18", "react@^17.0.0 || ^18.0.0", "react@^17.0.2 || ^18", "react@^17.0.2 || ^18.0.0", "react@^17.0.2 || ^18.0.0-0", "react@>= 0.14.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", "react@>=0.13", "react@>=0.14.0", "react@>=16.3.3", "react@>=16.6.0", "react@>=16.8", "react@>=16.8.0", "react@0.13.x || 0.14.x || ^15.0.0-0 || 15.x.x || ^16.0.0-0 || ^16.x.x || ^17.x.x || ^18.x.x", "react@17.0.2":
+"react@^15.5.x || ^16.x || ^17.x || ^18.x", "react@^16.11.0 || ^17.0.0 || ^18.0.0", "react@^16.13.1 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17 || ^18", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.9.0 || ^17 || ^18", "react@^17.0.0 || ^18.0.0", "react@^17.0.2 || ^18", "react@^17.0.2 || ^18.0.0", "react@^17.0.2 || ^18.0.0-0", "react@>= 0.14.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", "react@>= 16.9.0", "react@>=0.13", "react@>=0.14.0", "react@>=16.3.3", "react@>=16.6.0", "react@>=16.8", "react@>=16.8.0", "react@0.13.x || 0.14.x || ^15.0.0-0 || 15.x.x || ^16.0.0-0 || ^16.x.x || ^17.x.x || ^18.x.x", "react@17.0.2":
   "integrity" "sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA=="
   "resolved" "https://registry.npmjs.org/react/-/react-17.0.2.tgz"
   "version" "17.0.2"
@@ -5948,6 +5948,16 @@
   "integrity" "sha512-WCjS5NfuVJjkQzK10s8WOBY+hhDxxNt/N6ZaGwxFZ+wN3/lKKFSaaKUNecULcTTvE4urLcKaZFQD8vO0mOZujw=="
   "resolved" "https://registry.npmjs.org/sugarss/-/sugarss-4.0.1.tgz"
   "version" "4.0.1"
+
+"suneditor-react@^3.4.1":
+  "integrity" "sha512-xsfMjy2748x8Bcw/SeT2CeecrBABcJPyCO+LPourVLcQg8QW/A9FbIfP0DghNlBkH/gxy9iviR5wVydg9UW2wQ=="
+  "resolved" "https://registry.npmjs.org/suneditor-react/-/suneditor-react-3.4.1.tgz"
+  "version" "3.4.1"
+
+"suneditor@^2.42.0", "suneditor@^2.44.3":
+  "integrity" "sha512-B25DrbAxcwkvAANNm2EClugBCxATCa3SvV03SpyaMJybKj4bzQnS1iq6Wo3h+v970tNSnjfeoT3ID3Nj0NuiBA=="
+  "resolved" "https://registry.npmjs.org/suneditor/-/suneditor-2.44.3.tgz"
+  "version" "2.44.3"
 
 "supports-color@^5.3.0":
   "integrity" "sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow=="

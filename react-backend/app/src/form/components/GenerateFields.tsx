@@ -5,19 +5,11 @@ import type { InputTextFieldProps, InputSelectFieldProps, InputFileFieldProps, I
 import { InputTextField, InputSelectField, InputHiddenField,InputSwitchField,InputFileField,InputDatepickerField } from 'src/form/components/fields';
 import dynamic from "next/dynamic";
 import { useFormContext } from 'react-hook-form';
-
-
-const Editor = dynamic(() => import("src/form/components/fields/InputCKEditorField"), {
-  ssr: false,
-  loading: () => <p>Loading CKEditor...</p>,
-});
+import Editor from 'src/form/components/fields/InputSunEditorField'
 
 type Props = {
 	fields:Array<InputTextFieldProps | InputSelectFieldProps>
 };
-
-
-
 const GenerateField: React.VFC<Props> = (props) => {
   const { fields } = props;
   const {

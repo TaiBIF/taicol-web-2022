@@ -44,6 +44,8 @@
     "react-chartjs-2": "^4.3.1",
     "react-device-detect": "^2.2.2",
     "react-dom": "17.0.2",
+    "suneditor": "^2.44.3",
+    "suneditor-react": "^3.4.1",
     "swr": "^1.3.0",
     "validate-color": "^2.2.1"
   },
