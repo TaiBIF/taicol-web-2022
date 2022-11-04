@@ -71,7 +71,7 @@ const kingdomInfo:KingdomInfoProps[] = [
   { kingdom: 'Archaea',chineseName:'古菌界' },
   { kingdom: 'Protozoa',chineseName:'原生生物界' },
   { kingdom: 'Chromista',chineseName:'原藻界' },
-  { kingdom: 'Fungi',chineseName:'真菌界' },
+  { kingdom: 'Fungi',chineseName:'直菌界' },
   { kingdom: 'Plantae',chineseName:'植物界' },
   { kingdom: 'Animalia',chineseName:'動物界' },
 ]
@@ -113,21 +113,22 @@ const StatisticsPage: React.FC = () => {
       setRankCounts(rankData)
   }
   const formatEndemicCountData = (props: (string | number)[][]): void => {
-      const endemicData:EndemicProps[] = props.map((item: (string | number)[]):EndemicProps => {
-        const image = endemicInfo.find((r) => r.endemic === item[0])?.image || ''
-        const name = item[0] as string
-        const count = item[1] as number
-        const total = item[2] as number
-
-        return {
-          name: name,
-          image: image,
-          count: count,
-          ratio: ( (count/total)*100).toFixed(2)
-        }
-      })
-
-      setEndemicCounts(endemicData)
+    const endemicData: EndemicProps[] = kingdomInfo.map((kingdom: KingdomInfoProps): EndemicProps => {
+      const endemic = props.find((item: (string | number)[]) => kingdom.kingdom == item[0])
+      const image = endemic ? endemicInfo.find((r) => r.endemic === endemic[0])?.image || '' : ''
+      const name = endemic ? endemic[0] as string : ''
+      const count =endemic ? endemic[1] as number : 0
+      const total =endemic ? endemic[2] as number : 0
+    
+      return {
+        name: name,
+        image: image,
+        count: count,
+        ratio: ( (count/total)*100).toFixed(2)
+      }
+    });
+      
+    setEndemicCounts(endemicData)
   }
   const formatSpeciesCompareCountData = (props: (string | number| null)[][]): void => {
       const speciesCompareData:SpeciesCompareProps[] = props.map((item: (string | number| null)[]):SpeciesCompareProps => {
@@ -145,16 +146,17 @@ const StatisticsPage: React.FC = () => {
       setSpeciesCompareCounts(speciesCompareData)
   }
   const formatKingdomCountData = (props: (string | number)[][]): void => {
-      const kingdomData:KingdomProps[] = props.map((item: (string | number)[]):KingdomProps => {
-        const name = item[0] as string
-        const count = item[1] as number
-        
-        const chineseName = kingdomInfo.find((r) => r.kingdom == name)?.chineseName || ''
+    const kingdomData: KingdomProps[] = kingdomInfo.map((item: KingdomInfoProps): KingdomProps => {
+        const kingdom = props.find((r) => item.kingdom == r[0])
+
+        const name = kingdom ? kingdom[0] as string : ''
+        const count = kingdom ? kingdom[1] as number : 0
+        const chineseName = kingdom ? kingdomInfo.find((r) => r.kingdom == name)?.chineseName || '' : ''
         return {
-          name: [chineseName,name],
+          name: [chineseName, name],
           count: count,
         }
-      })
+    });
 
       setKingdomCounts(kingdomData)
   }

@@ -70,16 +70,19 @@ const kingdomInfo:KingdomInfoProps[] = [
   { kingdom: 'Archaea',chineseName:'古菌界' },
   { kingdom: 'Protozoa',chineseName:'原生生物界' },
   { kingdom: 'Chromista',chineseName:'原藻界' },
-  { kingdom: 'Fungi',chineseName:'真菌界' },
+  { kingdom: 'Fungi',chineseName:'直菌界' },
   { kingdom: 'Plantae',chineseName:'植物界' },
   { kingdom: 'Animalia',chineseName:'動物界' },
 ]
+
 
 const breadcrumbs = [
   { title: '首頁', href: '/' },
   {title: '更多資訊'},
   {title: '資料統計'}
 ]
+
+
 const Statistics: React.VFC = () => {
 
   const [speciesCompareTableData, setSpeciesCompareTableData] = React.useState<CompareTableDataProps[]>([]);
@@ -144,15 +147,17 @@ const Statistics: React.VFC = () => {
       setSpeciesCompareCounts(speciesCompareData)
   }
   const formatKingdomCountData = (props: (string | number)[][]): void => {
-      const kingdomData:KingdomProps[] = props.map((item: (string | number)[]):KingdomProps => {
-        const name = item[0] as string
-        const count = item[1] as number
-        const chineseName = kingdomInfo.find((r) => r.kingdom == name)?.chineseName || ''
+    const kingdomData: KingdomProps[] = kingdomInfo.map((item: KingdomInfoProps): KingdomProps => {
+        const kingdom = props.find((r) => item.kingdom == r[0])
+
+        const name = kingdom ? kingdom[0] as string : ''
+        const count = kingdom ? kingdom[1] as number : 0
+        const chineseName = kingdom ? kingdomInfo.find((r) => r.kingdom == name)?.chineseName || '' : ''
         return {
           name: [chineseName, name],
           count: count,
         }
-      })
+    });
 
       setKingdomCounts(kingdomData)
   }
