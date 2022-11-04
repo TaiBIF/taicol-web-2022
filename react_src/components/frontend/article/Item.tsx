@@ -4,8 +4,8 @@ import * as moment from 'moment';
 import validateColor from "validate-color";
 
 const ArticleItem: React.FC<ArticleDataProps> = (props) => {
-  const {   title, author, Category,updatedAt,slug } = props
-  const date = moment(new Date(updatedAt))
+  const {   title, author, Category,publishedDate,slug } = props
+  const date = moment(new Date(publishedDate))
   const categoryBackgroundColor = Category.color  && validateColor(Category.color) ? Category.color : "black"
 
   return (

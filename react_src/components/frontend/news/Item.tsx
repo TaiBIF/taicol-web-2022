@@ -4,8 +4,8 @@ import * as moment from 'moment';
 import validateColor from "validate-color";
 
 const NewsItem: React.FC<NewsDataProps> = (props) => {
-  const { title, Category, updatedAt, slug } = props
-  const date = moment(new Date(updatedAt))
+  const { title, Category, publishedDate, slug } = props
+  const date = moment(new Date(publishedDate))
 
   const style = {
     "backgroundColor": Category.color

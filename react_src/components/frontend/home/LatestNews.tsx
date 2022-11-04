@@ -5,8 +5,8 @@ import {shortDescription} from '../utils/helper'
 import validateColor from "validate-color";
 
 const LatestNews: React.FC<NewsDataProps> = (props) => {
-  const { title, Category, updatedAt, slug } = props
-  const date = moment(new Date(updatedAt))
+  const { title, Category, publishedDate, slug } = props
+  const date = moment(new Date(publishedDate))
   const categoryBackgroundColor = Category.color  && validateColor(Category.color) ? Category.color : "black"
 
   return (

@@ -45,7 +45,7 @@ const NewsItem: React.FC = () => {
 			<div className="news-area-cont">
 				<div className="news-list-box">
             <ul>
-          {newsList?.rows?.map((news: NewsDataProps, index: number) => <Item {...news} key={`news-${index}`} />)}
+            {newsList?.rows?.map((news: NewsDataProps, index: number) => <Item {...news} key={`news-${index}`} />)}
 					  </ul>
 				</div>
 

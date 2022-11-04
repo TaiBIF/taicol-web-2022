@@ -11,7 +11,8 @@ export type TaxonCountProps = {
 export type NewsDataProps = {
   title: string,
   description: string,
-  slug:string,
+  slug: string,
+  publishedDate: string,
   updatedAt: string;
   Category: {
     name: string,
