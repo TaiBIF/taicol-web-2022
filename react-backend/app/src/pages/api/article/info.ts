@@ -15,8 +15,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (result) {
     article = await Article.findOne({
       where: { slug: slug },
-      raw: true,
-      include: [Category],
+		include:[{model:Category,attributes:['name','color']}],
     });
 
     if (article) {

@@ -11,7 +11,7 @@ type Props = {
 	prev: ArticleDataProps,
 	next: ArticleDataProps,
 }
-const Article: React.VFC = () => {
+const Article: React.FC = () => {
 
   const slug = typeof window !== "undefined" ? window.location.pathname.replace(/\/$/g,'').split("/").pop() : '';
   const encoded = decodeURI(slug as string);
@@ -63,7 +63,7 @@ const Article: React.VFC = () => {
 					<div className="tag"  style={{ backgroundColor: categoryBackgroundColor}}>{data?.current?.Category?.name || ''}</div>
 					<div className="date">{date}</div>
 				</div>
-				<h2>台灣物種名錄分界說明</h2>
+				<h2>{data?.current?.title}</h2>
       </div>
       <div className="author">
 				<p>{data?.current?.authorInfo}</p>
