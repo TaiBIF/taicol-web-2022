@@ -68,10 +68,10 @@ const sourceInfo:SourceInfoProps[] = [
 const kingdomInfo:KingdomInfoProps[] = [
   { kingdom: 'Viruses',chineseName:'病毒' },
   { kingdom: 'Bacteria',chineseName:'細菌界' },
-  { kingdom: 'Archae',chineseName:'古菌界' },
+  { kingdom: 'Archaea',chineseName:'古菌界' },
   { kingdom: 'Protozoa',chineseName:'原生生物界' },
   { kingdom: 'Chromista',chineseName:'原藻界' },
-  { kingdom: 'Fungi',chineseName:'直菌界' },
+  { kingdom: 'Fungi',chineseName:'真菌界' },
   { kingdom: 'Plantae',chineseName:'植物界' },
   { kingdom: 'Animalia',chineseName:'動物界' },
 ]
@@ -153,7 +153,7 @@ const StatisticsPage: React.FC = () => {
         const count = item[1] as number
         const chineseName = kingdomInfo.find((r) => r.kingdom == name)?.chineseName || ''
         return {
-          name: `${chineseName} ${name}`,
+          name: [chineseName,name],
           count: count,
         }
       })

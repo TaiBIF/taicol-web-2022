@@ -152,7 +152,7 @@ const Statistics: React.VFC = () => {
         const count = item[1] as number
         const chineseName = kingdomInfo.find((r) => r.kingdom == name)?.chineseName || ''
         return {
-          name: `${chineseName} ${name}`,
+          name: [chineseName, name],
           count: count,
         }
       })
