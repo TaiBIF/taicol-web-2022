@@ -1,6 +1,8 @@
 import React from 'react';
 import BreadCrumb from 'src/components/frontend/common/BreadCrumb'
-import type {BreadCrumbProps} from 'src/types/frontend'
+import type { BreadCrumbProps } from 'src/types/frontend'
+import {timeout} from 'src/utils/helper'
+
 
 type Props = {
   title: string;
@@ -10,6 +12,13 @@ type Props = {
 }
 const Banner: React.VFC<Props> = (props) => {
   const {title,zhTWTitle,breadcrumbs,picType = 'turtle'} = props
+  const [loadBanner, setLoadBanner] = React.useState<boolean>(false);
+
+  React.useEffect( () => {
+    timeout(1000).then(() => {
+      setLoadBanner(true);
+    })
+  }, []);
 
   return (
 <div className="big-top">
@@ -24,14 +33,14 @@ const Banner: React.VFC<Props> = (props) => {
 			<div className="main-box">
         {picType == 'turtle' && <>
           <div className="pic-right1">
-            <img src="/images/cont-rightimg1.png" />
+             {loadBanner && <img src="/images/cont-rightimg1.png" />}
           </div>
           <div className="pic-right1s">
-            <img src="/images/cont-rightimg1s.png"/>
+            <img src="/images/cont-rightimg1s.png" />
           </div>
         </>}
         {picType == 'crap' && <div className="pic-right2">
-					<img src="/images/cont-rightimg2.png"/>
+          {loadBanner && <img src="/images/cont-rightimg2.png" />}
 				</div>}
 				<div className="float-dot-yel2">
 					<img src="/images/cir_yel.png"/>
