@@ -1,3 +1,5 @@
+import { DownloadFileDataProps } from "./table";
+
 export type TaxonCountProps = {
   img: string;
   title: string;
@@ -35,11 +37,10 @@ export type DownloadDataProps = {
   category: string,
   Category: {id:string},
   title: string,
-  file: string,
+  DownloadFiles: DownloadFileDataProps[],
   description: string,
   updatedAt:string
 }
-
 
 export type BreadCrumbProps = {
   title: string;

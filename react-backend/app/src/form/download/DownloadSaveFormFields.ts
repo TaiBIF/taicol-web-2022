@@ -16,8 +16,11 @@ export const DownloadSaveFormFields: Array<InputTextFieldProps | InputSelectFiel
 	{ name: 'publish', type: 'switch', label: '發佈' },
 	{ name: 'id', type: 'hidden', label: '' },
 	{ name: 'CategoryId', type: 'select', label: '目錄', options: getCategories('download'),async:true},
-	{ name: 'type', type: 'select', label: '檔案類型',options:DownloadFileTypeOptions },
 	{ name: 'title', type: 'text', label: '標題'},
 	{ name: 'description', type: 'text', label: '描述' },
-	{ name: 'file', type: 'file', label: '檔案' },
+];
+
+export const DownloadFileSaveFormFields: Array<InputTextFieldProps | InputSelectFieldProps> = [
+	{ name: 'type', type: 'select', label: '檔案類型',options:DownloadFileTypeOptions, gridSize:4},
+	{ name: 'url', type: 'file', label: '檔案', gridSize:8 },
 ];

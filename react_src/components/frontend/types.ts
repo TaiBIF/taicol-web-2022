@@ -39,12 +39,15 @@ export type DownloadDataProps = {
   category: string,
   Category: {id:string},
   title: string,
-  type: string,
-  file: string,
+  DownloadFiles: DownloadFileDataProps[],
   description: string,
   updatedAt:string
 }
 
+export type DownloadFileDataProps = {
+  url: string,
+  type: string,
+}
 
 export type BreadCrumbProps = {
   title: string;

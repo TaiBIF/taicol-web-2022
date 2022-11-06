@@ -4,11 +4,12 @@ import CardContent from '@mui/material/CardContent';
 // ** Zod Imports
 import { z } from 'zod';
 
-import { DownloadSaveFormFields } from './DownloadSaveFormFields';
+import { DownloadSaveFormFields,DownloadFileSaveFormFields } from './DownloadSaveFormFields';
 import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { updateDownloadFormSchema, createDownloadFormSchema } from './saveDownloadFormSchema';
 import GenerateFields from '../components/GenerateFields'
+import GenerateDynamicFields from '../components/GenerateDynamicFields'
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useSWRConfig } from 'swr'
@@ -36,6 +37,7 @@ const SaveDownloadForm: React.VFC<Props> = (props) => {
 	} = methods;
 
   const onSubmit: SubmitHandler<CreateFormValues | UpdateFormValues> = async (values) => {
+
 		const res = await fetch('/api/admin/download/save', {
 			method: 'POST',
 			headers: {
@@ -55,12 +57,12 @@ const SaveDownloadForm: React.VFC<Props> = (props) => {
     }
 	};
 
-  console.log('errors', errors);
 	return (
 		<CardContent>
 			<FormProvider {...methods}>
 				<form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
 					<GenerateFields fields={DownloadSaveFormFields} />
+          <GenerateDynamicFields dynamicFields={DownloadFileSaveFormFields} name={'DownloadFiles'} />
           <SubmitPanel />
 				</form>
 			</FormProvider>

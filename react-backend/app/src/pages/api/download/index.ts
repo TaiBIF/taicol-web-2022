@@ -1,4 +1,5 @@
-import {Download,Category} from 'src/db/models/download';
+import { Download, DownloadFile,Category } from 'src/db/models/download';
+
 import type { NextApiRequest, NextApiResponse } from 'next/types';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -18,7 +19,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const download = await Download.findAll({
     where: where,
-		include:[{model:Category,attributes:['id']}],
+		include:[{model:Category,attributes:['id']},{model:DownloadFile}],
     order: [
       ['id', 'DESC']
     ]

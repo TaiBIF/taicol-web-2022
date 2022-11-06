@@ -44,15 +44,21 @@ export type ArticleDataProps = {
   }
 };
 
+export type DownloadFileDataProps = {
+  url: string,
+  type: string,
+}
+
 export type DownloadDataProps = {
 	id: number;
 	title: string;
   description: string;
-  file: string | React.ReactElement;
+  files: string | React.ReactNode;
   category: string;
   Category: {
     name: string;
-  }
+  },
+  DownloadFiles: DownloadFileDataProps[]
 };
 
 export type ApiResponseDataProps = {

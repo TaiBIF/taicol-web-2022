@@ -75,6 +75,7 @@ const GenerateDynamicFields: React.VFC<Props> = (props) => {
                   dynamicFields.map((input: InputTextFieldProps | InputSelectFieldProps) => {
                     const inputName = input.name.split(".").pop();
                     input.name = `${name}[${index}].${inputName}`;
+
                     // @ts-expect-error
                     const error = errors?.[name]?.[index]?.[inputName] ? true : false;
                     // @ts-expect-error

@@ -1,7 +1,7 @@
 import type { OptionProp } from 'src/types';
 
 export const roles = ['admin', 'user'] as const;
-export const filetypes = ['csv', 'pdf','doc','xls','xlsx','docx'] as const;
+export const filetypes = ['csv', 'pdf','doc','txt'] as const;
 export const categoryTypes = ['news', 'article','download'] as const;
 
 export type Role = typeof roles[number];
@@ -30,10 +30,8 @@ export const RoleOptions: RoleOption[] = [
 export const DownloadFileTypeOptions: DownloadFileTypeOption[] = [
 	{ label: 'CSV',value: 'csv'},
 	{ label: 'PDF',value: 'pdf'},
-	{ label: 'XLS',value: 'xls'},
-	{ label: 'XLSX',value: 'xlsx'},
 	{ label: 'DOC',value: 'doc'},
-	{ label: 'DOCX',value: 'docx'},
+	{ label: 'TXT',value: 'txt'},
 ];
 
 export const CategoryTypeOptions: CategoryOption[] = [
