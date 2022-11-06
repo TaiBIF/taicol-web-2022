@@ -1,9 +1,8 @@
-import BreadCrumb from 'src/components/frontend/common/BreadCrumb'
-import { useRouter } from 'next/router'
 import useSWR from 'swr'
 import React from 'react'
 import moment from 'moment'
 import validateColor from "validate-color";
+import Banner from 'src/components/frontend/common/Banner'
 const News: React.VFC = () => {
 
   const slug = typeof window !== "undefined" ? window.location.pathname.replace(/\/$/g,'').split("/").pop() : '';
@@ -26,32 +25,7 @@ const News: React.VFC = () => {
   return (
   <div className="page-top">
 		<div className="big-top">
-			<div className="float-dot-yel">
-				<img src="/images/cir_yel.png"/>
-			</div>
-			<div className="float-dot-blue">
-				<img src="/images/cir_blue.png"/>
-			</div>
-			<div className="top-wave"></div>
-			<BreadCrumb breadcrumbs={breadcrumbs} />
-			<div className="main-box">
-				<div className="pic-right1">
-					<img src="/images/cont-rightimg1.png"/>
-				</div>
-				<div className="pic-right1s">
-					<img src="/images/cont-rightimg1s.png"/>
-				</div>
-				<div className="float-dot-yel2">
-					<img src="/images/cir_yel.png"/>
-				</div>
-				<div className="float-dot-blue2">
-					<img src="/images/cir_blue.png"/>
-				</div>
-				<div className="title-box">
-            <h2>最新消息 <span></span></h2>
-            <p>NEWS</p>
-				</div>
-			</div>
+			  <Banner title='NEWS' zhTWTitle='最新消息' breadcrumbs={breadcrumbs}/>
 		</div>
       <div className="main-box vivi-cont-top">
         <div className="news-cont-title">

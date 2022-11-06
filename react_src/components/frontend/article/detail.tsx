@@ -1,4 +1,5 @@
-import BreadCrumb from '../common/BreadCrumb'
+
+import Banner from '../common/Banner'
 import * as React from 'react'
 import useSWR from 'swr'
 import validateColor from 'validate-color'
@@ -30,32 +31,7 @@ const Article: React.FC = () => {
   return (
   <div className="page-top">
 		<div className="big-top">
-			<div className="float-dot-yel">
-				<img src="/static/image/cir_yel.png"/>
-			</div>
-			<div className="float-dot-blue">
-				<img src="/static/image/cir_blue.png"/>
-			</div>
-			<div className="top-wave"></div>
-			<BreadCrumb breadcrumbs={breadcrumbs} />
-			<div className="main-box">
-				<div className="pic-right1">
-					<img src="/static/image/cont-rightimg1.png"/>
-				</div>
-				<div className="pic-right1s">
-					<img src="/static/image/cont-rightimg1s.png"/>
-				</div>
-				<div className="float-dot-yel2">
-					<img src="/static/image/cir_yel.png"/>
-				</div>
-				<div className="float-dot-blue2">
-					<img src="/static/image/cir_blue.png"/>
-				</div>
-				<div className="title-box">
-            <h2>主題文章 <span></span></h2>
-            <p>ARTICLES</p>
-				</div>
-			</div>
+        	<Banner title='ARTICLES' zhTWTitle='主題文章' breadcrumbs={breadcrumbs} />
 		</div>
       <div className="main-box vivi-cont-top">
         <div className="news-cont-title">
