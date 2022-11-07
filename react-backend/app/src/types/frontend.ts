@@ -79,6 +79,7 @@ export type EndemicProps = {
   image: string;
   count: number;
   ratio: string;
+  total: number;
 }
 
 export type SourceProps = {

@@ -85,6 +85,7 @@ export type EndemicProps = {
   name: string;
   image: string;
   count: number;
+  total: number;
   ratio: string;
 }
 

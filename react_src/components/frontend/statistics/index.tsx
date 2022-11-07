@@ -113,17 +113,19 @@ const StatisticsPage: React.FC = () => {
       setRankCounts(rankData)
   }
   
+  
   const formatEndemicCountData = (props: (string | number)[][]): void => {
       const endemicData:EndemicProps[] = props.map((item: (string | number)[]):EndemicProps => {
         const image = endemicInfo.find((r) => r.endemic === item[0])?.image || ''
         const name = item[0] as string
-        const count = item[2] as number
+        const count = item[1] as number
         const total = item[2] as number
-
+        console.log('item',item)
         return {
           name: name,
           image: image,
           count: count,
+          total: total,
           ratio: ( (count/total)*100).toFixed(2)
         }
       })
