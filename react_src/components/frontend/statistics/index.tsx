@@ -116,7 +116,7 @@ const StatisticsPage: React.FC = () => {
   const formatEndemicCountData = (props: (string | number)[][]): void => {
       const endemicData:EndemicProps[] = props.map((item: (string | number)[]):EndemicProps => {
         const image = endemicInfo.find((r) => r.endemic === item[0])?.image || ''
-        const name = item[0] as string
+        const name = item[1] as string
         const count = item[1] as number
         const total = item[2] as number
 
