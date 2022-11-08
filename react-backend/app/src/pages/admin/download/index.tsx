@@ -14,6 +14,7 @@ import Router from 'next/router';
 import { ActionTypes } from 'src/types';
 import SearchBar from 'src/table/components/SearchBar';
 import { shortDescription } from 'src/utils/helper';
+import { DownloadFileDataProps } from 'src/types';
 
 import type { DownloadDataProps,DownloadListProps } from 'src/types';
 
@@ -28,14 +29,6 @@ const getHeadCells = (url: string) => {
     {
       field: 'category',
       headerName: 'Category',
-      type: 'string',
-      align: 'center',
-      headerAlign: 'center',
-      flex: 1,
-    },
-    {
-      field: 'type',
-      headerName: 'File Type',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -58,22 +51,21 @@ const getHeadCells = (url: string) => {
       flex: 1,
     },
     {
-      field: 'file',
+      field: 'files',
       headerName: 'File',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
       flex: 1,
       renderCell: (params) => {
-        if (params.row.file) {
-          return <div className='flex flex-col items-center'>
-            {params.row.file.split(",").map((file: string) => {
+        console.log(params.row.files);
+        if (params.row.files) {
+          return <div className='flex flex-col items-left'>
+            {params?.row?.files.map((file: string) => {
               return (
-                <>
-                  <a className='my-2' href={file} target="_blank" rel="noreferrer">
-                    檔案
-                  </a>
-                </>
+                <a className='my-2' href={file} target="_blank" rel="noreferrer">
+                 {file}
+                </a>
               )
             })}
           </div>
@@ -150,9 +142,11 @@ const DownloadListPage: React.FC = () => {
     rows = data.rows.map((row) => {
       const category = row?.Category?.name  || '';
 
-			return {
+      const files = row?.DownloadFiles?.map((file:DownloadFileDataProps) => file.url) || [];
+
+      return {
         ...row,
-        file: row.file ,
+        files: files,
         description: shortDescription(row.description, 100),
         category: category,
 			};

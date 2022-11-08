@@ -45,7 +45,7 @@ const NewsItem: React.FC = () => {
 			<div className="news-area-cont">
 				<div className="news-list-box">
             <ul>
-          {newsList?.rows?.map((news: NewsDataProps, index: number) => <Item {...news} key={`news-${index}`} />)}
+            {newsList?.rows?.map((news: NewsDataProps, index: number) => <Item {...news} key={`news-${index}`} />)}
 					  </ul>
 				</div>
 
@@ -58,21 +58,30 @@ const NewsItem: React.FC = () => {
 
           let link = <a href="javascript: void(0)" onClick={() => setPage(pageNumber)} className={`num ${page == index + 1 ? 'now' : ''}`}>{pageNumber}</a>
 
-          if (pageNumber > 1 && total > 2)
+          console.log('pageNumber', pageNumber)
+          console.log('total', total)
+          if (pageNumber == 2 && total > 2)
             link = <>
-              {link}
-              <a href="javascript: void(0)" onClick={() => setPage(page-1)} className="back">
+              <a href="javascript: void(0)" onClick={() => {
+                if(page > 1)
+                  setPage(page - 1)
+              }} className="back">
                 <img src="/static/image/pagear1.svg"/>
                 <p>上一頁</p>
               </a>
+              {link}
             </>
 
           if (pageNumber == total && total > 2)
             link = <>
-              <a href="javascript: void(0)" onClick={() => setPage(page+1)} className="next">
+              <a href="javascript: void(0)" onClick={() => {
+                if(page < total)
+                  setPage(page + 1)
+              }} className="next">
                 <img src="/static/image/pagear2.svg"/>
                 <p>下一頁</p>
                 </a>
+              {link}
             </>
           return link
         })

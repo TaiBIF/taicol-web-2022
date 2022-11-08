@@ -14,6 +14,7 @@ import type { InputTextFieldProps } from 'src/types';
 type Props = {
   accept?: string;
   gridSize?: number;
+  multiple?: boolean;
 } & InputTextFieldProps &
 	SxProps;
 
@@ -40,15 +41,18 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
 	},
 }));
 
-export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,errorMessage, ...props }) => {
+export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,errorMessage,multiple = false, ...props }) => {
 	const {
     control,
     setValue,
+    getValues,
 		formState: { errors },
-	} = useFormContext();
+  } = useFormContext();
 
-	const [uploadFiles, setUploadFiles] = useState<string[]>([]);
+  console.log('getValues',getValues(props.name))
 
+
+	const [uploadFiles, setUploadFiles] = useState<string[]>(multiple ? getValues(props.name) : [getValues(props.name)]);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData();
 
@@ -65,9 +69,16 @@ export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,error
         .then((response) => response.json())
         .then((result) => {
           if (result.uploaded) {
-            const newUploadFiles:string[] = [...uploadFiles, result.url];
-            setUploadFiles(newUploadFiles);
-            setValue('file', newUploadFiles.join(","));
+            if (multiple) {
+            const newUploadFiles = [...uploadFiles, result.url];
+            setUploadFiles(newUploadFiles );
+            setValue(`${props.name}` , newUploadFiles);
+
+            }
+            else {
+              setUploadFiles([result.url]);
+              setValue(`${props.name}`, result.url);
+            }
           }
         })
         .catch((error) => {
@@ -78,6 +89,8 @@ export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,error
 
 	return (
     <Grid item xs={12} sm={gridSize} >
+    <Grid container>
+    <Grid item xs={12} sm={6} >
 			<FormControl fullWidth error={!!errors[props.name]}>
         <Box>
           <ButtonStyled component="label" variant="contained" htmlFor={`upload-image-${props.name}`}>
@@ -103,13 +116,18 @@ export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,error
         </Box>
         {props.accept && <Typography mt={4}>{props.accept}</Typography>}
 
-        {uploadFiles && uploadFiles.map((file: string, index: number) => {
-          const regex = /(.png|.gif|.jpg|.webp|.jpeg)/ig
-          const key = `uploda-file-${index}`
-          return regex.test(file) ? <ImgStyled key={key} src={file}/> :
-            <Typography key={key} mt={4}>{file}</Typography>
-      })}
+
         </FormControl>
+		    </Grid>
+        <Grid item xs={12} sm={6} >
+          {uploadFiles && uploadFiles.map((file: string, index: number) => {
+            const regex = /(.png|.gif|.jpg|.webp|.jpeg)/ig
+            const key = `uploda-file-${index}`
+            return regex.test(file) ? <ImgStyled key={key} src={file}/> :
+              <Typography key={key} mt={4}><a href={file} download>{file}</a></Typography>
+          })}
+		    </Grid>
+		  </Grid>
 		</Grid>
 	);
 };

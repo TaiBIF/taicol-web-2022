@@ -39,10 +39,10 @@ const DownloadItem: React.FC = () => {
 
       {categories?.map((category: CategoryDataProps, index: number) => {
         return <div className="classify-item" key={`download-category-${category.id}`}>
-          {selectedCategory == 'all' && <div className="mark-title">
+          <div className="mark-title">
             <img src="/static/image/title-mark.svg" />
             <p>{category.name}</p>
-          </div>}
+          </div>
           <ul className="download-set">
             {downloadList?.filter((item: DownloadDataProps) => parseInt(item.Category.id) == category.id).map((download: DownloadDataProps, index: number) => <Item {...download} key={`news-${index}`} />)}
           </ul>

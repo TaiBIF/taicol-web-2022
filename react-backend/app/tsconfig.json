@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noUnusedLocals" :false,
     "baseUrl": ".",
     "rootDir": "src",
     "target": "es6",

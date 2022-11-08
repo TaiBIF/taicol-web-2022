@@ -5,8 +5,8 @@ import {shortDescription} from 'src/utils/helper'
 
 
 const LatestNews: React.VFC<NewsDataProps> = (props) => {
-  const { title, Category, updatedAt, slug } = props
-  const date = moment(new Date(updatedAt))
+  const { title, Category, publishedDate, slug } = props
+  const date = moment(new Date(publishedDate))
 
   return (
     <li>

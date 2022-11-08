@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Banner from '../common/Banner'
-import ClassCountStatisics from './RankCountStatisics'
+import RankCountStatisics from './RankCountStatisics'
 import SpeciesCountStatisics from './SpeciesCountStatisics'
 import useSWR from 'swr';
 import { useEffect } from 'react';
@@ -9,7 +9,8 @@ import { CompareType } from './options'
 import SpeciesAndEndemicRatiosStatisics from './SpeciesAndEndemicRatiosStatisics'
 import SourceDoughnutChart from './SourceDoughnutChart'
 import { getTotal } from '../utils/helper'
-import TaiwanSpeciesAndEndemicCompareGlobalStatisics  from './TaiwanSpeciesAndEndemicCompareGlobalStatisics'
+import TaiwanSpeciesAndEndemicCompareGlobalStatisics from './TaiwanSpeciesAndEndemicCompareGlobalStatisics'
+import TaxonCountSection from './TaxonCountSection'
 import { speciesOptions } from './options'
 import PopupTable from './PopupTable'
 import { fetcher } from '../utils/helper'
@@ -67,22 +68,19 @@ const sourceInfo:SourceInfoProps[] = [
 const kingdomInfo:KingdomInfoProps[] = [
   { kingdom: 'Viruses',chineseName:'病毒' },
   { kingdom: 'Bacteria',chineseName:'細菌界' },
-  { kingdom: 'Archae',chineseName:'古菌界' },
+  { kingdom: 'Archaea',chineseName:'古菌界' },
   { kingdom: 'Protozoa',chineseName:'原生生物界' },
   { kingdom: 'Chromista',chineseName:'原藻界' },
-  { kingdom: 'Fungi',chineseName:'直菌界' },
+  { kingdom: 'Fungi',chineseName:'真菌界' },
   { kingdom: 'Plantae',chineseName:'植物界' },
   { kingdom: 'Animalia',chineseName:'動物界' },
 ]
-
 
 const breadcrumbs = [
   { title: '首頁', href: '/' },
   {title: '更多資訊'},
   {title: '資料統計'}
 ]
-
-
 const StatisticsPage: React.FC = () => {
 
   const [speciesCompareTableData, setSpeciesCompareTableData] = React.useState<CompareTableDataProps[]>([]);
@@ -114,17 +112,21 @@ const StatisticsPage: React.FC = () => {
 
       setRankCounts(rankData)
   }
-  const formatEndemicCountData = (props: (string | number)[][],total:number): void => {
+  
+  
+  const formatEndemicCountData = (props: (string | number)[][]): void => {
       const endemicData:EndemicProps[] = props.map((item: (string | number)[]):EndemicProps => {
         const image = endemicInfo.find((r) => r.endemic === item[0])?.image || ''
         const name = item[0] as string
         const count = item[1] as number
-
+        const total = item[2] as number
+        console.log('item',item)
         return {
           name: name,
           image: image,
           count: count,
-          ratio: (count/total*100).toFixed(2)
+          total: total,
+          ratio: ( (count/total)*100).toFixed(2)
         }
       })
 
@@ -146,15 +148,17 @@ const StatisticsPage: React.FC = () => {
       setSpeciesCompareCounts(speciesCompareData)
   }
   const formatKingdomCountData = (props: (string | number)[][]): void => {
-      const kingdomData:KingdomProps[] = props.map((item: (string | number)[]):KingdomProps => {
-        const name = item[0] as string
-        const count = item[1] as number
-        const chineseName = kingdomInfo.find((r) => r.kingdom == name)?.chineseName || ''
+    const kingdomData: KingdomProps[] = kingdomInfo.map((item: KingdomInfoProps): KingdomProps => {
+        const kingdom = props.find((r) => item.kingdom == r[0])
+
+        const name = kingdom ? kingdom[0] as string : ''
+        const count = kingdom ? kingdom[1] as number : 0
+        const chineseName = kingdom ? kingdomInfo.find((r) => r.kingdom == name)?.chineseName || '' : ''
         return {
-          name: `${chineseName} ${name}`,
+          name: [chineseName, name],
           count: count,
         }
-      })
+    });
 
       setKingdomCounts(kingdomData)
   }
@@ -210,9 +214,8 @@ const StatisticsPage: React.FC = () => {
   useEffect(() => {
     if (data) {
       formatRankCountData(data.rank_count)
-      const endemicTotal = getTotal(data.endemic_count)
 
-      formatEndemicCountData(data.endemic_count, endemicTotal)
+      formatEndemicCountData(data.endemic_count)
       formatSourceCountData(data.source_count)
       formatSpeciesCompareCountData(data[speciesCompare])
       formatKingdomCountData(data.kingdom_count)
@@ -220,25 +223,16 @@ const StatisticsPage: React.FC = () => {
     }
   }, [data,speciesCompare])
 
-  console.log('kingdomCounts',kingdomCounts)
-  console.log('rankCounts',rankCounts)
-  console.log('kingdomCounts',kingdomCounts)
-  console.log('endemicCounts',endemicCounts)
-  console.log('speciesCompareCounts',speciesCompareCounts)
   return (<>
     <div className="page-top">
       <Banner title='STATISTICS' zhTWTitle='資料統計' breadcrumbs={breadcrumbs} picType={'crap'} />
-      <div className="statis-3-cont">
-        <div className="main-box">
-          <ul className="statis-3">
-
-          </ul>
-        </div>
+      
+        <TaxonCountSection />
         <div className="chart-box">
           <div className="main-box">
             <div className="boxarea-2-1">
                 <SpeciesCountStatisics data={kingdomCounts} />
-                <ClassCountStatisics data={rankCounts} />
+                <RankCountStatisics data={rankCounts} />
             </div>
             <SpeciesAndEndemicRatiosStatisics data={endemicCounts} />
 
@@ -252,7 +246,6 @@ const StatisticsPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
     </div>
     <PopupTable show={showCompareTable} handleShowCompareTableClick={handleShowCompareTableClick} data={speciesCompareTableData} />
   </>)

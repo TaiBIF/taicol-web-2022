@@ -26,3 +26,6 @@ export async function fetcher<JSON = any>(
   const res = await fetch(input, init)
   return res.json()
 }
+export const timeout = (delay:number) => {
+    return new Promise( res => setTimeout(res, delay) );
+}

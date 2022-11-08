@@ -1,15 +1,6 @@
 import { InputTextFieldProps, InputSelectFieldProps } from 'src/types';
 import { getCategories } from 'src/api';
 
-export type NewsSaveFields = {
-	id: number;
-	title: string;
-	slug: string;
-	description: string;
-	category: string;
-};
-
-
 export const NewsSaveFormFields: Array<InputTextFieldProps | InputSelectFieldProps> = [
 	{ name: 'publish', type: 'switch', label: '發佈' },
 	{ name: 'id', type: 'hidden', label: '' },
@@ -28,5 +19,6 @@ export const NewsSaveFormFields: Array<InputTextFieldProps | InputSelectFieldPro
     onChange(newSlug)
   } },
   { name: 'CategoryId', type: 'select', label: '目錄', options: getCategories('news'),async:true},
+	{ name: 'publishedDate', type: 'datepicker', label: '日期' },
 	{ name: 'description', type: 'editor', label: '描述' },
 ];

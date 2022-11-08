@@ -10,20 +10,32 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const apidocInfo = await ApidocInfo.findOne({
     attributes: {exclude: ['id']},
+    order: [
+      ['id', 'DESC']
+    ]
   });
 
   const apidocParams = await ApidocParam.findAll({
     attributes: {exclude: ['id']},
+    order: [
+      ['id', 'DESC']
+    ]
   });
 
   const apidocReturnParams = await ApidocReturnParam.findAll({
     attributes: {exclude: ['id']},
+    order: [
+      ['id', 'DESC']
+    ]
   });
 
 
 
   const  responses = await ApidocResponse.findAll({
     attributes: {exclude: ['id']},
+    order: [
+      ['id', 'DESC']
+    ]
   });
 
   res.status(200).json({
