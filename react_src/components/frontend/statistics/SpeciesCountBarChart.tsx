@@ -12,7 +12,6 @@ import type { ChartData } from 'chart.js';
 import { Bar  } from 'react-chartjs-2';
 import "chartjs-plugin-datalabels";
 import type { KingdomProps } from '../types';
-
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -22,21 +21,14 @@ ChartJS.register(
   Legend
 );
 
-const options = {
+const options:any = {
   legend: {
     display: true,
     position: 'right',
     labels: {
       padding: 16,
       usePointStyle: true,
-      generateLabels: function() {
-        const labels = [
-          {text:'dsfd'},
-          {text:'fsdf'},
-          {text:'sdfsdf'}
-        ];
-        return labels;
-      }
+
     }
   },
   indexAxis: 'y' as const,
@@ -58,11 +50,24 @@ const options = {
   scales: {
     xAxes: {
       grid: {
-          display: false,
+          display: true,
         },
       ticks: {
         display: true,
+        callback: function (value: string) {
+          const count = parseInt(value) / 1000;
+          return count.toString() + 'k';
+        }
       },
+    },
+
+    yAxes: {
+      grid: {
+          display: false,
+        },
+      ticks: {
+        display: true
+      }
     },
   },
 };
@@ -70,14 +75,14 @@ const options = {
 type Props = {
   data: KingdomProps[]
 }
-const SpeciesCountBarChart: React.FC<Props> = (props) => {
+const SpeciesCountBarChart: React.VFC<Props> = (props) => {
   const { data } = props;
 
   const chartData:ChartData<'bar'> = {
     labels: data.map((item) => item.name),
     datasets: [
       {
-        label: '全球現有種數',
+        label: '物種數',
         data: data.map((item) => item.count),
         backgroundColor: '#85BBD0',
         borderWidth: 0,

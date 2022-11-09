@@ -18,3 +18,6 @@ export const getTotal = (data:(string|number)[][]) => {
     return total
   }, 0)
 }
+export const timeout = (delay:number) => {
+    return new Promise( res => setTimeout(res, delay) );
+}

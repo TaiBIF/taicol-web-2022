@@ -1,7 +1,8 @@
 import { createDownloadFormSchema,updateDownloadFormSchema } from 'src/form/download/saveDownloadFormSchema';
-import {Download} from 'src/db/models/download';
+import {Download,DownloadFile} from 'src/db/models/download';
 import errors from 'src/constants/errors';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
+import sequelize from 'src/db/index';
 
 type ResponseData = {
 	status: boolean;
@@ -11,6 +12,7 @@ type ResponseData = {
 export default async (req: NextApiRequest, res: NextApiResponse<ResponseData>) => {
   if (req.method != "POST") res.status(403);
 
+  const t = await sequelize.transaction();
   const mode = req.body.id  ? 'update' : 'create';
 	const result = mode == 'update' ? updateDownloadFormSchema : createDownloadFormSchema
     .safeParse(req.body);
@@ -19,30 +21,53 @@ export default async (req: NextApiRequest, res: NextApiResponse<ResponseData>) =
 	let errorMessage = errors.POST_UNEXPECT;
 
 	if (result) {
-		let insertData = {};
+    let insertData = {};
+    let files = req.body['files'];
 
 		Object.keys(req.body).forEach((key) => {
       if(key != 'id')
         Object.assign(insertData, { [key]: req.body[key] });
+    });
 
-		});
+    try {
+      if (mode == 'create') {
 
-    if (mode == 'create') {
+        const download = await Download.create({
+          ...insertData},{
+          include: [DownloadFile], transaction: t
+        });
+      }
+      else {
+        // delete download
+        await Download.destroy({
+          where: {
+            id: req.body.id
+          },
+          transaction: t
+        });
+        await DownloadFile.destroy({
+          where: {
+            DownloadId: req.body.id
+          },
+          transaction: t
+        });
 
-      const download = await Download.create(insertData);
+        const result = await Download.create(insertData, {
+          include: [DownloadFile],
+          transaction: t
+        });
 
-      if (download)
-        resStatus = true;
-      else
-        errorMessage = errors.EMAIL_EXIST;
+      }
+
+      await t.commit();
+
+      resStatus = true;
     }
-    else {
-      const result = await Download.update(insertData, { where: { id: req.body.id } });
-
-      if(result)
-        resStatus = true;
+    catch (e) {
+      await t.rollback();
+      errorMessage = errors.POST_UNEXPECT;
     }
-	}
+  }
 
 	const resData: ResponseData = resStatus
 		? {

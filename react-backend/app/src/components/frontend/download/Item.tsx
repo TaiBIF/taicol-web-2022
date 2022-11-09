@@ -1,11 +1,12 @@
 import React from 'react';
 import type { DownloadDataProps } from 'src/types/frontend'
+import DownloadFile from './File'
 import moment from 'moment';
 
-const exts = ['pdf','txt','csv']
+const exts = ['pdf','doc','txt','csv']
 
 const DownloadItem: React.VFC<DownloadDataProps> = (props) => {
-  const {   title, file,updatedAt,description } = props
+  const {   title,DownloadFiles,updatedAt,description } = props
   const date = moment(new Date(updatedAt))
 
   return (
@@ -18,10 +19,8 @@ const DownloadItem: React.VFC<DownloadDataProps> = (props) => {
         <p className="short">{description}</p>
       </div>
       <div className="right-file">
-        {file && file.split(",").map((file, index) => {
-          const ext = file.split('.').pop() as string
-          const className = exts.includes(ext) ? ext : 'txt'
-          return <a href={file} className={`${className} uppercase`} target="_blank" download={file} key={`file-${index}`}>{ext}</a>
+        {DownloadFiles && DownloadFiles.map((file, index) => {
+          return <DownloadFile type={file.type} url={file.url} key={`download-file-${index}`} />
         })}
       </div>
     </li>

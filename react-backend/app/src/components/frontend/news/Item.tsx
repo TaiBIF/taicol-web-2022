@@ -1,12 +1,14 @@
 import React from 'react';
 import type { NewsDataProps } from 'src/types/frontend'
 import moment from 'moment';
+import validateColor from "validate-color";
 import { shortDescription } from 'src/utils/helper';
 
+
 const NewsItem: React.VFC<NewsDataProps> = (props) => {
-  const { title, Category, updatedAt, slug } = props
-  const date = moment(new Date(updatedAt))
-  console.log('news item date',date)
+  const { title,description, Category, publishedDate, slug } = props
+  const date = moment(new Date(publishedDate))
+  const categoryBackgroundColor = Category.color  && validateColor(Category.color) ? Category.color : "black"
 
   return (
     <li>
@@ -16,7 +18,7 @@ const NewsItem: React.VFC<NewsDataProps> = (props) => {
             <div className="day">{date.format('DD')}</div>
             <div className="mon-year">{date.format('ddd')}.{date.format('YYYY')}</div>
           </div>
-          <div className={`tag`} style={{ backgroundColor: `${Category.color}`}}>
+          <div className={`tag`} style={{ backgroundColor: categoryBackgroundColor}}>
             {Category.name} - {Category.color}
           </div>
         </div>
@@ -26,7 +28,7 @@ const NewsItem: React.VFC<NewsDataProps> = (props) => {
             {title}
           </h3>
           <p>
-            {title}
+            {shortDescription(description,100)}
           </p>
       </div>
       </a>

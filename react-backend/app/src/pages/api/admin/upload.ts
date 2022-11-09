@@ -52,7 +52,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       for (const file of files) {
         const tempPath = file[1].filepath;
         const ext = file[1]?.originalFilename?.split('.').pop() || '';
-        const filename = `${nanoid()}.${ext}`;
+        //const filename = `${nanoid()}.${ext}`;
+        const filename =  file[1]?.originalFilename;
         await fs.copyFile(tempPath, targetPath +filename);
 
         fileUrls.push(`${process.env.NEXT_PUBLIC_DOMAIN}/upload/${filename}`)

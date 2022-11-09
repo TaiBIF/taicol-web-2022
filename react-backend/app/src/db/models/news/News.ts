@@ -8,7 +8,8 @@ class New extends Model {
 	declare title: string;
 	declare slug: string;
   declare description: string;
-  declare publish:boolean
+  declare publish: boolean;
+  declare publishedDate: Date;
 }
 
 New.init(
@@ -20,6 +21,10 @@ New.init(
 		},
 		title: {
 			type: new DataTypes.STRING(256),
+			allowNull: false,
+		},
+		publishedDate: {
+			type: new DataTypes.DATE,
 			allowNull: false,
 		},
 		description: {

@@ -1,3 +1,5 @@
+import { DownloadFileDataProps } from "./table";
+
 export type TaxonCountProps = {
   img: string;
   title: string;
@@ -12,7 +14,7 @@ export type NewsDataProps = {
   title: string,
   description: string,
   slug:string,
-  updatedAt: string;
+  publishedDate: string;
   Category: {
     name: string,
     color: string,
@@ -24,7 +26,7 @@ export type ArticleDataProps = {
   title: string,
   author: string,
   slug:string,
-  updatedAt: string;
+  publishedDate: string;
   Category: {
     name: string,
     color: string,
@@ -35,11 +37,10 @@ export type DownloadDataProps = {
   category: string,
   Category: {id:string},
   title: string,
-  file: string,
+  DownloadFiles: DownloadFileDataProps[],
   description: string,
   updatedAt:string
 }
-
 
 export type BreadCrumbProps = {
   title: string;
@@ -62,7 +63,7 @@ export type Link = {
 }
 
 export type KingdomProps = {
-  name: string;
+  name: [string, string];
   count: number;
 }
 
@@ -78,6 +79,7 @@ export type EndemicProps = {
   image: string;
   count: number;
   ratio: string;
+  total: number;
 }
 
 export type SourceProps = {

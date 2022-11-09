@@ -1,4 +1,4 @@
-import {Download} from 'src/db/models/download';
+import {Download,DownloadFile,Category} from 'src/db/models/download';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
 import { updateDownloadFormSchema } from 'src/form/download/saveDownloadFormSchema';
 
@@ -10,7 +10,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 	let download: Download | null = null;
 
 	if (result) {
-		download = await Download.findByPk(id);
+    download = await Download.findByPk(id,
+      {
+        include: [
+          {model:Category,attributes:['id']},
+          { model: DownloadFile }]
+      }
+    );
 	}
 
 	res.status(200).json(download);

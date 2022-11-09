@@ -3,11 +3,14 @@ import errors from 'src/constants/errors';
 
 const share = {
   CategoryId:z.string().or(z.number()),
-  file: z.string().nonempty( { message: errors.NON_EMPTY }),
 	title: z.string().nonempty( { message: errors.NON_EMPTY }),
-	type: z.string().nonempty( { message: errors.NON_EMPTY }),
 	description: z.string().nonempty( { message: errors.NON_EMPTY }),
-  publish:z.boolean().default(true)
+  publish: z.boolean().default(true),
+  DownloadFiles: z.array(
+  z.object({
+    type: z.string().nonempty( { message: errors.NON_EMPTY }),
+    url: z.string().nonempty( { message: errors.NON_EMPTY }),
+}))
 };
 
 export const createDownloadFormSchema = z.object({

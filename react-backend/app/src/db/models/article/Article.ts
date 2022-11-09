@@ -7,7 +7,9 @@ class Article extends Model {
 	declare category: string;
 	declare author: string;
 	declare title: string;
+	declare slug: string;
 	declare description: string;
+  declare publishedDate: Date;
 }
 
 Article.init(
@@ -17,8 +19,16 @@ Article.init(
 			autoIncrement: true,
 			primaryKey: true,
 		},
+		publishedDate: {
+			type: new DataTypes.DATE,
+			allowNull: false,
+		},
 		author: {
 			type: new DataTypes.STRING(256),
+			allowNull: true,
+		},
+		authorInfo: {
+			type: new DataTypes.STRING(1000),
 			allowNull: true,
 		},
 		title: {

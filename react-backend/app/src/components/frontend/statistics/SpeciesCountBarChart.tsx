@@ -22,21 +22,14 @@ ChartJS.register(
   Legend
 );
 
-const options = {
+const options:any = {
   legend: {
     display: true,
     position: 'right',
     labels: {
       padding: 16,
       usePointStyle: true,
-      generateLabels: function() {
-        const labels = [
-          {text:'dsfd'},
-          {text:'fsdf'},
-          {text:'sdfsdf'}
-        ];
-        return labels;
-      }
+
     }
   },
   indexAxis: 'y' as const,
@@ -58,11 +51,24 @@ const options = {
   scales: {
     xAxes: {
       grid: {
-          display: false,
+          display: true,
         },
       ticks: {
         display: true,
+        callback: function (value: string) {
+          const count = parseInt(value) / 1000;
+          return count.toString() + 'k';
+        }
       },
+    },
+
+    yAxes: {
+      grid: {
+          display: false,
+        },
+      ticks: {
+        display: true
+      }
     },
   },
 };
@@ -77,7 +83,7 @@ const SpeciesCountBarChart: React.VFC<Props> = (props) => {
     labels: data.map((item) => item.name),
     datasets: [
       {
-        label: '全球現有種數',
+        label: '物種數',
         data: data.map((item) => item.count),
         backgroundColor: '#85BBD0',
         borderWidth: 0,

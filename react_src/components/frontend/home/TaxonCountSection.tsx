@@ -2,10 +2,11 @@ import * as React from 'react';
 import TaxonCount from './TaxonCount'
 import type {TaxonCountProps} from '../types'
 import MoreButton from '../common/MoreButton'
+import useSWR from 'swr';
 
 const taxonCountList:TaxonCountProps[] = [
   {
-    img: '/static/image/cancer01.png',
+    img: '/static/image/ssicon01.svg',
     title: '收錄物種數',
     enTitle:<>SPECIES AND <br/>INFRASPECIES</>,
     count: 0,
@@ -48,9 +49,14 @@ const marqueeLongStyle:style = {
 }
 
 const TaxonCountSection: React.FC = () => {
-  //const { data } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/web/stat/index`)
-
-  const data:Array<[string, number]> = [["reference", 243], ["taxon", 60214], ["name", 86950]]
+  const [data, setData] = React.useState<Array<[string,number]>>([])
+  React.useEffect(() => {
+    fetch(`${process.env.TAICOL_API_URL}/web/stat/index`)
+      .then(res => res.json())
+      .then(data => {
+        setData(data)
+      })
+  }, [])
 
   return (
     <section className="section-2-statistics" >
@@ -83,7 +89,7 @@ const TaxonCountSection: React.FC = () => {
 						<div className="w-box">
 							<ul className="statis-3">
                 {taxonCountList?.map((taxonCount: TaxonCountProps, index: number) => {
-                  const count = data && data?.find((item) => item[0] === taxonCount.type)?.[1] || 0
+                  const count = data && data?.find((item:[string, number]) => item[0] === taxonCount.type)?.[1] || 0
                   taxonCount.count = count
                   return <TaxonCount {...taxonCount} key={`taxon-count-${index}`} />
                 })}
