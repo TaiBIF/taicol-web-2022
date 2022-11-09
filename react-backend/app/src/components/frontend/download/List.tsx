@@ -38,7 +38,7 @@ const DownloadItem: React.VFC = () => {
 
       {categories?.map((category: CategoryDataProps, index: number) => {
         return <div className="classify-item" key={`download-category-${category.id}`}>
-          {selectedCategory == 'all' && <div className="mark-title">
+          {(selectedCategory == 'all' || selectedCategory == category.id) && <div className="mark-title">
             <img src="/images/title-mark.svg" />
             <p>{category.name}</p>
           </div>}

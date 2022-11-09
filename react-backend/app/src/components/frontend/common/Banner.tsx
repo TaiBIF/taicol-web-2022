@@ -31,16 +31,16 @@ const Banner: React.VFC<Props> = (props) => {
 			<div className="top-wave"></div>
       <BreadCrumb breadcrumbs={breadcrumbs} />
 			<div className="main-box">
-        {picType == 'turtle' && <>
+        {(picType == 'turtle' && loadBanner) && <>
           <div className="pic-right1">
-             {loadBanner && <img src="/images/cont-rightimg1.png" />}
+             <img src="/images/cont-rightimg1.png" />
           </div>
           <div className="pic-right1s">
             <img src="/images/cont-rightimg1s.png" />
           </div>
         </>}
-        {picType == 'crap' && <div className="pic-right2">
-          {loadBanner && <img src="/images/cont-rightimg2.png" />}
+        {(picType == 'crap' && loadBanner) && <div className="pic-right2">
+          <img src="/images/cont-rightimg2.png" />
 				</div>}
 				<div className="float-dot-yel2">
 					<img src="/images/cir_yel.png"/>
