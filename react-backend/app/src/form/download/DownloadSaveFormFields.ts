@@ -21,6 +21,6 @@ export const DownloadSaveFormFields: Array<InputTextFieldProps | InputSelectFiel
 ];
 
 export const DownloadFileSaveFormFields: Array<InputTextFieldProps | InputSelectFieldProps> = [
-	{ name: 'type', type: 'select', label: '檔案類型',options:DownloadFileTypeOptions, gridSize:4},
-	{ name: 'url', type: 'file', label: '檔案', gridSize:8 },
+	{ name: 'type', type: 'select', label: '檔案類型',options:DownloadFileTypeOptions, gridSize:2},
+	{ name: 'url', type: 'file', label: '檔案', gridSize:10 },
 ];
