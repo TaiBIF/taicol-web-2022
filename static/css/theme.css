@@ -496,6 +496,10 @@ body {
     font-size: 18px
 }
 
+#content-wrapper {
+    min-height: 100vh;
+}
+
 .header {
     position: fixed;
     z-index: 60;
