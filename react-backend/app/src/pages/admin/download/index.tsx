@@ -60,7 +60,7 @@ const getHeadCells = (url: string) => {
       renderCell: (params) => {
         console.log(params.row.files);
         if (params.row.files) {
-          return <div className='flex flex-col items-left'>
+          return <div className='flex flex-col items-left' style={{wordBreak:'break-all'}} >
             {params?.row?.files.map((file: string) => {
               return (
                 <a className='my-2' href={file} target="_blank" rel="noreferrer">
@@ -87,7 +87,7 @@ const getHeadCells = (url: string) => {
 
           switch (action) {
             case 'update':
-              Router.push(`//admin/download/update?id=${params.row.id}`);
+              Router.push(`/admin/download/update?id=${params.row.id}`);
               break;
             case 'delete':
                 if (confirm('Are you sure you want to delete this file?')) {
@@ -160,7 +160,7 @@ const DownloadListPage: React.FC = () => {
           <>
             <SearchBar handleSearch={(keyword) => setKeyword(keyword)} />
             <IconButton
-              onClick={(e: React.MouseEvent) => Router.push('//admin/download/create')}
+              onClick={(e: React.MouseEvent) => Router.push('/admin/download/create')}
               sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <AddIcon />
             </IconButton>

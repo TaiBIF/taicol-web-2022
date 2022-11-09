@@ -90,7 +90,7 @@ export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,error
 	return (
     <Grid item xs={12} sm={gridSize} >
     <Grid container>
-    <Grid item xs={12} sm={6} >
+    <Grid item xs={12} sm={4} >
 			<FormControl fullWidth error={!!errors[props.name]}>
         <Box>
           <ButtonStyled component="label" variant="contained" htmlFor={`upload-image-${props.name}`}>
@@ -119,7 +119,7 @@ export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,error
 
         </FormControl>
 		    </Grid>
-        <Grid item xs={12} sm={6} >
+        <Grid item xs={12} sm={8} style={{wordBreak:'break-all'}} >
           {uploadFiles && uploadFiles.map((file: string, index: number) => {
             const regex = /(.png|.gif|.jpg|.webp|.jpeg)/ig
             const key = `uploda-file-${index}`
