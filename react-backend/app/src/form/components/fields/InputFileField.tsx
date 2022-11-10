@@ -49,10 +49,7 @@ export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,error
 		formState: { errors },
   } = useFormContext();
 
-  console.log('getValues',getValues(props.name))
-
-
-	const [uploadFiles, setUploadFiles] = useState<string[]>(multiple ? getValues(props.name) : [getValues(props.name)]);
+	const [uploadFiles, setUploadFiles] = useState<string[]>(getValues(props.name) ? multiple ?  getValues(props.name)  : [getValues(props.name)] : []);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData();
 
@@ -69,6 +66,7 @@ export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,error
         .then((response) => response.json())
         .then((result) => {
           if (result.uploaded) {
+
             if (multiple) {
             const newUploadFiles = [...uploadFiles, result.url];
             setUploadFiles(newUploadFiles );
@@ -114,7 +112,7 @@ export const InputFileField: React.VFC<Props> = ({ gridSize, error = false,error
             Reset
           </ResetButtonStyled>
         </Box>
-        {props.accept && <Typography mt={4}>{props.accept}</Typography>}
+        {props.accept && <Typography mt={4}>只限: {props.accept}</Typography>}
 
 
         </FormControl>
