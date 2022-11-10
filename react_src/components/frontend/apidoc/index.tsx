@@ -18,12 +18,7 @@ const ApiPage: React.FC = () => {
   console.log(`${process.env.REACT_API_URL}/api/apidoc/info`)
   console.log('error', error);
   console.log('data',data)
-  const [markdown, setMarkdown] = React.useState<string>('');
-  React.useEffect(() => {
-    if (data) {
-      fetch(`${data.markdown}`).then((md) => md.text()).then((md) => setMarkdown(md));
-    }
-  }, [data]);
+
 
   return (
     <div className="page-top">
@@ -33,8 +28,8 @@ const ApiPage: React.FC = () => {
           <div className='page-update'>更新日期：{data && moment(data.createdAt).format('yyyy/MM/DD') }</div>
 
           <div id='markdown' className='api-box apitable-style'>
-            {markdown &&
-              <ReactMarkdown remarkPlugins={[remarkGfm]} children={markdown}  />
+            {data &&
+              <ReactMarkdown remarkPlugins={[remarkGfm]} children={data.content}  />
             }
           </div>
         </div>

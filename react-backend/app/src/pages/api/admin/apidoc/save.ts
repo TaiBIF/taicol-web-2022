@@ -2,6 +2,7 @@ import { saveApidocFormSchema } from 'src/form/apidoc/saveApidocFormSchema';
 import {Apidoc} from 'src/db/models/apidoc';
 import errors from 'src/constants/errors';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
+const fs = require('fs');
 
 type ResponseData = {
 	status: boolean;
@@ -15,26 +16,28 @@ export default async (req: NextApiRequest, res: NextApiResponse<ResponseData>) =
 	const result = saveApidocFormSchema.safeParse(req.body);
 
 	let resStatus = false;
-	let errorMessage = errors.POST_UNEXPECT;
+  let errorMessage = errors.POST_UNEXPECT;
 
-  // delete all record
-  Apidoc.truncate()
+  const url = new URL(req.body.markdown);
+  try {
+    const data = fs.readFileSync(`public${url.pathname}`, 'utf8');
 
-	if (result) {
-		let insertData = {};
+    // delete all record
+    Apidoc.truncate()
 
-		Object.keys(req.body).forEach((key) => {
-      if(key != 'id')
-        Object.assign(insertData, { [key]: req.body[key] });
+    if (result) {
+      let insertData = {content:data,markdown:req.body.markdown};
 
-		});
 
-    const apidocResponse = await Apidoc.create(insertData);
+      const apidocResponse = await Apidoc.create(insertData);
 
-    if (apidocResponse)
-      resStatus = true;
-    else
-      errorMessage = errors.EMAIL_EXIST;
+      if (apidocResponse)
+        resStatus = true;
+      else
+        errorMessage = errors.EMAIL_EXIST;
+    }
+     } catch (err) {
+    console.error(err);
   }
 
 	const resData: ResponseData = resStatus

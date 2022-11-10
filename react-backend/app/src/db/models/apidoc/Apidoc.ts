@@ -16,8 +16,12 @@ Apidoc.init(
 			autoIncrement: true,
 			primaryKey: true,
 		},
+		content: {
+			type: new DataTypes.TEXT,
+			allowNull: true,
+    },
 		markdown: {
-			type: new DataTypes.STRING(256),
+			type: new DataTypes.STRING(1000),
 			allowNull: true,
     }
 	},
