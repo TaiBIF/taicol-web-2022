@@ -26,14 +26,12 @@ const ApiPage: React.FC = () => {
     <div className="page-top">
       <Banner title='API DOCUMENTATION' zhTWTitle='API說明文件' breadcrumbs={breadcrumbs} />
       <div className='main-box vivi-cont-top'>
-        <div className="api-box">
-          <div className='page-update'>更新日期：{data && moment(data.createdAt).format('yyyy/MM/DD') }</div>
+        <div className='page-update'>更新日期：{data && moment(data.createdAt).format('yyyy/MM/DD') }</div>
 
-          <div id='markdown' className='api-box apitable-style'>
-            {data &&
-              <ReactMarkdown remarkPlugins={[remarkGfm]} children={utf8.decode(data.content)}  />
-            }
-          </div>
+        <div id='markdown' className='api-box apitable-style'>
+          {data &&
+            <ReactMarkdown remarkPlugins={[remarkGfm]} children={utf8.decode(data.content)}  />
+          }
         </div>
       </div>
     </div>

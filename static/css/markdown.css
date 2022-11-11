@@ -31,6 +31,10 @@
   padding: 15px 15px;
 }
 
+#markdown tr:nth-child(odd) td {
+  background-color: white;
+}
+
 #markdown tr:nth-child(even) td {
   background-color: #F5F8FA;
 }
@@ -54,13 +58,13 @@
   color: #333;
   margin-left: 10px;
   position: relative;
-  margin-top:30px;
+  margin-top:50px;
   margin-bottom:30px;
   font-weight: normal;
 }
 #markdown h2::before,
 #markdown h3::before {
-  content:url('/images/title-mark.svg')
+  content:url('/static/image/title-mark.svg')
 }
 
 #markdown ul {
