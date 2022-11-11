@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from 'remark-gfm'
 import useSWR from 'swr'
 import { fetcher } from '../utils/helper'
+import * as utf8 from 'utf8';
 
 
 const breadcrumbs = [
@@ -15,11 +16,12 @@ const breadcrumbs = [
 
 const ApiPage: React.FC = () => {
   const { data, isValidating, error } = useSWR(`${process.env.REACT_API_URL}/api/apidoc/info`,fetcher);
-  console.log(`${process.env.REACT_API_URL}/api/apidoc/info`)
-  console.log('error', error);
-  console.log('data',data)
-
-
+ 
+  if (data) {
+    
+  console.log('data.content',data.content)
+  console.log('utf8.decode(data.content)',utf8.decode(data.content))
+  }
   return (
     <div className="page-top">
       <Banner title='API DOCUMENTATION' zhTWTitle='API說明文件' breadcrumbs={breadcrumbs} />
@@ -29,7 +31,7 @@ const ApiPage: React.FC = () => {
 
           <div id='markdown' className='api-box apitable-style'>
             {data &&
-              <ReactMarkdown remarkPlugins={[remarkGfm]} children={data.content}  />
+              <ReactMarkdown remarkPlugins={[remarkGfm]} children={utf8.decode(data.content)}  />
             }
           </div>
         </div>

@@ -14,7 +14,7 @@ import DownloadSaveForm from 'src/form/download/DownloadSaveForm';
 import { updateDownloadFormSchema } from 'src/form/download/saveDownloadFormSchema';
 
 // **  SWR Imports
-import useSWR from 'swr';
+import useSWRImmutable from 'swr/immutable'
 
 type UpdateFormValues = z.infer<typeof updateDownloadFormSchema>;
 
@@ -23,7 +23,7 @@ const SaveDownloadPage = () => {
 	const router = useRouter();
 	const { id } = router.query;
 
-	const { data } = useSWR<UpdateFormValues>(id ? `/api/admin/download/info?id=${id}` : []);
+	const { data } = useSWRImmutable<UpdateFormValues>(id ? `/api/admin/download/info?id=${id}` : []);
 
 	return (
 		<Card>

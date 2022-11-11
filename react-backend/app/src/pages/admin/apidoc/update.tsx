@@ -15,7 +15,7 @@ import { saveApidocFormSchema } from 'src/form/apidoc/saveApidocFormSchema';
 
 
 // **  SWR Imports
-import useSWR from 'swr';
+import useSWRImmutable from 'swr/immutable'
 
 type SaveFormValues = z.infer<typeof saveApidocFormSchema>;
 
@@ -23,7 +23,7 @@ const UpdatePage = () => {
 	// ** State
 	const router = useRouter();
 
-	const { data,isValidating } = useSWR<SaveFormValues>(`/api/admin/apidoc/info`);
+	const { data,isValidating } = useSWRImmutable<SaveFormValues>(`/api/admin/apidoc/info`);
 
 	return (
 		<Card>

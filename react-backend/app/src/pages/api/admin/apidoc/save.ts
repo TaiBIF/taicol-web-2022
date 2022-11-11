@@ -2,6 +2,7 @@ import { saveApidocFormSchema } from 'src/form/apidoc/saveApidocFormSchema';
 import {Apidoc} from 'src/db/models/apidoc';
 import errors from 'src/constants/errors';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
+import utf8 from 'utf8';
 const fs = require('fs');
 
 type ResponseData = {
@@ -20,13 +21,13 @@ export default async (req: NextApiRequest, res: NextApiResponse<ResponseData>) =
 
   const url = new URL(req.body.markdown);
   try {
-    const data = fs.readFileSync(`public${url.pathname}`, 'utf8');
+    const data = fs.readFileSync(decodeURIComponent(`public${url.pathname}`), 'utf8');
 
     // delete all record
     Apidoc.truncate()
 
     if (result) {
-      let insertData = {content:data,markdown:req.body.markdown};
+      let insertData = {content:utf8.encode(data),markdown:req.body.markdown};
 
 
       const apidocResponse = await Apidoc.create(insertData);
