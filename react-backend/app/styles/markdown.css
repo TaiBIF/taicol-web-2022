@@ -65,7 +65,8 @@
 }
 #markdown h2::before,
 #markdown h3::before {
-  content:url('/images/title-mark.svg')
+  content:url('/images/title-mark.svg');
+  margin-right:10px;
 }
 
 #markdown ul {

@@ -132,20 +132,22 @@ const StatisticsPage: React.FC = () => {
 
       setEndemicCounts(endemicData)
   }
-  const formatSpeciesCompareCountData = (props: (string | number| null)[][]): void => {
-      const speciesCompareData:SpeciesCompareProps[] = props.map((item: (string | number| null)[]):SpeciesCompareProps => {
-        const name = item[0] as string
-        const TaiwanCount = item[1] as number
-        const GlobalCount = item[2] as number
+  const formatSpeciesCompareCountData = (props: (string | number | null)[][]): void => {
+      const speciesCompareData: SpeciesCompareProps[] = kingdomInfo.map((item: KingdomInfoProps): SpeciesCompareProps => {
+        const kingdom = props.find((r) => item.kingdom == r[0])
 
-        return {
-          name: name,
-          TaiwanCount: TaiwanCount,
-          GlobalCount: GlobalCount,
-        }
-      })
 
-      setSpeciesCompareCounts(speciesCompareData)
+          const zhTWName = kingdom ? item.chineseName as string : ''
+          const TaiwanCount =kingdom ?  kingdom[1] as number: 0
+          const GlobalCount = kingdom ?  kingdom[2] as number: 0
+
+          return {
+            name: zhTWName,
+            TaiwanCount: TaiwanCount,
+            GlobalCount: GlobalCount,
+          }
+      });
+    setSpeciesCompareCounts(speciesCompareData)
   }
   const formatKingdomCountData = (props: (string | number)[][]): void => {
     const kingdomData: KingdomProps[] = kingdomInfo.map((item: KingdomInfoProps): KingdomProps => {
