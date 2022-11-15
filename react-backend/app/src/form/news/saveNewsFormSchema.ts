@@ -5,7 +5,8 @@ const share = {
   CategoryId: z.string().or(z.number()),
   slug: z.string().nonempty( { message: errors.NON_EMPTY }),
   title: z.string().nonempty({ message: errors.NON_EMPTY }),
-  publishedDate:  z.preprocess((arg) => {
+  publishedDate: z.preprocess((arg) => {
+    console.log('arg',arg);
   if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
 }, z.date()),
   description: z.string().nonempty( { message: errors.NON_EMPTY }),

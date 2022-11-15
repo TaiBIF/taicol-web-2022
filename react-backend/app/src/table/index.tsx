@@ -24,7 +24,14 @@ const TableRecordList: React.VFC<Props> = (props) => {
 	return (
 		<Paper sx={{ width: '100%', overflow: 'hidden' }}>
 			<div style={{ height: 600, width: '100%' }}>
-				<DataGrid getRowHeight={() => 'auto'} rowCount={totalPage} rows={rows}  columns={headCells} pageSize={pageSize} checkboxSelection onPageChange={handleChangePage} />
+        <DataGrid
+          getRowHeight={() => 'auto'}
+          rowCount={totalPage}
+          rows={rows}
+          columns={headCells}
+          pageSize={pageSize}
+          paginationMode="server"
+          onPageChange={handleChangePage} />
 			</div>
 		</Paper>
 	);

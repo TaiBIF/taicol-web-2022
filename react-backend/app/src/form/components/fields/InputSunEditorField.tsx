@@ -29,7 +29,8 @@ const InputSunEditorField: React.VFC<InputCkeditorFieldProps> = ({ name,label, e
           <SunEditor
             autoFocus={true}
             lang='en'
-            setOptions={{
+              setOptions={{
+              imageUploadUrl: "/api/admin/sunEditorUpload",
               showPathLabel: false,
               minHeight: '50vh',
               maxHeight: '50vh',

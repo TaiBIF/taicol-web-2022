@@ -36,7 +36,7 @@ Article.init(
 			allowNull: false,
 		},
 		description: {
-			type: new DataTypes.TEXT,
+			type: new DataTypes.TEXT('long'),
 			allowNull: false,
 		},
 		slug: {

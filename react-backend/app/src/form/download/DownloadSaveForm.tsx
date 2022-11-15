@@ -55,7 +55,7 @@ const SaveDownloadForm: React.VFC<Props> = (props) => {
       mutate(`/api/admin/download`)
       router.push('/admin/download');
     }
-	};
+  };
 
 	return (
 		<CardContent>
