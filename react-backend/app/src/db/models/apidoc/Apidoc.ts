@@ -2,32 +2,33 @@ import { Model, DataTypes } from 'sequelize';
 
 import sequelize from 'src/db';
 
-class ApidocResponse extends Model {
+class Apidoc extends Model {
 	declare id: number;
 	declare title: string;
-	declare content: string;
+	declare url: string;
+	declare combine_url: string;
 }
 
-ApidocResponse.init(
+Apidoc.init(
 	{
 		id: {
 			type: DataTypes.INTEGER.UNSIGNED,
 			autoIncrement: true,
 			primaryKey: true,
 		},
-		title: {
-			type: new DataTypes.STRING(256),
-			allowNull: false,
-		},
 		content: {
 			type: new DataTypes.TEXT,
-			allowNull: false,
-		}
+			allowNull: true,
+    },
+		markdown: {
+			type: new DataTypes.STRING(1000),
+			allowNull: true,
+    }
 	},
 	{
-		tableName: 'apidoc_responses',
+		tableName: 'apidoc',
 		sequelize,
 	}
 );
 
-export default ApidocResponse;
+export default Apidoc;

@@ -4,39 +4,42 @@ import CardContent from '@mui/material/CardContent';
 // ** Zod Imports
 import { z } from 'zod';
 
-import { ApiResponseFields } from './ApidocFormFields';
+import { ApidocSaveFields } from './ApidocSaveFields';
 import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createApidocResponseFormSchema,updateApidocResponseFormSchema } from './saveApidocFormSchema';
+import { saveApidocFormSchema } from './saveApidocFormSchema';
 import GenerateFields from '../components/GenerateFields'
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { useSWRConfig } from 'swr';
 import SubmitPanel from 'src/form/components/SubmitPanel';
 
-type CreateFormValues = z.infer<typeof createApidocResponseFormSchema>;
-type UpdateFormValues = z.infer<typeof updateApidocResponseFormSchema>;
+type SaveFormValues = z.infer<typeof saveApidocFormSchema>;
 
 type Props = {
-	defaultValues?: UpdateFormValues | null;
+	defaultValues?: SaveFormValues | null;
 };
-const ApidocResponseForm: React.VFC<Props> = (props) => {
+const ApidocSaveForm: React.VFC<Props> = (props) => {
 	// ** State
 	const router = useRouter();
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { mutate } = useSWRConfig()
-	const methods = useForm<CreateFormValues | UpdateFormValues>({
+
+	const methods = useForm<SaveFormValues>({
 		defaultValues: props.defaultValues ? props.defaultValues : {},
-		resolver: zodResolver(props?.defaultValues?.id ? updateApidocResponseFormSchema : createApidocResponseFormSchema),
+		resolver: zodResolver(saveApidocFormSchema),
   });
+
+
 
 	const {
 		handleSubmit,
 		formState: { errors },
 	} = methods;
 
-  const onSubmit: SubmitHandler<CreateFormValues | UpdateFormValues> = async (values) => {
-		const res = await fetch('/api/admin/apidoc/response/save', {
+  const onSubmit: SubmitHandler<SaveFormValues> = async (values) => {
+
+		const res = await fetch('/api/admin/apidoc/save', {
 			method: 'POST',
 			headers: {
 				Accept: 'application/json',
@@ -50,16 +53,15 @@ const ApidocResponseForm: React.VFC<Props> = (props) => {
     if(result.status){
       enqueueSnackbar('Success', { variant: 'success' });
 
-      mutate(`/api/admin/apiinfo/response/info`)
-      router.push('/admin/apidoc/response');
+      mutate(`/api/admin/apidoc/info`)
     }
 	};
 
 	return (
 		<CardContent>
 			<FormProvider {...methods}>
-        <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-            <GenerateFields fields={ApiResponseFields} />
+				<form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+          <GenerateFields fields={ApidocSaveFields} />
           <SubmitPanel />
 				</form>
 			</FormProvider>
@@ -67,4 +69,4 @@ const ApidocResponseForm: React.VFC<Props> = (props) => {
 	);
 };
 
-export default ApidocResponseForm;
+export default ApidocSaveForm;

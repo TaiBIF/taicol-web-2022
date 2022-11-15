@@ -47,6 +47,18 @@ const options = {
         display: true,
       },
     },
+    yAxes: {
+      grid: {
+          display: true,
+        },
+      ticks: {
+        display: true,
+        callback: function (value: string) {
+          const count = parseInt(value) / 1000;
+          return count.toString() + 'k';
+        }
+      },
+    },
   },
 };
 
@@ -60,17 +72,20 @@ const CompareSpeciesBarChart: React.FC<Props> = (props) => {
     labels: data.map((item) => item.name),
     datasets: [
       {
-        label: '全球現有種數',
-        data: data.map((item) => item.GlobalCount || 0),
-        backgroundColor: '#85BBD0',
-        borderWidth: 0,
-      }
-      ,{
         label: '臺灣現有種數',
         data:  data.map((item) => item.TaiwanCount || 0),
         backgroundColor: '#FDD440',
         borderWidth: 0,
+        stack: 'Stack 0',
+      },
+      {
+        label: '全球現有種數',
+        data: data.map((item) => item.GlobalCount || 0),
+        backgroundColor: '#85BBD0',
+        borderWidth: 0,
+        stack: 'Stack 0',
       }
+      
     ]
   }
 

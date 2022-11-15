@@ -26,23 +26,22 @@ CREATE TABLE `SequelizeMeta` (
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`name`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; 
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `apidoc_info`
+-- Table structure for table `apidoc`
 --
 
-DROP TABLE IF EXISTS `apidoc_info`;
+DROP TABLE IF EXISTS `apidoc`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `apidoc_info` (
+CREATE TABLE `apidoc` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(256) DEFAULT NULL,
-  `url` varchar(256) DEFAULT NULL,
-  `combine_url` varchar(256) DEFAULT NULL,
+  `markdown` varchar(1000) DEFAULT NULL,
   `createdAt` datetime NOT NULL,
-  `updatedAt` datetime DEFAULT NULL,
+  `updatedAt` datetime NOT NULL,
+  `content` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -237,7 +236,6 @@ LOCK TABLES `users` WRITE;
 INSERT INTO `users` (id,name,first_name,last_name,password,phone,status,role,email,image,createdAt,updatedAt) VALUES (1,NULL,'Admin','','$2b$10$XOEreA9uG7A9RhOVcXyBduLAZaDZ.L8PDwd8VO20vcQcp4j9tq/jC','','active','admin','admin@ink.net.tw',NULL,'2022-08-22 14:05:04','2022-09-25 03:26:51');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
-
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -249,4 +247,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-11-06 10:43:56
+-- Dump completed on 2022-11-10 22:17:21

@@ -1,6 +1,11 @@
 import React from 'react';
 
 const Banner: React.VFC = () => {
+  const [keyword, setKeyword] = React.useState('');
+
+  const handleSearch = () => {
+    window.location.href = `/catalogue?filter=0&keyword=${keyword}`;
+  }
 
   return (
     <section className="section-1-kv">
@@ -34,13 +39,13 @@ const Banner: React.VFC = () => {
 						</h2>
 					</div>
 					<div className="search-bar">
-						<input type="text" placeholder="請輸入關鍵字"/>
-						<a href="#" className="more">
+						<input type="text" placeholder="請輸入關鍵字" onChange={(e) =>setKeyword(e.target.value)}/>
+						<a href="/catalogue?filter=2" className="more">
 							<svg xmlns="http://www.w3.org/2000/svg" width="27" height="23" viewBox="0 0 27 23">
 								<path id="Polygon_1" data-name="Polygon 1" d="M11.775,2.939a2,2,0,0,1,3.45,0L25.232,19.988A2,2,0,0,1,23.507,23H3.493a2,2,0,0,1-1.725-3.012Z" transform="translate(27 23) rotate(180)" fill="#4c8da7"></path>
 							</svg>
 						</a>
-						<button className="search">
+						<button className="search" onClick={handleSearch}>
               <svg id="Group_6882" data-name="Group 6882" xmlns="http://www.w3.org/2000/svg"
                 width="36.847" height="36.775" viewBox="0 0 36.847 36.775">
 								<defs>

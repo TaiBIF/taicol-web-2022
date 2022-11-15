@@ -1,0 +1,102 @@
+#markdown {
+  line-height: normal;
+  color: #333;
+  letter-spacing: 0.05em;
+  background-color: #FFF;
+  font-size:18px;
+}
+#markdown table  {
+  color: #555;
+  border-collapse: collapse;
+  width:100%;
+
+}
+
+#markdown table thead th {
+  font-weight: bold;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #4C8DA7;
+  text-align:left;
+  background-color: #FFF;
+  color: #333;
+}
+#markdown table th:first-child,
+#markdown table  td:first-child {
+  padding-left: 30px;
+}
+
+#markdown table th,
+#markdown table td {
+  font-family: 'Roboto', 'Noto Sans TC', sans-serif;
+  padding: 15px 15px;
+}
+
+#markdown tr:nth-child(odd) td {
+  background-color: white;
+}
+
+#markdown tr:nth-child(even) td {
+  background-color: #F5F8FA;
+}
+
+#markdown h1 {
+      color: #333;
+      font-size: 35px;
+      font-weight: 500;
+      padding-bottom: 10px;
+      display: inline-block;
+      position: relative;
+      border-bottom: 1px solid #4C8DA7;
+      margin-bottom: 30px;
+      margin-top:30px;
+}
+
+
+
+#markdown h2,
+#markdown h3 {
+  font-size: 24px;
+  color: #333;
+  margin-left: 10px;
+  position: relative;
+  margin-top:50px;
+  margin-bottom:30px;
+  font-weight: normal;
+}
+#markdown h2::before,
+#markdown h3::before {
+  content:url('/static/image/title-mark.svg');
+  margin-right:10px;
+}
+
+#markdown ul {
+  padding-left: 50px;
+}
+
+#markdown ul li {
+  list-style: none;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+#markdown ul li:before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  left: -20px;
+  top: 10px;
+  border-radius: 50%;
+  background-color: #4C8DA7;
+}
+
+
+#markdown code {
+  background-color: #F5F8FA;
+  padding: 20px 40px 20px 40px;
+  width: 100%;
+  overflow: auto;
+  border-radius: 10px;
+  display: block;;
+}
+

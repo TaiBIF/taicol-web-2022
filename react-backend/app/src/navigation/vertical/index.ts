@@ -71,14 +71,9 @@ const navigation = (): VerticalNavItemsType => {
 			sectionTitle: 'API Doc',
 		},
 		{
-			title: 'API參數',
+			title: 'API Markdown',
 			icon: DownloadBoxOutline,
 			path: '/admin/apidoc/update',
-    },
-		{
-			title: 'API 回傳',
-			icon: DownloadBoxOutline,
-			path: '/admin/apidoc/response',
     },
 	];
 };
