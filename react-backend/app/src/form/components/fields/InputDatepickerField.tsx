@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import { Dayjs } from 'dayjs';
 import { InputTextFieldProps } from 'src/types';
 import Grid from '@mui/material/Grid';
+import moment, { now } from 'moment';
 
 type Props = InputTextFieldProps;
 
@@ -32,8 +33,8 @@ export const InputDatepickerField: React.VFC<Props> = ({ name, endAdornment, gri
               }} // send value to hook form
               inputFormat="YYYY-MM-DD"
               renderInput={(params) => <TextField
-              {...params}
-              error={error}
+                {...params}
+                error={error}
               helperText={errorMessage}
               />}
               />

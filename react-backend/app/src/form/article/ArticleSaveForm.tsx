@@ -26,7 +26,7 @@ const SaveArticleForm: React.VFC<Props> = (props) => {
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { mutate } = useSWRConfig()
 	const methods = useForm<CreateFormValues | UpdateFormValues>({
-		defaultValues: props.defaultValues ? props.defaultValues : {},
+		defaultValues: props.defaultValues ? props.defaultValues : {publishedDate: new Date()},
 		resolver: zodResolver(props?.defaultValues?.id ? updateArticleFormSchema : createArticleFormSchema),
   });
 
