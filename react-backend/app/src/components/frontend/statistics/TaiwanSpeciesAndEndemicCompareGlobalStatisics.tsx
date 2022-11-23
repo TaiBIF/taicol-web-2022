@@ -1,17 +1,28 @@
 import React from 'react';
 import { speciesOptions } from 'src/components/frontend/statistics/options'
-import type { SpeciesCompareProps } from 'src/types/frontend'
+import type { SpeciesCompareProps,KingdomInfoProps } from 'src/types/frontend'
 import CompareSpeciesBarChart from 'src/components/frontend/statistics/CompareSpeciesBarChart'
 
 type Props = {
   data: SpeciesCompareProps[],
   handleCompareTypeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void,
-  handleShowCompareTableClick: (status:boolean) => void,
+  handleShowCompareTableClick: (status: boolean) => void,
+  kingdomInfo:KingdomInfoProps[]
 }
 
 const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.VFC<Props> = (props) => {
-  const { data, handleCompareTypeChange,handleShowCompareTableClick } = props
+  const { data, handleCompareTypeChange,handleShowCompareTableClick,kingdomInfo } = props
+  const [kingdomSelected, setKingdomSelect] = React.useState<string[]>(kingdomInfo.map((item: KingdomInfoProps, index: number) => {
+    return item.chineseName
+  } ))
 
+  const handleKingdomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newKingdomSelected = e.target.checked ? [...kingdomSelected, e.target.value] : kingdomSelected.filter((item) => item !== e.target.value)
+
+    setKingdomSelect(newKingdomSelected.map((chineseName) => {
+      return chineseName
+    }));
+  }
   return (
     <div className="item-p2">
       <div className="title-flex-box">
@@ -37,8 +48,21 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.VFC<Props> = (props) 
           </select>
         </div>
       </div>
-      <div className="for-canvas">
-        <CompareSpeciesBarChart data={data} />
+      <div className="for-canvas ">
+        <CompareSpeciesBarChart data={data.filter((item: SpeciesCompareProps, number: number) => kingdomSelected.includes(item.name))} />
+        <div className='more-selection-area'>
+          <div className='item-box check-set"'>
+            <div className="right-check">
+              {kingdomInfo?.map((item:KingdomInfoProps, index:number):React.ReactElement => {
+                return <label className="check-item mr-[8px]">{item.chineseName}
+                  <input type="checkbox" name="alien_type" checked={kingdomSelected.includes(item.chineseName) ? true : false} value={item.chineseName} onChange={handleKingdomChange} />
+									<span className="checkmark"></span>
+								</label>
+              })}
+
+            </div>
+          </div>
+        </div>
       </div>
       <a href="#" className="btn-more" onClick={() => handleShowCompareTableClick(true)}>
         <p>查看比較總表</p>

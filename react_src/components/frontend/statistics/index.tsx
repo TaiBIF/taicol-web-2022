@@ -4,37 +4,16 @@ import RankCountStatisics from './RankCountStatisics'
 import SpeciesCountStatisics from './SpeciesCountStatisics'
 import useSWR from 'swr';
 import { useEffect } from 'react';
-import type { RankProps, SourceProps, EndemicProps, SpeciesCompareProps,KingdomProps,CompareTableDataProps } from '../types'
+import type { RankProps, SourceProps, EndemicProps, SpeciesCompareProps,KingdomProps,CompareTableDataProps,RankInfoProps,EndemicInfoProps,SourceInfoProps,KingdomInfoProps } from '../types'
 import { CompareType } from './options'
 import SpeciesAndEndemicRatiosStatisics from './SpeciesAndEndemicRatiosStatisics'
 import SourceDoughnutChart from './SourceDoughnutChart'
-import { getTotal } from '../utils/helper'
 import TaiwanSpeciesAndEndemicCompareGlobalStatisics from './TaiwanSpeciesAndEndemicCompareGlobalStatisics'
 import TaxonCountSection from './TaxonCountSection'
 import { speciesOptions } from './options'
 import PopupTable from './PopupTable'
 import { fetcher } from '../utils/helper'
 
-type RankInfoProps = {
-  rank: string;
-  name: string;
-  className:string;
-}
-
-type EndemicInfoProps = {
-  endemic: string;
-  image: string;
-}
-
-type SourceInfoProps = {
-  source: string;
-  color:string;
-}
-
-type KingdomInfoProps = {
-  kingdom: string;
-  chineseName:string;
-}
 
 const rankInfo:RankInfoProps[] = [
   { rank: 'kingdom', name: '界',className:'rank-1-red' },
@@ -62,7 +41,7 @@ const sourceInfo:SourceInfoProps[] = [
   { source: '歸化',color:'#85BBD0' },
   { source: '入侵',color:'#74BDB6' },
   { source: '栽培豢養',color:'#BED368' },
-  { source: '無資料',color:'#FDC440' },
+  { source: '無資料',color:'#eeeeee' },
 ]
 
 const kingdomInfo:KingdomInfoProps[] = [
@@ -86,7 +65,7 @@ const StatisticsPage: React.FC = () => {
   const [speciesCompareTableData, setSpeciesCompareTableData] = React.useState<CompareTableDataProps[]>([]);
   const [kingdomCounts, setKingdomCounts] = React.useState<KingdomProps[]>([]);
   const [rankCounts, setRankCounts] = React.useState<RankProps[]>([]);
-  const [speciesCompare, setSpeciesCompare] = React.useState<CompareType>(speciesOptions[0].value);
+  const [speciesCompare, setSpeciesCompare] = React.useState<string>(speciesOptions[0].value);
   const [endemicCounts, setEndemicCounts] = React.useState<EndemicProps[]>([]);
   const [sourceCounts, setSourceCounts] = React.useState<SourceProps[]>([]);
   const [speciesCompareCounts, setSpeciesCompareCounts] = React.useState<SpeciesCompareProps[]>([]);
@@ -132,21 +111,38 @@ const StatisticsPage: React.FC = () => {
 
       setEndemicCounts(endemicData)
   }
-  const formatSpeciesCompareCountData = (props: (string | number | null)[][]): void => {
-      const speciesCompareData: SpeciesCompareProps[] = kingdomInfo.map((item: KingdomInfoProps): SpeciesCompareProps => {
+  const formatSpeciesCompareCountData = (props: (string | number | null)[][],speciesCompare:string): void => {
+    let speciesCompareData: SpeciesCompareProps[] = [];
+    if (speciesCompare == 'kingdom_compare') {
+      speciesCompareData = kingdomInfo.map((item: KingdomInfoProps): SpeciesCompareProps => {
         const kingdom = props.find((r) => item.kingdom == r[0])
 
 
-          const zhTWName = kingdom ? item.chineseName as string : ''
-          const TaiwanCount =kingdom ?  kingdom[1] as number: 0
-          const GlobalCount = kingdom ?  kingdom[2] as number: 0
+        const zhTWName = kingdom ? item.chineseName as string : ''
+        const TaiwanCount = kingdom ? kingdom[1] as number : 0
+        const GlobalCount = kingdom ? kingdom[2] as number : 0
 
-          return {
-            name: zhTWName,
-            TaiwanCount: TaiwanCount,
-            GlobalCount: GlobalCount,
-          }
+        return {
+          name: zhTWName,
+          TaiwanCount: TaiwanCount,
+          GlobalCount: GlobalCount,
+        }
       });
+    }
+    else {
+      speciesCompareData = props.map((item: (string | number | null)[]): SpeciesCompareProps => {
+        const name = item[0] as string
+        const TaiwanCount = item[1] as number
+        const GlobalCount = item[2] as number
+
+        return {
+          name: name,
+          TaiwanCount: TaiwanCount,
+          GlobalCount: GlobalCount,
+        }
+      })
+    }
+      setSpeciesCompareCounts(speciesCompareData)
     setSpeciesCompareCounts(speciesCompareData)
   }
   const formatKingdomCountData = (props: (string | number)[][]): void => {
@@ -216,10 +212,9 @@ const StatisticsPage: React.FC = () => {
   useEffect(() => {
     if (data) {
       formatRankCountData(data.rank_count)
-
       formatEndemicCountData(data.endemic_count)
       formatSourceCountData(data.source_count)
-      formatSpeciesCompareCountData(data[speciesCompare])
+      formatSpeciesCompareCountData(data[speciesCompare],speciesCompare)
       formatKingdomCountData(data.kingdom_count)
       formatSpeciesCompareTableData(data.compare_table)
     }
@@ -241,9 +236,11 @@ const StatisticsPage: React.FC = () => {
             <div className="boxarea-2-1">
               <SourceDoughnutChart data={sourceCounts} />
               <TaiwanSpeciesAndEndemicCompareGlobalStatisics
-                data={speciesCompareCounts}
+              data={speciesCompareCounts}
+                compareType={speciesCompare}
                 handleCompareTypeChange={handleCompareTypeChange}
                 handleShowCompareTableClick={handleShowCompareTableClick}
+                kingdomInfo={kingdomInfo}
               />
             </div>
           </div>

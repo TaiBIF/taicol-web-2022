@@ -128,3 +128,24 @@ export type CategoryDataProps = {
 	name: string;
 	sort: number;
 };
+
+export type RankInfoProps = {
+  rank: string;
+  name: string;
+  className:string;
+}
+
+export type EndemicInfoProps = {
+  endemic: string;
+  image: string;
+}
+
+export type SourceInfoProps = {
+  source: string;
+  color:string;
+}
+
+export type KingdomInfoProps = {
+  kingdom: string;
+  chineseName:string;
+}
