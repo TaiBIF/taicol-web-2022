@@ -4,7 +4,7 @@ import RankCountStatisics from 'src/components/frontend/statistics/RankCountStat
 import SpeciesCountStatisics from 'src/components/frontend/statistics/SpeciesCountStatisics'
 import useSWR from 'swr';
 import { useEffect } from 'react';
-import type { RankProps, SourceProps, EndemicProps, SpeciesCompareProps,KingdomProps,CompareTableDataProps } from 'src/types/frontend'
+import type { RankProps, SourceProps, EndemicProps, SpeciesCompareProps,KingdomProps,CompareTableDataProps,RankInfoProps,EndemicInfoProps,SourceInfoProps,KingdomInfoProps } from 'src/types/frontend'
 import { CompareType } from 'src/components/frontend/statistics/options'
 import SpeciesAndEndemicRatiosStatisics from 'src/components/frontend/statistics/SpeciesAndEndemicRatiosStatisics'
 import SourceDoughnutChart from 'src/components/frontend/statistics/SourceDoughnutChart'
@@ -13,27 +13,6 @@ import TaiwanSpeciesAndEndemicCompareGlobalStatisics  from 'src/components/front
 import { speciesOptions } from 'src/components/frontend/statistics/options'
 import PopupTable from 'src/components/frontend/statistics/PopupTable'
 import TaxonCountSection from 'src/components/frontend/statistics/TaxonCountSection'
-
-type RankInfoProps = {
-  rank: string;
-  name: string;
-  className:string;
-}
-
-type EndemicInfoProps = {
-  endemic: string;
-  image: string;
-}
-
-type SourceInfoProps = {
-  source: string;
-  color:string;
-}
-
-type KingdomInfoProps = {
-  kingdom: string;
-  chineseName:string;
-}
 
 const rankInfo:RankInfoProps[] = [
   { rank: 'kingdom', name: '界',className:'rank-1-red' },
@@ -243,6 +222,7 @@ const Statistics: React.VFC = () => {
                 data={speciesCompareCounts}
                 handleCompareTypeChange={handleCompareTypeChange}
                 handleShowCompareTableClick={handleShowCompareTableClick}
+                kingdomInfo={kingdomInfo}
               />
             </div>
           </div>
