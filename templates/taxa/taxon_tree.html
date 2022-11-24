@@ -532,9 +532,13 @@ span.anchor {
 			
 		}
 
+		//console.log($( item ).nextAll('ul li .item-box'))
+		$( '.item-box' ).removeClass('now')
+
 		if (($( item ).next('ul').css('display') =='block')|( ($( item ).next('ul').length ==0)&($( item ).hasClass('now'))) ) {
 			$( item ).removeClass('now')
 			$( item ).nextAll('ul').css('display','none')
+			//$( item ).nextAll('.item-box').removeClass('now')
 		} else {
 			$( item ).addClass('now');
 			$( item ).nextAll('ul').css('display','block')
@@ -549,7 +553,8 @@ span.anchor {
 		$('input[name="cultured"]').change(function() {
 			let current_taxon_id;
 			if ($('.main-box .item-box.now').length >0){
-				current_taxon_id = $('.main-box .item-box.now').data('taxon')
+				// 只選擇最後一個
+				current_taxon_id = $('.main-box .item-box.now').last().data('taxon')
 			} else {
 				// 清空autocomplete
 				$( "#keyword" ).val('').trigger('change');
