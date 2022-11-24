@@ -5,7 +5,7 @@ import useSWR from 'swr'
 import validateColor from 'validate-color'
 import * as moment from 'moment';
 import { ArticleDataProps } from '../types'
-import { fetcher } from '../utils/helper'
+import { fetcher,replaceDomain,replaceIp } from '../utils/helper'
 
 type Props = {
 	current: ArticleDataProps,
@@ -28,6 +28,13 @@ const Article: React.FC = () => {
 
   const date = data?.current?.publishedDate ? moment(data?.current?.publishedDate).format('YYYY-MM-DD') : ''
 
+  let description = '';
+
+  if (data) {
+    description = replaceIp(data?.current?.description, '');
+    description = replaceDomain(description, '');
+  }
+  
   return (
   <div className="page-top">
 		<div className="big-top">
