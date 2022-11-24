@@ -571,14 +571,14 @@ def taxon(request, taxon_id):
                     names = names.sort_values('publish_year', ascending=False)
                     names = names.replace({None:''})
                     names['per_usages'] = names['per_usages'].apply(json.loads)
-                    names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{x.taxon_name_id}", target="_blank">{x.sci_name}</a>', axis=1)
+                    names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{x.taxon_name_id}" target="_blank">{x.sci_name}</a>', axis=1)
                     names['author'] = names.apply(lambda x: f"{x.author}, {x.publish_year}" if x.nomenclature_id==2 and x.publish_year else x.author, axis=1)
-                    names['author'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/references/{x.o_reference_id}", target="_blank">{x.author}</a>' if x.o_reference_id else x.author, axis=1)
+                    names['author'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/references/{x.o_reference_id}" target="_blank">{x.author}</a>' if x.o_reference_id else x.author, axis=1)
                     names['sci_name'] = names.apply(lambda x: f'{x.sci_name} {x.author}' if x.author else x.sci_name, axis=1)
                     # 如果per_usages中有其他ref則補上
                     for pp in names['per_usages']:
                         for p in pp:
-                            if p.get('reference_id') not in new_refs and p.get('reference_id') not in names.reference_id:
+                            if p.get('reference_id') not in new_refs and p.get('reference_id') not in names.reference_id.to_list():
                                 new_refs.append(p.get('reference_id'))
                     if new_refs:
                         query = f"""SELECT ac.reference_id, ac.short_author, r.publish_year
@@ -612,7 +612,8 @@ def taxon(request, taxon_id):
                                             current_ref += ', pro parte'
                                         if current_ref not in ref_list:
                                             ref_list.append([current_ref,ppu.get('reference_id')],current_year)
-                            ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year']).drop_duplicates().sort_values('year')
+                            ref_list = [r for r in ref_list if r[1] not in names.o_reference_id.to_list()]
+                            ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year']).drop_duplicates().sort_values('year')                            
                             ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                             ref_str = ('; ').join(ref_list)
                             if ref_str:
@@ -635,6 +636,8 @@ def taxon(request, taxon_id):
                                             current_ref += ', pro parte'
                                         if current_ref not in ref_list:
                                             ref_list.append([current_ref,ppu.get('reference_id'),current_year])
+                            ref_list = [r for r in ref_list if r[1] not in names.o_reference_id.to_list()]
+
                             ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year']).drop_duplicates().sort_values('year')
                             min_year = ref_list.year.min()
                             # 決定排序的publish_year
@@ -660,9 +663,12 @@ def taxon(request, taxon_id):
                                             current_ref += ', pro parte'
                                         if current_ref not in ref_list:
                                             ref_list.append([current_ref,ppu.get('reference_id'),current_year])
+                            
+                            ref_list = [r for r in ref_list if r[1] not in names.o_reference_id.to_list()]
+
                             ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year']).drop_duplicates().sort_values('year')
                             # 決定排序的publish_year
-                            ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
+                            ref_list = [f'<a href="https://nametool.taicol.tw/references/{int(r[1]["ref_id"])}" target="_blank">{r[1]["ref"]}</a>' for r in ref_list.iterrows()]
                             # ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1])}' target='_blank'>{r[0]}</a>" for r in ref_list]
                             ref_str = ('; ').join(ref_list)
                             if ref_str:
@@ -670,6 +676,8 @@ def taxon(request, taxon_id):
                             else:
                                 name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0], names[names.taxon_name_id==n]['publish_year'].min()]]
             if name_changes:
+                # print(name_changes)
+                # name_changes = list(dict.fromkeys(name_changes))
                 name_changes = pd.DataFrame(name_changes, columns=['name_str','year']).sort_values('year')
                 name_changes = name_changes.name_str.to_list()
             # 文獻
@@ -797,6 +805,10 @@ def taxon_tree(request):
                     stat_str += f"{spp}種下 {c}{rank_map_c[sr]}"
                 else:
                     stat_str += f"{c}{rank_map_c[sr]} "
+            if spp > 0 and '種下' not in stat_str:
+                # 如果沒有47 最後要把種下加回去
+                stat_str += f"{spp}種下"
+
             kingdom_dict_c += [{'taxon_id': k, 'name': f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",'stat': stat_str.strip()}]
             spp = 0
             stat_str = ''
@@ -808,6 +820,10 @@ def taxon_tree(request):
                     stat_str += f"{spp}種下 {c}{rank_map_c[sr]}"
                 else:
                     stat_str += f"{c}{rank_map_c[sr]} "
+            if spp > 0 and '種下' not in stat_str:
+                # 如果沒有47 最後要把種下加回去
+                stat_str += f"{spp}種下"
+
             kingdom_dict += [{'taxon_id': k, 'name': f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",'stat': stat_str.strip()}]
     search_stat = SearchStat.objects.all().order_by('-count')[:6]
     s_taxon = [s.taxon_id for s in search_stat]
@@ -925,8 +941,9 @@ def get_tree_stat(taxon_id,cultured):
         stat_str = ''
         spp = 0
         stats = sub_stat[(sub_stat.taxon_id==st[0])&(sub_stat.rank_id!=st[1])]
+        stats = stats.reset_index(drop=True)
         for i in stats.index:
-            s = sub_stat.iloc[i]
+            s = stats.iloc[i]
             if s['count'] > 0:
                 r_id = s.rank_id
                 if r_id <= 46 and r_id >= 35:
