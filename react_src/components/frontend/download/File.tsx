@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { DownloadFileDataProps } from '../types'
 
-const DownloadFile: React.VFC<DownloadFileDataProps> = (props) => {
+const DownloadFile: React.FC<DownloadFileDataProps> = (props) => {
   const { type, url } = props
 
   const urlobj = new URL(url);

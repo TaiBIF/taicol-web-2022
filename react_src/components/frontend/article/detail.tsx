@@ -5,7 +5,7 @@ import useSWR from 'swr'
 import validateColor from 'validate-color'
 import * as moment from 'moment';
 import { ArticleDataProps } from '../types'
-import { fetcher } from '../utils/helper'
+import { fetcher,replaceDomain,replaceIp } from '../utils/helper'
 
 type Props = {
 	current: ArticleDataProps,
@@ -28,6 +28,12 @@ const Article: React.FC = () => {
 
   const date = data?.current?.publishedDate ? moment(data?.current?.publishedDate).format('YYYY-MM-DD') : ''
 
+  let description = '';
+  
+  if (data) {
+    description = data?.current?.description.replace(process.env.REACT_API_URL, '/static');
+  }
+  
   return (
   <div className="page-top">
 		<div className="big-top">
@@ -45,7 +51,7 @@ const Article: React.FC = () => {
 				<p>{data?.current?.authorInfo}</p>
       </div>
       <div className="editor-box">
-        {data && <div className='text-[#555]' dangerouslySetInnerHTML={{ __html: data?.current?.description }} />}
+        {data && <div className='text-[#555]' dangerouslySetInnerHTML={{ __html: description }} />}
       </div>
       <div className="news-article-btn">
           {data?.prev && <a href={`/article/${data.prev.slug}`}>上一則</a>}

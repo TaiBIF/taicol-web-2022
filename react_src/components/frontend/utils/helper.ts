@@ -29,3 +29,14 @@ export async function fetcher<JSON = any>(
 export const timeout = (delay:number) => {
     return new Promise( res => setTimeout(res, delay) );
 }
+
+export const replaceIp = (str: string, replaceStr: string) => {
+  const regex = /[a-zA-Z]{3,5}\:\/{2}[a-zA-Z0-9_.:-]+/g
+  console.log('replaceIp',str.replace(regex,replaceStr))
+  return str.replace(regex,replaceStr)
+}
+
+export const replaceDomain = (str:string,replaceStr:string) => {
+  const regex = /[a-zA-Z]{3,5}\:\/{2}[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+(:\d+)?/g
+  return str.replace(regex,replaceStr)
+}
