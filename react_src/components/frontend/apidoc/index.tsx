@@ -8,6 +8,15 @@ import { fetcher } from '../utils/helper'
 import * as utf8 from 'utf8';
 
 
+const  LinkRenderer = (props:any) => {
+  console.log({ props });
+  return (
+    <a href={props.href} target="_blank" rel="noreferrer">
+      {props.children}
+    </a>
+  );
+}
+ 
 const breadcrumbs = [
   { title: '首頁', href: '/' },
   {title: '更多資訊'},
@@ -15,13 +24,8 @@ const breadcrumbs = [
 ]
 
 const ApiPage: React.FC = () => {
-  const { data, isValidating, error } = useSWR(`${process.env.REACT_API_URL}/api/apidoc/info`,fetcher);
+  const { data} = useSWR(`${process.env.REACT_API_URL}/api/apidoc/info`,fetcher);
  
-  if (data) {
-    
-  console.log('data.content',data.content)
-  console.log('utf8.decode(data.content)',utf8.decode(data.content))
-  }
   return (
     <div className="page-top">
       <Banner title='API DOCUMENTATION' zhTWTitle='API說明文件' breadcrumbs={breadcrumbs} />
@@ -30,7 +34,7 @@ const ApiPage: React.FC = () => {
 
         <div id='markdown' className='api-box apitable-style'>
           {data &&
-            <ReactMarkdown remarkPlugins={[remarkGfm]} children={utf8.decode(data.content)}  />
+            <ReactMarkdown  components={{ a: LinkRenderer }} remarkPlugins={[remarkGfm]} children={utf8.decode(data.content)}  />
           }
         </div>
       </div>
