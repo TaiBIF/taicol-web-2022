@@ -1254,9 +1254,12 @@
 						if (params.term.match(/[\u3400-\u9FBF]/)){
 							if (params.term.length >1){
 								return '查詢中...';
+							} else {
+								throw false;  
 							}
 						} else if (params.term.trim().length  > 2){
 							return '查詢中...';
+							
 						} else {
 							throw false;  
 						}					

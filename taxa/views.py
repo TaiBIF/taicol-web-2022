@@ -67,6 +67,7 @@ def get_autocomplete_taxon(request):
 
     names = []
     if keyword_str := request.GET.get('keyword','').strip():
+        keyword_str = get_variants(keyword_str)
         cultured_condition = ''
         if request.GET.get('cultured') != 'on':
             cultured_condition = ' AND (at.alien_type != "cultured" or at.alien_type is null)'
@@ -75,14 +76,14 @@ def get_autocomplete_taxon(request):
                 FROM taxon_names tn
                 JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
                 JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
-                WHERE tn.deleted_at IS NULL {cultured_condition} AND (tn.name like '%{keyword_str}%' OR 
-                    at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
+                WHERE tn.deleted_at IS NULL {cultured_condition} AND (tn.name REGEXP '{keyword_str}' OR 
+                    at.common_name_c REGEXP '{keyword_str}' OR at.alternative_name_c REGEXP '{keyword_str}')"""
         else:
             query = f"""SELECT at.taxon_id, CONCAT_WS (' ',tn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))
                         FROM taxon_names tn
                         JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id
-                        WHERE tn.deleted_at IS NULL {cultured_condition}  AND (tn.name like '%{keyword_str}%' OR 
-                            at.common_name_c like '%{keyword_str}%' OR at.alternative_name_c like '%{keyword_str}%')"""
+                        WHERE tn.deleted_at IS NULL {cultured_condition}  AND (tn.name REGEXP '{keyword_str}' OR 
+                            at.common_name_c REGEXP '{keyword_str}' OR at.alternative_name_c REGEXP '{keyword_str}')"""
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             cursor.execute(query)
@@ -98,13 +99,14 @@ def get_conditioned_query(req, from_url=False):
     condition = 'tn.deleted_at IS NULL'
 
     if keyword := req.get('keyword','').strip():
+        keyword = get_variants(keyword)
         keyword_type = req.get('name-select','contain')
         if keyword_type == "equal":
-            keyword_str = f"= '{keyword}'"
+            keyword_str = f"REGEXP '^{keyword}$'"
         elif keyword_type == "startwith":
-            keyword_str = f"LIKE '{keyword}%'"
+            keyword_str = f"REGEXP '^{keyword}'"
         else:
-            keyword_str = f"LIKE '%{keyword}%'"
+            keyword_str = f"REGEXP '{keyword}'"
         condition += f""" AND (tn.name {keyword_str} OR at.common_name_c {keyword_str} OR at.alternative_name_c {keyword_str})"""
 
     # is_ 系列
