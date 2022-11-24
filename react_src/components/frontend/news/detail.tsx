@@ -30,8 +30,7 @@ const News: React.FC = () => {
   let description = '';
   
   if (data) {
-    description = replaceIp(data?.current?.description, '/static');
-    description = replaceDomain(description, '/static');
+    description = data?.current?.description.replace(process.env.REACT_API_URL, '/static');
   }
 
   return (
