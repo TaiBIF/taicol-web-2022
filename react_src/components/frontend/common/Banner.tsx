@@ -15,9 +15,10 @@ const Banner: React.FC<Props> = (props) => {
   const [loadBanner, setLoadBanner] = React.useState<boolean>(false);
 
   React.useEffect( () => {
-    timeout(1000).then(() => {
+	setLoadBanner(true)
+   /* timeout(1000).then(() => {
       setLoadBanner(true);
-    })
+    })*/
   }, []);
 
   return (
