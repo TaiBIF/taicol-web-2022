@@ -1,0 +1,27 @@
+/* loading box 調整 */
+
+.loadingbox {
+    margin-top: -80px
+}
+
+@media only screen and (max-width: 999px) {
+    .loadingbox {
+        margin-top: -60px
+    }
+}
+
+.fs-14 {
+    font-size: 14px
+}
+
+.mb-0 {
+    margin-bottom: 0
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.d-flex {
+    display: flex;
+}

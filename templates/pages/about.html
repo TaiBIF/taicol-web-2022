@@ -102,22 +102,5 @@
 {% endblock body %}
 
 {% block script %}
-<script>
-	$(function (){
-
-		gsap.registerPlugin(ScrollTrigger);
-
-		ScrollTrigger.create({
-			trigger: ".about-2",
-			start: "top-=60% top",
-			// markers: true,
-			onEnter:function () {
-				$('.about-2').addClass('vivi')
-			}
-		});
-
-	})
-
-</script>
-
+<script src="{% static 'js/about.js' %}"></script>
 {% endblock script %}

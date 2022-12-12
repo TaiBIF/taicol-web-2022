@@ -7,21 +7,14 @@
 	<title>臺灣物種名錄 Catalogue of Life in Taiwan</title>
 	<link rel=stylesheet type="text/css" href="{% static 'css/theme.css' %}">
     <link rel=stylesheet type="text/css" href="{% static 'css/markdown.css' %}">
-	<script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+	{% comment %} <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script> {% endcomment %}
+    <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
 	<script src="{% static 'js/gsap.min.js' %}" ></script>
 	<script src="{% static 'js/ScrollTrigger.min.js' %}" ></script>
     <link rel="icon" sizes="32x32" type="image/png" href="{% static 'image/logo-removebg.png' %}" />
     {% block head %}{% endblock head %}
-    <style>
-        .disabled-a-link {
-            pointer-events: none;
-        }
+	<link rel=stylesheet type="text/css" href="{% static 'css/base.css' %}">
 
-        .d-none {
-            display: none;
-        }
-
-    </style>
     {% block style %}{% endblock style %}
 </head>
 
@@ -190,75 +183,6 @@
 
 </body>
 <script src="{% static 'react_component/bundle.js' %}"></script>
-<script>
-	$(function (){
-
-        $('.go-topbtn').on('click', function(){
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;	  
-        })    
-
-		$('.ham4').on('click', function() {
-			if($(window).width()<999){
-				$('.ham4').toggleClass('active');
-				$('.main_menu').slideToggle();
-			}else{
-				$('.ham4').removeClass('active');
-				$('.main_menu').css("display", "flex");
-			}
-		});
-
-		$(window).resize(function(){
-
-			if($(window).width()>=999){
-				$('.main_menu').css("display", "flex");
-			}else{
-				$('.ham4').removeClass('active');
-				$('.main_menu').css("display", "none");
-			}
-		})
-
-		if ($(window).width() < 960) {
-			$('.mbli').addClass('rd_mb_two_menu_li');
-		}else{
-			$('.mbli').removeClass('rd_mb_two_menu_li');
-		}
-
-
-		$('.rd_mb_two_menu_li').on('click',function (event) {
-
-			if( $(this).closest('li').hasClass('now')){
-				$(this).removeClass('now');
-				$(this).find('.menu_2').slideUp();
-
-			}else{
-				$(this).addClass('now');
-				$(this).find('.menu_2').slideDown();
-			}
-		});
-
-
-		gsap.registerPlugin(ScrollTrigger);
-
-		ScrollTrigger.create({
-			trigger: ".section-2-statistics",
-			start: "top-=60% top",
-			// markers: true,
-			onEnter:function () {
-				$('.section-2-statistics').addClass('vivi')
-			}
-		});
-		ScrollTrigger.create({
-			trigger: ".section-3-news",
-			start: "top-=40% top",
-			// markers: true,
-			onEnter:function () {
-				$('.section-3-news').addClass('vivi')
-			}
-		});
-
-
-	})
-</script>
+<script src="{% static 'js/base.js' %}"></script>
 {% block script %}{% endblock script %}
 </html>

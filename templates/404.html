@@ -2,23 +2,7 @@
 {% load static %}
 
 {% block style %}
-<style>
-    .go-topbtn {
-        display: none;
-    }
-
-    .footer {
-        position: absolute;
-        bottom: 0;      
-        width: 100%;
-    }
-
-    html, body {
-        max-height: -o-calc(100vh - 95px) !important; /* opera */
-        max-height: -webkit-calc(100vh - 95px) !important; /* google, safari */
-        max-height: -moz-calc(100vh - 95px) !important; /* firefox */    
-    }
-</style>
+<link rel=stylesheet type="text/css" href="{% static 'css/404.css' %}">
 {% endblock style %}
 
 {% block body %}
@@ -37,7 +21,7 @@
             </div>
         </div>
     </div>
-    <div class="hot-search-box" style="border-bottom: none;">
+    <div class="hot-search-box bb-none">
         <div class="main-box">
             <p>您要求的網址不存在，若有疑問請<a href="mailto:catalogueoflife.taiwan@gmail.com">聯絡我們</a>，謝謝。</p>
         </div>

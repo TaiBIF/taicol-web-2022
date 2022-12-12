@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'conf.urls'
@@ -141,3 +142,21 @@ AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', default='')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', default='')
 AWS_SES_REGION_NAME = env('AWS_SES_REGION_NAME', default='')
 AWS_SES_REGION_ENDPOINT = env('AWS_SES_REGION_ENDPOINT', default='')
+
+# Content Security Policy 
+CSP_DEFAULT_SRC = ("'self'", "https://www.google.com/recpatcha/", "https://www.google.com/",'http://web-admin.taicol.tw/','https://web-admin.taicol.tw/',"http://18.183.59.124","https://fonts.googleapis.com/") 
+CSP_STYLE_SRC = ["'self'","https://cdn.datatables.net","https://unpkg.com/","http://www.w3.org","https://cdnjs.cloudflare.com","https://fonts.googleapis.com/","https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/"]
+CSP_IMG_SRC = ("'self'","data: http://www.w3.org") 
+# CSP_MEDIA_SRC = ("'self'","https://*.s3.ap-northeast-1.amazonaws.com/","https://d3gg2vsgjlos1e.cloudfront.net/") 
+CSP_FONT_SRC = ("'self'","https://fonts.googleapis.com/","https://fonts.gstatic.com/") 
+
+CSP_SCRIPT_SRC = ["'self'", "https://cdnjs.cloudflare.com",
+    "https://code.jquery.com",
+    "https://cdn.datatables.net",
+    #"https://*.highcharts.com",
+    # "https://*.fontawesome.com",
+    "https://unpkg.com/", "data: http://www.w3.org", "https://www.google.com", "https://www.gstatic.com",
+    "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/"
+]
+
+# CSP_CONNECT_SRC = ("'self'","https://*.fontawesome.com",)

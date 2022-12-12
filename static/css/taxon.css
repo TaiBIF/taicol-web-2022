@@ -1,0 +1,317 @@
+
+.species-de-content .right-de-box .book-list li:nth-child(1) a {
+    padding-top: 5px
+}
+
+.species-de-content .right-de-box .book-list li:nth-child(even) a {
+    color: #4C8DA7
+}
+
+.species-de-content .right-de-box .book-list li:nth-child(even) a:hover {
+    color: #5caccc
+}
+
+.species-de-content .right-de-box .book-list li:last-child  a{
+    border-bottom: 0
+}
+
+
+.pic-area {
+    width: 100%;
+    background: #FFF;
+    padding: 10px;
+    overflow: hidden;
+    position: relative
+}
+
+
+.pic-area .arr-right {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    margin-top: -30px;
+    right: 0;
+    z-index: 5;
+    width: 30px;
+    height: 60px;
+    background: url("/static/image/pic-arrr.svg") top left no-repeat;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s
+}
+
+@media only screen and (min-width: 1000px) {
+    .pic-area .arr-right:hover {
+        background: url("/static/image/pic-arrrs.svg") top left no-repeat;
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s
+    }
+}
+
+
+.pic-area .arr-left {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    margin-top: -30px;
+    left: 0;
+    z-index: 5;
+    width: 30px;
+    height: 60px;
+    background: url("/static/image/pic-arrl.svg") top left no-repeat;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s
+}
+
+@media only screen and (min-width: 1000px) {
+    .pic-area .arr-left:hover {
+        background: url("/static/image/pic-arrls.svg") top left no-repeat;
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s
+    }
+}
+
+.wrap-box {
+    text-align: left;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.image-title {
+    color: #4C8DA7;
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 500;
+    text-align: left;
+}
+
+.r-cir-box {
+    float: left;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    border-radius: 50%;
+    margin-right: 10px;
+    font-size: 14px;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 30px;
+    color: #FFF;
+}
+
+.r-cir-box.rank-1-red {
+    background: #FF7E7E;
+}
+
+.r-cir-box.rank-2-org {
+    background: #FF9E57;
+}
+
+.r-cir-box.rank-3-yell {
+    background: #FFC400;
+}
+
+.r-cir-box.rank-4-green {
+    background: #A6D368;
+}
+
+.r-cir-box.rank-5-blue {
+    background: #77CBED;
+}
+
+.r-cir-box.rank-6-deepblue {
+    background: #64A0D3;
+}
+
+.r-cir-box.rank-7-purple {
+    background: #B991E2;
+}
+
+.r-cir-box.rank-second-gray {
+    background: #555;
+}
+
+
+.r-name {
+    font-size: 18px;
+    font-weight: normal;
+    margin-right: 15px;
+    color: #555;
+    line-height: 30px;
+}
+
+/**/
+
+ul.link-left li {
+    word-break: break-word;
+}
+
+/* Tooltip container */
+.tooltip {
+position: relative !important;
+display: inline-block  !important;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: #EFF5F7;
+    color: #555;
+    border-radius: 3px;
+    padding: 5px;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    word-break: break-word;
+    top: 125%;
+    left: 50%; 
+    margin-left: -10px;
+
+}
+
+.tooltip .tooltiptext::after {
+content: " ";
+position: absolute;
+bottom: 100%;  /* At the top of the tooltip */
+left: 5%;
+margin-left: -5px;
+border-width: 5px;
+border-style: solid;
+border-color: transparent transparent #EFF5F7 transparent;
+}
+
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+visibility: visible;
+}
+
+
+a.anchor {
+    display: block;
+    position: relative;
+    top: -115px;
+    visibility: none;
+}
+
+
+.nice-select.subject {
+    width: 100%;
+    background: #FFF;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 0px 15px;
+    font-size: 16px;
+    height: 40px
+}
+
+.nice-select.subject {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: url("/static/image/ard01.svg") center right 15px no-repeat;
+    background-size: 16px auto;
+    background-color: #FFF
+}
+
+
+/* 照片輪播 */
+/* Next & previous buttons */
+    .right-
+    .arr-left, .arr-right {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        width: auto;
+        padding: 16px;
+        margin-top: -22px;
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+        transition: 0.6s ease;
+        border-radius: 0 3px 3px 0;
+        user-select: none;
+    }
+    
+    /* Caption text */
+    .text {
+        color: lightgrey;
+        font-size: 15px;
+        padding: 8px 12px;
+        position: absolute;
+        bottom: 8px;
+        width: 100%;
+        text-align: right;
+    }
+
+    
+
+    /* Fading animation */
+    .fade {
+        animation-name: fade;
+        animation-duration: 2s;
+    }
+    
+    @keyframes fade {
+        from {opacity: .4} 
+        to {opacity: 1}
+    }
+    
+    /* On smaller screens, decrease text size */
+    @media only screen and (max-width: 300px) {
+        .text {font-size: 11px}
+    }
+    
+
+.ai-none {
+    align-items: '' !important;
+}
+
+.cl-blue {
+    color: #4C8DA7
+}
+
+.fs-16 {
+    font-size: 16px
+}
+
+.imgpop-style {
+    display: block; 
+    overflow: auto
+}
+
+.m-auto {
+    margin: auto
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.ls-none {
+    list-style: none
+}
+
+#spe-image {
+    width: 100%; 
+    margin: 10px 0;
+}
+
+.mh-100 {
+    min-height: 100%
+}
+
+

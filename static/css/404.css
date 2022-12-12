@@ -1,0 +1,19 @@
+.go-topbtn {
+    display: none;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;      
+    width: 100%;
+}
+
+html, body {
+    max-height: -o-calc(100vh - 95px) !important; /* opera */
+    max-height: -webkit-calc(100vh - 95px) !important; /* google, safari */
+    max-height: -moz-calc(100vh - 95px) !important; /* firefox */    
+}
+
+.bb-none {
+    border-bottom: none;
+}

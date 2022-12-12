@@ -1,22 +1,11 @@
 {% extends 'base.html' %} 
 {% load static %}
 {% block style %}
-<style>
-	/* loading box 調整 */
-
-	.loadingbox {
-		margin-top: -80px
-	}
-
-	@media only screen and (max-width: 999px) {
-		.loadingbox {
-			margin-top: -60px
-		}
-	}
-</style>
+<link rel=stylesheet type="text/css" href="{% static 'css/name_match.css' %}">
 {% endblock style %}
 
 {% block body %}
+{% csrf_token %}
 <div class="loadingbox d-none">
 	<img class="center-logo" src="{% static 'image/logo-img.svg' %}" alt="臺灣物種名錄">
 	<div id="loader-wrapper">
@@ -86,7 +75,7 @@
 				</div>
 				<div class="text-areabox">
 					<p>學名/中文名</p>
-					<textarea name="name" id="" style="font-size: 14px"></textarea>
+					<textarea class="fs-14" name="name" id=""></textarea>
 				</div>
 				</form>
 				<button class="search">搜尋</button>
@@ -94,16 +83,16 @@
 		</div>
 		<div class="check-result-box  d-none">
 			<div class="main-box">
-				<div class="mark-title" style="margin-bottom: 0">
+				<div class="mark-title mb-0">
 					<img src="{% static 'image/title-mark.svg' %}">
 					<p>比對結果</p>
 				</div>
 				<div class="result-area">
-					<div class="top-infbox" style="margin-bottom: 20px;">
+					<div class="top-infbox mb-20">
 						<p></p>
-						<div class="button-two" style="display: flex;">
-							<button onclick="downloadData('csv')">下載CSV</button>
-							<button onclick="downloadData('json')">下載JSON</button>
+						<div class="button-two d-flex">
+							<button class="downloadData" data-type="csv">下載CSV</button>
+							<button class="downloadData" data-type="json">下載JSON</button>
 						</div>
 					</div>
 					<div class="right-table">
@@ -119,171 +108,5 @@
 
 {% endblock body %}
 {% block script %}
-<script>
-
-
-	function downloadData(format){
-		var input1 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
-
-		$('form').append(input1);
-		$('form').submit()	
-	}
-
-
-	function getData(page){
-		$('.loadingbox').removeClass('d-none');
-		$.ajax({
-			url: "{% url 'get_match_result' %}",
-			data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
-					'best': $('input[name=best]').val(),
-					'name': $('textarea[name=name]').val(),
-					'page': page,
-				},
-					
-			type: 'POST',
-			dataType : 'json',
-		})
-		.done(function(results) {
-			$('.loadingbox').addClass('d-none');
-			$('.check-result-box').removeClass('d-none');
-			//清空表格
-			$('.table-style1').html(`<tr>
-				<td>查詢字串</td>
-				<td>比對結果</td>
-				<td>中文名</td>
-				<td>界</td>
-				<td>所屬類群</td>
-				<td>階層</td>
-				<td>原生/外來/特有性</td>
-				<td>棲地環境</td>
-				<td>保育類</td>
-				<td>臺灣紅皮書</td>
-				<td>IUCN評估</td>
-				<td>CITES附錄</td>
-			</tr>`)
-			for (let i = 0; i < results.data.length; i++) {
-				if ((results.data[i]['matched_clean'] == '')|results.data[i]['matched_clean'] == undefined){
-					$('.table-style1').append(
-						`<tr>
-							<td>${results.data[i]['search_term']}</td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>`)
-				} else {
-					let tag = '';
-					if (results.data[i]['is_endemic'] != ''){
-						tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
-					}
-					if (results.data[i]['alien_type'] != ''){
-						tag += '<div class="item">' + results.data[i]['alien_type'] + '</div>'
-					}
-					let tag1 = '';
-					if (results.data[i]['is_terrestrial'] ==1 ){
-						tag1 += '<div class="item">陸生</div>'
-					}
-					if (results.data[i]['is_freshwater'] ==1 ){
-						tag1 += '<div class="item">淡水</div>'
-					}
-					if (results.data[i]['is_brackish'] ==1 ){
-						tag1 += '<div class="item">半鹹水</div>'
-					}
-					if (results.data[i]['is_marine'] ==1 ){
-						tag1 += '<div class="item">海生</div>'
-					}
-
-					$('.table-style1').append(
-						`<tr>
-							<td>${results.data[i]['search_term']}</td>
-							<td><a href="/taxon/${results.data[i]['taxon_id']}" target="_blank">${results.data[i]['formatted_name']}</a></td>
-							<td>${results.data[i]['common_name_c']}</a></td>
-							<td>${results.data[i]['kingdom']}</td>
-							<td>${results.data[i]['taxon_group']}</td>
-							<td>${results.data[i]['rank']}</td>
-							<td>
-								<div class="tag-green">
-									${tag}
-								</div>
-							</td>
-							<td>
-								<div class="tag-green">
-									${tag1}
-								</div>
-							</td>
-							<td>${results.data[i]['protected_category']}</td>
-							<td>${results.data[i]['red_category']}</td>
-							<td>${results.data[i]['iucn_category']}</td>
-							<td>${results.data[i]['cites_listing']}</td>
-						</tr>`)
-				}
-			}
-
-			$('.page-num').remove()
-
-			// 頁碼
-			if (results.page.total_page > 1){  // 判斷超過一頁，有才加分頁按鈕
-				$('.scro-m').after(
-				`	<div class="page-num">
-					<!--現在位置加now-->
-					<a href="javascript:;" onclick="getData(1)" class="num page-start">1</a>
-					<a href="javascript:;" onclick="getData(${results.page.current_page - 1})" class="back">
-						<img src="{% static 'image/pagear1.svg' %}">
-						<p>上一頁</p>
-					</a>
-					<a href="javascript:;" onclick="getData(${results.page.current_page + 1})" class="next">
-						<p>下一頁</p>
-						<img src="{% static 'image/pagear2.svg' %}">
-					</a>
-					<a href="javascript:;" onclick="getData(${results.page.total_page})" class="num" id="page-end">${results.page.total_page}</a>
-				</div>
-				`)
-				$('.page-num').append(`
-					<input type="hidden" name="total_page" value="${results.page.total_page}">
-				`)
-			}
-
-			if (results.page.current_page==1){
-				$('.back').attr("onclick","");
-			} else if (results.page.current_page==results.page.total_page){
-				$('.next').attr("onclick","");
-			}
-				
-			let html = ''
-			for (let i = 0; i < results.page.page_list.length; i++) {
-				if (results.page.page_list[i] == results.page.current_page){
-				html += `<a class="num now" href="javascript:;" onclick="getData(${results.page.page_list[i]})">${results.page.page_list[i]}</a> `;
-				} else {
-				html += `<a class="num" href="javascript:;" onclick="getData(${results.page.page_list[i]})">${results.page.page_list[i]}</a>  `
-				}
-			}
-			$('.back').after(html)
-
-		})
-		.fail(function( xhr, status, errorThrown ) {
-			$('.loadingbox').addClass('d-none');
-			alert('發生未知錯誤！請聯絡管理員')
-			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
-		}) 
-
-	}
-
-	$(function(){
-		$('.search').click(function (){
-			if ($('textarea').val()!=''){
-				getData(1)
-			}else{
-				alert('請輸入查詢學名')
-			}
-		})
-
-	})
-</script>
+<script src="{% static 'js/name_match.js' %}"></script>
 {% endblock script %}

@@ -1,0 +1,350 @@
+.item-box .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #FFF;
+    border-radius: 3px;
+    border: 1px solid #ddd
+}
+
+.item-box .check-item:hover input~.checkmark {
+    border: 1px solid #4C8DA7
+}
+
+.item-box .check-item input:checked~.checkmark {
+    background-color: #4C8DA7
+}
+
+.item-box .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none
+}
+
+.item-box .check-item input:checked~.checkmark:after {
+    display: block
+}
+
+.item-box .check-item .checkmark:after {
+    left: 6px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg)
+}
+
+.item-box.check-set {
+    margin-bottom: 0
+}
+
+@media only screen and (max-width: 767px) {
+    .item-box.check-set {
+        margin-bottom: 5px
+    }
+}
+
+.item-box.check-set .right-check {
+    margin-top: 5px
+}
+
+.item-box .right-check {
+    display: flex;
+    margin-top: 10px;
+    flex-wrap: wrap
+}
+
+.item-box .check-item {
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 20px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin-right: 20px;
+    color: #555;
+    margin-top: 15px;
+    margin-left: 20px
+}
+
+
+.cont-search-bar {
+    border-radius: 20px;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    border: 0
+}
+
+.select2-search__field {
+    font-size: 18px;
+    color: #555;
+}
+
+.select2-search--dropdown {
+padding: 4px 20px 4px 20px;
+}
+
+.select2-dropdown  {
+    color: #555;
+    border-radius: 5px;
+    border: solid 1px #ddd;
+    font-size: 18px;
+    text-align: left;
+    line-height: 30px;
+    margin-top: 2px;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    color: #555 ;
+    background-color: #f6f6f6 ;
+}
+.select2-container--default .select2-results__option {
+    padding-left: 20px;
+    color: #555 ;
+}
+
+
+#select2-keyword-container {
+    margin: 0
+}
+
+.select2-selection__placeholder {
+    color: #FF0000;
+    font-size: 18px	
+}
+
+#keyword {
+    width: 100%
+}
+
+.select2-container .select2-selection--single		{
+    display: flex;
+    align-items: center;
+}
+
+.select2-container--default .select2-selection--single {
+    border: 0;
+}
+
+.select2-container .select2-selection--single {
+    height: 60px;
+    padding-left: 20px;
+    background: url("/static/image/search_icon.svg") center right 20px no-repeat;
+    background-size: 24px;
+
+}
+
+@media only screen and (max-width: 1279px) {
+    .select2-container .select2-selection--single {
+        height: 50px;
+        padding-left: 20px
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .select2-container .select2-selection--single {
+        font-size: 16px
+    }
+}
+
+
+.select2-selection__arrow b{
+    display:none !important;
+}
+
+
+span.anchor {
+display: block;
+position: relative;
+top: -115px;
+visibility: none;
+}
+
+
+/* loading box 調整 */
+
+.loadingbox {
+    margin-top: -80px
+}
+
+@media only screen and (max-width: 999px) {
+    .loadingbox {
+        margin-top: -60px
+    }
+}
+
+/* 種階層顏色補上css */
+
+.tree-area .rank-7-purple .item-box.now {
+    background: #B991E2;
+    margin-bottom: 5px;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s
+}
+
+.tree-area .rank-7-purple .item-box.now .cir-box {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    background: #FFF;
+    color: #B991E2
+}
+
+.tree-area .rank-7-purple .item-box.now h2, .tree-area .rank-7-purple .item-box.now p {
+    color: #FFF
+}
+
+.tree-area .rank-7-purple .item-box.now .arr {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg)
+}
+
+.tree-area .rank-7-purple .item-box.now .arr line {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    stroke: #FFF
+}
+
+/* 非林奈階層 */
+.tree-area .rank-second-gray {
+    margin-left: 10;
+}
+
+.tree-area .rank-second-gray .item-box {
+    background: #F7F7F7;
+    position: relative;
+    padding: 15px 35px 15px 13px;
+    margin-bottom: 10px
+}
+
+@media only screen and (min-width: 1000px) {
+    .tree-area .rank-second-gray .item-box:hover {
+        background: #555;
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s
+    }
+
+    .tree-area .rank-second-gray .item-box:hover .cir-box {
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s;
+        background: #FFF;
+        color: #555
+    }
+
+    .tree-area .rank-second-gray .item-box:hover h2, .tree-area .rank-second-gray .item-box:hover p {
+        color: #FFF
+    }
+
+    .tree-area .rank-second-gray .item-box:hover .arr {
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s;
+        -moz-transform: rotate(180deg);
+        -ms-transform: rotate(180deg);
+        -o-transform: rotate(180deg);
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg)
+    }
+
+    .tree-area .rank-second-gray .item-box:hover .arr line {
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s;
+        stroke: #FFF
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .tree-area .rank-second-gray .item-box {
+        padding: 8px 35px 8px 13px
+    }
+}
+
+.tree-area .rank-second-gray .item-box.now {
+    background: #555;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    margin-bottom: 5px
+}
+
+.tree-area .rank-second-gray .item-box.now .cir-box {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    background: #FFF;
+    color: #555
+}
+
+.tree-area .rank-second-gray .item-box.now h2, .tree-area .rank-second-gray .item-box.now p {
+    color: #FFF
+}
+
+.tree-area .rank-second-gray .item-box.now .arr {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg)
+}
+
+.tree-area .rank-second-gray .item-box.now .arr line {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    stroke: #FFF
+}
+
+.tree-area .rank-second-gray .item-box .cir-box {
+    background: #555;
+    color: #FFF
+}
+
+

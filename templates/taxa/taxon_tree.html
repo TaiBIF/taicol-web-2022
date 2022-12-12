@@ -9,361 +9,12 @@
 
 
 {% block style %}
-<style>
-	.item-box .checkmark {
-		position: absolute;
-		top: 0;
-		left: 0;
-		height: 20px;
-		width: 20px;
-		background-color: #FFF;
-		border-radius: 3px;
-		border: 1px solid #ddd
-	}
-	
-	.item-box .check-item:hover input~.checkmark {
-		border: 1px solid #4C8DA7
-	}
-	
-	.item-box .check-item input:checked~.checkmark {
-		background-color: #4C8DA7
-	}
-	
-	.item-box .checkmark:after {
-		content: "";
-		position: absolute;
-		display: none
-	}
-	
-	.item-box .check-item input:checked~.checkmark:after {
-		display: block
-	}
-	
-	.item-box .check-item .checkmark:after {
-		left: 6px;
-		top: 1px;
-		width: 5px;
-		height: 10px;
-		border: solid white;
-		border-width: 0 2px 2px 0;
-		-webkit-transform: rotate(45deg);
-		-ms-transform: rotate(45deg);
-		transform: rotate(45deg)
-	}
-	
-	.item-box.check-set {
-		margin-bottom: 0
-	}
-	
-	@media only screen and (max-width: 767px) {
-		.item-box.check-set {
-			margin-bottom: 5px
-		}
-	}
-
-	.item-box.check-set .right-check {
-		margin-top: 5px
-	}
-	
-	.item-box .right-check {
-		display: flex;
-		margin-top: 10px;
-		flex-wrap: wrap
-	}
-	
-	.item-box .check-item {
-		display: block;
-		position: relative;
-		padding-left: 30px;
-		cursor: pointer;
-		font-size: 16px;
-		line-height: 20px;
-		-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-		margin-right: 20px;
-		color: #555;
-		margin-top: 15px;
-		margin-left: 20px
-	}
-	
-
-	.cont-search-bar {
-		border-radius: 20px;
-	}
-
-	.select2-container--default .select2-search--dropdown .select2-search__field {
-		border: 0
-	}
-
-	.select2-search__field {
-		font-size: 18px;
-		color: #555;
-	}
-
-	.select2-search--dropdown {
-	padding: 4px 20px 4px 20px;
-	}
-
-	.select2-dropdown  {
-		color: #555;
-		border-radius: 5px;
-		border: solid 1px #ddd;
-		font-size: 18px;
-		text-align: left;
-		line-height: 30px;
-		margin-top: 2px;
-	}
-
-	.select2-container--default .select2-results__option--highlighted[aria-selected] {
-		color: #555 ;
-		background-color: #f6f6f6 ;
-   }
-	.select2-container--default .select2-results__option {
-		padding-left: 20px;
-		color: #555 ;
-   }
-
-   
-	#select2-keyword-container {
-		margin: 0
-	}
-
-	.select2-selection__placeholder {
-		color: #FF0000;
-		font-size: 18px	
-	}
-	
-	#keyword {
-		width: 100%
-	}
-
-	.select2-container .select2-selection--single		{
-		display: flex;
-		align-items: center;
-	}
-
-	.select2-container--default .select2-selection--single {
-		border: 0;
-	}
-
-	.select2-container .select2-selection--single {
-		height: 60px;
-		padding-left: 20px;
-		background: url("/static/image/search_icon.svg") center right 20px no-repeat;
-		background-size: 24px;
-
-	}
-
-	@media only screen and (max-width: 1279px) {
-		.select2-container .select2-selection--single {
-			height: 50px;
-			padding-left: 20px
-		}
-	}
-	
-	@media only screen and (max-width: 767px) {
-		.select2-container .select2-selection--single {
-			font-size: 16px
-		}
-	}
-	
-
-	.select2-selection__arrow b{
-		display:none !important;
-	}
-	
-
-span.anchor {
-	display: block;
-	position: relative;
-	top: -115px;
-	visibility: none;
-}
-
-
-	/* loading box 調整 */
-
-	.loadingbox {
-		margin-top: -80px
-	}
-
-	@media only screen and (max-width: 999px) {
-		.loadingbox {
-			margin-top: -60px
-		}
-	}
-
-	/* 種階層顏色補上css */
-
-	.tree-area .rank-7-purple .item-box.now {
-		background: #B991E2;
-		margin-bottom: 5px;
-		transition: all .3s;
-		-moz-transition: all .3s;
-		-o-transition: all .3s;
-		-ms-transition: all .3s;
-		-webkit-transition: all .3s
-	}
-	
-	.tree-area .rank-7-purple .item-box.now .cir-box {
-		transition: all .3s;
-		-moz-transition: all .3s;
-		-o-transition: all .3s;
-		-ms-transition: all .3s;
-		-webkit-transition: all .3s;
-		background: #FFF;
-		color: #B991E2
-	}
-	
-	.tree-area .rank-7-purple .item-box.now h2, .tree-area .rank-7-purple .item-box.now p {
-		color: #FFF
-	}
-	
-	.tree-area .rank-7-purple .item-box.now .arr {
-		transition: all .3s;
-		-moz-transition: all .3s;
-		-o-transition: all .3s;
-		-ms-transition: all .3s;
-		-webkit-transition: all .3s;
-		-moz-transform: rotate(180deg);
-		-ms-transform: rotate(180deg);
-		-o-transform: rotate(180deg);
-		-webkit-transform: rotate(180deg);
-		transform: rotate(180deg)
-	}
-	
-	.tree-area .rank-7-purple .item-box.now .arr line {
-		transition: all .3s;
-		-moz-transition: all .3s;
-		-o-transition: all .3s;
-		-ms-transition: all .3s;
-		-webkit-transition: all .3s;
-		stroke: #FFF
-	}
-
-	/* 非林奈階層 */
-	.tree-area .rank-second-gray {
-		margin-left: 10;
-	}
-	
-	.tree-area .rank-second-gray .item-box {
-		background: #F7F7F7;
-		position: relative;
-		padding: 15px 35px 15px 13px;
-		margin-bottom: 10px
-	}
-	
-	@media only screen and (min-width: 1000px) {
-		.tree-area .rank-second-gray .item-box:hover {
-			background: #555;
-			transition: all .3s;
-			-moz-transition: all .3s;
-			-o-transition: all .3s;
-			-ms-transition: all .3s;
-			-webkit-transition: all .3s
-		}
-	
-		.tree-area .rank-second-gray .item-box:hover .cir-box {
-			transition: all .3s;
-			-moz-transition: all .3s;
-			-o-transition: all .3s;
-			-ms-transition: all .3s;
-			-webkit-transition: all .3s;
-			background: #FFF;
-			color: #555
-		}
-	
-		.tree-area .rank-second-gray .item-box:hover h2, .tree-area .rank-second-gray .item-box:hover p {
-			color: #FFF
-		}
-	
-		.tree-area .rank-second-gray .item-box:hover .arr {
-			transition: all .3s;
-			-moz-transition: all .3s;
-			-o-transition: all .3s;
-			-ms-transition: all .3s;
-			-webkit-transition: all .3s;
-			-moz-transform: rotate(180deg);
-			-ms-transform: rotate(180deg);
-			-o-transform: rotate(180deg);
-			-webkit-transform: rotate(180deg);
-			transform: rotate(180deg)
-		}
-	
-		.tree-area .rank-second-gray .item-box:hover .arr line {
-			transition: all .3s;
-			-moz-transition: all .3s;
-			-o-transition: all .3s;
-			-ms-transition: all .3s;
-			-webkit-transition: all .3s;
-			stroke: #FFF
-		}
-	}
-	
-	@media only screen and (max-width: 767px) {
-		.tree-area .rank-second-gray .item-box {
-			padding: 8px 35px 8px 13px
-		}
-	}
-	
-	.tree-area .rank-second-gray .item-box.now {
-		background: #555;
-		transition: all .3s;
-		-moz-transition: all .3s;
-		-o-transition: all .3s;
-		-ms-transition: all .3s;
-		-webkit-transition: all .3s;
-		margin-bottom: 5px
-	}
-	
-	.tree-area .rank-second-gray .item-box.now .cir-box {
-		transition: all .3s;
-		-moz-transition: all .3s;
-		-o-transition: all .3s;
-		-ms-transition: all .3s;
-		-webkit-transition: all .3s;
-		background: #FFF;
-		color: #555
-	}
-	
-	.tree-area .rank-second-gray .item-box.now h2, .tree-area .rank-second-gray .item-box.now p {
-		color: #FFF
-	}
-	
-	.tree-area .rank-second-gray .item-box.now .arr {
-		transition: all .3s;
-		-moz-transition: all .3s;
-		-o-transition: all .3s;
-		-ms-transition: all .3s;
-		-webkit-transition: all .3s;
-		-moz-transform: rotate(180deg);
-		-ms-transform: rotate(180deg);
-		-o-transform: rotate(180deg);
-		-webkit-transform: rotate(180deg);
-		transform: rotate(180deg)
-	}
-	
-	.tree-area .rank-second-gray .item-box.now .arr line {
-		transition: all .3s;
-		-moz-transition: all .3s;
-		-o-transition: all .3s;
-		-ms-transition: all .3s;
-		-webkit-transition: all .3s;
-		stroke: #FFF
-	}
-	
-	.tree-area .rank-second-gray .item-box .cir-box {
-		background: #555;
-		color: #FFF
-	}
-	
-	
-</style>
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon_tree.css' %}">
 {% endblock style %}
 
 {% block body %}
+{% csrf_token %}
+
 <div class="loadingbox d-none">
 	<img class="center-logo" src="{% static 'image/logo-img.svg' %}" alt="臺灣物種名錄">
 	<div id="loader-wrapper">
@@ -395,7 +46,7 @@ span.anchor {
 				<h3>熱門搜尋階層</h3>
 				<div class="seach-tag-area">
 					{% for ss in search_stat %}
-						<a href="javascript:;" onclick="searchClick('{{ ss.taxon_id }}')">
+						<a class="search_a" href="javascript:;" data-taxon_id="{{ ss.taxon_id }}">
 							<p>{{ ss.name|safe }}</p>
 						</a>
 					{% endfor %}
@@ -425,7 +76,7 @@ span.anchor {
 				<div class="item-box check-set">
 					<div class="right-check">
 						<label class="check-item">栽培豢養
-							<input type="checkbox" name="cultured" style="display:none" checked>
+							<input type="checkbox" name="cultured" class="d-none" checked>
 							<span class="checkmark"></span>
 						</label>
 					</div>
@@ -434,16 +85,39 @@ span.anchor {
 		</div>
 		<div class="tree-area">
 			<div class="main-box">
-				<ul class="rank-1-red" style="display: block;">
+				<ul class="rank-1-red kingdom d-block">
 					<!--選到的給now並展開第二層-->
 					{% for k in kingdom_dict %}
 					<li>
 						<span class="anchor" id="{{ k.taxon_id }}" ></span>
-						<div class="item-box" data-fetched="0" data-taxon="{{ k.taxon_id }}" data-rank="3" onclick="getSubList(this)">
+						<div class="item-box getSubList" data-fetched="0" data-taxon="{{ k.taxon_id }}" data-rank="3">
 							<div class="cir-box">
 								界
 							</div>
-							<h2 onclick="redirectTaxonPage(event, '{{ k.taxon_id }}')">{{ k.name|safe }}</h2>
+							<h2 class="redirectTaxonPage" data-taxon_id="{{ k.taxon_id }}">{{ k.name|safe }}</h2>
+							<p>{{ k.stat }}</p>
+							<div class="arr">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+									</g>
+								</svg>
+							</div>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>
+				<ul class="rank-1-red kingdom_c d-none">
+					<!--選到的給now並展開第二層-->
+					{% for k in kingdom_dict_c %}
+					<li>
+						<span class="anchor" id="{{ k.taxon_id }}" ></span>
+						<div class="item-box getSubList" data-fetched="0" data-taxon="{{ k.taxon_id }}" data-rank="3">
+							<div class="cir-box">
+								界
+							</div>
+							<h2 class="redirectTaxonPage" data-taxon_id="{{ k.taxon_id }}">{{ k.name|safe }}</h2>
 							<p>{{ k.stat }}</p>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -461,366 +135,10 @@ span.anchor {
 		</div>
 	</div>
 
+
+
+
 {% endblock body %}
 {% block script %}
-<script>
-
-
-	function redirectTaxonPage(event,taxon_id){
-			event.stopPropagation();
-			window.open(`/taxon/${taxon_id}`);
-	}
-
-	function getSubList(item){
-		let cultured = 'off';
-		if ($('input[name="cultured"]').is(':checked')){
-			cultured = 'on';
-		}
-		//$('.main-box .item-box').removeClass('now');
-		if ($(item).data('fetched')=="0"){
-			$('.loadingbox').removeClass('d-none');
-			$.ajax({
-				url: "{% url 'get_sub_tree' %}",
-				data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
-						'taxon_id': $(item).data('taxon'),
-						'rank_id': $(item).data('rank'),
-						'cultured': cultured
-						},
-				type: 'POST',
-				dataType : 'json',
-			})
-			.done(function(results) {
-				$('.loadingbox').addClass('d-none');
-				$(item).data('fetched','1');
-				let html_str;
-				for (j of Object.keys(results)){
-					html_str = "";
-					for (var i = 0; i < results[j]['data'].length; i++) {
-						html_str += `
-						<li>
-							<span class="anchor" id="${results[j]['data'][i]['taxon_id']}" ></span>
-							<div class="item-box" data-fetched="0" data-taxon="${results[j]['data'][i]['taxon_id']}" data-rank="${results[j]['data'][i]['rank_id']}" onclick="getSubList(this)">
-								<div class="cir-box">
-									${j}
-								</div>
-								<h2 onclick='redirectTaxonPage(event,"${results[j]['data'][i]['taxon_id']}")'>${results[j]['data'][i]['name']}</h2>
-								<p>${results[j]['data'][i]['stat']}</p>
-								<div class="arr">
-									<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-										<g id="tree-arr" transform="translate(-1545.086 -550.086)">
-											<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-											<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-										</g>
-									</svg>
-								</div>
-							</div>
-						</li>
-						`
-					}
-
-					html_str = `<ul class="${results[j]['rank_color']}" style="display: block;">` + html_str + '</ul>'
-					$(item).after(html_str)
-				}
-
-				//$(this).after('<ul class="rank-2-org"></ul>')
-			})
-			.fail(function( xhr, status, errorThrown ) {
-				$('.loadingbox').addClass('d-none');
-				alert('發生未知錯誤！請聯絡管理員')
-				console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
-			}) 
-			
-		}
-
-		//console.log($( item ).nextAll('ul li .item-box'))
-		$( '.item-box' ).removeClass('now')
-
-		if (($( item ).next('ul').css('display') =='block')|( ($( item ).next('ul').length ==0)&($( item ).hasClass('now'))) ) {
-			$( item ).removeClass('now')
-			$( item ).nextAll('ul').css('display','none')
-			//$( item ).nextAll('.item-box').removeClass('now')
-		} else {
-			$( item ).addClass('now');
-			$( item ).nextAll('ul').css('display','block')
-		}
-	}
-	
-	
-
-	$(function (){
-
-		// 栽培豢養
-		$('input[name="cultured"]').change(function() {
-			let current_taxon_id;
-			if ($('.main-box .item-box.now').length >0){
-				// 只選擇最後一個
-				current_taxon_id = $('.main-box .item-box.now').last().data('taxon')
-			} else {
-				// 清空autocomplete
-				$( "#keyword" ).val('').trigger('change');
-
-			}
-			if(this.checked) {
-				$('.tree-area .main-box').html(`
-				<ul class="rank-1-red" style="display: block;">
-					{% for k in kingdom_dict %}
-					<li>
-						<span class="anchor" id="{{ k.taxon_id }}" ></span>
-						<div class="item-box" data-fetched="0" data-taxon="{{ k.taxon_id }}" data-rank="3" onclick="getSubList(this)">
-							<div class="cir-box">
-								界
-							</div>
-							<h2 onclick="redirectTaxonPage(event, '{{ k.taxon_id }}')">{{ k.name|safe }}</h2>
-							<p>{{ k.stat }}</p>
-							<div class="arr">
-								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
-										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-									</g>
-								</svg>
-							</div>
-						</div>
-					</li>
-					{% endfor %}
-				</ul>`)
-				// 後續
-				if (current_taxon_id){
-					searchClick(current_taxon_id)
-				}
-				
-			} else {
-				$('.tree-area .main-box').html(`
-				<ul class="rank-1-red" style="display: block;">
-					{% for k in kingdom_dict_c %}
-					<li>
-						<span class="anchor" id="{{ k.taxon_id }}" ></span>
-						<div class="item-box" data-fetched="0" data-taxon="{{ k.taxon_id }}" data-rank="3" onclick="getSubList(this)">
-							<div class="cir-box">
-								界
-							</div>
-							<h2 onclick="redirectTaxonPage(event, '{{ k.taxon_id }}')">{{ k.name|safe }}</h2>
-							<p>{{ k.stat }}</p>
-							<div class="arr">
-								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
-										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-									</g>
-								</svg>
-							</div>
-						</div>
-					</li>
-					{% endfor %}
-				</ul>`)
-				// 後續
-
-				if (current_taxon_id){
-					searchClick(current_taxon_id)
-				} 
-
-			
-			}
-		});
-		
-
-		// 關鍵字 autocomplete
-		$("#keyword").select2({
-			language: {
-				"noResults": function(){
-					return "查無結果";
-				},		 
-				searching: function(params) {
-					if (params.term != undefined){
-						if (params.term.match(/[\u3400-\u9FBF]/)){
-							if (params.term.length >1){
-								return '查詢中...';
-							} else {
-								throw false;  
-							}
-						} else if (params.term.trim().length  > 2){
-							return '查詢中...';
-						} else {
-							throw false;  
-						}					
-					}
-				}
-			},		
-			ajax: {
-				dataType: 'json',
-				data: function (params) {
-					let cultured = 'off';
-					if ($('input[name="cultured"]').is(':checked')){
-						cultured = 'on';
-					}
-		
-					if (params.term.match(/[\u3400-\u9FBF]/)){
-						if (params.term.length >1){
-							return {
-								keyword: params.term,
-								from_tree: 'true',
-								cultured: cultured
-								};
-						}
-					} else if (params.term.trim().length  > 2){
-						return {
-							keyword: params.term,
-							from_tree: 'true',
-							cultured: cultured
-							};
-	
-					} else {
-						throw false;  
-					}
-				},			  
-				jsonpCallback: 'jsonCallback',
-				url: '{% url "get_autocomplete_taxon" %}',
-				processResults: function (data) {
-					return {
-						results: $.map(data, function (item) {
-							return {
-								text: item.text,
-								id: item.id,
-							}
-						})
-					};
-				}
-			}
-		});
-
-
-		$('#keyword').on('select2:select', function (e) {
-			var data = e.params.data;
-			searchClick(data.id)
-		  });
-
-	});
-
-	function searchClick(keyword_taxon_id){
-		let cultured = 'off';
-		if ($('input[name="cultured"]').is(':checked')){
-			cultured = 'on';
-		}
-		// 關閉所有的樹
-		$('.main-box .item-box').removeClass('now');
-		$('.main-box ul').not('.rank-1-red').css('display','none');
-		// 搜尋下方的樹
-		// 先查path 如果已經在樹上就不要再查詢
-		// 已經有存在 只需要打開
-		if ($(`div [data-taxon="${keyword_taxon_id}"`).length > 0) {
-			$(`div [data-taxon="${keyword_taxon_id}"`).parent().parents('ul').css('display','block');
-			if (!$(`div[data-taxon="${keyword_taxon_id}"]`).hasClass('now')){
-				$(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')}	
-			$(`div [data-taxon="${keyword_taxon_id}"`).nextAll('ul').css('display','block');
-			document.location=`#${keyword_taxon_id}`
-		} else {
-			$('.loadingbox').removeClass('d-none');
-			$.ajax({
-				url: "{% url 'get_taxon_path' %}",
-				data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
-						'taxon_id': keyword_taxon_id,
-						'cultured': cultured},
-				type: 'POST',
-				dataType : 'json',
-			})
-			.done(function(results) {
-				fetch_taxon = []
-				for (r of results){
-					if ($(`div[data-taxon="${r}"]`).length==0 |  $(`div[data-taxon="${r}"]`).data('fetched')=="0"){
-						fetch_taxon.push(r)
-					}
-				}
-				//fetch_taxon.push(keyword_taxon_id)
-				if (fetch_taxon.length > 0){
-					fetchSubList(fetch_taxon, keyword_taxon_id)
-				} else {
-					$('.loadingbox').addClass('d-none');
-				}
-			})
-			.fail(function( xhr, status, errorThrown ) {
-				$('.loadingbox').addClass('d-none');
-				alert('發生未知錯誤！請聯絡管理員')
-				console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
-			}) 
-
-		}
-		// 加入搜尋次數
-		// TODO 如果是從
-		$.ajax({
-			url: "{% url 'update_search_stat' %}",
-			data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
-					'taxon_id': keyword_taxon_id},
-			type: 'POST',
-			dataType : 'json',
-		})
-		.done(function(results) {
-			console.log('done')
-		})
-	}
-
-
-	function fetchSubList(fetch_taxon, keyword_taxon_id){
-		let cultured = 'off';
-		if ($('input[name="cultured"]').is(':checked')){
-			cultured = 'on';
-		}
-		$.ajax({
-			url: "{% url 'get_sub_tree_list' %}",
-			data:  {'csrfmiddlewaretoken' : '{{ csrf_token }}',
-					'taxon_id': fetch_taxon,
-					'cultured': cultured},
-			type: 'POST',
-			dataType : 'json',
-		})
-		.done(function(results) {
-			$('.loadingbox').addClass('d-none');
-			for (var r = 0; r < results.length; r++) {
-				let html_str;
-				for (j of Object.keys(results[r])){
-					item = $(`div[data-taxon="${results[r][j]['taxon_id']}"]`)
-					$(item).data('fetched','1');
-					html_str = "";
-					for (var i = 0; i < results[r][j]['data'].length; i++) {
-						html_str += `
-						<li>
-							<span class="anchor" id="${results[r][j]['data'][i]['taxon_id']}" ></span>
-							<div class="item-box" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}" onclick="getSubList(this)">
-								<div class="cir-box">
-									${j}
-								</div>
-								<h2 onclick='redirectTaxonPage(event,"${results[r][j]['data'][i]['taxon_id']}")'>${results[r][j]['data'][i]['name']}</h2>
-								<p>${results[r][j]['data'][i]['stat']}</p>
-								<div class="arr">
-									<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-										<g id="tree-arr" transform="translate(-1545.086 -550.086)">
-											<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-											<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-										</g>
-									</svg>
-								</div>
-							</div>
-						</li>
-						`
-					}
-					html_str = `<ul class="${results[r][j]['rank_color']}" style="display: block;">` + html_str + '</ul>'
-					$(item).after(html_str)
-				}
-			}
-			if (!$(`div[data-taxon="${keyword_taxon_id}"]`).hasClass('now')){
-				$(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')
-			}
-			$(`div[data-taxon="${keyword_taxon_id}"]`).data('fetched','1');
-			$(`div [data-taxon="${keyword_taxon_id}"`).parent().parents('ul').css('display','block');
-			$(`div [data-taxon="${keyword_taxon_id}"`).nextAll('ul').css('display','block');
-
-			document.location=`#${keyword_taxon_id}`
-			$('.loadingbox').addClass('d-none');
-		})
-		.fail(function( xhr, status, errorThrown ) {
-			$('.loadingbox').addClass('d-none');
-			alert('發生未知錯誤！請聯絡管理員')
-			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
-		}) 
-	}
-</script>
+<script src="{% static 'js/taxon_tree.js' %}"></script>
 {% endblock script %}

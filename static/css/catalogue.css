@@ -1,0 +1,167 @@
+
+	.select2-container--default .select2-search--dropdown .select2-search__field {
+		border: 0
+	}
+
+	.select2-search__field {
+		font-size: 18px;
+		color: #555;
+	}
+
+	.select2-search--dropdown {
+		padding: 4px 15px 4px 15px;
+	}
+
+	.select2-dropdown  {
+		color: #555;
+		border-radius: 5px;
+		border: solid 1px #ddd;
+		font-size: 18px;
+		text-align: left;
+		line-height: 30px;
+		margin-top: 2px;
+	}
+
+	.select2-container--default .select2-results__option--highlighted[aria-selected] {
+		color: #555 ;
+		background-color: #f6f6f6 ;
+   }
+	.select2-container--default .select2-results__option {
+		padding-left: 15px;
+		color: #555 ;
+   }
+
+   
+	#select2-keyword-container {
+		margin: 0
+	}
+
+	
+	.select2-container--default .select2-selection--single {
+		border: 0;
+	}
+
+	.select2-container .select2-selection--single {
+		background: #FFF;
+		border-radius: 5px;
+		border: 1px solid #ddd;
+		padding: 0px 10px;
+		font-size: 16px;
+		height: 40px;
+		width: 460px;
+		max-width: 100%;
+	}
+
+	span.select2-selection.select2-selection--single {
+        outline: none;
+    }
+
+
+	.select2-selection__arrow b {
+		display:none !important;
+	}
+	.select2-container .select2-selection--single		{
+		display: flex;
+		align-items: center;
+	}
+
+
+	.f-bold {
+		font-weight: bold !important;
+	}
+
+	.result-area {
+		min-height: 300px
+	}
+
+	.nice-select.wide {
+		width: 100% !important;
+		padding: 0px 15px !important;
+		font-size: 16px !important;
+		height: 40px !important;
+		max-width: 460px !important;
+		background: url("/static/image/ard01.svg") center right 15px no-repeat;
+		background-size: 16px auto !important;
+		background-color: #FFF !important;
+		-webkit-appearance: none !important;
+		-moz-appearance: none !important;
+		appearance: none !important;
+	}
+
+	@media only screen and (max-width: 767px) {
+		.nice-select.wide {
+			margin-bottom: 10px !important;
+		}
+	}
+
+
+	.nice-select .list { max-height: 400px; overflow-y: scroll; }
+
+	.nice-select.select-box {
+		margin-right: 10px !important;
+		-webkit-appearance: none !important;
+		-moz-appearance: none !important;
+		appearance: none !important;
+		height: 60px !important;
+		width: 170px !important;
+		flex: 0 0 170px !important;
+		border: 1px solid #ddd !important;
+		border-radius: 30px !important;
+		background: url("/static/image/ard01.svg") center right 20px no-repeat !important;
+		background-size: 16px auto !important;
+		padding: 0px 20px !important;
+		color: #888 !important;
+		font-size: 18px  !important;
+	}
+	
+	@media only screen and (max-width: 767px) {
+		.nice-select.select-box {
+			font-size: 16px !important;
+			width: 100% !important;
+			height: 50px !important;
+			flex: initial !important;
+			margin-right: 0px !important;
+		}
+	}
+
+	.nice-select.select-box .list, .nice-select.mb-select .list {
+		left: 0 !important;
+		right: 0 !important;
+		
+	}
+	  
+	.select-box span.current {
+		line-height: 60px;
+	}
+
+
+	.nice-select.mb-select {
+        background: #FFF;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        padding: 0px 15px;
+        font-size: 16px;
+        height: 40px;
+        width: calc(50% - 5px);
+        max-width: 460px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: url("/static/image/ard01.svg") center right 15px no-repeat;
+        background-size: 16px auto;
+        background-color: #FFF
+    }
+
+
+	/* loading box 調整 */
+
+	.loadingbox {
+		margin-top: -80px
+	}
+
+	@media only screen and (max-width: 999px) {
+		.loadingbox {
+			margin-top: -60px
+		}
+	}
+	
