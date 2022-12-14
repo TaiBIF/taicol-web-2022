@@ -161,4 +161,4 @@ CSP_SCRIPT_SRC = ["'self'", "https://cdnjs.cloudflare.com",
 
 # CSP_CONNECT_SRC = ("'self'","https://*.fontawesome.com",)
 
-CSRF_TRUSTED_ORIGINS = ['https://web-staging.taicol.tw/','https://web-admin.taicol.tw/']
+CSRF_TRUSTED_ORIGINS = ['https://web-staging.taicol.tw','https://web-admin.taicol.tw']
