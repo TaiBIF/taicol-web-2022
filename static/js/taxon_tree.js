@@ -162,12 +162,12 @@ $(function (){
                         if (params.term.length >1){
                             return '查詢中...';
                         } else {
-                            throw false;  
+                            return false;  
                         }
                     } else if (params.term.trim().length  > 2){
                         return '查詢中...';
                     } else {
-                        throw false;  
+                        return false;  
                     }					
                 }
             }
@@ -175,6 +175,7 @@ $(function (){
         ajax: {
             dataType: 'json',
             data: function (params) {
+                console.log(params)
                 let cultured = 'off';
                 if ($('input[name="cultured"]').is(':checked')){
                     cultured = 'on';
@@ -196,7 +197,7 @@ $(function (){
                         };
 
                 } else {
-                    throw false;  
+                    return false;  
                 }
             },			  
             jsonpCallback: 'jsonCallback',
@@ -314,7 +315,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id){
                             <div class="cir-box">
                                 ${j}
                             </div>
-                            <h2 class="redirectTaxonPage" data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
+                            <h2 class="redirectTaxonPage" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
                             <p>${results[r][j]['data'][i]['stat']}</p>
                             <div class="arr">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
