@@ -8343,6 +8343,10 @@ body {
     }
 }
 
+.species-de-content .right-de-box .history-edit {
+    width: 100%;
+}
+
 @media only screen and (max-width: 767px) {
     .species-de-content .right-de-box .history-edit {
         width: 1000px

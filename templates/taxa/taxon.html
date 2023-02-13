@@ -164,7 +164,7 @@
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<p>照片提供：<a id="image_link" href="#">臺灣生命大百科</a></p>
+						<p>照片提供：<a target="_blank" id="image_permalink" href="#">臺灣生命大百科</a></p>
 					</div>
 				</div>
 			</div>
@@ -197,6 +197,9 @@
 				<div class="sticky-left">
 					<input type="hidden" name="taxon_id" value="{{ taxon_id }}">
 					<button class="sticky_btn" data-hash="#taxon-status">- 分類資訊</button>
+					{% if stat_str %}
+					<button class="sticky_btn" data-hash="#taxon-sub">- 子階層統計</button>
+					{% endif %}
 					<button class="sticky_btn" data-hash="#taxon-rank">- 分類階層</button>
 					<button class="sticky_btn" data-hash="#taxon-info">- 物種資訊</button>
 					<button class="sticky_btn" data-hash="#taxon-change">- 學名變遷</button>
@@ -214,14 +217,26 @@
 								<h2>{{ data.common_name_c|default_if_none:'' }}</h2>
 								<p>物種編號：{{ taxon_id }}</p>
 							</div>
-							<div class="class-inf">
-								<a class="anchor" id="taxon-status"></a>
-								<div class="mark-title">
-									<img src="{% static 'image/title-markw.svg' %}">
-									<p>分類資訊</p>
+							<div class="infobox">
+								<div class="class-inf {% if data.is_deleted %} deleted_t {% endif %} mr-5">
+									<a class="anchor" id="taxon-status"></a>
+									<div class="mark-title">
+										<img src="{% static 'image/title-markw.svg' %}">
+										<p>分類資訊</p>
+									</div>
+									<p>{{ data.rank_d }}</p>
+									<p>{{ data.status|safe }}</p>
 								</div>
-								<p>{{ data.rank_d }}</p>
-								<p>{{ data.status }}</p>
+								{% if stat_str %}
+								<div class="class-inf ml-5 class-inf-w">
+									<a class="anchor" id="taxon-sub"></a>
+									<div class="mark-title">
+										<img src="{% static 'image/title-mark.svg' %}">
+										<p>子階層統計</p>
+									</div>
+									<p>{{ stat_str|safe }}</p>
+								</div>
+								{% endif %}
 							</div>
 						</div>
 						<div class="rignt-pic_area">
@@ -244,6 +259,7 @@
 													<img src="{{ img.src|safe }}">
 													<div class="text image_author" >{{ img.author|safe }}</div>
 													<div class="image_provider d-none">{{ img.provider|safe }}</div>
+													<div class="image_permalink d-none">{{ img.permalink|safe }}</div>
 												</div>
 											</div>
 										</div>
@@ -339,7 +355,9 @@
 										</p>
 										{% endif %}
 										{% if data.iucn_category  %}
-										<p>IUCN：{{ data.iucn_category }} 
+										<div  class="d-flex">
+
+										<p>IUCN：<a target="_blank" href="{{ data.iucn_url }}">{{ data.iucn_category }}</a>
 											{% if data.iucn_note %}
 											<div class="tooltip">
 												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle cl-blue" viewBox="0 0 16 16">
@@ -350,9 +368,11 @@
 											</div>
 											{% endif %}
 										</p>
+										</div>
 										{% endif %}
 										{% if data.cites_listing  %}
-										<p>CITES：{{ data.cites_listing }} 
+										<div  class="d-flex">
+										<p>CITES：<a target="_blank" href="{{ data.cites_url }}">{{ data.cites_listing }}</a>
 											{% if data.cites_note %}
 											<div class="tooltip">
 												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle cl-blue" viewBox="0 0 16 16">
@@ -363,6 +383,7 @@
 											</div>
 											{% endif %}
 										</p>
+									</div>
 										{% endif %}
 									</div>
 								</div>
@@ -527,11 +548,10 @@
 								</tr>
 								{% for t in taxon_history %}
 									<tr>
-										<td>{{ t.datetime|safe }}
-										</td>
+										<td>{{ t.datetime|safe }}</td>
 										<td>{{ t.type }} {{ t.content|default_if_none:''|safe }}</td>
 										<td>{{ t.ref|safe }}</td>
-										<td></td>
+										<td>{{ t.editor|default_if_none:'' }}</td>
 									</tr>
 								{% endfor %}
 							</table>

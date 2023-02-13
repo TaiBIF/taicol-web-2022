@@ -1,4 +1,3 @@
-
 .species-de-content .right-de-box .book-list li:nth-child(1) a {
     padding-top: 5px
 }
@@ -11,7 +10,7 @@
     color: #5caccc
 }
 
-.species-de-content .right-de-box .book-list li:last-child  a{
+.species-de-content .right-de-box .book-list li:last-child a {
     border-bottom: 0
 }
 
@@ -159,8 +158,9 @@ ul.link-left li {
 
 /* Tooltip container */
 .tooltip {
-position: relative !important;
-display: inline-block  !important;
+    position: relative !important;
+    display: inline-block !important;
+    margin: auto 4px;
 }
 
 /* Tooltip text */
@@ -177,26 +177,27 @@ display: inline-block  !important;
     z-index: 1;
     word-break: break-word;
     top: 125%;
-    left: 50%; 
+    left: 50%;
     margin-left: -10px;
 
 }
 
 .tooltip .tooltiptext::after {
-content: " ";
-position: absolute;
-bottom: 100%;  /* At the top of the tooltip */
-left: 5%;
-margin-left: -5px;
-border-width: 5px;
-border-style: solid;
-border-color: transparent transparent #EFF5F7 transparent;
+    content: " ";
+    position: absolute;
+    bottom: 100%;
+    /* At the top of the tooltip */
+    left: 5%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #EFF5F7 transparent;
 }
 
 
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
-visibility: visible;
+    visibility: visible;
 }
 
 
@@ -230,51 +231,57 @@ a.anchor {
 
 /* 照片輪播 */
 /* Next & previous buttons */
-    .right-
-    .arr-left, .arr-right {
-        cursor: pointer;
-        position: absolute;
-        top: 50%;
-        width: auto;
-        padding: 16px;
-        margin-top: -22px;
-        color: white;
-        font-weight: bold;
-        font-size: 18px;
-        transition: 0.6s ease;
-        border-radius: 0 3px 3px 0;
-        user-select: none;
+.right- .arr-left, .arr-right {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+}
+
+/* Caption text */
+.text {
+    color: lightgrey;
+    font-size: 15px;
+    padding: 8px 12px;
+    position: absolute;
+    bottom: 8px;
+    width: 100%;
+    text-align: right;
+}
+
+
+
+/* Fading animation */
+.fade {
+    animation-name: fade;
+    animation-duration: 2s;
+}
+
+@keyframes fade {
+    from {
+        opacity: .4
     }
-    
-    /* Caption text */
+
+    to {
+        opacity: 1
+    }
+}
+
+/* On smaller screens, decrease text size */
+@media only screen and (max-width: 300px) {
     .text {
-        color: lightgrey;
-        font-size: 15px;
-        padding: 8px 12px;
-        position: absolute;
-        bottom: 8px;
-        width: 100%;
-        text-align: right;
+        font-size: 11px
     }
+}
 
-    
-
-    /* Fading animation */
-    .fade {
-        animation-name: fade;
-        animation-duration: 2s;
-    }
-    
-    @keyframes fade {
-        from {opacity: .4} 
-        to {opacity: 1}
-    }
-    
-    /* On smaller screens, decrease text size */
-    @media only screen and (max-width: 300px) {
-        .text {font-size: 11px}
-    }
-    
 
 .ai-none {
     align-items: '' !important;
@@ -289,7 +296,7 @@ a.anchor {
 }
 
 .imgpop-style {
-    display: block; 
+    display: block;
     overflow: auto
 }
 
@@ -306,7 +313,7 @@ a.anchor {
 }
 
 #spe-image {
-    width: 100%; 
+    width: 100%;
     margin: 10px 0;
 }
 
@@ -314,4 +321,81 @@ a.anchor {
     min-height: 100%
 }
 
+.infobox {
+    display: flex;
+    justify-content: 'space-between'
+}
 
+.species-de-content .right-de-box .box-2 .left-maininf .infobox .class-inf {
+    background: #4C8DA7;
+    width: 100%;
+    max-width: 50%;
+    border-radius: 10px;
+    padding: 10px 20px
+}
+
+@media only screen and (max-width: 767px) {
+    .species-de-content .right-de-box .box-2 .left-maininf .infobox .class-inf {
+        padding: 10px 15px
+    }
+}
+
+.species-de-content .right-de-box .box-2 .left-maininf .infobox .class-inf p {
+    color: #FFF;
+    font-size: 18px
+}
+
+@media only screen and (max-width: 999px) {
+    .species-de-content .right-de-box .box-2 .left-maininf .infobox .class-inf p {
+        font-size: 16px
+    }
+}
+
+.species-de-content .right-de-box .box-2 .left-maininf .infobox .class-inf .mark-title {
+    margin-bottom: 0
+}
+
+.species-de-content .right-de-box .box-2 .left-maininf .infobox .class-inf .mark-title p {
+    color: #FFF
+}
+
+.ml-5 {
+    margin-left: 5px
+}
+
+.mr-5 {
+    margin-right: 5px
+}
+
+.class-inf-w {
+    background-color: white !important;
+}
+
+.class-inf-w p {
+    color: #333 !important
+}
+
+.wh-20 {
+    height: 20px !important;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.species-de-content .right-de-box .box-2 .left-maininf .deleted_t {
+    background: grey !important;
+}
+
+.new_taxon_a {
+    color: #FFF
+}
+
+.new_taxon_a:hover {
+    color: lightblue
+}
+
+
+.fa_size {
+    height: 14px
+}

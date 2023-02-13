@@ -35,9 +35,11 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 		}
 		slides[slideIndex-1].style.display = "block";  
 		// 修改popup裡面的照片
+		/*
 		$('.imagepop #spe-image').attr("src",$('.mySlides:visible img').attr('src'));
 		$('.imagepop #image_author').html($('.mySlides:visible img').next('.image_author').html());
 		$('.imagepop #image_provider').html($('.mySlides:visible img').next('.image_provider').html());
+		$('.imagepop #image_permalink').attr("href",$('.mySlides:visible img').next('.image_permalink').html());*/
 	}
 
 	function controlAll(){
@@ -152,12 +154,16 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
 	$( ".imagepop .xx" ).click(function() {
 		$('.imagepop').fadeOut("slow");
+		$('.imagepop').addClass("d-none");
 	});
 
 
 	$( ".mySlides img" ).not('.nopic').click(function() {
+		$('.imagepop').removeClass('d-none')
 		$('.imagepop').fadeIn("slow");
 		$('.imagepop #spe-image').attr("src",this.src);
 		$('.imagepop #image_author').html($(this).next('.image_author').html());
 		$('.imagepop #image_provider').html($(this).next().next('.image_provider').html());
+		$('.imagepop #image_permalink').attr("href",$(this).next().next().next('.image_permalink').html());
+
 	});

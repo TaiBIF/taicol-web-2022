@@ -401,8 +401,8 @@
 				$('.page-num').remove()
 				$('.mb-cataselect').remove()
 				$('.table-style1').html('')
-				$('.button-two').hide()
-				$('.result-flexbox').hide()
+				$('.button-two').addClass('d-none')
+				$('.result-flexbox').addClass('d-none')
 				$('.kingdom-box, .rank-box, .endemic-box, .status-box, .alien_type-box').html('')
 
 				$('#total-count').parent('p').removeClass('d-none');
@@ -410,9 +410,9 @@
 				$('#total-count').html(results['count']['total'][0]['count']);
 				if (results['count']['total'][0]['count']>0){
 
-					$('.button-two').show()
-					$('.result-flexbox').show()
-					$('.right-table').show()
+					$('.button-two').removeClass('d-none')
+					$('.result-flexbox').removeClass('d-none')
+					$('.right-table').removeClass('d-none')
 
 
 					$('.top-infbox').after(
