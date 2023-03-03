@@ -7,14 +7,14 @@ class Expert(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
     name_e = models.CharField(max_length=100, blank=True, null=True) # 英文名
     email = models.CharField(max_length=1000, blank=True, null=True)
-    taxon_id = models.CharField(max_length=7, blank=True, null=True)
+    taxon_id = models.CharField(max_length=8, blank=True, null=True)
     taxon_group = models.CharField(max_length=100, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
 
 class SearchStat(models.Model): # 熱門搜尋階層
-    taxon_id = models.CharField(max_length=7, blank=False, null=False)
+    taxon_id = models.CharField(max_length=8, blank=False, null=False)
     count = models.IntegerField()
     updated_at = models.DateTimeField(auto_now_add=True)
 
@@ -30,9 +30,10 @@ class Feedback(models.Model): # 錯誤回報
         (7, '文獻'),
         (8, '專家'),
         (9, '相關連結'),
-        (10, '變更歷史')
+        (10, '變更歷史'),
+        (11, '有效名版本紀錄')
     )
-    taxon_id = models.CharField('物種編號',max_length=7, blank=False, null=False)
+    taxon_id = models.CharField('物種編號',max_length=8, blank=False, null=False)
     type = models.SmallIntegerField('類型',choices=TYPE_CHOICE, null=True, blank=True)
     title = models.CharField('主旨',max_length=1000, blank=True, null=True)
     description = models.TextField('錯誤描述',blank=True, null=True)

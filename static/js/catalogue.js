@@ -9,6 +9,8 @@
 	let more_opts = ['is_terrestrial','is_freshwater','is_brackish','is_marine',
 				  'protected_category','red_category','iucn_category','cites','date']
 
+
+
 	function changeAction(){
 		// 進階選項控制
 		let filter = $('[name=filter]').val();
@@ -181,9 +183,11 @@
 						tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
 					}
 					if (results.data[i]['alien_type'] != ''){
-						tag += '<div class="item">' + results.data[i]['alien_type'] + '</div>'
+						let alt_list = results.data[i]['alien_type'].split(',')
+						for (let a = 0; a < alt_list.length; a++) {
+							tag += '<div class="item">' + alt_list[a] + '</div>'
+						}
 					}
-
 					$('.table-style1').append(
 						`<tr>
 							<td>${results.data[i]['kingdom']}</td>
@@ -225,10 +229,8 @@
 					}
 
 					if (results.page.current_page==1){
-						//$('.back').attr("onclick","");
                         $('.back').removeClass('updateData')
 					} else if (results.page.current_page==results.page.total_page){
-						//$('.next').attr("onclick","");
                         $('.next').removeClass('updateData')
 					}
 						
@@ -266,8 +268,6 @@
 		var input3 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
 
 		$('form').append(input1).append(input2).append(input3);
-		//console.log($('form'))
-
 		$('form').submit()
 		
 	}
@@ -304,8 +304,7 @@
 									</button>
 								</div>`)
 							}
-							})
-				
+						})
 					} else {
 						urlParams.getAll(m).forEach(function(me){
 							$(`input[name=${m}][value="${me}"]`).prop('checked', true)
@@ -382,6 +381,7 @@
 			alert('日期格式錯誤');
 			window.enterPressed = false;
 		} else {
+
 
 			$('.loadingbox').removeClass('d-none');
 
@@ -461,6 +461,7 @@
 					})
 
 					if (results.count.kingdom.length > 0) {
+						$('.kingdom-box').parent('li').removeClass('d-none')
 						for (let i = 0; i < results.count.kingdom.length; i++) {
 							$('.kingdom-box').append(`<button class="changeFacet facet-btn facet-kingdom-${results.count.kingdom[i]['category']}" data-facet="kingdom" data-value="${results.count.kingdom[i]['category']}">
 													  ${results.count.kingdom[i]['category_c']}(${results.count.kingdom[i]['count']})</button>`)
@@ -468,48 +469,51 @@
 						// 手機選單
 						$('select[name=mb-select]').append(`<option value="kingdom">界</option>`)
 					} else {
-						$('.kingdom-box').parent('li').hide()
+						$('.kingdom-box').parent('li').addClass('d-none')
 					}
 
 					if (results.count.rank.length>0){
+						$('.rank-box').parent('li').removeClass('d-none')
 						for (let i = 0; i < results.count.rank.length; i++) {
 							$('.rank-box').append(`<button class="changeFacet facet-btn  facet-rank-${results.count.rank[i]['category']}" data-facet="rank" data-value="${results.count.rank[i]['category']}">
 													${results.count.rank[i]['category_c']}(${results.count.rank[i]['count']})</button>`)
 						}
 						$('select[name=mb-select]').append(`<option value="rank">階層</option>`)
 					} else {
-						$('.rank-box').parent('li').hide()
+						$('.rank-box').parent('li').addClass('d-none')
 					}
 
 					if (results.count.is_endemic.length>0){
+						$('.endemic-box').parent('li').removeClass('d-none')
 						for (let i = 0; i < results.count.is_endemic.length; i++) {
 							$('.endemic-box').append(`<button class="changeFacet facet-btn facet-endemic-${results.count.is_endemic[i]['category']}" data-facet="endemic" data-value="${results.count.is_endemic[i]['category']}')">
 													  ${results.count.is_endemic[i]['category_c']}(${results.count.is_endemic[i]['count']})</button>`)
 						}
 						$('select[name=mb-select]').append(`<option value="endemic">特有性</option>`)
 					} else {
-						$('.endemic-box').parent('li').hide()
+						$('.endemic-box').parent('li').addClass('d-none')
 					}
 
 					if (results.count.alien_type.length>0){
+						$('.alien_type-box').parent('li').removeClass('d-none')
 						for (let i = 0; i < results.count.alien_type.length; i++) {
 							$('.alien_type-box').append(`<button class="changeFacet facet-btn facet-alien_type-${results.count.alien_type[i]['category']}" data-facet="alien_type" data-value="${results.count.alien_type[i]['category']}">
 													${results.count.alien_type[i]['category_c']}(${results.count.alien_type[i]['count']})</button>`)
 						}
 						$('select[name=mb-select]').append(`<option value="alien_type">原生/外來性</option>`)
 					} else {
-						$('.alien_type-box').parent('li').hide()
+						$('.alien_type-box').parent('li').addClass('d-none')
 					}
 
-
 					if (results.count.status.length>0){
+						$('.status-box').parent('li').removeClass('d-none')
 						for (let i = 0; i < results.count.status.length; i++) {
 							$('.status-box').append(`<button class="changeFacet facet-btn facet-status-${results.count.status[i]['category']}" data-facet="status" data-value="${results.count.status[i]['category']}">
 													${results.count.status[i]['category_c']}(${results.count.status[i]['count']})</button>`)
 						}
 						$('select[name=mb-select]').append(`<option value="status">地位</option>`)
 					} else {
-						$('.status-box').parent('li').hide()
+						$('.status-box').parent('li').addClass('d-none')
 					}
 
 					$('.table-style1').html(`<tr>
@@ -528,7 +532,10 @@
 							tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
 						}
 						if (results.data[i]['alien_type'] != ''){
-							tag += '<div class="item">' + results.data[i]['alien_type'] + '</div>'
+							let alt_list = results.data[i]['alien_type'].split(',')
+							for (let a = 0; a < alt_list.length; a++) {
+								tag += '<div class="item">' + alt_list[a] + '</div>'
+							}
 						}
 						$('.table-style1').append(
 							`<tr>alien_type
@@ -607,9 +614,9 @@
                         changeFacet($(this).data('facet'), $(this).data('value'))
                     })
             
-
+					$('.mb-cataselect').removeClass('d-none')
 				} else {
-					$('.mb-cataselect').hide()
+					$('.mb-cataselect').addClass('d-none')
 				}
 			})
 			.fail(function( xhr, status, errorThrown ) {
@@ -621,7 +628,7 @@
 		}
 	}
 
-	$(function(){
+	$(function(){		
 
         $('.changeFacet').on('click',function(){
             changeFacet($(this).data('facet'), $(this).data('value'))

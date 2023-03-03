@@ -79,6 +79,8 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 						tag1 += '<div class="item">海生</div>'
 					}
 
+					console.log(results.data[i])
+
 					$('.table-style1').append(
 						`<tr>
 							<td>${results.data[i]['search_term']}</td>

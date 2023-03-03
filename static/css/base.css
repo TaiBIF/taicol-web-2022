@@ -9,3 +9,7 @@
 .d-block {
     display: block  !important;
 }
+
+.flex-start {
+    align-items: flex-start;
+}

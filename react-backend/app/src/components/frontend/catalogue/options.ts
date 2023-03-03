@@ -16,7 +16,7 @@ export const redCategories: Option[] = [
   { value: '1NLC', label: 'LC' },
   { value: 'NDD', label: 'DD' },
   { value: 'NA', label: 'NA' },
-  { value: 'NE', label: 'NE/無評估' },
+  { value: 'NE', label: 'NE' },
 ]
 
 

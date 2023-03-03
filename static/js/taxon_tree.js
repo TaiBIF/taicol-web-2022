@@ -1,28 +1,31 @@
 var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
-
-
-
 /*
 function redirectTaxonPage(taxon_id){
         event.stopPropagation();
         window.open(`/taxon/${taxon_id}`);
 }*/
 
-
-
 function getSubList(item){
+    console.log('getSubList', item)
     let cultured = 'off';
     if ($('input[name="cultured"]').is(':checked')){
         cultured = 'on';
     }
+
+    if ($(item).data('taxon')){
+        taxon_id = $(item).data('taxon')
+    } else {
+        taxon_id = $(item).data('parent_taxon')
+    }
     //$('.main-box .item-box').removeClass('now');
     if ($(item).data('fetched')=="0"){
+        console.log('a')
         $('.loadingbox').removeClass('d-none');
         $.ajax({
             url: "/get_sub_tree",
             data:  {'csrfmiddlewaretoken' : $csrf_token,
-                    'taxon_id': $(item).data('taxon'),
+                    'taxon_id': taxon_id,
                     'rank_id': $(item).data('rank'),
                     'cultured': cultured
                     },
@@ -36,26 +39,51 @@ function getSubList(item){
             for (j of Object.keys(results)){
                 html_str = "";
                 for (var i = 0; i < results[j]['data'].length; i++) {
-                    html_str += `
-                    <li>
-                        <span class="anchor" id="${results[j]['data'][i]['taxon_id']}" ></span>
-                        <div class="item-box getSubList" data-fetched="0" data-taxon="${results[j]['data'][i]['taxon_id']}" data-rank="${results[j]['data'][i]['rank_id']}">
-                            <div class="cir-box">
-                                ${j}
+                    if (results[j]['data'][i]['taxon_id']){
+                        html_str += `
+                        <li>
+                            <span class="anchor" id="${results[j]['data'][i]['taxon_id']}-${cultured}" ></span>
+                            <div class="item-box getSubList" data-cultured="${cultured}" data-fetched="0" data-taxon="${results[j]['data'][i]['taxon_id']}" data-rank="${results[j]['data'][i]['rank_id']}">
+                                <div class="cir-box">
+                                    ${j}
+                                </div>
+                                <h2 class="redirectTaxonPage" data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</h2>
+                                <p>${results[j]['data'][i]['stat']}</p>
+                                <div class="arr">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+                                        <g id="tree-arr" transform="translate(-1545.086 -550.086)">
+                                            <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                            <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                        </g>
+                                    </svg>
+                                </div>
                             </div>
-                            <h2 class="redirectTaxonPage" data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</h2>
-                            <p>${results[j]['data'][i]['stat']}</p>
-                            <div class="arr">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                    <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                        <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                        <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                    </g>
-                                </svg>
+                        </li>
+                        `
+                    } else {
+                        html_str += `
+                        <li>
+                            <span class="anchor" id="" ></span>
+                            <div class="item-box getSubList" data-cultured="${cultured}" data-fetched="0" data-taxon="" data-parent_taxon="${taxon_id}" data-rank="${results[j]['data'][i]['rank_id']}">
+                                <div class="cir-box">
+                                    ${j}
+                                </div>
+                                <h2 class="" data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</h2>
+                                <p>${results[j]['data'][i]['stat']}</p>
+                                <div class="arr">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+                                        <g id="tree-arr" transform="translate(-1545.086 -550.086)">
+                                            <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                            <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                        </g>
+                                    </svg>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    `
+                        </li>
+                        `
+                    }
+
+
                 }
 
                 html_str = `<ul class="d-block ${results[j]['rank_color']}">` + html_str + '</ul>'
@@ -73,8 +101,6 @@ function getSubList(item){
                 window.open(`/taxon/${$(this).data('taxon_id')}`);
             })   
  
-
-            //$(this).after('<ul class="rank-2-org"></ul>')
         })
         .fail(function( xhr, status, errorThrown ) {
             $('.loadingbox').addClass('d-none');
@@ -84,10 +110,9 @@ function getSubList(item){
         
     }
 
-    //console.log($( item ).nextAll('ul li .item-box'))
     $( '.item-box' ).removeClass('now')
 
-    if (($( item ).next('ul').css('display') =='block')|( ($( item ).next('ul').length ==0)&($( item ).hasClass('now'))) ) {
+    if (($( item ).next('ul').hasClass('d-block'))|( ($( item ).next('ul').length ==0)&($( item ).hasClass('now'))) ) {
         $( item ).removeClass('now')
         $( item ).nextAll('ul').removeClass('d-block').addClass('d-none')
         //$( item ).nextAll('.item-box').removeClass('now')
@@ -128,8 +153,9 @@ $(function (){
 
         }
         if(this.checked) {
-            $('.tree-area .main-box ul.kingdom').show()
-            $('.tree-area .main-box ul.kingdom_c').hide()
+            // 包含栽培豢養
+            $('.tree-area .main-box ul.kingdom').removeClass('d-none').addClass('d-block')
+            $('.tree-area .main-box ul.kingdom_c').addClass('d-none').removeClass('d-block')
 
             // 後續
             if (current_taxon_id){
@@ -137,15 +163,13 @@ $(function (){
             }
             
         } else {
-            $('.tree-area .main-box ul.kingdom_c').show()
-            $('.tree-area .main-box ul.kingdom').hide()
+            // 排除栽培豢養
+            $('.tree-area .main-box ul.kingdom_c').removeClass('d-none').addClass('d-block')
+            $('.tree-area .main-box ul.kingdom').addClass('d-none').removeClass('d-block')
             // 後續
-
             if (current_taxon_id){
                 searchClick(current_taxon_id)
             } 
-
-        
         }
     });
     
@@ -170,12 +194,11 @@ $(function (){
                         return false;  
                     }					
                 }
-            }
+            },
         },		
         ajax: {
             dataType: 'json',
             data: function (params) {
-                console.log(params)
                 let cultured = 'off';
                 if ($('input[name="cultured"]').is(':checked')){
                     cultured = 'on';
@@ -230,16 +253,16 @@ function searchClick(keyword_taxon_id){
     }
     // 關閉所有的樹
     $('.main-box .item-box').removeClass('now');
-    $('.main-box ul').not('.rank-1-red').css('display','none');
+    $(`.main-box ul`).not('.rank-1-red').addClass('d-none').removeClass('d-block');
     // 搜尋下方的樹
     // 先查path 如果已經在樹上就不要再查詢
     // 已經有存在 只需要打開
-    if ($(`div [data-taxon="${keyword_taxon_id}"`).length > 0) {
-        $(`div [data-taxon="${keyword_taxon_id}"`).parent().parents('ul').css('display','block');
-        if (!$(`div[data-taxon="${keyword_taxon_id}"]`).hasClass('now')){
-            $(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')}	
-        $(`div [data-taxon="${keyword_taxon_id}"`).nextAll('ul').css('display','block');
-        document.location=`#${keyword_taxon_id}`
+    if ($(`div [data-taxon="${keyword_taxon_id}"][data-cultured="${cultured}"]`).length > 0) {
+        $(`div [data-taxon="${keyword_taxon_id}"][data-cultured="${cultured}"]`).parent().parents('ul').addClass('d-block').removeClass('d-none');
+        if (!$(`div[data-taxon="${keyword_taxon_id}"][data-cultured="${cultured}"]`).hasClass('now')){
+            $(`div[data-taxon="${keyword_taxon_id}"][data-cultured="${cultured}"]`).addClass('now')}	
+        $(`div [data-taxon="${keyword_taxon_id}"][data-cultured="${cultured}"]`).nextAll('ul').addClass('d-block').removeClass('d-none');
+        document.location=`#${keyword_taxon_id}-${cultured}`
     } else {
         $('.loadingbox').removeClass('d-none');
         $.ajax({
@@ -252,14 +275,16 @@ function searchClick(keyword_taxon_id){
         })
         .done(function(results) {
             fetch_taxon = []
-            for (r of results){
-                if ($(`div[data-taxon="${r}"]`).length==0 |  $(`div[data-taxon="${r}"]`).data('fetched')=="0"){
-                    fetch_taxon.push(r)
+            fetch_rank_id = []
+            for (let i = 0; i < results.path.length; i++) {
+                if ($(`div[data-taxon="${results.path[i]}"][data-cultured="${cultured}"]`).length==0 | $(`div[data-taxon="${results.path[i]}"][data-cultured="${cultured}"]`).data('fetched')=="0"){
+                    fetch_taxon.push(results.path[i])
+                    fetch_rank_id.push(results.rank_id[i])
                 }
-            }
+              }
             //fetch_taxon.push(keyword_taxon_id)
             if (fetch_taxon.length > 0){
-                fetchSubList(fetch_taxon, keyword_taxon_id)
+                fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id)
             } else {
                 $('.loadingbox').addClass('d-none');
             }
@@ -286,7 +311,8 @@ function searchClick(keyword_taxon_id){
 }
 
 
-function fetchSubList(fetch_taxon, keyword_taxon_id){
+function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
+
     let cultured = 'off';
     if ($('input[name="cultured"]').is(':checked')){
         cultured = 'on';
@@ -295,42 +321,162 @@ function fetchSubList(fetch_taxon, keyword_taxon_id){
         url: "/get_sub_tree_list",
         data:  {'csrfmiddlewaretoken' : $csrf_token,
                 'taxon_id': fetch_taxon,
+                'rank_id': fetch_rank_id,
                 'cultured': cultured},
         type: 'POST',
         dataType : 'json',
     })
     .done(function(results) {
+        console.log(results)
         $('.loadingbox').addClass('d-none');
+        
         for (var r = 0; r < results.length; r++) {
+
+
             let html_str;
-            for (j of Object.keys(results[r])){
-                item = $(`div[data-taxon="${results[r][j]['taxon_id']}"]`)
+            if (results[r]['has_lack']){
+                j = Object.keys(results[r])[1]
+                // 第一個一定是接在該taxon_id後面沒錯
+                item = $(`div[data-taxon="${results[r][j]['taxon_id']}"][data-cultured="${cultured}"]`)
                 $(item).data('fetched','1');
                 html_str = "";
                 for (var i = 0; i < results[r][j]['data'].length; i++) {
-                    html_str += `
-                    <li>
-                        <span class="anchor" id="${results[r][j]['data'][i]['taxon_id']}" ></span>
-                        <div class="item-box getSubList" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
-                            <div class="cir-box">
-                                ${j}
+                    if (results[r][j]['data'][i]['taxon_id']){
+                        html_str += `
+                        <li>
+                            <span class="anchor" id="${results[r][j]['data'][i]['taxon_id']}-${cultured}" ></span>
+                            <div class="item-box getSubList" data-cultured="${cultured}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                                <div class="cir-box">
+                                    ${j}
+                                </div>
+                                <h2 class="redirectTaxonPage" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
+                                <p>${results[r][j]['data'][i]['stat']}</p>
+                                <div class="arr">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+                                        <g id="tree-arr" transform="translate(-1545.086 -550.086)">
+                                            <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                            <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                        </g>
+                                    </svg>
+                                </div>
                             </div>
-                            <h2 class="redirectTaxonPage" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
-                            <p>${results[r][j]['data'][i]['stat']}</p>
-                            <div class="arr">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                    <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                        <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                        <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                    </g>
-                                </svg>
+                        </li>
+                        `
+                    } else {
+                        html_str += `
+                        <li>
+                            <span class="anchor" id="" ></span>
+                            <div class="item-box getSubList" data-cultured="${cultured}" data-fetched="0" data-taxon="" data-parent_taxon="${results[r][j]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                                <div class="cir-box">
+                                    ${j}
+                                </div>
+                                <h2 class="" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
+                                <p>${results[r][j]['data'][i]['stat']}</p>
+                                <div class="arr">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+                                        <g id="tree-arr" transform="translate(-1545.086 -550.086)">
+                                            <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                            <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                        </g>
+                                    </svg>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    `
+                        </li>
+                        `
+                    }
                 }
                 html_str = `<ul class="d-block ${results[r][j]['rank_color']}">` + html_str + '</ul>'
                 $(item).after(html_str) 
+
+                for (j of Object.keys(results[r])){
+                    if (j != Object.keys(results[r])[0]){
+                        // 這邊要改成判斷可以接在parent後面
+                        item = $(`div[data-parent_taxon="${results[r][j]['taxon_id']}"][data-rank="${results[r][j]['parent_rank_id']}"]`)
+                        $(item).data('fetched','1');
+                        html_str = "";
+                        for (var i = 0; i < results[r][j]['data'].length; i++) {
+                            if (results[r][j]['data'][i]['taxon_id']){
+                                html_str += `
+                                <li>
+                                    <span class="anchor" id="${results[r][j]['data'][i]['taxon_id']}-${cultured}" ></span>
+                                    <div class="item-box getSubList" data-cultured="${cultured}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                                        <div class="cir-box">
+                                            ${j}
+                                        </div>
+                                        <h2 class="redirectTaxonPage" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
+                                        <p>${results[r][j]['data'][i]['stat']}</p>
+                                        <div class="arr">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+                                                <g id="tree-arr" transform="translate(-1545.086 -550.086)">
+                                                    <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                                    <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </li>
+                                `
+                            } else {
+                                html_str += `
+                                <li>
+                                    <span class="anchor" id="" ></span>
+                                    <div class="item-box getSubList" data-cultured="${cultured}" data-fetched="0" data-taxon="" data-parent_taxon="${results[r][j]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                                        <div class="cir-box">
+                                            ${j}
+                                        </div>
+                                        <h2 class="" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
+                                        <p>${results[r][j]['data'][i]['stat']}</p>
+                                        <div class="arr">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+                                                <g id="tree-arr" transform="translate(-1545.086 -550.086)">
+                                                    <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                                    <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </li>
+                                `
+                            }
+                        }
+                        html_str = `<ul class="d-block ${results[r][j]['rank_color']}">` + html_str + '</ul>'
+                        $(item).after(html_str) 
+                    }
+                }
+            } else {
+                for (j of Object.keys(results[r])){
+                    if (j != 'has_lack'){
+                        item = $(`div[data-taxon="${results[r][j]['taxon_id']}"][data-cultured="${cultured}"]`)
+                        $(item).data('fetched','1');
+                        html_str = "";
+                        for (var i = 0; i < results[r][j]['data'].length; i++) {
+                            if (results[r][j]['data'][i]['taxon_id']){
+                                html_str += `
+                                <li>
+                                    <span class="anchor" id="${results[r][j]['data'][i]['taxon_id']}-${cultured}" ></span>
+                                    <div class="item-box getSubList" data-cultured="${cultured}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                                        <div class="cir-box">
+                                            ${j}
+                                        </div>
+                                        <h2 class="redirectTaxonPage" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
+                                        <p>${results[r][j]['data'][i]['stat']}</p>
+                                        <div class="arr">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+                                                <g id="tree-arr" transform="translate(-1545.086 -550.086)">
+                                                    <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                                    <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                                </g>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </li>
+                                `
+                            } 
+                        }
+                        html_str = `<ul class="d-block ${results[r][j]['rank_color']}">` + html_str + '</ul>'
+                        $(item).after(html_str) 
+                    }
+                }
             }
             
             $(".getSubList").prop("onclick", null).off("click");
@@ -345,14 +491,15 @@ function fetchSubList(fetch_taxon, keyword_taxon_id){
             })
             
         }
-        if (!$(`div[data-taxon="${keyword_taxon_id}"]`).hasClass('now')){
-            $(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')
-        }
-        $(`div[data-taxon="${keyword_taxon_id}"]`).data('fetched','1');
-        $(`div [data-taxon="${keyword_taxon_id}"`).parent().parents('ul').css('display','block');
-        $(`div [data-taxon="${keyword_taxon_id}"`).nextAll('ul').css('display','block');
 
-        document.location=`#${keyword_taxon_id}`
+        if (!$(`div[data-taxon="${keyword_taxon_id}"][data-cultured="${cultured}"]`).hasClass('now')){
+            $(`div[data-taxon="${keyword_taxon_id}"][data-cultured="${cultured}"]`).addClass('now')
+        }
+        $(`div [data-taxon="${keyword_taxon_id}"][data-cultured="${cultured}"]`).data('fetched','1');
+        $(`div [data-taxon="${keyword_taxon_id}"][data-cultured="${cultured}"]`).parent().parents('ul').addClass('d-block').removeClass('d-none');
+        $(`div [data-taxon="${keyword_taxon_id}"][data-cultured="${cultured}"]`).nextAll('ul').addClass('d-block').removeClass('d-none');
+
+        document.location=`#${keyword_taxon_id}-${cultured}`
         $('.loadingbox').addClass('d-none');
     })
     .fail(function( xhr, status, errorThrown ) {

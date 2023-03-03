@@ -57,6 +57,14 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
 	$(function(){
 
+		$('.rank-area .item').on('mouseenter',(function(){
+			$(this).find('.search-rank').removeClass('d-none')
+		}))
+
+		$('.rank-area .item').on('mouseleave',(function(){
+			$(this).find('.search-rank').addClass('d-none')
+		}))
+
         $('.controlAll').on('click',function(){
             controlAll()
         })
@@ -72,6 +80,8 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
                 plusSlides(-1)
             }
         })
+
+
 
 		// 照片
 		let cols = ['title','description','notify','name','email']
@@ -135,9 +145,9 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 				$(this).parent('.w-box').addClass('now')
 			}
 			if ($('.w-box-2.now').length==1){
-				$('.box-2.column').css('align-items','flex-start')
+				$('.box-2.column').addClass('flex-start')
 			} else {
-				$('.box-2.column').css('align-items','')
+				$('.box-2.column').removeClass('flex-start')
 			}
 		})
 
@@ -146,9 +156,13 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
 	$( ".mistake-btn" ).click(function() {
 		$('.mistakepop').fadeIn("slow");
+		$('.mistakepop').removeClass('d-none')
 	});
+	
 	$( ".xx" ).click(function() {
 		$('.mistakepop').fadeOut("slow");
+		$('.mistakepop').addClass('d-none')
+
 	});
 
 

@@ -58,7 +58,7 @@
 					<form id="errorForm">
 					<input type="hidden" name="taxon_id" value="{{ taxon_id }}">
 					<div class="case-num">
-						針對({{ taxon_id }}){{ data.sci_name|safe }}回報錯誤
+						針對({{ taxon_id|default_if_none:'' }}){{ data.sci_name|safe }}回報錯誤
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
@@ -76,6 +76,7 @@
 								<option value="7">文獻</option>
 								<option value="8">專家</option>
 								<option value="9">相關連結</option>
+								<option value="11">有效名版本紀錄</option>
 								<option value="10">變更歷史</option>
 							</select>
 						</div>
@@ -141,7 +142,10 @@
 						<li><p class="image-title" >{{ data.sci_name|safe }}</p></li>
 						<li>
 							<div class="wrap-box">
-								{{ self_html_str|safe }}
+								<div class="r-cir-box {{ data.self.rank_color }}">
+									{{ data.self.rank_c }}
+								</div>
+								<span class="r-name">{{ data.self.name_c }}<span>
 							</div>
 						</li>
 					</ul>
@@ -206,6 +210,7 @@
 					<button class="sticky_btn" data-hash="#taxon-ref">- 文獻</button>
 					<button class="sticky_btn" data-hash="#taxon-expert">- 專家</button>
 					<button class="sticky_btn" data-hash="#taxon-link">- 相關連結</button>
+					<button class="sticky_btn" data-hash="#taxon-version">- 有效名版本</button>
 					<button class="sticky_btn" data-hash="#taxon-history">- 變更歷史</button>
 				</div>
 				<div class="right-de-box">
@@ -214,11 +219,14 @@
 						<div class="left-maininf">
 							<div class="maintxt">
 								<h2 class="en">{{ data.sci_name|safe }}</h2>
-								<h2>{{ data.common_name_c|default_if_none:'' }}</h2>
-								<p>物種編號：{{ taxon_id }}</p>
+								<h2>{{ data.common_name_c|default_if_none:'' }}</h2>									
+								{% if data.alternative_name_c %}
+									<p>{{ data.alternative_name_c }}</p>
+								{% endif %}
+								<p>物種編號：{{ taxon_id|default_if_none:'' }}</p>
 							</div>
 							<div class="infobox">
-								<div class="class-inf {% if data.is_deleted %} deleted_t {% endif %} mr-5">
+								<div class="class-inf {% if data.is_deleted or data.not_in_taiwan %} deleted_t {% endif %} mr-5">
 									<a class="anchor" id="taxon-status"></a>
 									<div class="mark-title">
 										<img src="{% static 'image/title-markw.svg' %}">
@@ -300,7 +308,19 @@
 								</div>
 								<div class="w-content">
 									<div class="rank-area">
-										{{ higher_html_str|safe }}
+										{% for i in data.higher %}
+										<div class="item">
+											<div class="cir-box {{ i.rank_color }}">
+												{{ i.rank_c  }}
+											</div>
+											<a {% if i.a_href %} class="rank-p" target="_blank" href="{{ i.a_href }}" {% else %} class="rank-p a-disabled" {% endif %}>
+											{{ i.a_content|safe  }}</a>
+											{% if i.search_href %}
+											<a class="d-none search-rank" target="_blank" href="{{ i.search_href }}">
+											<i class="ml-5 fa-solid fa-magnifying-glass"></i></a>
+											{% endif %}
+											</div>
+										{% endfor %}
 									</div>
 								</div>
 							</div>
@@ -325,10 +345,25 @@
 								</div>
 								<div class="w-content">
 									<div class="green-tag-box">
-										{{ info_html_str|safe }}
+										{% for i in data.alien_types  %}
+											<div class="item">{{ i.alien_type }}</div>
+											{% if i.note %}
+											<div class="alien-tooltip">
+												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle cl-blue" viewBox="0 0 16 16">
+													<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+													<path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+												</svg>
+												<span class="alien-tooltiptext">{{ i.note|safe }}</span>  
+											</div>
+											{% endif %}
+										{% endfor %}
+										{% for i in data.is_list  %}
+											<div class="item">{{ i }}</div>
+										{% endfor %}
 									</div>
 									<div class="inf-short">
 										{% if data.protected_category  %}
+										<div class="d-flex">
 										<p>保育類：{{ data.protected_category }} 
 											{% if data.protected_note %}
 											<div class="tooltip">
@@ -340,8 +375,10 @@
 											</div>
 											{% endif %}
 										</p>
+										</div>
 										{% endif %}										
 										{% if data.red_category  %}
+										<div class="d-flex">
 										<p>臺灣紅皮書：{{ data.red_category }} 
 											{% if data.red_note %}
 											<div class="tooltip">
@@ -353,10 +390,10 @@
 											</div>
 											{% endif %}
 										</p>
+										</div>
 										{% endif %}
 										{% if data.iucn_category  %}
-										<div  class="d-flex">
-
+										<div class="d-flex">
 										<p>IUCN：<a target="_blank" href="{{ data.iucn_url }}">{{ data.iucn_category }}</a>
 											{% if data.iucn_note %}
 											<div class="tooltip">
@@ -371,7 +408,7 @@
 										</div>
 										{% endif %}
 										{% if data.cites_listing  %}
-										<div  class="d-flex">
+										<div class="d-flex">
 										<p>CITES：<a target="_blank" href="{{ data.cites_url }}">{{ data.cites_listing }}</a>
 											{% if data.cites_note %}
 											<div class="tooltip">
@@ -522,6 +559,46 @@
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
+							<a class="anchor" id="taxon-version"></a>
+							<div class="mark-title">
+								<img src="{% static 'image/title-mark.svg' %}">
+								<p>有效名版本紀錄</p>
+							</div>
+							<div class="arr">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+									</g>
+								</svg>
+							</div>
+						</div>
+						<div class="w-content">
+							<div class="scro-m">
+							{% if name_history|length > 0 %}
+							<table class="history-edit" cellspacing="0" cellpadding="0" border="0">
+								<tr>
+									<td>日期</td>
+									<td>有效名</td>
+									<td width="50%">文獻</td>
+								</tr>
+								{% for t in name_history %}
+									<tr>
+										<td>{{ t.updated_at|safe }}</td>
+										<td>{{ t.name|safe }}</td>
+										<td>{% if t.reference_id %}
+											<a target="_blank" href="https://nametool.taicol.tw/references/{{ t.reference_id }}">{{ t.ref|default_if_none:''|safe }}</a>
+										{% endif %}</td>
+									</tr>
+								{% endfor %}
+							</table>
+							{% endif %}
+						</div>
+						</div>
+					</div>
+					<!--展開時加上now-->
+					<div class="w-box marb_20 now">
+						<div class="title-click">
 							<a class="anchor" id="taxon-history"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
@@ -538,7 +615,7 @@
 						</div>
 						<div class="w-content">
 							<div class="scro-m">
-								{% if taxon_history|length > 0 %}
+							{% if taxon_history|length > 0 %}
 							<table class="history-edit" cellspacing="0" cellpadding="0" border="0">
 								<tr>
 									<td>日期</td>
@@ -550,7 +627,7 @@
 									<tr>
 										<td>{{ t.datetime|safe }}</td>
 										<td>{{ t.type }} {{ t.content|default_if_none:''|safe }}</td>
-										<td>{{ t.ref|safe }}</td>
+										<td>{{ t.ref|default_if_none:''|safe }}</td>
 										<td>{{ t.editor|default_if_none:'' }}</td>
 									</tr>
 								{% endfor %}

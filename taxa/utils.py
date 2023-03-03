@@ -30,8 +30,6 @@ with conn.cursor() as cursor:
     for l in links:
         link_map[l[0]] = {'title': l[1], 'url_prefix': l[2]}
 
-
-
 kingdom_map = {}
 conn = pymysql.connect(**db_settings)
 query = "SELECT tn.name, at.taxon_id, at.common_name_c FROM taxon_names tn\
@@ -62,7 +60,11 @@ status_map_taxon_c = {'accepted': {'en-us': 'Accepted', 'zh-tw': '接受名'}, '
 rank_color_map = { 3: 'rank-1-red', 12: 'rank-2-org', 18: 'rank-3-yell', 22: 'rank-4-green', 26: 'rank-5-blue', 
                   30: 'rank-6-deepblue', 34: 'rank-7-purple'}
 
-is_map_c = {'is_endemic':'臺灣特有','is_terrestrial':'陸生','is_freshwater':'淡水','is_brackish':'半鹹水','is_marine':'海水'}
+is_map_c = {'is_in_taiwan':'存在於臺灣','is_endemic':'臺灣特有','is_terrestrial':'陸生','is_freshwater':'淡水','is_brackish':'半鹹水','is_marine':'海水'}
+
+is_in_taiwan_map_c =  {
+  1: '存在', 0: '不存在', '1': '存在', '0': '不存在'
+}
 
 # 台灣紅皮書
 redlist_map_c = {
@@ -99,8 +101,17 @@ taxon_history_map = {0: '有效名變更',
     14: '新增屬性',
     15: '移除屬性'}
 
+# 林奈階層
 
+lin_map = {
+    3: 'kingdom',
+    12: 'phylum',
+    18: 'classis',
+    22: 'ordo',
+    26: 'familia',
+}
 
+lin_ranks = [3,12,18,22,26,30,34]
 
 var_df = pd.DataFrame([
 ('鈎','[鈎鉤]'),

@@ -165,13 +165,14 @@ ul.link-left li {
 
 /* Tooltip text */
 .tooltip .tooltiptext {
+    font-size: 13px;
     visibility: hidden;
     width: 200px;
-    background-color: #EFF5F7;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     color: #555;
-    border-radius: 3px;
+    border-radius: 5px;
     padding: 5px;
-
     /* Position the tooltip */
     position: absolute;
     z-index: 1;
@@ -182,17 +183,17 @@ ul.link-left li {
 
 }
 
+/*
 .tooltip .tooltiptext::after {
     content: " ";
     position: absolute;
     bottom: 100%;
-    /* At the top of the tooltip */
     left: 5%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
     border-color: transparent transparent #EFF5F7 transparent;
-}
+}*/
 
 
 /* Show the tooltip text when you mouse over the tooltip container */
@@ -200,6 +201,50 @@ ul.link-left li {
     visibility: visible;
 }
 
+
+/* Tooltip container */
+.alien-tooltip {
+    position: relative !important;
+    display: inline-block !important;
+    margin: auto 10px auto 0px;
+}
+
+/* Tooltip text */
+.alien-tooltip .alien-tooltiptext {
+    font-size: 13px;
+    visibility: hidden;
+    width: 300px;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    color: #555;
+    border-radius: 5px;
+    padding: 10px;
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 100;
+    word-break: break-word;
+    top: 125%;
+    left: 50%;
+    margin-left: -10px;
+}
+
+/*
+.alien-tooltip .alien-tooltiptext::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;
+    left: 5%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #EFF5F7 transparent;
+}*/
+
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.alien-tooltip:hover .alien-tooltiptext {
+    visibility: visible;
+}
 
 a.anchor {
     display: block;
@@ -395,7 +440,35 @@ a.anchor {
     color: lightblue
 }
 
+.new_taxon_a:hover path {
+    fill: lightblue
+}
+
+.new_taxon_aa path {
+    fill: black
+}
+
+.new_taxon_aa:hover path {
+    fill: #888
+}
+
 
 .fa_size {
     height: 14px
 }
+
+.a-disabled {
+    pointer-events: none;
+}
+
+.a-disabled:hover {
+    color: #333
+}
+
+.search-rank svg, .search-rank  i {
+    color: #888;
+    height: 12px
+}
+
+
+

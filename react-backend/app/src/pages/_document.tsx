@@ -21,7 +21,7 @@ class CustomDocument extends Document {
             rel='stylesheet'
             href='https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Roboto:wght@300;400;500;700&display=swap'
           />
-          <link rel="icon" sizes="32x32" type="image/png" href="/images/logo-removebg.png"/>
+          <link rel="icon" sizes="32x32" type="image/png" href="/images/logo.png"/>
         </Head>
         <body>
           <Main />
