@@ -4245,7 +4245,7 @@ body {
     margin-left: 0
 }
 
-.tree-area .rank-1-red .item-box {
+.tree-area .rank-1-red li > .item-box {
     background: #F7F7F7;
     position: relative;
     padding: 15px 35px 15px 13px;
@@ -4253,7 +4253,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-1-red .item-box:hover {
+    .tree-area .rank-1-red li > .item-box:hover {
         background: #FF7E7E;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4262,7 +4262,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-1-red .item-box:hover .cir-box {
+    .tree-area .rank-1-red li > .item-box:hover > .cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4272,11 +4272,11 @@ body {
         color: #FF7E7E
     }
 
-    .tree-area .rank-1-red .item-box:hover h2, .tree-area .rank-1-red .item-box:hover p {
+    .tree-area .rank-1-red li > .item-box:hover > h2, .tree-area .rank-1-red li > .item-box:hover > p {
         color: #FFF
     }
 
-    .tree-area .rank-1-red .item-box:hover .arr {
+    .tree-area .rank-1-red li > .item-box:hover > .arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4289,7 +4289,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-1-red .item-box:hover .arr line {
+    .tree-area .rank-1-red li > .item-box:hover > .arr > line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4300,12 +4300,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-1-red .item-box {
+    .tree-area .rank-1-red li > .item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-1-red .item-box.now {
+.tree-area .rank-1-red li > .item-box.now {
     background: #FF7E7E;
     transition: all .3s;
     -moz-transition: all .3s;
@@ -4315,7 +4315,7 @@ body {
     margin-bottom: 5px
 }
 
-.tree-area .rank-1-red .item-box.now .cir-box {
+.tree-area .rank-1-red li > .item-box.now > .cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4325,11 +4325,11 @@ body {
     color: #FF7E7E
 }
 
-.tree-area .rank-1-red .item-box.now h2, .tree-area .rank-1-red .item-box.now p {
+.tree-area .rank-1-red li > .item-box.now > h2, .tree-area .rank-1-red li > .item-box.now > p {
     color: #FFF
 }
 
-.tree-area .rank-1-red .item-box.now .arr {
+.tree-area .rank-1-red li > .item-box.now > .arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4342,7 +4342,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-1-red .item-box.now .arr line {
+.tree-area .rank-1-red li > .item-box.now > .arr > line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4351,7 +4351,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-1-red .item-box .cir-box {
+.tree-area .rank-1-red li > .item-box > .cir-box {
     background: #FF7E7E;
     color: #FFF
 }
@@ -4360,7 +4360,7 @@ body {
     display: none
 }
 
-.tree-area .rank-2-org .item-box {
+.tree-area .rank-2-org li > .item-box {
     background: #FFF;
     position: relative;
     margin-bottom: 0;
@@ -4368,7 +4368,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-2-org .item-box:hover {
+    .tree-area .rank-2-org li > .item-box:hover {
         background: #f7f7f7;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4377,7 +4377,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-2-org .item-box:hover .cir-box {
+    .tree-area .rank-2-org li > .item-box:hover > .cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4387,11 +4387,11 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-2-org .item-box:hover h2, .tree-area .rank-2-org .item-box:hover p {
+    .tree-area .rank-2-org li > .item-box:hover > h2, .tree-area .rank-2-org li > .item-box:hover > p {
         color: #FF9E57
     }
 
-    .tree-area .rank-2-org .item-box:hover .arr {
+    .tree-area .rank-2-org li > .item-box:hover > .arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4404,7 +4404,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-2-org .item-box:hover .arr line {
+    .tree-area .rank-2-org li > .item-box:hover > .arr > line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4415,12 +4415,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-2-org .item-box {
+    .tree-area .rank-2-org li > .item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-2-org .item-box.now {
+.tree-area .rank-2-org li > .item-box.now {
     background: #FF9E57;
     transition: all .3s;
     -moz-transition: all .3s;
@@ -4430,7 +4430,7 @@ body {
     margin-bottom: 5px
 }
 
-.tree-area .rank-2-org .item-box.now .cir-box {
+.tree-area .rank-2-org li > .item-box.now > .cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4440,11 +4440,11 @@ body {
     color: #FF9E57
 }
 
-.tree-area .rank-2-org .item-box.now h2, .tree-area .rank-2-org .item-box.now p {
+.tree-area .rank-2-org li > .item-box.now > h2, .tree-area .rank-2-org li > .item-box.now > p {
     color: #FFF
 }
 
-.tree-area .rank-2-org .item-box.now .arr {
+.tree-area .rank-2-org li > .item-box.now > .arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4457,7 +4457,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-2-org .item-box.now .arr line {
+.tree-area .rank-2-org li > .item-box.now > .arr > line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4466,7 +4466,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-2-org .item-box .cir-box {
+.tree-area .rank-2-org li > .item-box > .cir-box {
     background: #FF9E57;
     color: #FFF
 }
@@ -4475,7 +4475,7 @@ body {
     display: none
 }
 
-.tree-area .rank-3-yell .item-box {
+.tree-area .rank-3-yell li > .item-box {
     background: #FFF;
     position: relative;
     margin-bottom: 0;
@@ -4483,7 +4483,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-3-yell .item-box:hover {
+    .tree-area .rank-3-yell li > .item-box:hover {
         background: #f7f7f7;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4492,7 +4492,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-3-yell .item-box:hover .cir-box {
+    .tree-area .rank-3-yell li > .item-box:hover > .cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4502,11 +4502,11 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-3-yell .item-box:hover h2, .tree-area .rank-3-yell .item-box:hover p {
+    .tree-area .rank-3-yell li > .item-box:hover > h2, .tree-area .rank-3-yell li > .item-box:hover > p {
         color: #F5CE4D
     }
 
-    .tree-area .rank-3-yell .item-box:hover .arr {
+    .tree-area .rank-3-yell li > .item-box:hover > .arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4519,7 +4519,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-3-yell .item-box:hover .arr line {
+    .tree-area .rank-3-yell li > .item-box:hover > .arr > line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4530,12 +4530,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-3-yell .item-box {
+    .tree-area .rank-3-yell li > .item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-3-yell .item-box.now {
+.tree-area .rank-3-yell li > .item-box.now {
     background: #F5CE4D;
     margin-bottom: 5px;
     transition: all .3s;
@@ -4545,7 +4545,7 @@ body {
     -webkit-transition: all .3s
 }
 
-.tree-area .rank-3-yell .item-box.now .cir-box {
+.tree-area .rank-3-yell li > .item-box.now > .cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4555,11 +4555,11 @@ body {
     color: #F5CE4D
 }
 
-.tree-area .rank-3-yell .item-box.now h2, .tree-area .rank-3-yell .item-box.now p {
+.tree-area .rank-3-yell li > .item-box.now > h2, .tree-area .rank-3-yell li > .item-box.now > p {
     color: #FFF
 }
 
-.tree-area .rank-3-yell .item-box.now .arr {
+.tree-area .rank-3-yell li > .item-box.now > .arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4572,7 +4572,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-3-yell .item-box.now .arr line {
+.tree-area .rank-3-yell li > .item-box.now > .arr > line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4581,7 +4581,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-3-yell .item-box .cir-box {
+.tree-area .rank-3-yell li > .item-box > .cir-box {
     background: #FFC400;
     color: #FFF
 }
@@ -4590,7 +4590,7 @@ body {
     display: none
 }
 
-.tree-area .rank-4-green .item-box {
+.tree-area .rank-4-green li > .item-box {
     background: #FFF;
     position: relative;
     margin-bottom: 0;
@@ -4598,7 +4598,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-4-green .item-box:hover {
+    .tree-area .rank-4-green li > .item-box:hover {
         background: #f7f7f7;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4607,7 +4607,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-4-green .item-box:hover .cir-box {
+    .tree-area .rank-4-green li > .item-box:hover > .cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4617,11 +4617,11 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-4-green .item-box:hover h2, .tree-area .rank-4-green .item-box:hover p {
+    .tree-area .rank-4-green li > .item-box:hover > h2, .tree-area .rank-4-green li > .item-box:hover > p {
         color: #A6D368
     }
 
-    .tree-area .rank-4-green .item-box:hover .arr {
+    .tree-area .rank-4-green li > .item-box:hover > .arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4634,7 +4634,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-4-green .item-box:hover .arr line {
+    .tree-area .rank-4-green li > .item-box:hover > .arr > line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4645,12 +4645,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-4-green .item-box {
+    .tree-area .rank-4-green li > .item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-4-green .item-box.now {
+.tree-area .rank-4-green li > .item-box.now {
     background: #A6D368;
     margin-bottom: 5px;
     transition: all .3s;
@@ -4660,7 +4660,7 @@ body {
     -webkit-transition: all .3s
 }
 
-.tree-area .rank-4-green .item-box.now .cir-box {
+.tree-area .rank-4-green li > .item-box.now > .cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4670,11 +4670,11 @@ body {
     color: #A6D368
 }
 
-.tree-area .rank-4-green .item-box.now h2, .tree-area .rank-4-green .item-box.now p {
+.tree-area .rank-4-green li > .item-box.now > h2, .tree-area .rank-4-green li > .item-box.now > p {
     color: #FFF
 }
 
-.tree-area .rank-4-green .item-box.now .arr {
+.tree-area .rank-4-green li > .item-box.now > .arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4687,7 +4687,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-4-green .item-box.now .arr line {
+.tree-area .rank-4-green li > .item-box.now > .arr > line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4696,7 +4696,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-4-green .item-box .cir-box {
+.tree-area .rank-4-green li > .item-box > .cir-box {
     background: #A6D368;
     color: #FFF
 }
@@ -4705,7 +4705,7 @@ body {
     display: none
 }
 
-.tree-area .rank-5-blue .item-box {
+.tree-area .rank-5-blue li > .item-box {
     background: #FFF;
     position: relative;
     margin-bottom: 0;
@@ -4713,7 +4713,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-5-blue .item-box:hover {
+    .tree-area .rank-5-blue li > .item-box:hover {
         background: #f7f7f7;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4722,7 +4722,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-5-blue .item-box:hover .cir-box {
+    .tree-area .rank-5-blue li > .item-box:hover > .cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4732,11 +4732,11 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-5-blue .item-box:hover h2, .tree-area .rank-5-blue .item-box:hover p {
+    .tree-area .rank-5-blue li > .item-box:hover > h2, .tree-area .rank-5-blue li > .item-box:hover > p {
         color: #77CBED
     }
 
-    .tree-area .rank-5-blue .item-box:hover .arr {
+    .tree-area .rank-5-blue li > .item-box:hover > .arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4749,7 +4749,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-5-blue .item-box:hover .arr line {
+    .tree-area .rank-5-blue li > .item-box:hover > .arr > line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4760,12 +4760,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-5-blue .item-box {
+    .tree-area .rank-5-blue li > .item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-5-blue .item-box.now {
+.tree-area .rank-5-blue li > .item-box.now {
     background: #77CBED;
     margin-bottom: 5px;
     transition: all .3s;
@@ -4775,7 +4775,7 @@ body {
     -webkit-transition: all .3s
 }
 
-.tree-area .rank-5-blue .item-box.now .cir-box {
+.tree-area .rank-5-blue li > .item-box.now > .cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4785,11 +4785,11 @@ body {
     color: #77CBED
 }
 
-.tree-area .rank-5-blue .item-box.now h2, .tree-area .rank-5-blue .item-box.now p {
+.tree-area .rank-5-blue li > .item-box.now > h2, .tree-area .rank-5-blue li > .item-box.now > p {
     color: #FFF
 }
 
-.tree-area .rank-5-blue .item-box.now .arr {
+.tree-area .rank-5-blue li > .item-box.now > .arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4802,7 +4802,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-5-blue .item-box.now .arr line {
+.tree-area .rank-5-blue li > .item-box.now > .arr > line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4811,7 +4811,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-5-blue .item-box .cir-box {
+.tree-area .rank-5-blue li > .item-box > .cir-box {
     background: #77CBED;
     color: #FFF
 }
@@ -4820,7 +4820,7 @@ body {
     display: none
 }
 
-.tree-area .rank-6-deepblue .item-box {
+.tree-area .rank-6-deepblue li > .item-box {
     background: #FFF;
     position: relative;
     margin-bottom: 0;
@@ -4828,7 +4828,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-6-deepblue .item-box:hover {
+    .tree-area .rank-6-deepblue li > .item-box:hover {
         background: #f7f7f7;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4837,7 +4837,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-6-deepblue .item-box:hover .cir-box {
+    .tree-area .rank-6-deepblue li > .item-box:hover > .cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4847,11 +4847,11 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-6-deepblue .item-box:hover h2, .tree-area .rank-6-deepblue .item-box:hover p {
+    .tree-area .rank-6-deepblue li > .item-box:hover > h2, .tree-area .rank-6-deepblue li > .item-box:hover > p {
         color: #64A0D3
     }
 
-    .tree-area .rank-6-deepblue .item-box:hover .arr {
+    .tree-area .rank-6-deepblue li > .item-box:hover > .arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4864,7 +4864,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-6-deepblue .item-box:hover .arr line {
+    .tree-area .rank-6-deepblue li > .item-box:hover > .arr > line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4875,12 +4875,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-6-deepblue .item-box {
+    .tree-area .rank-6-deepblue li > .item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-6-deepblue .item-box.now {
+.tree-area .rank-6-deepblue li > .item-box.now {
     background: #64A0D3;
     margin-bottom: 5px;
     transition: all .3s;
@@ -4890,7 +4890,7 @@ body {
     -webkit-transition: all .3s
 }
 
-.tree-area .rank-6-deepblue .item-box.now .cir-box {
+.tree-area .rank-6-deepblue li > .item-box.now > .cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4900,11 +4900,11 @@ body {
     color: #64A0D3
 }
 
-.tree-area .rank-6-deepblue .item-box.now h2, .tree-area .rank-6-deepblue .item-box.now p {
+.tree-area .rank-6-deepblue li > .item-box.now > h2, .tree-area .rank-6-deepblue li > .item-box.now > p {
     color: #FFF
 }
 
-.tree-area .rank-6-deepblue .item-box.now .arr {
+.tree-area .rank-6-deepblue li > .item-box.now > .arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4917,7 +4917,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-6-deepblue .item-box.now .arr line {
+.tree-area .rank-6-deepblue li > .item-box.now > .arr > line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4926,7 +4926,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-6-deepblue .item-box .cir-box {
+.tree-area .rank-6-deepblue li > .item-box > .cir-box {
     background: #64A0D3;
     color: #FFF
 }
@@ -4935,7 +4935,7 @@ body {
     display: none
 }
 
-.tree-area .rank-7-purple .item-box {
+.tree-area .rank-7-purple li > .item-box {
     background: #f7f7f7;
     position: relative;
     margin-bottom: 0;
@@ -4944,7 +4944,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-7-purple .item-box:hover {
+    .tree-area .rank-7-purple li > .item-box:hover {
         background: #B991E2;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4953,7 +4953,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-7-purple .item-box:hover .cir-box {
+    .tree-area .rank-7-purple li > .item-box:hover > .cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4963,11 +4963,11 @@ body {
         color: #B991E2
     }
 
-    .tree-area .rank-7-purple .item-box:hover h2, .tree-area .rank-7-purple .item-box:hover p {
+    .tree-area .rank-7-purple li > .item-box:hover > h2, .tree-area .rank-7-purple li > .item-box:hover > p {
         color: #FFF
     }
 
-    .tree-area .rank-7-purple .item-box:hover .arr {
+    .tree-area .rank-7-purple li > .item-box:hover > .arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4980,7 +4980,7 @@ body {
         transform: rotate(-90deg)
     }
 
-    .tree-area .rank-7-purple .item-box:hover .arr line {
+    .tree-area .rank-7-purple li > .item-box:hover > .arr > line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4991,15 +4991,182 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-7-purple .item-box {
+    .tree-area .rank-7-purple li > .item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-7-purple .item-box .cir-box {
+.tree-area .rank-7-purple li > .item-box > .cir-box {
     background: #B991E2;
     color: #FFF
 }
+
+
+
+/* 種階層顏色補上css */
+
+.tree-area .rank-7-purple li > .item-box.now {
+    background: #B991E2;
+    margin-bottom: 5px;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s
+}
+
+.tree-area .rank-7-purple li > .item-box.now > .cir-box {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    background: #FFF;
+    color: #B991E2
+}
+
+.tree-area .rank-7-purple li > .item-box.now > h2, .tree-area .rank-7-purple li > .item-box.now > p {
+    color: #FFF
+}
+
+.tree-area .rank-7-purple li > .item-box.now > .arr {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg)
+}
+
+.tree-area .rank-7-purple li > .item-box.now > .arr > line {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    stroke: #FFF
+}
+
+/* 非林奈階層 */
+.tree-area .rank-second-gray {
+    margin-left: 10;
+}
+
+.tree-area .rank-second-gray > li > .item-box {
+    background: #F7F7F7;
+    position: relative;
+    padding: 15px 35px 15px 13px;
+    margin-bottom: 10px
+}
+
+@media only screen and (min-width: 1000px) {
+    .tree-area .rank-second-gray > li > .item-box:hover {
+        background: #555;
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s
+    }
+
+    .tree-area .rank-second-gray > li > .item-box:hover > .cir-box {
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s;
+        background: #FFF;
+        color: #555
+    }
+
+    .tree-area .rank-second-gray > li > .item-box:hover > h2, .tree-area .rank-second-gray > li > .item-box:hover > p {
+        color: #FFF
+    }
+
+    .tree-area .rank-second-gray > li > .item-box:hover > .arr {
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s;
+        -moz-transform: rotate(180deg);
+        -ms-transform: rotate(180deg);
+        -o-transform: rotate(180deg);
+        -webkit-transform: rotate(180deg);
+        transform: rotate(180deg)
+    }
+
+    .tree-area .rank-second-gray > li > .item-box:hover > .arr > line {
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s;
+        stroke: #FFF
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .tree-area .rank-second-gray > li > .item-box {
+        padding: 8px 35px 8px 13px
+    }
+}
+
+.tree-area .rank-second-gray > li > .item-box.now {
+    background: #555;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    margin-bottom: 5px
+}
+
+.tree-area .rank-second-gray > li > .item-box.now > .cir-box {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    background: #FFF;
+    color: #555
+}
+
+.tree-area .rank-second-gray > li > .item-box.now > h2, .tree-area .rank-second-gray > li > .item-box.now > p {
+    color: #FFF
+}
+
+.tree-area .rank-second-gray > li > .item-box.now > .arr {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg)
+}
+
+.tree-area .rank-second-gray > li > .item-box.now > .arr > line {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    stroke: #FFF
+}
+
+.tree-area .rank-second-gray > li > .item-box > .cir-box {
+    background: #555;
+    color: #FFF
+}
+
 
 .splist-search-box {
     padding: 30px 0;

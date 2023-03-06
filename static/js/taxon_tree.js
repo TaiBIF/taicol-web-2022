@@ -7,7 +7,6 @@ function redirectTaxonPage(taxon_id){
 }*/
 
 function getSubList(item){
-    console.log('getSubList', item)
     let cultured = 'off';
     if ($('input[name="cultured"]').is(':checked')){
         cultured = 'on';
@@ -37,57 +36,57 @@ function getSubList(item){
             $(item).data('fetched','1');
             let html_str;
             for (j of Object.keys(results)){
-                html_str = "";
-                for (var i = 0; i < results[j]['data'].length; i++) {
-                    if (results[j]['data'][i]['taxon_id']){
-                        html_str += `
-                        <li>
-                            <span class="anchor" id="${results[j]['data'][i]['taxon_id']}-${cultured}" ></span>
-                            <div class="item-box getSubList" data-cultured="${cultured}" data-fetched="0" data-taxon="${results[j]['data'][i]['taxon_id']}" data-rank="${results[j]['data'][i]['rank_id']}">
-                                <div class="cir-box">
-                                    ${j}
+                if (j != 'has_lack'){
+                    html_str = "";
+                    for (var i = 0; i < results[j]['data'].length; i++) {
+                        if (results[j]['data'][i]['taxon_id']){
+                            html_str += `
+                            <li>
+                                <span class="anchor" id="${results[j]['data'][i]['taxon_id']}-${cultured}" ></span>
+                                <div class="item-box getSubList" data-cultured="${cultured}" data-fetched="0" data-taxon="${results[j]['data'][i]['taxon_id']}" data-rank="${results[j]['data'][i]['rank_id']}">
+                                    <div class="cir-box">
+                                        ${j}
+                                    </div>
+                                    <h2 class="redirectTaxonPage" data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</h2>
+                                    <p>${results[j]['data'][i]['stat']}</p>
+                                    <div class="arr">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+                                            <g id="tree-arr" transform="translate(-1545.086 -550.086)">
+                                                <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                                <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                            </g>
+                                        </svg>
+                                    </div>
                                 </div>
-                                <h2 class="redirectTaxonPage" data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</h2>
-                                <p>${results[j]['data'][i]['stat']}</p>
-                                <div class="arr">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                        <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                            <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                            <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                        </g>
-                                    </svg>
+                            </li>
+                            `
+                        } else {
+                            html_str += `
+                            <li>
+                                <span class="anchor" id="" ></span>
+                                <div class="item-box getSubList" data-cultured="${cultured}" data-fetched="0" data-taxon="" data-parent_taxon="${taxon_id}" data-rank="${results[j]['data'][i]['rank_id']}">
+                                    <div class="cir-box">
+                                        ${j}
+                                    </div>
+                                    <h2 class="" data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</h2>
+                                    <p>${results[j]['data'][i]['stat']}</p>
+                                    <div class="arr">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+                                            <g id="tree-arr" transform="translate(-1545.086 -550.086)">
+                                                <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                                <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+                                            </g>
+                                        </svg>
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
-                        `
-                    } else {
-                        html_str += `
-                        <li>
-                            <span class="anchor" id="" ></span>
-                            <div class="item-box getSubList" data-cultured="${cultured}" data-fetched="0" data-taxon="" data-parent_taxon="${taxon_id}" data-rank="${results[j]['data'][i]['rank_id']}">
-                                <div class="cir-box">
-                                    ${j}
-                                </div>
-                                <h2 class="" data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</h2>
-                                <p>${results[j]['data'][i]['stat']}</p>
-                                <div class="arr">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                        <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                            <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                            <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                        </g>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        `
+                            </li>
+                            `
+                        }
                     }
 
-
+                    html_str = `<ul class="d-block ${results[j]['rank_color']}">` + html_str + '</ul>'
+                    $(item).after(html_str)
                 }
-
-                html_str = `<ul class="d-block ${results[j]['rank_color']}">` + html_str + '</ul>'
-                $(item).after(html_str)
             }
             $(".getSubList").prop("onclick", null).off("click");
             $(".redirectTaxonPage").prop("onclick", null).off("click");
@@ -297,7 +296,6 @@ function searchClick(keyword_taxon_id){
 
     }
     // 加入搜尋次數
-    // TODO 如果是從
     $.ajax({
         url: "/update_search_stat",
         data:  {'csrfmiddlewaretoken' : $csrf_token,
@@ -327,11 +325,9 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
         dataType : 'json',
     })
     .done(function(results) {
-        console.log(results)
         $('.loadingbox').addClass('d-none');
         
         for (var r = 0; r < results.length; r++) {
-
 
             let html_str;
             if (results[r]['has_lack']){
