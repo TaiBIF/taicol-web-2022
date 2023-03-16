@@ -453,7 +453,7 @@ def taxon(request, taxon_id):
                     for ii in img:
                         foto = {'author':ii['author'], 'src':ii['image_big'], 'provider':ii['provider'],'permalink': ii['permalink']}
                         data['images'].append(foto)
-
+                        
                 # 學名
                 if data['rank_id'] == 47:
                     query = f"WITH view as (SELECT tnhp.taxon_name_id, CONCAT_WS(' ',an.formatted_name, an.name_author ) as sci_name FROM taxon_name_hybrid_parent tnhp \
@@ -492,28 +492,29 @@ def taxon(request, taxon_id):
                         for c in json.loads(data['cites_note']):
                             c_str += f"{c['listing']}，{c['name']}；"
                             if c.get('is_primary'):
-                                data['cites_url'] = "https://checklist.cites.org/#/en/search/scientific_name=" + c['name']
+                                data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + c['name']
                         data['cites_note'] = c_str.rstrip('；')
                     elif len(json.loads(data['cites_note'])) == 1:
                         if json.loads(data['cites_note'])[0].get('is_primary'):
-                            data['cites_url'] = "https://checklist.cites.org/#/en/search/scientific_name=" + json.loads(data['cites_note'])[0]['name']
+                            data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + json.loads(data['cites_note'])[0]['name']
                         data['cites_note'] = ''
                     else:
                         data['cites_note'] = ''
 
                 if c_iucn := data['iucn_category']:
-                    iucn_url = f"https://apiv3.iucnredlist.org/api/v3/species/citation/id/{data['iucn_taxon_id']}?token={env('IUCN_TOKEN')}"
-                    iucn_r = requests.get(iucn_url)
-                    iucn_r = iucn_r.json()
-                    if iucn_rr := iucn_r.get('result'):
-                        iucn_rr = iucn_rr[0]['citation']
-                        iucn_rr = iucn_rr[iucn_rr.find(f"e.T{data['iucn_taxon_id']}")+2:].split('.')[0]
-                        iucn_rr = iucn_rr.split('A')[-1]
-                    elif iucn_rr := iucn_r.get('species'):
-                        pass
+                    # # TODO 這邊應該不用再用API?
+                    # iucn_url = f"https://apiv3.iucnredlist.org/api/v3/species/citation/id/{data['iucn_taxon_id']}?token={env('IUCN_TOKEN')}"
+                    # iucn_r = requests.get(iucn_url)
+                    # iucn_r = iucn_r.json()
+                    # if iucn_rr := iucn_r.get('result'):
+                    #     iucn_rr = iucn_rr[0]['citation']
+                    #     iucn_rr = iucn_rr[iucn_rr.find(f"e.T{data['iucn_taxon_id']}")+2:].split('.')[0]
+                    #     iucn_rr = iucn_rr.split('A')[-1]
+                    # elif iucn_rr := iucn_r.get('species'):
+                    #     pass
                     data['iucn_category'] = iucn_map_c[c_iucn] + ' ' + c_iucn
-                    if iucn_rr:
-                        data['iucn_url'] = "https://www.iucnredlist.org/species/" + str(data['iucn_taxon_id']) + '/' + iucn_rr
+                    # if iucn_rr:
+                    data['iucn_url'] = "https://apiv3.iucnredlist.org/api/v3/taxonredirect/" + str(data['iucn_taxon_id'])
 
                 if data['iucn_note']:
                     if len(json.loads(data['iucn_note'])) > 1:
@@ -629,7 +630,7 @@ def taxon(request, taxon_id):
                     if len(names):
                         names = names.sort_values('publish_year', ascending=False)
                         names = names.replace({None:''})
-                        names.loc[names.taxon_name_id==data['name_id'],'sci_name'] = data['sci_name']
+                        # names.loc[names.taxon_name_id==data['name_id'],'sci_name'] = data['sci_name']
                         for tnid in names[(names.taxon_name_id!=data['name_id'])&(names.rank_id==47)].taxon_name_id:
                             query = f"WITH view as (SELECT tnhp.taxon_name_id, CONCAT_WS(' ',an.formatted_name, an.name_author ) as sci_name FROM taxon_name_hybrid_parent tnhp \
                                 JOIN api_names an ON tnhp.parent_taxon_name_id = an.taxon_name_id \
@@ -647,10 +648,10 @@ def taxon(request, taxon_id):
 
                         names['per_usages'] = names['per_usages'].apply(json.loads)
                         names['sci_name_ori'] = names['sci_name']
-                        names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{x.taxon_name_id}" target="_blank">{x.sci_name}</a>', axis=1)
                         names['author'] = names.apply(lambda x: f"{x.author}, {x.publish_year}" if x.nomenclature_id==2 and x.publish_year else x.author, axis=1)
                         names['author'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/references/{x.o_reference_id}" target="_blank">{x.author}</a>' if x.o_reference_id else x.author, axis=1)
                         names['sci_name'] = names.apply(lambda x: f'{x.sci_name} {x.author}' if x.author else x.sci_name, axis=1)
+                        names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{x.taxon_name_id}" target="_blank">{x.sci_name}</a>', axis=1)
                         # 如果per_usages中有其他ref則補上
                         for pp in names['per_usages']:
                             for p in pp:
@@ -871,15 +872,16 @@ def taxon(request, taxon_id):
                     for tl in xx:
                         if tl not in tmp_links:
                             tmp_links.append(tl)
-                    ncbi_count = 0
+                    # # NCBI改用name search
+                    # ncbi_count = 0
+                    # for t in tmp_links:
+                    #     if t["source"] == 'ncbi':
+                    #         ncbi_count += 1
+                    # use_ncbi = True
+                    # if ncbi_count > 1:
+                    #     use_ncbi = False
                     for t in tmp_links:
-                        if t["source"] == 'ncbi':
-                            ncbi_count += 1
-                    use_ncbi = True
-                    if ncbi_count > 1:
-                        use_ncbi = False
-                    for t in tmp_links:
-                        if t["source"] in ["antwiki","mycobank","worms","powo","tropicos","lpsn","adw","fishbase_order","gisd"]:
+                        if t["source"] in ["antwiki","mycobank","worms","powo","tropicos","lpsn","adw","fishbase_order"]:
                             links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': data['name'], 'hidden_name': True}]
                         elif t["source"] == 'nc':
                             links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('=')[1].split('&')[0]}]
@@ -887,9 +889,9 @@ def taxon(request, taxon_id):
                             links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('/')[-1]}]
                         elif t["source"] != 'ncbi':
                             links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix']}]
-                        elif t["source"] == 'ncbi' and use_ncbi:
-                            links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix']}]
-                for s in ['wikispecies','discoverlife','taibif','inat','irmng']:
+                        # elif t["source"] == 'ncbi' and use_ncbi:
+                        #     links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix']}]
+                for s in ['wikispecies','discoverlife','taibif','inat','irmng','gisd','ncbi']:
                     links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'], 'hidden_name': True}]
                 # 全部都接 wikispecies,discoverlife,taibif,inat,irmng
                 # 變更歷史
