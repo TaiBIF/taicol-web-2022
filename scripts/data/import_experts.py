@@ -23,17 +23,18 @@ df = df.drop(['taxon_group'],axis=1)
 df = df.rename(columns={'taxon_list': 'taxon_group'})
 df = df.apply(lambda x: x.str.strip())
 # 先比對name取得taxon_id
-names = str(list(df.taxon_group.unique())).replace('[','(').replace(']',')')
+# names = str(list(df.taxon_group.unique())).replace('[','(').replace(']',')')
+names = list(df.taxon_group.unique())
 
 # 同名異物的情況?
 conn = pymysql.connect(**db_settings)
 query = f"""SELECT tn.name, at.taxon_id
            FROM taxon_names tn 
            JOIN api_taxon at ON tn.id = at.accepted_taxon_name_id
-           WHERE tn.name IN {names}"""
+           WHERE tn.name IN %s"""
 
 with conn.cursor() as cursor:
-    cursor.execute(query)
+    cursor.execute(query, (names,))
     results = cursor.fetchall()
     results = pd.DataFrame(results, columns=['taxon_group', 'taxon_id'])
 

@@ -2211,7 +2211,8 @@ body {
 }
 
 .section-3-news .left-news-box .news-area-li ul {
-    float: left
+    float: left;
+    width: 100%
 }
 
 .section-3-news .left-news-box .news-area-li li {

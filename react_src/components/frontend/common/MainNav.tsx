@@ -4,6 +4,7 @@ import { isTablet,isMobile,isDesktop } from 'react-device-detect';
 type Menu = {
   title: string,
   href?: string,
+  target?: string,
   children?: Menu[]
 }
 
@@ -34,6 +35,11 @@ const menus:Menu[] = [
       {
         title: '學名比對工具',
         href: '/name/match'
+      },
+      {
+        title: '學名管理工具',
+        href: 'https://nametool.taicol.tw/',
+        target: '_blank'
       },
     ]
   },
@@ -74,14 +80,14 @@ const MainNav: React.FC = () => {
             <div className="menu_2">
               <div className="w_bg">
                 {menu?.children?.map((menu: Menu, index: number) =>
-                  <a href={menu.href} key={`main-sub-menu-${index}`}>{menu.title}<span></span></a>
+                  <a target={menu.target} href={menu.href} key={`main-sub-menu-${index}`}>{menu.title}<span></span></a>
 
                 )}
               </div>
             </div>
           </li> :
           <li key={`main-menu-${index}`}>
-              <a href={menu.href} className="big_title">{menu.title}<span></span></a>
+              <a target={menu.target} href={menu.href} className="big_title">{menu.title}<span></span></a>
           </li>
       })}
     </ul>

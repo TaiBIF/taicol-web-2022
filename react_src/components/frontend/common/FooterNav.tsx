@@ -3,6 +3,7 @@ import * as React from 'react';
 type Menu = {
   title: string,
   href?: string,
+  target?: string,
   children?: Menu[]
 }
 
@@ -40,7 +41,12 @@ const menusCol2:Menu[] = [
       },
       {
         title: '學名比對工具',
-        href: 'http://web-staging.taicol.tw/name/match'
+        href: '/name/match',
+      },
+      {
+        title: '學名管理工具',
+        href: 'https://nametool.taicol.tw/',
+        target: '_blank'
       },
     ]
   },
@@ -75,15 +81,15 @@ const GerenateMenuLink:React.FC<MenuLink> = (props) => {
 
   return menu?.children ?
     <>
-    <a href="#" className="bit-title disabled-a-link">
+    <a href="#" className="bit-title disabled-a-link" target={menu.target}>
         <span></span>
         <p>{menu.title}</p>
     </a>
-    {menu?.children?.map((menu: Menu, index: number) => <a key={`submenu-${index}`} href={menu.href} className="ss-title">
+    {menu?.children?.map((menu: Menu, index: number) => <a key={`submenu-${index}`} href={menu.href} className="ss-title" target={menu.target}>
             <p>{menu.title}</p>
     </a>)}
     </> :
-    <a  href={menu.href} className="bit-title">
+    <a  href={menu.href} className="bit-title" target={menu.target}>
         <span></span>
         <p>{menu.title}</p>
     </a>

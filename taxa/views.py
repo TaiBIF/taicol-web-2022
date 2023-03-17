@@ -502,18 +502,7 @@ def taxon(request, taxon_id):
                         data['cites_note'] = ''
 
                 if c_iucn := data['iucn_category']:
-                    # # TODO 這邊應該不用再用API?
-                    # iucn_url = f"https://apiv3.iucnredlist.org/api/v3/species/citation/id/{data['iucn_taxon_id']}?token={env('IUCN_TOKEN')}"
-                    # iucn_r = requests.get(iucn_url)
-                    # iucn_r = iucn_r.json()
-                    # if iucn_rr := iucn_r.get('result'):
-                    #     iucn_rr = iucn_rr[0]['citation']
-                    #     iucn_rr = iucn_rr[iucn_rr.find(f"e.T{data['iucn_taxon_id']}")+2:].split('.')[0]
-                    #     iucn_rr = iucn_rr.split('A')[-1]
-                    # elif iucn_rr := iucn_r.get('species'):
-                    #     pass
                     data['iucn_category'] = iucn_map_c[c_iucn] + ' ' + c_iucn
-                    # if iucn_rr:
                     data['iucn_url'] = "https://apiv3.iucnredlist.org/api/v3/taxonredirect/" + str(data['iucn_taxon_id'])
 
                 if data['iucn_note']:
@@ -809,20 +798,17 @@ def taxon(request, taxon_id):
                                 has_cultured = 1
                             # 抓出所有的name
                             at_names = alien_type_df[alien_type_df.alien_type==at].taxon_name_id.unique()
+                            current_note = []
                             for atn in at_names:
                                 # 抓出name對應的非backbone reference
                                 if len(alien_type_df[(alien_type_df.alien_type==at)&(alien_type_df.taxon_name_id==atn)&(alien_type_df.reference_type!=4)]):
                                     at_refs_list = alien_type_df[(alien_type_df.alien_type==at)&(alien_type_df.taxon_name_id==atn)&(alien_type_df.reference_type!=4)].reference_id.unique()
                                     at_refs = ref_df[ref_df.reference_id.isin(at_refs_list)].ref.to_list()
-                                    data['alien_types'].append({
-                                        'alien_type': alien_map_c[at],
-                                        'note': f'{names[names.taxon_name_id==atn].sci_name_ori.to_list()[0]}: {", ".join(at_refs)}'
-                                    })
-                                else:
-                                    data['alien_types'].append({
-                                        'alien_type': alien_map_c[at],
-                                        'note': None
-                                    })
+                                    current_note.append(f'{names[names.taxon_name_id==atn].sci_name_ori.to_list()[0]}: {", ".join(at_refs)}')
+                            data['alien_types'].append({
+                                'alien_type': alien_map_c[at],
+                                'note': ', '.join(current_note)
+                            })
                 #  如果有is_cultured要加上去 如果是backbone不給文獻
                 if not has_cultured and data['is_cultured']:
                     data['alien_types'].append({'alien_type': alien_map_c['cultured'],'note': None})
