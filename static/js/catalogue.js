@@ -184,6 +184,7 @@
 					}
 					if (results.data[i]['alien_type'] != ''){
 						let alt_list = results.data[i]['alien_type'].split(',')
+						alt_list = [...new Set(alt_list)];
 						for (let a = 0; a < alt_list.length; a++) {
 							tag += '<div class="item">' + alt_list[a] + '</div>'
 						}
@@ -293,7 +294,6 @@
 					if (m=='rank'){
 						urlParams.getAll(m).forEach(function(me){
 							// 先確認是不是存在
-
 							if (!$(`input[name=rank][value="${me}"]`).length){
 								$('.alread-select').append(
 								`<div class="item">
@@ -533,6 +533,7 @@
 						}
 						if (results.data[i]['alien_type'] != ''){
 							let alt_list = results.data[i]['alien_type'].split(',')
+							alt_list = [...new Set(alt_list)];
 							for (let a = 0; a < alt_list.length; a++) {
 								tag += '<div class="item">' + alt_list[a] + '</div>'
 							}
