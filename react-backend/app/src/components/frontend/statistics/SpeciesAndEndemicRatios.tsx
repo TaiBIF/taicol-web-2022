@@ -15,7 +15,7 @@ const RankCountStatisics: React.VFC<EndemicProps> = (props) => {
         <div className="num">{formatNumber(total)}</div>
       </div>
       <div className="pie-box">
-        <Tooltip title={formatNumber(count)}>
+        <Tooltip title={formatNumber(count)} enterTouchDelay={0}>
           <div className="pie">
             <svg width="170" height="170">
               <circle className={`pie${ratiotoFixed}`} r="70" cx="85" cy="85"></circle>

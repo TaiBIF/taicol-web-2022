@@ -142,7 +142,7 @@
 			$('.loadingbox').removeClass('d-none');
 			
 			let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
-					'&name-select=' + $('select[name=name-select] option:selected').val() +
+					'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() +
 					'&page=' + page + '&total_page=' + total_page + '&facet=' + $('input[name=hidden-facet]').val() + 
 					'&value=' + $('input[name=hidden-value]').val()  
 					
@@ -166,6 +166,23 @@
 				$('.loadingbox').addClass('d-none');
 				// 修改共幾筆
 				$('#total-count').html(results['total_count']);
+
+				if (results['total_count'] > 1000){
+					$('.downloadData').off('click')
+					$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
+					$('.offlineDownloadData').on('click', function(){
+						offlineDownloadData()
+						$('button.download_check').data('type', $(this).data('type'))
+					})
+				} else {
+					$('.offlineDownloadData').off('click')
+					$('.offlineDownloadData').removeClass('offlineDownloadData').addClass('downloadData')
+					$('.downloadData').on('click', function(){
+						downloadData($(this).data('type'))
+					})
+				}
+
+
 				// 清空頁碼
 				$('.page-num').remove()
 				$('.table-style1').html(`<tr>
@@ -267,9 +284,11 @@
 		var input1 = $("<input>").attr("name", "keyword").attr("type", "hidden").val($('input[name=keyword]').val());
 		var input2 = $("<input>").attr("name", "name-select").attr("type", "hidden").val($('select[name=name-select] option:selected').val());
 		var input3 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
+		var input4 = $("<input>").attr("name", "date-select").attr("type", "hidden").val($('select[name=date-select] option:selected').val());
 
-		$('form').append(input1).append(input2).append(input3);
-		$('form').submit()
+		$('form#moreForm').append(input1).append(input2).append(input3).append(input4);
+		$('form#moreForm').attr('action','/download_search_results')
+		$('form#moreForm').submit()
 		
 	}
 
@@ -352,16 +371,16 @@
 			});
 
 		} else {
-			query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
-			'&name-select=' + $('select[name=name-select] option:selected').val() 
+			query_str = $('form#moreForm').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
+			'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val();
 			if ($('#taxon_group').select2('data').length > 0){
 				query_str = query_str + "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
 						"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
 			}
 			var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
 			history.pushState(null, '', newRelativePathQuery);
+		
 		}
-
 		// 確認至少有一個搜尋項
 		let newUrlParams = new URLSearchParams(query_str);
 
@@ -410,6 +429,20 @@
 				$('#total-count').html(results['count']['total'][0]['count']);
 				if (results['count']['total'][0]['count']>0){
 
+					if (results['count']['total'][0]['count'] > 1000){
+						$('.downloadData').off('click')
+						$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
+						$('.offlineDownloadData').on('click', function(){
+							offlineDownloadData($(this).data('type'))
+						})
+					} else {
+						$('.offlineDownloadData').off('click')
+						$('.offlineDownloadData').removeClass('offlineDownloadData').addClass('downloadData')
+						$('.downloadData').on('click', function(){
+							downloadData($(this).data('type'))
+						})
+					}
+	
 					$('.button-two').removeClass('d-none')
 					$('.result-flexbox').removeClass('d-none')
 					$('.right-table').removeClass('d-none')
@@ -486,7 +519,7 @@
 					if (results.count.is_endemic.length>0){
 						$('.endemic-box').parent('li').removeClass('d-none')
 						for (let i = 0; i < results.count.is_endemic.length; i++) {
-							$('.endemic-box').append(`<button class="changeFacet facet-btn facet-endemic-${results.count.is_endemic[i]['category']}" data-facet="endemic" data-value="${results.count.is_endemic[i]['category']}')">
+							$('.endemic-box').append(`<button class="changeFacet facet-btn facet-endemic-${results.count.is_endemic[i]['category']}" data-facet="endemic" data-value="${results.count.is_endemic[i]['category']}">
 													  ${results.count.is_endemic[i]['category_c']}(${results.count.is_endemic[i]['count']})</button>`)
 						}
 						$('select[name=mb-select]').append(`<option value="endemic">特有性</option>`)
@@ -657,8 +690,9 @@
 
 		// 較高分類群 autocomplete
 		$("#taxon_group").select2({
+			placeholder: "請輸入查詢字串",
 			language: {
-				"noResults": function(){
+				"noResults": function(params){
 					return "查無結果";
 				},		 
 				searching: function(params) {
@@ -681,6 +715,7 @@
 			ajax: {
 				dataType: 'json',
 				data: function (params) {
+					if (params.term != undefined ){
 						if (params.term.match(/[\u3400-\u9FBF]/)){
 							if (params.term.length >1){
 								return {
@@ -697,6 +732,9 @@
 						} else {
 							throw false;  
 						}
+					} else {
+						throw false;  
+					}
 				},			  
 				jsonpCallback: 'jsonCallback',
 				url: '/get_autocomplete_taxon',
@@ -712,8 +750,12 @@
 				}
 			}
 		});
-		
 
+		$('#taxon_group').on('select2:open', function (e) {
+			$('.select2-search__field').get(0).focus()
+		});
+		  
+		
 		// 按 enter 直接查詢
 		window.enterPressed = false;
 
@@ -793,3 +835,69 @@
 			$('.option-box2').slideDown();
 		}
 	});
+
+
+
+	function offlineDownloadData(){
+		$('.downloadpop').fadeIn("slow");
+		$('.downloadpop').removeClass("d-none");
+	}
+
+
+	function sendOfflineDownloadData(format){
+		var input1 = $("<input>").attr("name", "keyword").attr("type", "hidden").val($('input[name=keyword]').val());
+		var input2 = $("<input>").attr("name", "name-select").attr("type", "hidden").val($('select[name=name-select] option:selected').val());
+		var input3 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
+		var input4 = $("<input>").attr("name", "date-select").attr("type", "hidden").val($('select[name=date-select] option:selected').val());
+		var input5 = $("<input>").attr("name", "download_email").attr("type", "hidden").val($('input[name=download_email]').val());
+
+		$('form#moreForm').append(input1).append(input2).append(input3).append(input4).append(input5);
+		
+		$.ajax({
+			url: "/send_download_request",
+			data: $('form#moreForm').serialize() + '&csrfmiddlewaretoken=' + $csrf_token,		
+			type: 'POST',
+			dataType : 'json',
+		})
+		.done(function(results) {
+			console.log(results)
+		})
+		
+		// $('form#moreForm').attr('action','/send_download_request')
+		// $('form#moreForm').submit()
+
+
+	}
+
+	$( ".downloadpop .xx" ).click(function() {
+		$('.downloadpop').fadeOut("slow");
+		$('.downloadpop').addClass('d-none')
+	});
+	
+	
+
+	$( "#download_email" ).keyup(function() {
+        ValidateEmail($(this).val())
+      });
+
+	//https://emailregex.com
+
+	function ValidateEmail(inputText){
+		let mailformat = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
+		if(inputText.match(mailformat)){
+			$('#email-check').attr('fill', 'green');
+			$('button.download_check').prop('disabled', false);
+		} else {
+			$('#email-check').attr('fill', 'lightgrey');
+			$('button.download_check').prop('disabled', true);
+		}
+	}
+
+	$('.download_check').on('click', function(){
+		sendOfflineDownloadData($(this).data('type'))
+		alert('請求已送出')
+		$('.downloadpop').fadeOut("slow");
+		$('.downloadpop').addClass('d-none')
+
+		
+	})

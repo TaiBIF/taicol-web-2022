@@ -14,7 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from conf import settings
+from django.views.static import serve
 
 handler404 = 'pages.views.custom_page_not_found_view'
 handler500 = 'pages.views.custom_error_view'
@@ -25,4 +27,7 @@ urlpatterns = [
     path('', include('pages.urls')),
     path('', include('taxa.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    re_path(r'^media/(?P<path>.*)$', serve, {
+        'document_root': settings.MEDIA_ROOT,
+    }),
 ]

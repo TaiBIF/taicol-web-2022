@@ -202,25 +202,29 @@ $(function (){
                 if ($('input[name="cultured"]').is(':checked')){
                     cultured = 'on';
                 }
-    
-                if (params.term.match(/[\u3400-\u9FBF]/)){
-                    if (params.term.length >1){
+                if (params.term != undefined ){
+                    if (params.term.match(/[\u3400-\u9FBF]/)){
+                        if (params.term.length >1){
+                            return {
+                                keyword: params.term,
+                                from_tree: 'true',
+                                cultured: cultured
+                                };
+                        }
+                    } else if (params.term.trim().length  > 2){
                         return {
                             keyword: params.term,
                             from_tree: 'true',
                             cultured: cultured
                             };
-                    }
-                } else if (params.term.trim().length  > 2){
-                    return {
-                        keyword: params.term,
-                        from_tree: 'true',
-                        cultured: cultured
-                        };
 
+                    } else {
+                        return false;  
+                    }					
                 } else {
-                    return false;  
+                    throw false;  
                 }
+
             },			  
             jsonpCallback: 'jsonCallback',
             url: '/get_autocomplete_taxon',
@@ -235,6 +239,10 @@ $(function (){
                 };
             }
         }
+    });
+
+    $('#keyword').on('select2:open', function (e) {
+        $('.select2-search__field').get(0).focus()
     });
 
 

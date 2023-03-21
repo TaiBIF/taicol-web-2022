@@ -1,3 +1,8 @@
+
+::placeholder{
+    color: #999 !important;
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Roboto:wght@300;400;500;700&display=swap");
 
 .img_link img, .img_link>.show_box, .img_link .span {
@@ -1838,7 +1843,7 @@ body {
     text-transform: uppercase;
     color: #FFF;
     margin-right: 5px;
-    font-size: 0.9375vw
+    font-size: calc(10px + 0.9375vw);
 }
 
 .btn-more .arr {
@@ -2725,13 +2730,13 @@ body {
     font-weight: normal;
     font-size: 18px;
     color: #FFF;
-    line-height: 18px
+    line-height: 28px;
 }
 
 @media only screen and (max-width: 1279px) {
     .footer .main-box .name-contactbox .contact h4 {
         font-size: 16px;
-        line-height: 18px
+        line-height: 24px
     }
 }
 
@@ -4145,7 +4150,8 @@ body {
 }
 
 .tree-area .cir-box {
-    width: 30px;
+    width: initial;
+    min-width: 30px;
     height: 30px;
     display: flex;
     border-radius: 50%;
@@ -4153,7 +4159,7 @@ body {
     font-size: 14px;
     align-items: center;
     justify-content: center;
-    flex: 0 0 30px;
+    flex: 0 0 auto;
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4161,9 +4167,12 @@ body {
     -webkit-transition: all .3s
 }
 
+
+
 @media only screen and (max-width: 767px) {
     .tree-area .cir-box {
-        flex: 0 0 25px;
+       /* flex: 0 0 25px;*/
+        min-width: 25px;
         height: 25px;
         font-size: 13px
     }
@@ -5134,7 +5143,7 @@ body {
     -ms-transition: all .3s;
     -webkit-transition: all .3s;
     background: #FFF;
-    color: #555
+    color: #555;
 }
 
 .tree-area .rank-second-gray > li > .item-box.now > h2, .tree-area .rank-second-gray > li > .item-box.now > p {
@@ -5165,7 +5174,9 @@ body {
 
 .tree-area .rank-second-gray > li > .item-box > .cir-box {
     background: #555;
-    color: #FFF
+    color: #FFF;
+    padding: 0px 5px;
+    border-radius: 30px
 }
 
 
@@ -8409,9 +8420,10 @@ body {
     padding-top: 5px
 }
 
+/*
 .species-de-content .right-de-box .book-list li:nth-child(even) {
     color: #4C8DA7
-}
+}*/
 
 .species-de-content .right-de-box .book-list li:last-child {
     border-bottom: 0
@@ -8568,7 +8580,7 @@ body {
     align-items: center;
     justify-content: center;
     position: fixed;
-    z-index: 30;
+    z-index: 300;
     right: 20px;
     top: 50%;
     border-radius: 50%;
@@ -8907,7 +8919,7 @@ body {
     }
 }
 
-.popbox .error-form .input-item2 input, .popbox .error-form .input-item2 select {
+.popbox .error-form input, .popbox .error-form .input-item2 select {
     width: 100%;
     background: #FFF;
     border-radius: 5px;

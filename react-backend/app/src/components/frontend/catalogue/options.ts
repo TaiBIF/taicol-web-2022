@@ -21,7 +21,7 @@ export const redCategories: Option[] = [
 
 
 export const citesRefs: Option[] = [
-  { value: 'NC', label: '無' },
+  { value: 'NC', label: '非管制' },
   { value: '1', label: '附錄一' },
   { value: '2', label: '附錄二' },
   { value: '3', label: '附錄三' },

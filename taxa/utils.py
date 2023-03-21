@@ -2,6 +2,11 @@ from conf.settings import env
 import pymysql
 import math
 import pandas as pd
+import re
+# from datetime import datetime, timedelta, strftime
+import json
+import numpy as np
+
 
 def get_page_list(current_page, total_page, window=3):
   list_index = math.ceil(current_page/window)
@@ -78,7 +83,7 @@ iucn_map_c = {
 }
 
 
-cites_map_c = { '1': '附錄 I 有滅種威脅須嚴格管制','2':'附錄 II 族群數量稀少須有效管制','3':'附錄 III 特定國家指定有效管制','NC':'NC 無'}
+cites_map_c = { '1': '附錄 I 有滅種威脅須嚴格管制','2':'附錄 II 族群數量稀少須有效管制','3':'附錄 III 特定國家指定有效管制','NC':'NC 非管制'}
 
 
 protected_map_c = {'I': '瀕臨絕種野生動物', 'II': '珍貴稀有野生動物', 'III': '其他應予保育之野生動物'}
@@ -244,4 +249,124 @@ def get_variants(string):
     if char in new_string:
       new_string = new_string.replace(char,f"{var_df_2.loc[i, 'pattern']}")
   return new_string
+
+
+
+def get_download_file(taxon_list=[]):
+  query = f"SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, \
+          t.rank_id, t.common_name_c, t.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), t.is_fossil, t.is_terrestrial, \
+          t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, \
+          ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, \
+          t.created_at, t.updated_at, att.path \
+          FROM api_taxon t \
+          JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
+          JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id \
+          LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id \
+          LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id \
+          WHERE t.taxon_id IN %s"
+
+  conn = pymysql.connect(**db_settings)
+  with conn.cursor() as cursor:
+      cursor.execute(query, (taxon_list,))
+      df = cursor.fetchall()
+      df = pd.DataFrame(df, columns=['taxon_id','name_id','simple_name','name_author','formatted_name','rank','common_name_c','alternative_name_c',  
+                                      'is_hybrid','is_in_taiwan','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine',
+                                      'cites','cites_note','iucn','iucn_note','redlist','redlist_note','protected','protected_note','sensitive','sensitive_note',
+                                      'created_at','updated_at','path'])
+
+  df['alien_type'] = df['alien_type'].replace({None: '[]'})
+  df['alien_type'] = df.alien_type.apply(lambda x: ','.join(list(dict.fromkeys(eval(x)))))
+
+  df['created_at'] = df.created_at.dt.strftime('%Y-%m-%d')
+  df['updated_at'] = df.updated_at.dt.strftime('%Y-%m-%d')
+
+  # synonyms
+  query = f"SELECT tu.taxon_id, GROUP_CONCAT(DISTINCT(tn.name) SEPARATOR ','), GROUP_CONCAT(DISTINCT(an.formatted_name) SEPARATOR ',') \
+              FROM api_taxon_usages tu \
+              JOIN api_names an ON tu.taxon_name_id = an.taxon_name_id \
+              JOIN taxon_names tn ON tu.taxon_name_id = tn.id \
+              WHERE tu.status = 'not-accepted' AND tu.is_deleted = 0 \
+              GROUP BY tu.taxon_id;"
+  with conn.cursor() as cursor:
+      cursor.execute(query)
+      syns = cursor.fetchall()
+      syns = pd.DataFrame(syns, columns=['taxon_id','synonyms','formatted_synonyms'])
+
+  df = df.merge(syns, on='taxon_id', how='left')
+  # higher taxa
+  total_path = []
+
+  for i in df.index:
+      row = df.iloc[i]
+      if path := row.path:
+          path = path.split('>')
+          # 拿掉自己
+          for p in path:
+            if p != row.taxon_id and p not in total_path:
+              total_path.append(p)
+
+  query = f"SELECT t.taxon_id, tn.name, t.rank_id, t.common_name_c \
+          FROM api_taxon t \
+          JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
+          WHERE t.taxon_id IN %s"
+
+  conn = pymysql.connect(**db_settings)
+  with conn.cursor() as cursor:
+      cursor.execute(query, (total_path,))
+      path_df = cursor.fetchall()
+      path_df = pd.DataFrame(path_df, columns=['taxon_id','simple_name','rank','common_name_c'])
+
+  for i in df.index:
+      row = df.iloc[i]
+      if path := row.path:
+          path = path.split('>')
+          # 拿掉自己
+          path = [p for p in path if p != row.taxon_id]
+          # 3,12,18,22,26,30,34 
+          if path:
+              higher = path_df[path_df.taxon_id.isin(path)&path_df['rank'].isin([3,12,18,22,26,30])][['simple_name','common_name_c','rank','taxon_id']]
+              current_ranks = higher['rank'].to_list() + [row['rank']]
+              for x in lin_map.keys():
+                  if x not in current_ranks and x < max(current_ranks) and x > min(current_ranks):
+                      higher = pd.concat([higher, pd.Series({'rank': x, 'common_name_c': '地位未定', 'taxon_id': None, 'simple_name': None}).to_frame().T], ignore_index=True)
+              # 從最大的rank開始補
+              higher = higher.sort_values('rank', ignore_index=True, ascending=False)
+              for hi in higher[higher.taxon_id.isnull()].index:
+                  found_hi = hi + 1
+                  while not higher.loc[found_hi].taxon_id:
+                      found_hi += 1
+                  higher.loc[hi, 'simple_name'] = f'{higher.loc[found_hi].simple_name} {lin_map[higher.loc[hi]["rank"]]} incertae sedis'
+                  higher.loc[hi, 'common_name_c'] = '地位未定'
+              for r in higher.index:
+                  rr = higher.iloc[r]
+                  r_rank_id = rr['rank']
+                  df.loc[i, f'{rank_map[r_rank_id].lower()}'] = rr['simple_name']
+                  df.loc[i, f'{rank_map[r_rank_id].lower()}_c'] = rr['common_name_c']
+
+  # rank_id to rank
+  df['rank'] = df['rank'].apply(lambda x: rank_map[x])
+
+  # 0 / 1 要改成 true / false
+  is_list = ['is_hybrid','is_in_taiwan','is_endemic','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine']
+  df[is_list] = df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
+
+  df = df.replace({np.nan: '', None: ''})
+
+  # 欄位順序
+  cols = ['taxon_id','name_id','simple_name','name_author','formatted_name','synonyms','formatted_synonyms','rank',
+          'common_name_c','alternative_name_c','is_hybrid','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater',
+          'is_brackish','is_marine','cites','iucn','redlist','protected','sensitive','created_at','updated_at',
+          'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
+  
+  for c in cols:
+    if c not in df.keys():
+      df[c] = ''
+  # cites要改成 I,II,III
+  df['cites'] = df['cites'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III') if x else x)
+
+  taxon = df[cols]
+  return taxon
+  # today = datetime.now() + timedelta(hours=8)
+
+  # taxon.to_csv(f"物種名錄_物種_{today.strftime('%Y%m%d')}.csv",index=False)
 

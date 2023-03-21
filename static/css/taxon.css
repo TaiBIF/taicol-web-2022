@@ -2,13 +2,14 @@
     padding-top: 5px
 }
 
+/*
 .species-de-content .right-de-box .book-list li:nth-child(even) a {
     color: #4C8DA7
 }
 
 .species-de-content .right-de-box .book-list li:nth-child(even) a:hover {
     color: #5caccc
-}
+}*/
 
 .species-de-content .right-de-box .book-list li:last-child a {
     border-bottom: 0
