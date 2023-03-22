@@ -24,6 +24,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 		include:[{model:Category,attributes:['name']}],
     offset: offset,
 		limit: limit,
+    order: [
+      ['updatedAt', 'DESC']
+    ]
 	});
 
 	res.status(200).json(article);

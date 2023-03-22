@@ -1843,8 +1843,15 @@ body {
     text-transform: uppercase;
     color: #FFF;
     margin-right: 5px;
-    font-size: calc(10px + 0.9375vw);
+    font-size: 0.9375vw;
 }
+
+@media only screen and (max-width: 767px) {
+    .btn-more p {
+        font-size: calc(8px + 0.9375vw);
+    }
+}
+
 
 .btn-more .arr {
     display: flex;
