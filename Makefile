@@ -18,9 +18,9 @@ stag-build:
 	docker-compose -f staging.yml build
 
 stag-up:
-	sudo rm -rf ~/tc-web-volumes/static/upload/
 	docker-compose -f staging.yml up -d
 	docker-compose -f react-backend/staging.yml up -d
+	sudo rm -rf ~/tc-web-volumes/static/upload/
 	ln -t ~/tc-web-volumes/static -s ~/taicol-web-2022/react-backend/app/public/upload
 
 stag-down:
