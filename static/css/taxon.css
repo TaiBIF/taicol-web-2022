@@ -208,6 +208,13 @@ ul.link-left li {
     position: relative !important;
     display: inline-block !important;
     margin: auto 10px auto 0px;
+    padding-bottom: 10px
+}
+
+@media only screen and (max-width: 767px) {
+    .alien-tooltip {
+        padding-bottom: 5px
+    }
 }
 
 /* Tooltip text */
