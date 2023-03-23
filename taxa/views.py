@@ -68,7 +68,7 @@ def download_search_results_offline(request):
         df.to_csv(f'/tc-web-volumes/media/download/{df_file_name}', index=False)
 
     download_url = request.scheme+"://" + request.META['HTTP_HOST']+ MEDIA_URL + os.path.join('download', df_file_name)
-    if env('ENV') != 'dev':
+    if env('WEB_ENV') != 'dev':
         download_url = download_url.replace('http', 'https')
 
     email_body = render_to_string('taxa/download.html', {'download_url': download_url, })
@@ -482,7 +482,7 @@ def taxon(request, taxon_id):
                     LEFT JOIN api_taxon_tree att ON at.taxon_id = att.taxon_id
                     LEFT JOIN api_conservation ac ON at.taxon_id = ac.taxon_id 
                     JOIN taxon_names tn ON at.accepted_taxon_name_id = tn.id
-                    WHERE at.taxon_id = %s AND atu.is_deleted = 0
+                    WHERE at.taxon_id = %s AND atu.is_deleted = 0 AND atu.is_latest = 1
                 """
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
@@ -666,7 +666,7 @@ def taxon(request, taxon_id):
                                                         'o_reference_id','r_publish_year','rank_id','r_type'])
                     if len(names):
                         names = names.sort_values('publish_year', ascending=False)
-                        names = names.replace({None:''})
+                        names = names.replace({None:'',np.nan:''})
                         # names.loc[names.taxon_name_id==data['name_id'],'sci_name'] = data['sci_name']
                         for tnid in names[(names.taxon_name_id!=data['name_id'])&(names.rank_id==47)].taxon_name_id:
                             query = f"WITH view as (SELECT tnhp.taxon_name_id, CONCAT_WS(' ',an.formatted_name, an.name_author ) as sci_name FROM taxon_name_hybrid_parent tnhp \
@@ -686,10 +686,10 @@ def taxon(request, taxon_id):
                         names['per_usages'] = names['per_usages'].apply(json.loads)
                         names['sci_name_ori'] = names['sci_name']
                         names['author'] = names.apply(lambda x: f"{x.author}, {x.publish_year}" if x.nomenclature_id==2 and x.publish_year else x.author, axis=1)
-                        names['author'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/references/{x.o_reference_id}" target="_blank">{x.author}</a>' if x.o_reference_id else x.author, axis=1)
+                        names['author'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/references/{int(x.o_reference_id)}" target="_blank">{x.author}</a>' if x.o_reference_id else x.author, axis=1)
                         names['sci_name'] = names.apply(lambda x: f'{x.sci_name} {x.author}' if x.author else x.sci_name, axis=1)
-                        names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{x.taxon_name_id}" target="_blank">{x.sci_name}</a>', axis=1)
-                        names['sci_name_ori'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{x.taxon_name_id}" target="_blank">{x.sci_name_ori}</a>', axis=1)
+                        names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name}</a>', axis=1)
+                        names['sci_name_ori'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name_ori}</a>', axis=1)
                         # 如果per_usages中有其他ref則補上
                         for pp in names['per_usages']:
                             for p in pp:
@@ -981,9 +981,9 @@ def taxon(request, taxon_id):
                                 new_path_str_name = '更新後階層：無'
                             content_str.append(new_path_str_name)
                             content_str = '，'.join(content_str)
-                            row = [taxon_history_map[thh[0]], content_str, f'<a href="https://nametool.taicol.tw/references/{thh[5]}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+                            row = [taxon_history_map[thh[0]], content_str, f'<a href="https://nametool.taicol.tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                         elif thh[5] and thh[2] and thh[-1] != 4:
-                            row = [taxon_history_map[thh[0]], thh[1], f'<a href="https://nametool.taicol.tw/references/{thh[5]}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+                            row = [taxon_history_map[thh[0]], thh[1], f'<a href="https://nametool.taicol.tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                         else:
                             row = [taxon_history_map[thh[0]], thh[1], '', thh[3].strftime("%Y-%m-%d"), thh[4]]
                         taxon_history.append(row)
@@ -1060,9 +1060,9 @@ def taxon(request, taxon_id):
 												<path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
 											</g>
 										</g>
-									</svg></a>''', f'<a href="https://nametool.taicol.tw/references/{thh[5]}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+									</svg></a>''', f'<a href="https://nametool.taicol.tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                 else:
-                    row = [taxon_history_map[thh[0]], '', f'<a href="https://nametool.taicol.tw/references/{thh[5]}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+                    row = [taxon_history_map[thh[0]], '', f'<a href="https://nametool.taicol.tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                 taxon_history.append(row)
         taxon_history = pd.DataFrame(taxon_history, columns=['type','content','ref','datetime','editor'])
         taxon_history = taxon_history.drop_duplicates(subset=['type','content','ref']).to_dict(orient='records')
