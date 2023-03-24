@@ -2339,9 +2339,12 @@ body {
     font-size: 22px;
     display: block;
     color: #333;
-    display: -webkit-box;
+    /* display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1; */
+    text-overflow: ellipsis;
+    white-space:nowrap;
+    max-width: 100%;
     overflow: hidden;
     font-weight: 500;
     transition: all .3s;
