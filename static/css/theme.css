@@ -2341,7 +2341,7 @@ body {
     color: #333;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
+    -webkit-line-clamp: 2;
     overflow: hidden;
     font-weight: 500;
     transition: all .3s;
@@ -2350,6 +2350,7 @@ body {
     -ms-transition: all .3s;
     -webkit-transition: all .3s
 }
+
 
 @media only screen and (max-width: 1599px) {
     .section-3-news .left-news-box .news-area-li li .news-title {
@@ -4223,7 +4224,8 @@ body {
     -moz-transition: all .3s;
     -o-transition: all .3s;
     -ms-transition: all .3s;
-    -webkit-transition: all .3s
+    -webkit-transition: all .3s;
+    margin-right: 10px;
 }
 
 @media only screen and (max-width: 999px) {
