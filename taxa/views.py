@@ -685,6 +685,7 @@ def taxon(request, taxon_id):
 
                         names['per_usages'] = names['per_usages'].apply(json.loads)
                         names['sci_name_ori'] = names['sci_name']
+                        names['sci_name_ori_1'] = names['sci_name'] # 為了學名排序
                         names['author'] = names.apply(lambda x: f"{x.author}, {x.publish_year}" if x.nomenclature_id==2 and x.publish_year else x.author, axis=1)
                         names['author'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/references/{int(x.o_reference_id)}" target="_blank">{x.author}</a>' if x.o_reference_id else x.author, axis=1)
                         names['sci_name'] = names.apply(lambda x: f'{x.sci_name} {x.author}' if x.author else x.sci_name, axis=1)
@@ -693,7 +694,7 @@ def taxon(request, taxon_id):
                         # 如果per_usages中有其他ref則補上
                         for pp in names['per_usages']:
                             for p in pp:
-                                if p.get('reference_id') not in new_refs and p.get('reference_id') not in names.reference_id.to_list():
+                                if p.get('reference_id') not in new_refs:
                                     new_refs.append(p.get('reference_id'))
                         if new_refs:
                             query = f"""SELECT ac.reference_id, ac.short_author, r.publish_year, r.type
@@ -708,6 +709,7 @@ def taxon(request, taxon_id):
                                 conn.close()
                         # names = names.append(usage_refs).reset_index(drop=True)
                         for n in names.taxon_name_id.unique():
+                            print(n)
                             # 如果是原始組合名
                             ref_list = []
                             ref_str = ''
@@ -734,9 +736,9 @@ def taxon(request, taxon_id):
                                 ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                                 ref_str = ('; ').join(ref_list)
                                 if ref_str:
-                                    name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]}; {ref_str}", names[names.taxon_name_id==n]['publish_year'].min()]]
+                                    name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]}; {ref_str}", names[names.taxon_name_id==n]['publish_year'].min(), names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                                 else:
-                                    name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0], names[names.taxon_name_id==n]['publish_year'].min()]]
+                                    name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0], names[names.taxon_name_id==n]['publish_year'].min(), names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                             # 如果是誤用名
                             elif len(names[(names.taxon_name_id==n)&(names.ru_status=='misapplied')]):
                                 if len(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')&(names.is_taiwan==1)].ref):
@@ -746,6 +748,7 @@ def taxon(request, taxon_id):
                                             ref_list += [[names.loc[r].ref, names.loc[r].reference_id, names.loc[r].publish_year, names.loc[r].r_type]]
                                 for pu in names[(names.taxon_name_id==n)&(names.ru_status=='misapplied')].per_usages:
                                     for ppu in pu:
+                                        print(ppu)
                                         if not ppu.get('is_from_published_ref', False):
                                             current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
                                             current_year = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'publish_year'].values[0]
@@ -755,16 +758,17 @@ def taxon(request, taxon_id):
                                                     current_ref += ', pro parte'
                                             if current_ref not in ref_list:
                                                 ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_r_type])
-                                ref_list = [r for r in ref_list if r[1] not in names.o_reference_id.to_list() and r[3]!=4 ]
+                                # ref_list = [r for r in ref_list if r[1] not in names.o_reference_id.to_list() and r[3]!=4 ]
+                                ref_list = [r for r in ref_list if r[3]!=4]
                                 ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                                 min_year = ref_list.year.min()
                                 # 決定排序的publish_year
                                 ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                                 ref_str = ('; ').join(ref_list)
                                 if ref_str:
-                                    name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]} (誤用): {ref_str}",min_year]]
+                                    name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]} (誤用): {ref_str}",min_year, names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                                 else:
-                                    name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0] + ' (誤用)', '']]
+                                    name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0] + ' (誤用)', '', names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                             # 不是誤用名
                             elif not len(names[(names.taxon_name_id==n)&(names.ru_status=='misapplied')]):
                                 if len(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref):
@@ -783,17 +787,21 @@ def taxon(request, taxon_id):
                                                     current_ref += ', pro parte'
                                             if current_ref not in ref_list:
                                                 ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_type])
-                                ref_list = [r for r in ref_list if r[1] not in names.o_reference_id.to_list() and r[3]!=4]
+                                # ref_list = [r for r in ref_list if r[1] not in names.o_reference_id.to_list() and r[3]!=4]
+                                ref_list = [r for r in ref_list if r[3]!=4]
                                 ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                                 # 決定排序的publish_year
                                 ref_list = [f'<a href="https://nametool.taicol.tw/references/{int(r[1]["ref_id"])}" target="_blank">{r[1]["ref"]}</a>' for r in ref_list.iterrows()]
                                 ref_str = ('; ').join(ref_list)
                                 if ref_str:
-                                    name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]}: {ref_str}",names[names.taxon_name_id==n]['publish_year'].min()]]
+                                    name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]}: {ref_str}",names[names.taxon_name_id==n]['publish_year'].min(), names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                                 else:
-                                    name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0], names[names.taxon_name_id==n]['publish_year'].min()]]
+                                    name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0], names[names.taxon_name_id==n]['publish_year'].min(), names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                 if name_changes:
-                    name_changes = pd.DataFrame(name_changes, columns=['name_str','year']).sort_values('year')
+                    name_changes = pd.DataFrame(name_changes, columns=['name_str','year','name'])
+                    name_changes['year'] = name_changes.year.replace({'': None}) # 讓年份為空值的在最後面
+                    # name_changes = name_changes.sort_values(by=['year','name'])
+                    name_changes = name_changes.sort_values(by=['year'])
                     name_changes = name_changes.name_str.to_list()
 
                 # 文獻
