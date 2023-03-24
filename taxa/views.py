@@ -682,12 +682,11 @@ def taxon(request, taxon_id):
                                 conn.close()
                                 if n:
                                     names.loc[names.taxon_name_id==tnid,'sci_name'] = n[0] 
-
                         names['per_usages'] = names['per_usages'].apply(json.loads)
                         names['sci_name_ori'] = names['sci_name']
                         names['sci_name_ori_1'] = names['sci_name'] # 為了學名排序
                         names['author'] = names.apply(lambda x: f"{x.author}, {x.publish_year}" if x.nomenclature_id==2 and x.publish_year else x.author, axis=1)
-                        names['author'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/references/{int(x.o_reference_id)}" target="_blank">{x.author}</a>' if x.o_reference_id else x.author, axis=1)
+                        names['author'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/references/{int(x.o_reference_id)}" target="_blank">{x.author}</a>' if x.o_reference_id and not x.original_taxon_name_id else x.author, axis=1)
                         names['sci_name'] = names.apply(lambda x: f'{x.sci_name} {x.author}' if x.author else x.sci_name, axis=1)
                         names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name}</a>', axis=1)
                         names['sci_name_ori'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name_ori}</a>', axis=1)
@@ -768,7 +767,6 @@ def taxon(request, taxon_id):
                                     ref_list = [r for r in ref_list if r[3]!=4 ]
                                 else:
                                     ref_list = [r for r in ref_list if r[1] not in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].o_reference_id.to_list() and r[3]!=4 ]
-                                # ref_list = [r for r in ref_list if r[3]!=4]
                                 ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                                 min_year = ref_list.year.min()
                                 # 決定排序的publish_year
@@ -796,7 +794,6 @@ def taxon(request, taxon_id):
                                                     current_ref += ', pro parte'
                                             if current_ref not in ref_list:
                                                 ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_type])
-                                # ref_list = [r for r in ref_list if r[1] not in names.o_reference_id.to_list() and r[3]!=4]
                                 if has_original:
                                     ref_list = [r for r in ref_list if r[3]!=4 ]
                                 else:
