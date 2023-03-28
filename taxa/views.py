@@ -320,12 +320,12 @@ def get_query_data(base, offset, response, limit):
                     # 界
             kingdoms = higher_taxa[(higher_taxa.rank_id==3)].taxon_id.to_list()
             for i in results.index:
-                at_list = []
+                alt_list = []
                 if results.iloc[i].alien_type:
                     for at in json.loads(results.iloc[i].alien_type):
-                        at_list.append(alien_map_c[at.get('alien_type')])
-                at_list = list(dict.fromkeys(at_list))
-                results.loc[i,'alien_type'] = ','.join(at_list)
+                        alt_list.append(alien_map_c[at.get('alien_type')])
+                alt_list = list(dict.fromkeys(alt_list))
+                results.loc[i,'alien_type'] = ','.join(alt_list)
                 if results.iloc[i].path:
                     path = results.iloc[i].path.split('>')
                     ks = [k for k in kingdoms if k in path]
@@ -406,13 +406,13 @@ def catalogue(request):
             count['is_endemic_c'] = count['is_endemic'].apply(lambda x: '臺灣特有' if x == '1' or x == 1 else None)
             tmp_alien_type = {}
             for at in count['alien_type']:
-                at_list = []
+                alt_list = []
                 if at:
                     for att in json.loads(at):
-                        # if att.get('alien_type') not in at_list:
-                        at_list.append(att.get('alien_type'))
-                at_list = list(dict.fromkeys(at_list))
-                for atl in at_list:
+                        # if att.get('alien_type') not in alt_list:
+                        alt_list.append(att.get('alien_type'))
+                alt_list = list(dict.fromkeys(alt_list))
+                for atl in alt_list:
                     if atl not in tmp_alien_type.keys():
                         tmp_alien_type[atl] = 1
                     else:
@@ -1474,7 +1474,7 @@ def get_match_result(request):
                             for at in json.loads(df.iloc[i].alien_type):
                                 # if at.get('alien_type') not in alt_list:
                                 alt_list.append(alien_map_c[at.get('alien_type')])
-                        at_list = list(dict.fromkeys(at_list))
+                        alt_list = list(dict.fromkeys(alt_list))
                         df.loc[i,'alien_type'] = ','.join(alt_list)
 
                     df['rank'] = df['rank_id'].apply(lambda x: rank_map_c[x] if x else '')
@@ -1551,7 +1551,7 @@ def download_match_results(request):
                                 for at in json.loads(df.iloc[i].alien_type):
                                     # if at.get('alien_type') not in alt_list:
                                     alt_list.append(alien_map_c[at.get('alien_type')])
-                            at_list = list(dict.fromkeys(at_list))
+                            alt_list = list(dict.fromkeys(alt_list))
                             df.loc[i,'alien_type'] = ','.join(alt_list)
                         df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
                         df['rank'] = df['rank_id'].apply(lambda x: rank_map[x] if x else '')
