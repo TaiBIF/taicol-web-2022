@@ -40,8 +40,9 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 				<td>IUCN評估</td>
 				<td>CITES附錄</td>
 			</tr>`)
+			console.log(results.data)
 			for (let i = 0; i < results.data.length; i++) {
-				if ((results.data[i]['matched_clean'] == '')|results.data[i]['matched_clean'] == undefined){
+				if ((results.data[i]['taxon_id'] == '')|results.data[i]['taxon_id'] == undefined){
 					$('.table-style1').append(
 						`<tr>
 							<td>${results.data[i]['search_term']}</td>

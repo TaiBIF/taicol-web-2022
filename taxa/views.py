@@ -1453,7 +1453,7 @@ def get_match_result(request):
                     info = pd.DataFrame(info, columns=['is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine',
                                                         'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c'])
                     # info = info.astype({'accepted_namecode': 'str'})
-                    df = df.merge(info,how='left',left_on='namecode',right_on='taxon_id')
+                    df = df[['search_term','namecode','family','kingdom']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
                     df = df.replace({np.nan: '', None: ''})
                     df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
                     # taxon group
