@@ -1411,7 +1411,6 @@ def get_match_result(request):
 
         names = ('|').join(names[(page-1)*10:page*10])
         url = f"{env('NOMENMATCH_ROOT')}"
-        # url = 'http://host.docker.internal:8080/api.php'
         result = requests.post(url, data = {
             'names': names,
             'best': best,
@@ -1435,15 +1434,14 @@ def get_match_result(request):
             df = df_flat
             #JOIN taxon
             if namecode_list:
-                # namecode_list = [f'"{n}"' for n in namecode_list]
                 query = f""" SELECT at.is_endemic, at.alien_type, at.is_terrestrial, 
                              at.is_freshwater, at.is_brackish, at.is_marine,
                              at.taxon_id, ac.protected_category, ac.red_category, ac.iucn_category, ac.cites_listing,
                              at.rank_id, an.formatted_name, at.common_name_c
                             FROM api_taxon at
                             LEFT JOIN api_conservation ac ON ac.taxon_id = at.taxon_id
-                            JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
-                            WHERE at.taxon_id IN %s AND at.is_in_taiwan = 1 AND at.is_deleted != 1
+                            LEFT JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
+                            WHERE at.taxon_id IN %s AND at.is_deleted != 1
                         """
                 conn = pymysql.connect(**db_settings)
                 with conn.cursor() as cursor:
@@ -1453,7 +1451,7 @@ def get_match_result(request):
                     info = pd.DataFrame(info, columns=['is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine',
                                                         'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c'])
                     # info = info.astype({'accepted_namecode': 'str'})
-                    df = df[['search_term','namecode','family','kingdom']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
+                    df = df[['search_term','namecode','family','kingdom','phylum','class','order','genus']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
                     df = df.replace({np.nan: '', None: ''})
                     df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
                     # taxon group
@@ -1502,7 +1500,6 @@ def download_match_results(request):
             names = ('|').join(t_names[page*30:(page+1)*30])
             df = pd.DataFrame()
             url = env('NOMENMATCH_ROOT')
-            # url = 'http://host.docker.internal:8080/api.php'
             result = requests.post(url, data = {
                 'names': names,
                 'best': best,
@@ -1529,11 +1526,11 @@ def download_match_results(request):
                     query = f""" SELECT at.is_endemic, at.alien_type, at.is_terrestrial, 
                                 at.is_freshwater, at.is_brackish, at.is_marine,
                                 at.taxon_id, ac.protected_category, ac.red_category, ac.iucn_category, ac.cites_listing,
-                                at.rank_id, an.formatted_name, at.common_name_c
+                                at.rank_id, tn.name, at.common_name_c
                                 FROM api_taxon at
                                 LEFT JOIN api_conservation ac ON ac.taxon_id = at.taxon_id
-                                JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
-                                WHERE at.taxon_id IN %s AND at.is_in_taiwan = 1 AND at.is_deleted != 1 
+                                JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
+                                WHERE at.taxon_id IN %s AND at.is_deleted != 1 
                             """
                     conn = pymysql.connect(**db_settings)
                     with conn.cursor() as cursor:
@@ -1541,7 +1538,7 @@ def download_match_results(request):
                         info = cursor.fetchall()
                         conn.close()
                         info = pd.DataFrame(info, columns=['is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine',
-                                                            'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c'])
+                                                            'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'name', 'common_name_c'])
                         df = df.merge(info,how='left',left_on='accepted_namecode', right_on='taxon_id')
                         df = df.replace({np.nan: '', None: ''})
                 
@@ -1560,12 +1557,12 @@ def download_match_results(request):
                 df = df.replace({np.nan: '', None: ''})
                 final_df = final_df.append(df)
     # 移除不需要的欄位
-    cols = ["search_term","matched","common_name_c","kingdom","phylum","class","order","family","genus","rank","is_endemic","alien_type",
+    cols = ["search_term","name","common_name_c","kingdom","phylum","class","order","family","genus","rank","is_endemic","alien_type",
             "is_terrestrial","is_freshwater","is_brackish","is_marine","protected_category","red_category","iucn_category","cites_listing","accepted_namecode"]
     # [c for c in cols if c in final_df.keys()]
     final_df = final_df[[c for c in cols if c in final_df.keys()]]
     final_df = final_df.rename(columns={
-        "search_term":"查詢字串","matched":"比對結果","common_name_c":"中文名","kingdom":"界","phylum":"門","class":"綱","order":"目","family":"科",
+        "search_term":"查詢字串","name":"比對結果","common_name_c":"中文名","kingdom":"界","phylum":"門","class":"綱","order":"目","family":"科",
         "genus":"屬","rank":"階層","is_endemic":"是否為特有",
         "alien_type":"原生/外來性","is_terrestrial":"是否為陸生生物","is_freshwater":"是否為淡水生物","is_brackish":"是否為半鹹水生物","is_marine":"是否為海洋生物",
         "protected_category":"臺灣保育類等級","red_category":"臺灣紅皮書評估",
