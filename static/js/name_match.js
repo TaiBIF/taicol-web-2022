@@ -76,7 +76,7 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 						tag1 += '<div class="item">半鹹水</div>'
 					}
 					if (results.data[i]['is_marine'] ==1 ){
-						tag1 += '<div class="item">海生</div>'
+						tag1 += '<div class="item">海洋</div>'
 					}
 
 					console.log(results.data[i])
