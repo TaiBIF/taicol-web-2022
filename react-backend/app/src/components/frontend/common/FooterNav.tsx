@@ -19,7 +19,7 @@ const menusCol1:Menu[] = [
   },
   {
     title: '物種樹',
-    href: 'http://web-staging.taicol.tw/taxon/tree'
+    href: '/taxon/tree'
   },
   {
     title: '物種名錄',

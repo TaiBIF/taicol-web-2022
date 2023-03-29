@@ -1410,7 +1410,7 @@ def get_match_result(request):
         response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
 
         names = ('|').join(names[(page-1)*10:page*10])
-        url = f"{env('NOMENMATCH_ROOT')}"
+        url = env('NOMENMATCH_ROOT')
         result = requests.post(url, data = {
             'names': names,
             'best': best,
