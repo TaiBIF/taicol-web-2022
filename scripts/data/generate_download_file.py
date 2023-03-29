@@ -21,15 +21,16 @@ db_settings = {
 # 名錄檔案（物種）
 
 query = "SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, \
-        t.rank_id, t.common_name_c, t.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, t.alien_type, t.is_fossil, t.is_terrestrial, \
+        t.rank_id, t.common_name_c, t.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), t.is_fossil, t.is_terrestrial, \
         t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, \
         ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, \
-        t.created_at, t.updated_at, att.path FROM api_taxon t \
+        t.created_at, t.updated_at, att.path \
+         FROM api_taxon t \
         JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
         JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id \
         LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id \
         LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id \
-        WHERE t.is_in_taiwan = 1"
+        WHERE t.is_in_taiwan = 1 and t.is_deleted = 0"
 
 conn = pymysql.connect(**db_settings)
 with conn.cursor() as cursor:
@@ -40,6 +41,9 @@ with conn.cursor() as cursor:
                                     'cites','cites_note','iucn','iucn_note','redlist','redlist_note','protected','protected_note','sensitive','sensitive_note',
                                     'created_at','updated_at','path'])
 
+
+df['alien_type'] = df['alien_type'].replace({None: '[]'})
+df['alien_type'] = df.alien_type.apply(lambda x: ','.join(list(dict.fromkeys(eval(x)))))
 
 df['created_at'] = df.created_at.dt.strftime('%Y-%m-%d')
 df['updated_at'] = df.updated_at.dt.strftime('%Y-%m-%d')
@@ -98,16 +102,17 @@ is_list = ['is_hybrid','is_in_taiwan','is_endemic','is_fossil','is_terrestrial',
 df[is_list] = df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
 
 # alien_type
-for i in df.index:
-    if i % 1000 == 0:
-        print(i)
-    row = df.iloc[i]
-    aliens = []
-    if row.alien_type:
-        for a in json.loads(row.alien_type):
-            if a.get('alien_type') not in aliens:
-                aliens.append(a.get('alien_type'))
-    df.loc[i,'alien_type'] = (',').join(aliens)
+# for i in df.index:
+#     if i % 1000 == 0:
+#         print(i)
+#     row = df.iloc[i]
+#     aliens = []
+#     if row.alien_type:
+#         for a in json.loads(row.alien_type):
+#             # if a.get('alien_type') not in aliens:
+#             aliens.append(a.get('alien_type'))
+#     aliens = list(dict.fromkeys(aliens))
+#     df.loc[i,'alien_type'] = (',').join(aliens)
     # # 保育資訊
     # if row.cites_note:
     #     if len(json.loads(row.cites_note)) > 1:
@@ -166,7 +171,7 @@ cols = ['taxon_id','name_id','simple_name','name_author','formatted_name','synon
 
 # cites要改成 I,II,III
 df['cites'] = df['cites'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III') if x else x)
-df['protected'] = df['protected'].str.replace('none','無')
+# df['protected'] = df['protected'].str.replace('none','無')
 
 
 taxon = df[cols]
@@ -363,7 +368,6 @@ for i in names.index:
             names.loc[i,'s3_rank'] = spe_l[1]['rank_abbreviation']
             names.loc[i,'latin_s3'] = spe_l[1]['latin_name']
     # hybrid_parent
-    # TODO 目前is_hybrid都被設成False，這樣會抓不到，先暫時寫成下面的處理
     if row['is_hybrid'] == 'true':
         query_hybrid_parent = f"SELECT GROUP_CONCAT( CONCAT(tn.name, ' ',tn.formatted_authors) SEPARATOR ' × ' ) FROM taxon_name_hybrid_parent AS tnhp \
                                 JOIN taxon_names AS tn ON tn.id = tnhp.parent_taxon_name_id \
@@ -372,7 +376,8 @@ for i in names.index:
         with conn.cursor() as cursor:
             cursor.execute(query_hybrid_parent)
             hybrid_name_result = cursor.fetchall()
-        names.loc[names.name_id == row['name_id'], 'hybrid_parent'] = hybrid_name_result[0]
+        if hybrid_name_result:
+            names.loc[names.name_id == row['name_id'], 'hybrid_parent'] = hybrid_name_result[0]
 # query_hybrid_parent = f"SELECT tnhp.taxon_name_id, GROUP_CONCAT(CONCAT_WS(' ', tn.name, an.name_author) SEPARATOR ' × ' ) FROM taxon_name_hybrid_parent AS tnhp \
 #                         JOIN taxon_names AS tn ON tn.id = tnhp.parent_taxon_name_id \
 #                         LEFT JOIN api_names an ON an.taxon_name_id = tn.id \

@@ -1,5 +1,4 @@
-
-::placeholder{
+::placeholder {
     color: #999 !important;
 }
 
@@ -535,7 +534,7 @@ body {
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
-    user-select: none
+    user-select: none;
 }
 
 .header .mb-hambruger .hamRotate.active {
@@ -2343,7 +2342,7 @@ body {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1; */
     text-overflow: ellipsis;
-    white-space:nowrap;
+    white-space: nowrap;
     max-width: 100%;
     overflow: hidden;
     font-weight: 500;
@@ -4182,7 +4181,7 @@ body {
 
 @media only screen and (max-width: 767px) {
     .tree-area .cir-box {
-       /* flex: 0 0 25px;*/
+        /* flex: 0 0 25px;*/
         min-width: 25px;
         height: 25px;
         font-size: 13px
@@ -4267,7 +4266,7 @@ body {
     margin-left: 0
 }
 
-.tree-area .rank-1-red li > .item-box {
+.tree-area .rank-1-red li>.item-box {
     background: #F7F7F7;
     position: relative;
     padding: 15px 35px 15px 13px;
@@ -4275,7 +4274,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-1-red li > .item-box:hover {
+    .tree-area .rank-1-red li>.item-box:hover {
         background: #FF7E7E;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4284,7 +4283,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-1-red li > .item-box:hover > .cir-box {
+    .tree-area .rank-1-red li>.item-box:hover>.cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4294,11 +4293,11 @@ body {
         color: #FF7E7E
     }
 
-    .tree-area .rank-1-red li > .item-box:hover > h2, .tree-area .rank-1-red li > .item-box:hover > p {
+    .tree-area .rank-1-red li>.item-box:hover>h2, .tree-area .rank-1-red li>.item-box:hover>p {
         color: #FFF
     }
 
-    .tree-area .rank-1-red li > .item-box:hover > .arr {
+    .tree-area .rank-1-red li>.item-box:hover>.arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4311,7 +4310,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-1-red li > .item-box:hover > .arr > line {
+    .tree-area .rank-1-red li>.item-box:hover>.arr>line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4322,12 +4321,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-1-red li > .item-box {
+    .tree-area .rank-1-red li>.item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-1-red li > .item-box.now {
+.tree-area .rank-1-red li>.item-box.now {
     background: #FF7E7E;
     transition: all .3s;
     -moz-transition: all .3s;
@@ -4337,7 +4336,7 @@ body {
     margin-bottom: 5px
 }
 
-.tree-area .rank-1-red li > .item-box.now > .cir-box {
+.tree-area .rank-1-red li>.item-box.now>.cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4347,11 +4346,11 @@ body {
     color: #FF7E7E
 }
 
-.tree-area .rank-1-red li > .item-box.now > h2, .tree-area .rank-1-red li > .item-box.now > p {
+.tree-area .rank-1-red li>.item-box.now>h2, .tree-area .rank-1-red li>.item-box.now>p {
     color: #FFF
 }
 
-.tree-area .rank-1-red li > .item-box.now > .arr {
+.tree-area .rank-1-red li>.item-box.now>.arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4364,7 +4363,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-1-red li > .item-box.now > .arr > line {
+.tree-area .rank-1-red li>.item-box.now>.arr>line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4373,7 +4372,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-1-red li > .item-box > .cir-box {
+.tree-area .rank-1-red li>.item-box>.cir-box {
     background: #FF7E7E;
     color: #FFF
 }
@@ -4382,7 +4381,7 @@ body {
     display: none
 }
 
-.tree-area .rank-2-org li > .item-box {
+.tree-area .rank-2-org li>.item-box {
     background: #FFF;
     position: relative;
     margin-bottom: 0;
@@ -4390,7 +4389,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-2-org li > .item-box:hover {
+    .tree-area .rank-2-org li>.item-box:hover {
         background: #f7f7f7;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4399,7 +4398,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-2-org li > .item-box:hover > .cir-box {
+    .tree-area .rank-2-org li>.item-box:hover>.cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4409,11 +4408,11 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-2-org li > .item-box:hover > h2, .tree-area .rank-2-org li > .item-box:hover > p {
+    .tree-area .rank-2-org li>.item-box:hover>h2, .tree-area .rank-2-org li>.item-box:hover>p {
         color: #FF9E57
     }
 
-    .tree-area .rank-2-org li > .item-box:hover > .arr {
+    .tree-area .rank-2-org li>.item-box:hover>.arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4426,7 +4425,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-2-org li > .item-box:hover > .arr > line {
+    .tree-area .rank-2-org li>.item-box:hover>.arr>line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4437,12 +4436,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-2-org li > .item-box {
+    .tree-area .rank-2-org li>.item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-2-org li > .item-box.now {
+.tree-area .rank-2-org li>.item-box.now {
     background: #FF9E57;
     transition: all .3s;
     -moz-transition: all .3s;
@@ -4452,7 +4451,7 @@ body {
     margin-bottom: 5px
 }
 
-.tree-area .rank-2-org li > .item-box.now > .cir-box {
+.tree-area .rank-2-org li>.item-box.now>.cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4462,11 +4461,11 @@ body {
     color: #FF9E57
 }
 
-.tree-area .rank-2-org li > .item-box.now > h2, .tree-area .rank-2-org li > .item-box.now > p {
+.tree-area .rank-2-org li>.item-box.now>h2, .tree-area .rank-2-org li>.item-box.now>p {
     color: #FFF
 }
 
-.tree-area .rank-2-org li > .item-box.now > .arr {
+.tree-area .rank-2-org li>.item-box.now>.arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4479,7 +4478,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-2-org li > .item-box.now > .arr > line {
+.tree-area .rank-2-org li>.item-box.now>.arr>line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4488,7 +4487,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-2-org li > .item-box > .cir-box {
+.tree-area .rank-2-org li>.item-box>.cir-box {
     background: #FF9E57;
     color: #FFF
 }
@@ -4497,7 +4496,7 @@ body {
     display: none
 }
 
-.tree-area .rank-3-yell li > .item-box {
+.tree-area .rank-3-yell li>.item-box {
     background: #FFF;
     position: relative;
     margin-bottom: 0;
@@ -4505,7 +4504,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-3-yell li > .item-box:hover {
+    .tree-area .rank-3-yell li>.item-box:hover {
         background: #f7f7f7;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4514,7 +4513,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-3-yell li > .item-box:hover > .cir-box {
+    .tree-area .rank-3-yell li>.item-box:hover>.cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4524,11 +4523,11 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-3-yell li > .item-box:hover > h2, .tree-area .rank-3-yell li > .item-box:hover > p {
+    .tree-area .rank-3-yell li>.item-box:hover>h2, .tree-area .rank-3-yell li>.item-box:hover>p {
         color: #F5CE4D
     }
 
-    .tree-area .rank-3-yell li > .item-box:hover > .arr {
+    .tree-area .rank-3-yell li>.item-box:hover>.arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4541,7 +4540,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-3-yell li > .item-box:hover > .arr > line {
+    .tree-area .rank-3-yell li>.item-box:hover>.arr>line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4552,12 +4551,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-3-yell li > .item-box {
+    .tree-area .rank-3-yell li>.item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-3-yell li > .item-box.now {
+.tree-area .rank-3-yell li>.item-box.now {
     background: #F5CE4D;
     margin-bottom: 5px;
     transition: all .3s;
@@ -4567,7 +4566,7 @@ body {
     -webkit-transition: all .3s
 }
 
-.tree-area .rank-3-yell li > .item-box.now > .cir-box {
+.tree-area .rank-3-yell li>.item-box.now>.cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4577,11 +4576,11 @@ body {
     color: #F5CE4D
 }
 
-.tree-area .rank-3-yell li > .item-box.now > h2, .tree-area .rank-3-yell li > .item-box.now > p {
+.tree-area .rank-3-yell li>.item-box.now>h2, .tree-area .rank-3-yell li>.item-box.now>p {
     color: #FFF
 }
 
-.tree-area .rank-3-yell li > .item-box.now > .arr {
+.tree-area .rank-3-yell li>.item-box.now>.arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4594,7 +4593,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-3-yell li > .item-box.now > .arr > line {
+.tree-area .rank-3-yell li>.item-box.now>.arr>line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4603,7 +4602,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-3-yell li > .item-box > .cir-box {
+.tree-area .rank-3-yell li>.item-box>.cir-box {
     background: #FFC400;
     color: #FFF
 }
@@ -4612,7 +4611,7 @@ body {
     display: none
 }
 
-.tree-area .rank-4-green li > .item-box {
+.tree-area .rank-4-green li>.item-box {
     background: #FFF;
     position: relative;
     margin-bottom: 0;
@@ -4620,7 +4619,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-4-green li > .item-box:hover {
+    .tree-area .rank-4-green li>.item-box:hover {
         background: #f7f7f7;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4629,7 +4628,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-4-green li > .item-box:hover > .cir-box {
+    .tree-area .rank-4-green li>.item-box:hover>.cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4639,11 +4638,11 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-4-green li > .item-box:hover > h2, .tree-area .rank-4-green li > .item-box:hover > p {
+    .tree-area .rank-4-green li>.item-box:hover>h2, .tree-area .rank-4-green li>.item-box:hover>p {
         color: #A6D368
     }
 
-    .tree-area .rank-4-green li > .item-box:hover > .arr {
+    .tree-area .rank-4-green li>.item-box:hover>.arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4656,7 +4655,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-4-green li > .item-box:hover > .arr > line {
+    .tree-area .rank-4-green li>.item-box:hover>.arr>line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4667,12 +4666,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-4-green li > .item-box {
+    .tree-area .rank-4-green li>.item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-4-green li > .item-box.now {
+.tree-area .rank-4-green li>.item-box.now {
     background: #A6D368;
     margin-bottom: 5px;
     transition: all .3s;
@@ -4682,7 +4681,7 @@ body {
     -webkit-transition: all .3s
 }
 
-.tree-area .rank-4-green li > .item-box.now > .cir-box {
+.tree-area .rank-4-green li>.item-box.now>.cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4692,11 +4691,11 @@ body {
     color: #A6D368
 }
 
-.tree-area .rank-4-green li > .item-box.now > h2, .tree-area .rank-4-green li > .item-box.now > p {
+.tree-area .rank-4-green li>.item-box.now>h2, .tree-area .rank-4-green li>.item-box.now>p {
     color: #FFF
 }
 
-.tree-area .rank-4-green li > .item-box.now > .arr {
+.tree-area .rank-4-green li>.item-box.now>.arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4709,7 +4708,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-4-green li > .item-box.now > .arr > line {
+.tree-area .rank-4-green li>.item-box.now>.arr>line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4718,7 +4717,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-4-green li > .item-box > .cir-box {
+.tree-area .rank-4-green li>.item-box>.cir-box {
     background: #A6D368;
     color: #FFF
 }
@@ -4727,7 +4726,7 @@ body {
     display: none
 }
 
-.tree-area .rank-5-blue li > .item-box {
+.tree-area .rank-5-blue li>.item-box {
     background: #FFF;
     position: relative;
     margin-bottom: 0;
@@ -4735,7 +4734,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-5-blue li > .item-box:hover {
+    .tree-area .rank-5-blue li>.item-box:hover {
         background: #f7f7f7;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4744,7 +4743,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-5-blue li > .item-box:hover > .cir-box {
+    .tree-area .rank-5-blue li>.item-box:hover>.cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4754,11 +4753,11 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-5-blue li > .item-box:hover > h2, .tree-area .rank-5-blue li > .item-box:hover > p {
+    .tree-area .rank-5-blue li>.item-box:hover>h2, .tree-area .rank-5-blue li>.item-box:hover>p {
         color: #77CBED
     }
 
-    .tree-area .rank-5-blue li > .item-box:hover > .arr {
+    .tree-area .rank-5-blue li>.item-box:hover>.arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4771,7 +4770,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-5-blue li > .item-box:hover > .arr > line {
+    .tree-area .rank-5-blue li>.item-box:hover>.arr>line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4782,12 +4781,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-5-blue li > .item-box {
+    .tree-area .rank-5-blue li>.item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-5-blue li > .item-box.now {
+.tree-area .rank-5-blue li>.item-box.now {
     background: #77CBED;
     margin-bottom: 5px;
     transition: all .3s;
@@ -4797,7 +4796,7 @@ body {
     -webkit-transition: all .3s
 }
 
-.tree-area .rank-5-blue li > .item-box.now > .cir-box {
+.tree-area .rank-5-blue li>.item-box.now>.cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4807,11 +4806,11 @@ body {
     color: #77CBED
 }
 
-.tree-area .rank-5-blue li > .item-box.now > h2, .tree-area .rank-5-blue li > .item-box.now > p {
+.tree-area .rank-5-blue li>.item-box.now>h2, .tree-area .rank-5-blue li>.item-box.now>p {
     color: #FFF
 }
 
-.tree-area .rank-5-blue li > .item-box.now > .arr {
+.tree-area .rank-5-blue li>.item-box.now>.arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4824,7 +4823,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-5-blue li > .item-box.now > .arr > line {
+.tree-area .rank-5-blue li>.item-box.now>.arr>line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4833,7 +4832,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-5-blue li > .item-box > .cir-box {
+.tree-area .rank-5-blue li>.item-box>.cir-box {
     background: #77CBED;
     color: #FFF
 }
@@ -4842,7 +4841,7 @@ body {
     display: none
 }
 
-.tree-area .rank-6-deepblue li > .item-box {
+.tree-area .rank-6-deepblue li>.item-box {
     background: #FFF;
     position: relative;
     margin-bottom: 0;
@@ -4850,7 +4849,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-6-deepblue li > .item-box:hover {
+    .tree-area .rank-6-deepblue li>.item-box:hover {
         background: #f7f7f7;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4859,7 +4858,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-6-deepblue li > .item-box:hover > .cir-box {
+    .tree-area .rank-6-deepblue li>.item-box:hover>.cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4869,11 +4868,11 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-6-deepblue li > .item-box:hover > h2, .tree-area .rank-6-deepblue li > .item-box:hover > p {
+    .tree-area .rank-6-deepblue li>.item-box:hover>h2, .tree-area .rank-6-deepblue li>.item-box:hover>p {
         color: #64A0D3
     }
 
-    .tree-area .rank-6-deepblue li > .item-box:hover > .arr {
+    .tree-area .rank-6-deepblue li>.item-box:hover>.arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4886,7 +4885,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-6-deepblue li > .item-box:hover > .arr > line {
+    .tree-area .rank-6-deepblue li>.item-box:hover>.arr>line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4897,12 +4896,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-6-deepblue li > .item-box {
+    .tree-area .rank-6-deepblue li>.item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-6-deepblue li > .item-box.now {
+.tree-area .rank-6-deepblue li>.item-box.now {
     background: #64A0D3;
     margin-bottom: 5px;
     transition: all .3s;
@@ -4912,7 +4911,7 @@ body {
     -webkit-transition: all .3s
 }
 
-.tree-area .rank-6-deepblue li > .item-box.now > .cir-box {
+.tree-area .rank-6-deepblue li>.item-box.now>.cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4922,11 +4921,11 @@ body {
     color: #64A0D3
 }
 
-.tree-area .rank-6-deepblue li > .item-box.now > h2, .tree-area .rank-6-deepblue li > .item-box.now > p {
+.tree-area .rank-6-deepblue li>.item-box.now>h2, .tree-area .rank-6-deepblue li>.item-box.now>p {
     color: #FFF
 }
 
-.tree-area .rank-6-deepblue li > .item-box.now > .arr {
+.tree-area .rank-6-deepblue li>.item-box.now>.arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4939,7 +4938,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-6-deepblue li > .item-box.now > .arr > line {
+.tree-area .rank-6-deepblue li>.item-box.now>.arr>line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -4948,7 +4947,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-6-deepblue li > .item-box > .cir-box {
+.tree-area .rank-6-deepblue li>.item-box>.cir-box {
     background: #64A0D3;
     color: #FFF
 }
@@ -4957,7 +4956,7 @@ body {
     display: none
 }
 
-.tree-area .rank-7-purple li > .item-box {
+.tree-area .rank-7-purple li>.item-box {
     background: #f7f7f7;
     position: relative;
     margin-bottom: 0;
@@ -4966,7 +4965,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-7-purple li > .item-box:hover {
+    .tree-area .rank-7-purple li>.item-box:hover {
         background: #B991E2;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -4975,7 +4974,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-7-purple li > .item-box:hover > .cir-box {
+    .tree-area .rank-7-purple li>.item-box:hover>.cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -4985,11 +4984,11 @@ body {
         color: #B991E2
     }
 
-    .tree-area .rank-7-purple li > .item-box:hover > h2, .tree-area .rank-7-purple li > .item-box:hover > p {
+    .tree-area .rank-7-purple li>.item-box:hover>h2, .tree-area .rank-7-purple li>.item-box:hover>p {
         color: #FFF
     }
 
-    .tree-area .rank-7-purple li > .item-box:hover > .arr {
+    .tree-area .rank-7-purple li>.item-box:hover>.arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -5002,7 +5001,7 @@ body {
         transform: rotate(-90deg)
     }
 
-    .tree-area .rank-7-purple li > .item-box:hover > .arr > line {
+    .tree-area .rank-7-purple li>.item-box:hover>.arr>line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -5013,12 +5012,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-7-purple li > .item-box {
+    .tree-area .rank-7-purple li>.item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-7-purple li > .item-box > .cir-box {
+.tree-area .rank-7-purple li>.item-box>.cir-box {
     background: #B991E2;
     color: #FFF
 }
@@ -5027,7 +5026,7 @@ body {
 
 /* 種階層顏色補上css */
 
-.tree-area .rank-7-purple li > .item-box.now {
+.tree-area .rank-7-purple li>.item-box.now {
     background: #B991E2;
     margin-bottom: 5px;
     transition: all .3s;
@@ -5037,7 +5036,7 @@ body {
     -webkit-transition: all .3s
 }
 
-.tree-area .rank-7-purple li > .item-box.now > .cir-box {
+.tree-area .rank-7-purple li>.item-box.now>.cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -5047,11 +5046,11 @@ body {
     color: #B991E2
 }
 
-.tree-area .rank-7-purple li > .item-box.now > h2, .tree-area .rank-7-purple li > .item-box.now > p {
+.tree-area .rank-7-purple li>.item-box.now>h2, .tree-area .rank-7-purple li>.item-box.now>p {
     color: #FFF
 }
 
-.tree-area .rank-7-purple li > .item-box.now > .arr {
+.tree-area .rank-7-purple li>.item-box.now>.arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -5064,7 +5063,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-7-purple li > .item-box.now > .arr > line {
+.tree-area .rank-7-purple li>.item-box.now>.arr>line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -5078,7 +5077,7 @@ body {
     margin-left: 10;
 }
 
-.tree-area .rank-second-gray > li > .item-box {
+.tree-area .rank-second-gray>li>.item-box {
     background: #F7F7F7;
     position: relative;
     padding: 15px 35px 15px 13px;
@@ -5086,7 +5085,7 @@ body {
 }
 
 @media only screen and (min-width: 1000px) {
-    .tree-area .rank-second-gray > li > .item-box:hover {
+    .tree-area .rank-second-gray>li>.item-box:hover {
         background: #555;
         transition: all .3s;
         -moz-transition: all .3s;
@@ -5095,7 +5094,7 @@ body {
         -webkit-transition: all .3s
     }
 
-    .tree-area .rank-second-gray > li > .item-box:hover > .cir-box {
+    .tree-area .rank-second-gray>li>.item-box:hover>.cir-box {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -5105,11 +5104,11 @@ body {
         color: #555
     }
 
-    .tree-area .rank-second-gray > li > .item-box:hover > h2, .tree-area .rank-second-gray > li > .item-box:hover > p {
+    .tree-area .rank-second-gray>li>.item-box:hover>h2, .tree-area .rank-second-gray>li>.item-box:hover>p {
         color: #FFF
     }
 
-    .tree-area .rank-second-gray > li > .item-box:hover > .arr {
+    .tree-area .rank-second-gray>li>.item-box:hover>.arr {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -5122,7 +5121,7 @@ body {
         transform: rotate(180deg)
     }
 
-    .tree-area .rank-second-gray > li > .item-box:hover > .arr > line {
+    .tree-area .rank-second-gray>li>.item-box:hover>.arr>line {
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -5133,12 +5132,12 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .tree-area .rank-second-gray > li > .item-box {
+    .tree-area .rank-second-gray>li>.item-box {
         padding: 8px 35px 8px 13px
     }
 }
 
-.tree-area .rank-second-gray > li > .item-box.now {
+.tree-area .rank-second-gray>li>.item-box.now {
     background: #555;
     transition: all .3s;
     -moz-transition: all .3s;
@@ -5148,7 +5147,7 @@ body {
     margin-bottom: 5px
 }
 
-.tree-area .rank-second-gray > li > .item-box.now > .cir-box {
+.tree-area .rank-second-gray>li>.item-box.now>.cir-box {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -5158,11 +5157,11 @@ body {
     color: #555;
 }
 
-.tree-area .rank-second-gray > li > .item-box.now > h2, .tree-area .rank-second-gray > li > .item-box.now > p {
+.tree-area .rank-second-gray>li>.item-box.now>h2, .tree-area .rank-second-gray>li>.item-box.now>p {
     color: #FFF
 }
 
-.tree-area .rank-second-gray > li > .item-box.now > .arr {
+.tree-area .rank-second-gray>li>.item-box.now>.arr {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -5175,7 +5174,7 @@ body {
     transform: rotate(180deg)
 }
 
-.tree-area .rank-second-gray > li > .item-box.now > .arr > line {
+.tree-area .rank-second-gray>li>.item-box.now>.arr>line {
     transition: all .3s;
     -moz-transition: all .3s;
     -o-transition: all .3s;
@@ -5184,7 +5183,7 @@ body {
     stroke: #FFF
 }
 
-.tree-area .rank-second-gray > li > .item-box > .cir-box {
+.tree-area .rank-second-gray>li>.item-box>.cir-box {
     background: #555;
     color: #FFF;
     padding: 0px 5px;
@@ -9377,7 +9376,7 @@ body {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.06);
     background: #FFF;
     border-bottom: 0;
-    display:flex;
+    display: flex;
     flex-direction: column;
 }
 
@@ -9979,6 +9978,18 @@ body {
     animation: pie0 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie1 {
+    -moz-animation: pie1 0.5s 0.3s linear forwards;
+    -webkit-animation: pie1 0.5s 0.3s linear forwards;
+    animation: pie1 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie2 {
+    -moz-animation: pie2 0.5s 0.3s linear forwards;
+    -webkit-animation: pie2 0.5s 0.3s linear forwards;
+    animation: pie2 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie3 {
     -moz-animation: pie3 0.5s 0.3s linear forwards;
     -webkit-animation: pie3 0.5s 0.3s linear forwards;
@@ -9997,10 +10008,46 @@ body {
     animation: pie5 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie6 {
+    -moz-animation: pie6 0.5s 0.3s linear forwards;
+    -webkit-animation: pie6 0.5s 0.3s linear forwards;
+    animation: pie6 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie7 {
+    -moz-animation: pie7 0.5s 0.3s linear forwards;
+    -webkit-animation: pie7 0.5s 0.3s linear forwards;
+    animation: pie7 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie8 {
+    -moz-animation: pie8 0.5s 0.3s linear forwards;
+    -webkit-animation: pie8 0.5s 0.3s linear forwards;
+    animation: pie8 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie9 {
+    -moz-animation: pie9 0.5s 0.3s linear forwards;
+    -webkit-animation: pie9 0.5s 0.3s linear forwards;
+    animation: pie9 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie10 {
     -moz-animation: pie10 0.5s 0.3s linear forwards;
     -webkit-animation: pie10 0.5s 0.3s linear forwards;
     animation: pie10 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie11 {
+    -moz-animation: pie11 0.5s 0.3s linear forwards;
+    -webkit-animation: pie11 0.5s 0.3s linear forwards;
+    animation: pie11 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie12 {
+    -moz-animation: pie12 0.5s 0.3s linear forwards;
+    -webkit-animation: pie12 0.5s 0.3s linear forwards;
+    animation: pie12 0.5s 0.3s linear forwards
 }
 
 .chart-box .boxarea-1.vivi li svg circle.pie13 {
@@ -10009,10 +10056,40 @@ body {
     animation: pie13 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie14 {
+    -moz-animation: pie14 0.5s 0.3s linear forwards;
+    -webkit-animation: pie14 0.5s 0.3s linear forwards;
+    animation: pie14 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie15 {
     -moz-animation: pie15 0.5s 0.3s linear forwards;
     -webkit-animation: pie15 0.5s 0.3s linear forwards;
     animation: pie15 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie16 {
+    -moz-animation: pie16 0.5s 0.3s linear forwards;
+    -webkit-animation: pie16 0.5s 0.3s linear forwards;
+    animation: pie16 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie17 {
+    -moz-animation: pie17 0.5s 0.3s linear forwards;
+    -webkit-animation: pie17 0.5s 0.3s linear forwards;
+    animation: pie17 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie18 {
+    -moz-animation: pie18 0.5s 0.3s linear forwards;
+    -webkit-animation: pie18 0.5s 0.3s linear forwards;
+    animation: pie18 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie19 {
+    -moz-animation: pie19 0.5s 0.3s linear forwards;
+    -webkit-animation: pie19 0.5s 0.3s linear forwards;
+    animation: pie19 0.5s 0.3s linear forwards
 }
 
 .chart-box .boxarea-1.vivi li svg circle.pie20 {
@@ -10027,10 +10104,52 @@ body {
     animation: pie21 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie22 {
+    -moz-animation: pie22 0.5s 0.3s linear forwards;
+    -webkit-animation: pie22 0.5s 0.3s linear forwards;
+    animation: pie22 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie23 {
+    -moz-animation: pie23 0.5s 0.3s linear forwards;
+    -webkit-animation: pie23 0.5s 0.3s linear forwards;
+    animation: pie23 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie24 {
+    -moz-animation: pie24 0.5s 0.3s linear forwards;
+    -webkit-animation: pie24 0.5s 0.3s linear forwards;
+    animation: pie24 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie25 {
     -moz-animation: pie25 0.5s 0.3s linear forwards;
     -webkit-animation: pie25 0.5s 0.3s linear forwards;
     animation: pie25 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie26 {
+    -moz-animation: pie26 0.5s 0.3s linear forwards;
+    -webkit-animation: pie26 0.5s 0.3s linear forwards;
+    animation: pie26 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie27 {
+    -moz-animation: pie27 0.5s 0.3s linear forwards;
+    -webkit-animation: pie27 0.5s 0.3s linear forwards;
+    animation: pie27 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie28 {
+    -moz-animation: pie28 0.5s 0.3s linear forwards;
+    -webkit-animation: pie28 0.5s 0.3s linear forwards;
+    animation: pie28 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie29 {
+    -moz-animation: pie29 0.5s 0.3s linear forwards;
+    -webkit-animation: pie29 0.5s 0.3s linear forwards;
+    animation: pie29 0.5s 0.3s linear forwards
 }
 
 .chart-box .boxarea-1.vivi li svg circle.pie30 {
@@ -10039,10 +10158,28 @@ body {
     animation: pie30 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie31 {
+    -moz-animation: pie31 0.5s 0.3s linear forwards;
+    -webkit-animation: pie31 0.5s 0.3s linear forwards;
+    animation: pie31 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie32 {
     -moz-animation: pie32 0.5s 0.3s linear forwards;
     -webkit-animation: pie32 0.5s 0.3s linear forwards;
     animation: pie32 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie33 {
+    -moz-animation: pie33 0.5s 0.3s linear forwards;
+    -webkit-animation: pie33 0.5s 0.3s linear forwards;
+    animation: pie33 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie34 {
+    -moz-animation: pie34 0.5s 0.3s linear forwards;
+    -webkit-animation: pie34 0.5s 0.3s linear forwards;
+    animation: pie34 0.5s 0.3s linear forwards
 }
 
 .chart-box .boxarea-1.vivi li svg circle.pie35 {
@@ -10051,10 +10188,46 @@ body {
     animation: pie35 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie36 {
+    -moz-animation: pie36 0.5s 0.3s linear forwards;
+    -webkit-animation: pie36 0.5s 0.3s linear forwards;
+    animation: pie36 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie37 {
+    -moz-animation: pie37 0.5s 0.3s linear forwards;
+    -webkit-animation: pie37 0.5s 0.3s linear forwards;
+    animation: pie37 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie38 {
+    -moz-animation: pie38 0.5s 0.3s linear forwards;
+    -webkit-animation: pie38 0.5s 0.3s linear forwards;
+    animation: pie38 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie39 {
+    -moz-animation: pie39 0.5s 0.3s linear forwards;
+    -webkit-animation: pie39 0.5s 0.3s linear forwards;
+    animation: pie39 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie40 {
     -moz-animation: pie40 0.5s 0.3s linear forwards;
     -webkit-animation: pie40 0.5s 0.3s linear forwards;
     animation: pie40 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie41 {
+    -moz-animation: pie41 0.5s 0.3s linear forwards;
+    -webkit-animation: pie41 0.5s 0.3s linear forwards;
+    animation: pie41 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie42 {
+    -moz-animation: pie42 0.5s 0.3s linear forwards;
+    -webkit-animation: pie42 0.5s 0.3s linear forwards;
+    animation: pie42 0.5s 0.3s linear forwards
 }
 
 .chart-box .boxarea-1.vivi li svg circle.pie43 {
@@ -10063,10 +10236,40 @@ body {
     animation: pie43 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie44 {
+    -moz-animation: pie44 0.5s 0.3s linear forwards;
+    -webkit-animation: pie44 0.5s 0.3s linear forwards;
+    animation: pie44 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie45 {
     -moz-animation: pie45 0.5s 0.3s linear forwards;
     -webkit-animation: pie45 0.5s 0.3s linear forwards;
     animation: pie45 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie46 {
+    -moz-animation: pie46 0.5s 0.3s linear forwards;
+    -webkit-animation: pie46 0.5s 0.3s linear forwards;
+    animation: pie46 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie47 {
+    -moz-animation: pie47 0.5s 0.3s linear forwards;
+    -webkit-animation: pie47 0.5s 0.3s linear forwards;
+    animation: pie47 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie48 {
+    -moz-animation: pie48 0.5s 0.3s linear forwards;
+    -webkit-animation: pie48 0.5s 0.3s linear forwards;
+    animation: pie48 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie49 {
+    -moz-animation: pie49 0.5s 0.3s linear forwards;
+    -webkit-animation: pie49 0.5s 0.3s linear forwards;
+    animation: pie49 0.5s 0.3s linear forwards
 }
 
 .chart-box .boxarea-1.vivi li svg circle.pie50 {
@@ -10075,10 +10278,58 @@ body {
     animation: pie50 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie51 {
+    -moz-animation: pie51 0.5s 0.3s linear forwards;
+    -webkit-animation: pie51 0.5s 0.3s linear forwards;
+    animation: pie51 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie52 {
+    -moz-animation: pie52 0.5s 0.3s linear forwards;
+    -webkit-animation: pie52 0.5s 0.3s linear forwards;
+    animation: pie52 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie53 {
+    -moz-animation: pie53 0.5s 0.3s linear forwards;
+    -webkit-animation: pie53 0.5s 0.3s linear forwards;
+    animation: pie53 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie54 {
+    -moz-animation: pie54 0.5s 0.3s linear forwards;
+    -webkit-animation: pie54 0.5s 0.3s linear forwards;
+    animation: pie54 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie55 {
     -moz-animation: pie55 0.5s 0.3s linear forwards;
     -webkit-animation: pie55 0.5s 0.3s linear forwards;
     animation: pie55 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie56 {
+    -moz-animation: pie56 0.5s 0.3s linear forwards;
+    -webkit-animation: pie56 0.5s 0.3s linear forwards;
+    animation: pie56 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie57 {
+    -moz-animation: pie57 0.5s 0.3s linear forwards;
+    -webkit-animation: pie57 0.5s 0.3s linear forwards;
+    animation: pie57 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie58 {
+    -moz-animation: pie58 0.5s 0.3s linear forwards;
+    -webkit-animation: pie58 0.5s 0.3s linear forwards;
+    animation: pie58 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie59 {
+    -moz-animation: pie59 0.5s 0.3s linear forwards;
+    -webkit-animation: pie59 0.5s 0.3s linear forwards;
+    animation: pie59 0.5s 0.3s linear forwards
 }
 
 .chart-box .boxarea-1.vivi li svg circle.pie60 {
@@ -10087,10 +10338,58 @@ body {
     animation: pie60 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie61 {
+    -moz-animation: pie61 0.5s 0.3s linear forwards;
+    -webkit-animation: pie61 0.5s 0.3s linear forwards;
+    animation: pie61 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie62 {
+    -moz-animation: pie62 0.5s 0.3s linear forwards;
+    -webkit-animation: pie62 0.5s 0.3s linear forwards;
+    animation: pie62 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie63 {
+    -moz-animation: pie63 0.5s 0.3s linear forwards;
+    -webkit-animation: pie63 0.5s 0.3s linear forwards;
+    animation: pie63 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie64 {
+    -moz-animation: pie64 0.5s 0.3s linear forwards;
+    -webkit-animation: pie64 0.5s 0.3s linear forwards;
+    animation: pie64 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie65 {
     -moz-animation: pie65 0.5s 0.3s linear forwards;
     -webkit-animation: pie65 0.5s 0.3s linear forwards;
     animation: pie65 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie66 {
+    -moz-animation: pie66 0.5s 0.3s linear forwards;
+    -webkit-animation: pie66 0.5s 0.3s linear forwards;
+    animation: pie66 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie67 {
+    -moz-animation: pie67 0.5s 0.3s linear forwards;
+    -webkit-animation: pie67 0.5s 0.3s linear forwards;
+    animation: pie67 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie68 {
+    -moz-animation: pie68 0.5s 0.3s linear forwards;
+    -webkit-animation: pie68 0.5s 0.3s linear forwards;
+    animation: pie68 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie69 {
+    -moz-animation: pie69 0.5s 0.3s linear forwards;
+    -webkit-animation: pie69 0.5s 0.3s linear forwards;
+    animation: pie69 0.5s 0.3s linear forwards
 }
 
 .chart-box .boxarea-1.vivi li svg circle.pie70 {
@@ -10099,10 +10398,58 @@ body {
     animation: pie70 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie71 {
+    -moz-animation: pie71 0.5s 0.3s linear forwards;
+    -webkit-animation: pie71 0.5s 0.3s linear forwards;
+    animation: pie71 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie72 {
+    -moz-animation: pie72 0.5s 0.3s linear forwards;
+    -webkit-animation: pie72 0.5s 0.3s linear forwards;
+    animation: pie72 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie73 {
+    -moz-animation: pie73 0.5s 0.3s linear forwards;
+    -webkit-animation: pie73 0.5s 0.3s linear forwards;
+    animation: pie73 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie74 {
+    -moz-animation: pie74 0.5s 0.3s linear forwards;
+    -webkit-animation: pie74 0.5s 0.3s linear forwards;
+    animation: pie74 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie75 {
     -moz-animation: pie75 0.5s 0.3s linear forwards;
     -webkit-animation: pie75 0.5s 0.3s linear forwards;
     animation: pie75 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie76 {
+    -moz-animation: pie76 0.5s 0.3s linear forwards;
+    -webkit-animation: pie76 0.5s 0.3s linear forwards;
+    animation: pie76 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie77 {
+    -moz-animation: pie77 0.5s 0.3s linear forwards;
+    -webkit-animation: pie77 0.5s 0.3s linear forwards;
+    animation: pie77 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie78 {
+    -moz-animation: pie78 0.5s 0.3s linear forwards;
+    -webkit-animation: pie78 0.5s 0.3s linear forwards;
+    animation: pie78 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie79 {
+    -moz-animation: pie79 0.5s 0.3s linear forwards;
+    -webkit-animation: pie79 0.5s 0.3s linear forwards;
+    animation: pie79 0.5s 0.3s linear forwards
 }
 
 .chart-box .boxarea-1.vivi li svg circle.pie80 {
@@ -10111,29 +10458,126 @@ body {
     animation: pie80 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie81 {
+    -moz-animation: pie81 0.5s 0.3s linear forwards;
+    -webkit-animation: pie81 0.5s 0.3s linear forwards;
+    animation: pie81 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie82 {
+    -moz-animation: pie82 0.5s 0.3s linear forwards;
+    -webkit-animation: pie82 0.5s 0.3s linear forwards;
+    animation: pie82 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie83 {
+    -moz-animation: pie83 0.5s 0.3s linear forwards;
+    -webkit-animation: pie83 0.5s 0.3s linear forwards;
+    animation: pie83 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie84 {
+    -moz-animation: pie84 0.5s 0.3s linear forwards;
+    -webkit-animation: pie84 0.5s 0.3s linear forwards;
+    animation: pie84 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie85 {
     -moz-animation: pie85 0.5s 0.3s linear forwards;
     -webkit-animation: pie85 0.5s 0.3s linear forwards;
     animation: pie85 0.5s 0.3s linear forwards
 }
 
+.chart-box .boxarea-1.vivi li svg circle.pie86 {
+    -moz-animation: pie86 0.5s 0.3s linear forwards;
+    -webkit-animation: pie86 0.5s 0.3s linear forwards;
+    animation: pie86 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie87 {
+    -moz-animation: pie87 0.5s 0.3s linear forwards;
+    -webkit-animation: pie87 0.5s 0.3s linear forwards;
+    animation: pie87 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie88 {
+    -moz-animation: pie88 0.5s 0.3s linear forwards;
+    -webkit-animation: pie88 0.5s 0.3s linear forwards;
+    animation: pie88 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie89 {
+    -moz-animation: pie89 0.5s 0.3s linear forwards;
+    -webkit-animation: pie89 0.5s 0.3s linear forwards;
+    animation: pie89 0.5s 0.3s linear forwards
+}
+
 .chart-box .boxarea-1.vivi li svg circle.pie90 {
-    -moz-animation: pie70 0.5s 0.3s linear forwards;
-    -webkit-animation: pie70 0.5s 0.3s linear forwards;
-    animation: pie70 0.5s 0.3s linear forwards
+    -moz-animation: pie90 0.5s 0.3s linear forwards;
+    -webkit-animation: pie90 0.5s 0.3s linear forwards;
+    animation: pie90 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie91 {
+    -moz-animation: pie91 0.5s 0.3s linear forwards;
+    -webkit-animation: pie91 0.5s 0.3s linear forwards;
+    animation: pie91 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie92 {
+    -moz-animation: pie92 0.5s 0.3s linear forwards;
+    -webkit-animation: pie92 0.5s 0.3s linear forwards;
+    animation: pie92 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie93 {
+    -moz-animation: pie93 0.5s 0.3s linear forwards;
+    -webkit-animation: pie93 0.5s 0.3s linear forwards;
+    animation: pie93 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie94 {
+    -moz-animation: pie94 0.5s 0.3s linear forwards;
+    -webkit-animation: pie94 0.5s 0.3s linear forwards;
+    animation: pie94 0.5s 0.3s linear forwards
 }
 
 .chart-box .boxarea-1.vivi li svg circle.pie95 {
-    -moz-animation: pie75 0.5s 0.3s linear forwards;
-    -webkit-animation: pie75 0.5s 0.3s linear forwards;
-    animation: pie75 0.5s 0.3s linear forwards
+    -moz-animation: pie95 0.5s 0.3s linear forwards;
+    -webkit-animation: pie95 0.5s 0.3s linear forwards;
+    animation: pie95 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie96 {
+    -moz-animation: pie96 0.5s 0.3s linear forwards;
+    -webkit-animation: pie96 0.5s 0.3s linear forwards;
+    animation: pie96 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie97 {
+    -moz-animation: pie97 0.5s 0.3s linear forwards;
+    -webkit-animation: pie97 0.5s 0.3s linear forwards;
+    animation: pie97 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie98 {
+    -moz-animation: pie98 0.5s 0.3s linear forwards;
+    -webkit-animation: pie98 0.5s 0.3s linear forwards;
+    animation: pie98 0.5s 0.3s linear forwards
+}
+
+.chart-box .boxarea-1.vivi li svg circle.pie99 {
+    -moz-animation: pie99 0.5s 0.3s linear forwards;
+    -webkit-animation: pie99 0.5s 0.3s linear forwards;
+    animation: pie99 0.5s 0.3s linear forwards
 }
 
 .chart-box .boxarea-1.vivi li svg circle.pie100 {
-    -moz-animation: pie80 0.5s 0.3s linear forwards;
-    -webkit-animation: pie80 0.5s 0.3s linear forwards;
-    animation: pie80 0.5s 0.3s linear forwards
+    -moz-animation: pie100 0.5s 0.3s linear forwards;
+    -webkit-animation: pie100 0.5s 0.3s linear forwards;
+    animation: pie100 0.5s 0.3s linear forwards
 }
+
 
 .chart-box .special-specise {
     display: flex;
@@ -12170,6 +12614,86 @@ body {
     }
 }
 
+@-webkit-keyframes pie1 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 4.4 440
+    }
+}
+
+@-moz-keyframes pie1 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 4.4 440
+    }
+}
+
+@-ms-keyframes pie1 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 4.4 440
+    }
+}
+
+@keyframes pie1 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 4.4 440
+    }
+}
+
+@-webkit-keyframes pie2 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 8.8 440
+    }
+}
+
+@-moz-keyframes pie2 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 8.8 440
+    }
+}
+
+@-ms-keyframes pie2 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 8.8 440
+    }
+}
+
+@keyframes pie2 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 8.8 440
+    }
+}
+
 @-webkit-keyframes pie3 {
     0% {
         stroke-dasharray: 0 440
@@ -12216,7 +12740,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 20.1 440
+        stroke-dasharray: 17.6 440
     }
 }
 
@@ -12226,7 +12750,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 20.1 440
+        stroke-dasharray: 17.6 440
     }
 }
 
@@ -12236,7 +12760,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 20.1 440
+        stroke-dasharray: 17.6 440
     }
 }
 
@@ -12246,7 +12770,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 20.1 440
+        stroke-dasharray: 17.6 440
     }
 }
 
@@ -12256,7 +12780,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 22 440
+        stroke-dasharray: 22.0 440
     }
 }
 
@@ -12266,7 +12790,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 22 440
+        stroke-dasharray: 22.0 440
     }
 }
 
@@ -12276,7 +12800,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 22 440
+        stroke-dasharray: 22.0 440
     }
 }
 
@@ -12286,7 +12810,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 22 440
+        stroke-dasharray: 22.0 440
+    }
+}
+
+@-webkit-keyframes pie6 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 26.4 440
+    }
+}
+
+@-moz-keyframes pie6 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 26.4 440
+    }
+}
+
+@-ms-keyframes pie6 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 26.4 440
+    }
+}
+
+@keyframes pie6 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 26.4 440
+    }
+}
+
+@-webkit-keyframes pie7 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 30.8 440
+    }
+}
+
+@-moz-keyframes pie7 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 30.8 440
+    }
+}
+
+@-ms-keyframes pie7 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 30.8 440
+    }
+}
+
+@keyframes pie7 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 30.8 440
+    }
+}
+
+@-webkit-keyframes pie8 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 35.2 440
+    }
+}
+
+@-moz-keyframes pie8 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 35.2 440
+    }
+}
+
+@-ms-keyframes pie8 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 35.2 440
+    }
+}
+
+@keyframes pie8 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 35.2 440
+    }
+}
+
+@-webkit-keyframes pie9 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 39.6 440
+    }
+}
+
+@-moz-keyframes pie9 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 39.6 440
+    }
+}
+
+@-ms-keyframes pie9 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 39.6 440
+    }
+}
+
+@keyframes pie9 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 39.6 440
     }
 }
 
@@ -12296,7 +12980,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 44 440
+        stroke-dasharray: 44.0 440
     }
 }
 
@@ -12306,7 +12990,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 44 440
+        stroke-dasharray: 44.0 440
     }
 }
 
@@ -12316,7 +13000,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 44 440
+        stroke-dasharray: 44.0 440
     }
 }
 
@@ -12326,7 +13010,87 @@ body {
     }
 
     100% {
-        stroke-dasharray: 44 440
+        stroke-dasharray: 44.0 440
+    }
+}
+
+@-webkit-keyframes pie11 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 48.4 440
+    }
+}
+
+@-moz-keyframes pie11 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 48.4 440
+    }
+}
+
+@-ms-keyframes pie11 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 48.4 440
+    }
+}
+
+@keyframes pie11 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 48.4 440
+    }
+}
+
+@-webkit-keyframes pie12 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 52.8 440
+    }
+}
+
+@-moz-keyframes pie12 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 52.8 440
+    }
+}
+
+@-ms-keyframes pie12 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 52.8 440
+    }
+}
+
+@keyframes pie12 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 52.8 440
     }
 }
 
@@ -12370,13 +13134,53 @@ body {
     }
 }
 
+@-webkit-keyframes pie14 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 61.6 440
+    }
+}
+
+@-moz-keyframes pie14 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 61.6 440
+    }
+}
+
+@-ms-keyframes pie14 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 61.6 440
+    }
+}
+
+@keyframes pie14 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 61.6 440
+    }
+}
+
 @-webkit-keyframes pie15 {
     0% {
         stroke-dasharray: 0 440
     }
 
     100% {
-        stroke-dasharray: 66 440
+        stroke-dasharray: 66.0 440
     }
 }
 
@@ -12386,7 +13190,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 66 440
+        stroke-dasharray: 66.0 440
     }
 }
 
@@ -12396,7 +13200,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 66 440
+        stroke-dasharray: 66.0 440
     }
 }
 
@@ -12406,7 +13210,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 66 440
+        stroke-dasharray: 66.0 440
+    }
+}
+
+@-webkit-keyframes pie16 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 70.4 440
+    }
+}
+
+@-moz-keyframes pie16 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 70.4 440
+    }
+}
+
+@-ms-keyframes pie16 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 70.4 440
+    }
+}
+
+@keyframes pie16 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 70.4 440
+    }
+}
+
+@-webkit-keyframes pie17 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 74.8 440
+    }
+}
+
+@-moz-keyframes pie17 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 74.8 440
+    }
+}
+
+@-ms-keyframes pie17 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 74.8 440
+    }
+}
+
+@keyframes pie17 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 74.8 440
+    }
+}
+
+@-webkit-keyframes pie18 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 79.2 440
+    }
+}
+
+@-moz-keyframes pie18 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 79.2 440
+    }
+}
+
+@-ms-keyframes pie18 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 79.2 440
+    }
+}
+
+@keyframes pie18 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 79.2 440
+    }
+}
+
+@-webkit-keyframes pie19 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 83.6 440
+    }
+}
+
+@-moz-keyframes pie19 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 83.6 440
+    }
+}
+
+@-ms-keyframes pie19 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 83.6 440
+    }
+}
+
+@keyframes pie19 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 83.6 440
     }
 }
 
@@ -12416,7 +13380,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 88 440
+        stroke-dasharray: 88.0 440
     }
 }
 
@@ -12426,7 +13390,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 88 440
+        stroke-dasharray: 88.0 440
     }
 }
 
@@ -12436,7 +13400,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 88 440
+        stroke-dasharray: 88.0 440
     }
 }
 
@@ -12446,7 +13410,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 88 440
+        stroke-dasharray: 88.0 440
     }
 }
 
@@ -12456,7 +13420,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 95 440
+        stroke-dasharray: 92.4 440
     }
 }
 
@@ -12466,7 +13430,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 95 440
+        stroke-dasharray: 92.4 440
     }
 }
 
@@ -12476,7 +13440,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 95 440
+        stroke-dasharray: 92.4 440
     }
 }
 
@@ -12486,7 +13450,127 @@ body {
     }
 
     100% {
-        stroke-dasharray: 95 440
+        stroke-dasharray: 92.4 440
+    }
+}
+
+@-webkit-keyframes pie22 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 96.8 440
+    }
+}
+
+@-moz-keyframes pie22 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 96.8 440
+    }
+}
+
+@-ms-keyframes pie22 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 96.8 440
+    }
+}
+
+@keyframes pie22 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 96.8 440
+    }
+}
+
+@-webkit-keyframes pie23 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 101.2 440
+    }
+}
+
+@-moz-keyframes pie23 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 101.2 440
+    }
+}
+
+@-ms-keyframes pie23 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 101.2 440
+    }
+}
+
+@keyframes pie23 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 101.2 440
+    }
+}
+
+@-webkit-keyframes pie24 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 105.6 440
+    }
+}
+
+@-moz-keyframes pie24 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 105.6 440
+    }
+}
+
+@-ms-keyframes pie24 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 105.6 440
+    }
+}
+
+@keyframes pie24 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 105.6 440
     }
 }
 
@@ -12496,7 +13580,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 110 440
+        stroke-dasharray: 110.0 440
     }
 }
 
@@ -12506,7 +13590,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 110 440
+        stroke-dasharray: 110.0 440
     }
 }
 
@@ -12516,7 +13600,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 110 440
+        stroke-dasharray: 110.0 440
     }
 }
 
@@ -12526,7 +13610,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 110 440
+        stroke-dasharray: 110.0 440
+    }
+}
+
+@-webkit-keyframes pie26 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 114.4 440
+    }
+}
+
+@-moz-keyframes pie26 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 114.4 440
+    }
+}
+
+@-ms-keyframes pie26 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 114.4 440
+    }
+}
+
+@keyframes pie26 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 114.4 440
+    }
+}
+
+@-webkit-keyframes pie27 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 118.8 440
+    }
+}
+
+@-moz-keyframes pie27 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 118.8 440
+    }
+}
+
+@-ms-keyframes pie27 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 118.8 440
+    }
+}
+
+@keyframes pie27 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 118.8 440
+    }
+}
+
+@-webkit-keyframes pie28 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 123.2 440
+    }
+}
+
+@-moz-keyframes pie28 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 123.2 440
+    }
+}
+
+@-ms-keyframes pie28 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 123.2 440
+    }
+}
+
+@keyframes pie28 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 123.2 440
+    }
+}
+
+@-webkit-keyframes pie29 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 127.6 440
+    }
+}
+
+@-moz-keyframes pie29 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 127.6 440
+    }
+}
+
+@-ms-keyframes pie29 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 127.6 440
+    }
+}
+
+@keyframes pie29 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 127.6 440
     }
 }
 
@@ -12536,7 +13780,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 132 440
+        stroke-dasharray: 132.0 440
     }
 }
 
@@ -12546,7 +13790,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 132 440
+        stroke-dasharray: 132.0 440
     }
 }
 
@@ -12556,7 +13800,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 132 440
+        stroke-dasharray: 132.0 440
     }
 }
 
@@ -12566,7 +13810,47 @@ body {
     }
 
     100% {
-        stroke-dasharray: 132 440
+        stroke-dasharray: 132.0 440
+    }
+}
+
+@-webkit-keyframes pie31 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 136.4 440
+    }
+}
+
+@-moz-keyframes pie31 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 136.4 440
+    }
+}
+
+@-ms-keyframes pie31 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 136.4 440
+    }
+}
+
+@keyframes pie31 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 136.4 440
     }
 }
 
@@ -12576,7 +13860,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 141 440
+        stroke-dasharray: 140.8 440
     }
 }
 
@@ -12586,7 +13870,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 141 440
+        stroke-dasharray: 140.8 440
     }
 }
 
@@ -12596,7 +13880,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 141 440
+        stroke-dasharray: 140.8 440
     }
 }
 
@@ -12606,7 +13890,87 @@ body {
     }
 
     100% {
-        stroke-dasharray: 141 440
+        stroke-dasharray: 140.8 440
+    }
+}
+
+@-webkit-keyframes pie33 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 145.2 440
+    }
+}
+
+@-moz-keyframes pie33 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 145.2 440
+    }
+}
+
+@-ms-keyframes pie33 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 145.2 440
+    }
+}
+
+@keyframes pie33 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 145.2 440
+    }
+}
+
+@-webkit-keyframes pie34 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 149.6 440
+    }
+}
+
+@-moz-keyframes pie34 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 149.6 440
+    }
+}
+
+@-ms-keyframes pie34 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 149.6 440
+    }
+}
+
+@keyframes pie34 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 149.6 440
     }
 }
 
@@ -12616,7 +13980,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 154 440
+        stroke-dasharray: 154.0 440
     }
 }
 
@@ -12626,7 +13990,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 154 440
+        stroke-dasharray: 154.0 440
     }
 }
 
@@ -12636,7 +14000,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 154 440
+        stroke-dasharray: 154.0 440
     }
 }
 
@@ -12646,7 +14010,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 154 440
+        stroke-dasharray: 154.0 440
+    }
+}
+
+@-webkit-keyframes pie36 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 158.4 440
+    }
+}
+
+@-moz-keyframes pie36 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 158.4 440
+    }
+}
+
+@-ms-keyframes pie36 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 158.4 440
+    }
+}
+
+@keyframes pie36 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 158.4 440
+    }
+}
+
+@-webkit-keyframes pie37 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 162.8 440
+    }
+}
+
+@-moz-keyframes pie37 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 162.8 440
+    }
+}
+
+@-ms-keyframes pie37 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 162.8 440
+    }
+}
+
+@keyframes pie37 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 162.8 440
+    }
+}
+
+@-webkit-keyframes pie38 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 167.2 440
+    }
+}
+
+@-moz-keyframes pie38 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 167.2 440
+    }
+}
+
+@-ms-keyframes pie38 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 167.2 440
+    }
+}
+
+@keyframes pie38 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 167.2 440
+    }
+}
+
+@-webkit-keyframes pie39 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 171.6 440
+    }
+}
+
+@-moz-keyframes pie39 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 171.6 440
+    }
+}
+
+@-ms-keyframes pie39 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 171.6 440
+    }
+}
+
+@keyframes pie39 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 171.6 440
     }
 }
 
@@ -12656,7 +14180,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 176 440
+        stroke-dasharray: 176.0 440
     }
 }
 
@@ -12666,7 +14190,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 176 440
+        stroke-dasharray: 176.0 440
     }
 }
 
@@ -12676,7 +14200,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 176 440
+        stroke-dasharray: 176.0 440
     }
 }
 
@@ -12686,7 +14210,87 @@ body {
     }
 
     100% {
-        stroke-dasharray: 176 440
+        stroke-dasharray: 176.0 440
+    }
+}
+
+@-webkit-keyframes pie41 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 180.4 440
+    }
+}
+
+@-moz-keyframes pie41 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 180.4 440
+    }
+}
+
+@-ms-keyframes pie41 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 180.4 440
+    }
+}
+
+@keyframes pie41 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 180.4 440
+    }
+}
+
+@-webkit-keyframes pie42 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 184.8 440
+    }
+}
+
+@-moz-keyframes pie42 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 184.8 440
+    }
+}
+
+@-ms-keyframes pie42 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 184.8 440
+    }
+}
+
+@keyframes pie42 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 184.8 440
     }
 }
 
@@ -12696,7 +14300,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 190 440
+        stroke-dasharray: 189.2 440
     }
 }
 
@@ -12706,7 +14310,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 190 440
+        stroke-dasharray: 189.2 440
     }
 }
 
@@ -12716,7 +14320,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 190 440
+        stroke-dasharray: 189.2 440
     }
 }
 
@@ -12726,7 +14330,47 @@ body {
     }
 
     100% {
-        stroke-dasharray: 190 440
+        stroke-dasharray: 189.2 440
+    }
+}
+
+@-webkit-keyframes pie44 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 193.6 440
+    }
+}
+
+@-moz-keyframes pie44 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 193.6 440
+    }
+}
+
+@-ms-keyframes pie44 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 193.6 440
+    }
+}
+
+@keyframes pie44 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 193.6 440
     }
 }
 
@@ -12736,7 +14380,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 198 440
+        stroke-dasharray: 198.0 440
     }
 }
 
@@ -12746,7 +14390,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 198 440
+        stroke-dasharray: 198.0 440
     }
 }
 
@@ -12756,7 +14400,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 198 440
+        stroke-dasharray: 198.0 440
     }
 }
 
@@ -12766,7 +14410,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 198 440
+        stroke-dasharray: 198.0 440
+    }
+}
+
+@-webkit-keyframes pie46 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 202.4 440
+    }
+}
+
+@-moz-keyframes pie46 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 202.4 440
+    }
+}
+
+@-ms-keyframes pie46 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 202.4 440
+    }
+}
+
+@keyframes pie46 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 202.4 440
+    }
+}
+
+@-webkit-keyframes pie47 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 206.8 440
+    }
+}
+
+@-moz-keyframes pie47 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 206.8 440
+    }
+}
+
+@-ms-keyframes pie47 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 206.8 440
+    }
+}
+
+@keyframes pie47 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 206.8 440
+    }
+}
+
+@-webkit-keyframes pie48 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 211.2 440
+    }
+}
+
+@-moz-keyframes pie48 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 211.2 440
+    }
+}
+
+@-ms-keyframes pie48 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 211.2 440
+    }
+}
+
+@keyframes pie48 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 211.2 440
+    }
+}
+
+@-webkit-keyframes pie49 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 215.6 440
+    }
+}
+
+@-moz-keyframes pie49 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 215.6 440
+    }
+}
+
+@-ms-keyframes pie49 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 215.6 440
+    }
+}
+
+@keyframes pie49 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 215.6 440
     }
 }
 
@@ -12776,7 +14580,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 220 440
+        stroke-dasharray: 220.0 440
     }
 }
 
@@ -12786,7 +14590,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 220 440
+        stroke-dasharray: 220.0 440
     }
 }
 
@@ -12796,7 +14600,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 220 440
+        stroke-dasharray: 220.0 440
     }
 }
 
@@ -12806,7 +14610,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 220 440
+        stroke-dasharray: 220.0 440
+    }
+}
+
+@-webkit-keyframes pie51 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 224.4 440
+    }
+}
+
+@-moz-keyframes pie51 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 224.4 440
+    }
+}
+
+@-ms-keyframes pie51 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 224.4 440
+    }
+}
+
+@keyframes pie51 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 224.4 440
+    }
+}
+
+@-webkit-keyframes pie52 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 228.8 440
+    }
+}
+
+@-moz-keyframes pie52 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 228.8 440
+    }
+}
+
+@-ms-keyframes pie52 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 228.8 440
+    }
+}
+
+@keyframes pie52 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 228.8 440
+    }
+}
+
+@-webkit-keyframes pie53 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 233.2 440
+    }
+}
+
+@-moz-keyframes pie53 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 233.2 440
+    }
+}
+
+@-ms-keyframes pie53 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 233.2 440
+    }
+}
+
+@keyframes pie53 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 233.2 440
+    }
+}
+
+@-webkit-keyframes pie54 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 237.6 440
+    }
+}
+
+@-moz-keyframes pie54 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 237.6 440
+    }
+}
+
+@-ms-keyframes pie54 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 237.6 440
+    }
+}
+
+@keyframes pie54 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 237.6 440
     }
 }
 
@@ -12816,7 +14780,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 242 440
+        stroke-dasharray: 242.0 440
     }
 }
 
@@ -12826,7 +14790,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 242 440
+        stroke-dasharray: 242.0 440
     }
 }
 
@@ -12836,7 +14800,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 242 440
+        stroke-dasharray: 242.0 440
     }
 }
 
@@ -12846,7 +14810,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 242 440
+        stroke-dasharray: 242.0 440
+    }
+}
+
+@-webkit-keyframes pie56 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 246.4 440
+    }
+}
+
+@-moz-keyframes pie56 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 246.4 440
+    }
+}
+
+@-ms-keyframes pie56 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 246.4 440
+    }
+}
+
+@keyframes pie56 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 246.4 440
+    }
+}
+
+@-webkit-keyframes pie57 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 250.8 440
+    }
+}
+
+@-moz-keyframes pie57 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 250.8 440
+    }
+}
+
+@-ms-keyframes pie57 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 250.8 440
+    }
+}
+
+@keyframes pie57 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 250.8 440
+    }
+}
+
+@-webkit-keyframes pie58 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 255.2 440
+    }
+}
+
+@-moz-keyframes pie58 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 255.2 440
+    }
+}
+
+@-ms-keyframes pie58 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 255.2 440
+    }
+}
+
+@keyframes pie58 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 255.2 440
+    }
+}
+
+@-webkit-keyframes pie59 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 259.6 440
+    }
+}
+
+@-moz-keyframes pie59 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 259.6 440
+    }
+}
+
+@-ms-keyframes pie59 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 259.6 440
+    }
+}
+
+@keyframes pie59 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 259.6 440
     }
 }
 
@@ -12856,7 +14980,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 264 440
+        stroke-dasharray: 264.0 440
     }
 }
 
@@ -12866,7 +14990,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 264 440
+        stroke-dasharray: 264.0 440
     }
 }
 
@@ -12876,7 +15000,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 264 440
+        stroke-dasharray: 264.0 440
     }
 }
 
@@ -12886,7 +15010,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 264 440
+        stroke-dasharray: 264.0 440
+    }
+}
+
+@-webkit-keyframes pie61 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 268.4 440
+    }
+}
+
+@-moz-keyframes pie61 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 268.4 440
+    }
+}
+
+@-ms-keyframes pie61 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 268.4 440
+    }
+}
+
+@keyframes pie61 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 268.4 440
+    }
+}
+
+@-webkit-keyframes pie62 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 272.8 440
+    }
+}
+
+@-moz-keyframes pie62 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 272.8 440
+    }
+}
+
+@-ms-keyframes pie62 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 272.8 440
+    }
+}
+
+@keyframes pie62 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 272.8 440
+    }
+}
+
+@-webkit-keyframes pie63 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 277.2 440
+    }
+}
+
+@-moz-keyframes pie63 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 277.2 440
+    }
+}
+
+@-ms-keyframes pie63 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 277.2 440
+    }
+}
+
+@keyframes pie63 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 277.2 440
+    }
+}
+
+@-webkit-keyframes pie64 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 281.6 440
+    }
+}
+
+@-moz-keyframes pie64 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 281.6 440
+    }
+}
+
+@-ms-keyframes pie64 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 281.6 440
+    }
+}
+
+@keyframes pie64 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 281.6 440
     }
 }
 
@@ -12896,7 +15180,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 286 440
+        stroke-dasharray: 286.0 440
     }
 }
 
@@ -12906,7 +15190,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 286 440
+        stroke-dasharray: 286.0 440
     }
 }
 
@@ -12916,7 +15200,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 286 440
+        stroke-dasharray: 286.0 440
     }
 }
 
@@ -12926,7 +15210,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 286 440
+        stroke-dasharray: 286.0 440
+    }
+}
+
+@-webkit-keyframes pie66 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 290.4 440
+    }
+}
+
+@-moz-keyframes pie66 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 290.4 440
+    }
+}
+
+@-ms-keyframes pie66 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 290.4 440
+    }
+}
+
+@keyframes pie66 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 290.4 440
+    }
+}
+
+@-webkit-keyframes pie67 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 294.8 440
+    }
+}
+
+@-moz-keyframes pie67 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 294.8 440
+    }
+}
+
+@-ms-keyframes pie67 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 294.8 440
+    }
+}
+
+@keyframes pie67 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 294.8 440
+    }
+}
+
+@-webkit-keyframes pie68 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 299.2 440
+    }
+}
+
+@-moz-keyframes pie68 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 299.2 440
+    }
+}
+
+@-ms-keyframes pie68 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 299.2 440
+    }
+}
+
+@keyframes pie68 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 299.2 440
+    }
+}
+
+@-webkit-keyframes pie69 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 303.6 440
+    }
+}
+
+@-moz-keyframes pie69 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 303.6 440
+    }
+}
+
+@-ms-keyframes pie69 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 303.6 440
+    }
+}
+
+@keyframes pie69 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 303.6 440
     }
 }
 
@@ -12936,7 +15380,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 308 440
+        stroke-dasharray: 308.0 440
     }
 }
 
@@ -12946,7 +15390,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 308 440
+        stroke-dasharray: 308.0 440
     }
 }
 
@@ -12956,7 +15400,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 308 440
+        stroke-dasharray: 308.0 440
     }
 }
 
@@ -12966,7 +15410,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 308 440
+        stroke-dasharray: 308.0 440
+    }
+}
+
+@-webkit-keyframes pie71 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 312.4 440
+    }
+}
+
+@-moz-keyframes pie71 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 312.4 440
+    }
+}
+
+@-ms-keyframes pie71 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 312.4 440
+    }
+}
+
+@keyframes pie71 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 312.4 440
+    }
+}
+
+@-webkit-keyframes pie72 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 316.8 440
+    }
+}
+
+@-moz-keyframes pie72 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 316.8 440
+    }
+}
+
+@-ms-keyframes pie72 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 316.8 440
+    }
+}
+
+@keyframes pie72 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 316.8 440
+    }
+}
+
+@-webkit-keyframes pie73 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 321.2 440
+    }
+}
+
+@-moz-keyframes pie73 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 321.2 440
+    }
+}
+
+@-ms-keyframes pie73 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 321.2 440
+    }
+}
+
+@keyframes pie73 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 321.2 440
+    }
+}
+
+@-webkit-keyframes pie74 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 325.6 440
+    }
+}
+
+@-moz-keyframes pie74 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 325.6 440
+    }
+}
+
+@-ms-keyframes pie74 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 325.6 440
+    }
+}
+
+@keyframes pie74 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 325.6 440
     }
 }
 
@@ -12976,7 +15580,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 330 440
+        stroke-dasharray: 330.0 440
     }
 }
 
@@ -12986,7 +15590,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 330 440
+        stroke-dasharray: 330.0 440
     }
 }
 
@@ -12996,7 +15600,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 330 440
+        stroke-dasharray: 330.0 440
     }
 }
 
@@ -13006,7 +15610,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 330 440
+        stroke-dasharray: 330.0 440
+    }
+}
+
+@-webkit-keyframes pie76 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 334.4 440
+    }
+}
+
+@-moz-keyframes pie76 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 334.4 440
+    }
+}
+
+@-ms-keyframes pie76 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 334.4 440
+    }
+}
+
+@keyframes pie76 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 334.4 440
+    }
+}
+
+@-webkit-keyframes pie77 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 338.8 440
+    }
+}
+
+@-moz-keyframes pie77 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 338.8 440
+    }
+}
+
+@-ms-keyframes pie77 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 338.8 440
+    }
+}
+
+@keyframes pie77 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 338.8 440
+    }
+}
+
+@-webkit-keyframes pie78 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 343.2 440
+    }
+}
+
+@-moz-keyframes pie78 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 343.2 440
+    }
+}
+
+@-ms-keyframes pie78 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 343.2 440
+    }
+}
+
+@keyframes pie78 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 343.2 440
+    }
+}
+
+@-webkit-keyframes pie79 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 347.6 440
+    }
+}
+
+@-moz-keyframes pie79 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 347.6 440
+    }
+}
+
+@-ms-keyframes pie79 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 347.6 440
+    }
+}
+
+@keyframes pie79 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 347.6 440
     }
 }
 
@@ -13016,7 +15780,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 352 440
+        stroke-dasharray: 352.0 440
     }
 }
 
@@ -13026,7 +15790,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 352 440
+        stroke-dasharray: 352.0 440
     }
 }
 
@@ -13036,7 +15800,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 352 440
+        stroke-dasharray: 352.0 440
     }
 }
 
@@ -13046,7 +15810,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 352 440
+        stroke-dasharray: 352.0 440
+    }
+}
+
+@-webkit-keyframes pie81 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 356.4 440
+    }
+}
+
+@-moz-keyframes pie81 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 356.4 440
+    }
+}
+
+@-ms-keyframes pie81 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 356.4 440
+    }
+}
+
+@keyframes pie81 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 356.4 440
+    }
+}
+
+@-webkit-keyframes pie82 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 360.8 440
+    }
+}
+
+@-moz-keyframes pie82 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 360.8 440
+    }
+}
+
+@-ms-keyframes pie82 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 360.8 440
+    }
+}
+
+@keyframes pie82 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 360.8 440
+    }
+}
+
+@-webkit-keyframes pie83 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 365.2 440
+    }
+}
+
+@-moz-keyframes pie83 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 365.2 440
+    }
+}
+
+@-ms-keyframes pie83 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 365.2 440
+    }
+}
+
+@keyframes pie83 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 365.2 440
+    }
+}
+
+@-webkit-keyframes pie84 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 369.6 440
+    }
+}
+
+@-moz-keyframes pie84 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 369.6 440
+    }
+}
+
+@-ms-keyframes pie84 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 369.6 440
+    }
+}
+
+@keyframes pie84 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 369.6 440
     }
 }
 
@@ -13056,7 +15980,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 374 440
+        stroke-dasharray: 374.0 440
     }
 }
 
@@ -13066,7 +15990,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 374 440
+        stroke-dasharray: 374.0 440
     }
 }
 
@@ -13076,7 +16000,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 374 440
+        stroke-dasharray: 374.0 440
     }
 }
 
@@ -13086,7 +16010,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 374 440
+        stroke-dasharray: 374.0 440
+    }
+}
+
+@-webkit-keyframes pie86 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 378.4 440
+    }
+}
+
+@-moz-keyframes pie86 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 378.4 440
+    }
+}
+
+@-ms-keyframes pie86 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 378.4 440
+    }
+}
+
+@keyframes pie86 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 378.4 440
+    }
+}
+
+@-webkit-keyframes pie87 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 382.8 440
+    }
+}
+
+@-moz-keyframes pie87 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 382.8 440
+    }
+}
+
+@-ms-keyframes pie87 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 382.8 440
+    }
+}
+
+@keyframes pie87 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 382.8 440
+    }
+}
+
+@-webkit-keyframes pie88 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 387.2 440
+    }
+}
+
+@-moz-keyframes pie88 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 387.2 440
+    }
+}
+
+@-ms-keyframes pie88 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 387.2 440
+    }
+}
+
+@keyframes pie88 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 387.2 440
+    }
+}
+
+@-webkit-keyframes pie89 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 391.6 440
+    }
+}
+
+@-moz-keyframes pie89 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 391.6 440
+    }
+}
+
+@-ms-keyframes pie89 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 391.6 440
+    }
+}
+
+@keyframes pie89 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 391.6 440
     }
 }
 
@@ -13096,7 +16180,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 396 440
+        stroke-dasharray: 396.0 440
     }
 }
 
@@ -13106,7 +16190,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 396 440
+        stroke-dasharray: 396.0 440
     }
 }
 
@@ -13116,7 +16200,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 396 440
+        stroke-dasharray: 396.0 440
     }
 }
 
@@ -13126,7 +16210,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 396 440
+        stroke-dasharray: 396.0 440
+    }
+}
+
+@-webkit-keyframes pie91 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 400.4 440
+    }
+}
+
+@-moz-keyframes pie91 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 400.4 440
+    }
+}
+
+@-ms-keyframes pie91 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 400.4 440
+    }
+}
+
+@keyframes pie91 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 400.4 440
+    }
+}
+
+@-webkit-keyframes pie92 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 404.8 440
+    }
+}
+
+@-moz-keyframes pie92 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 404.8 440
+    }
+}
+
+@-ms-keyframes pie92 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 404.8 440
+    }
+}
+
+@keyframes pie92 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 404.8 440
+    }
+}
+
+@-webkit-keyframes pie93 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 409.2 440
+    }
+}
+
+@-moz-keyframes pie93 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 409.2 440
+    }
+}
+
+@-ms-keyframes pie93 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 409.2 440
+    }
+}
+
+@keyframes pie93 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 409.2 440
+    }
+}
+
+@-webkit-keyframes pie94 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 413.6 440
+    }
+}
+
+@-moz-keyframes pie94 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 413.6 440
+    }
+}
+
+@-ms-keyframes pie94 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 413.6 440
+    }
+}
+
+@keyframes pie94 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 413.6 440
     }
 }
 
@@ -13136,7 +16380,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 418 440
+        stroke-dasharray: 418.0 440
     }
 }
 
@@ -13146,7 +16390,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 418 440
+        stroke-dasharray: 418.0 440
     }
 }
 
@@ -13156,7 +16400,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 418 440
+        stroke-dasharray: 418.0 440
     }
 }
 
@@ -13166,7 +16410,167 @@ body {
     }
 
     100% {
-        stroke-dasharray: 418 440
+        stroke-dasharray: 418.0 440
+    }
+}
+
+@-webkit-keyframes pie96 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 422.4 440
+    }
+}
+
+@-moz-keyframes pie96 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 422.4 440
+    }
+}
+
+@-ms-keyframes pie96 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 422.4 440
+    }
+}
+
+@keyframes pie96 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 422.4 440
+    }
+}
+
+@-webkit-keyframes pie97 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 426.8 440
+    }
+}
+
+@-moz-keyframes pie97 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 426.8 440
+    }
+}
+
+@-ms-keyframes pie97 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 426.8 440
+    }
+}
+
+@keyframes pie97 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 426.8 440
+    }
+}
+
+@-webkit-keyframes pie98 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 431.2 440
+    }
+}
+
+@-moz-keyframes pie98 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 431.2 440
+    }
+}
+
+@-ms-keyframes pie98 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 431.2 440
+    }
+}
+
+@keyframes pie98 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 431.2 440
+    }
+}
+
+@-webkit-keyframes pie99 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 435.6 440
+    }
+}
+
+@-moz-keyframes pie99 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 435.6 440
+    }
+}
+
+@-ms-keyframes pie99 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 435.6 440
+    }
+}
+
+@keyframes pie99 {
+    0% {
+        stroke-dasharray: 0 440
+    }
+
+    100% {
+        stroke-dasharray: 435.6 440
     }
 }
 
@@ -13176,7 +16580,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 440 440
+        stroke-dasharray: 440.0 440
     }
 }
 
@@ -13186,7 +16590,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 440 440
+        stroke-dasharray: 440.0 440
     }
 }
 
@@ -13196,7 +16600,7 @@ body {
     }
 
     100% {
-        stroke-dasharray: 440 440
+        stroke-dasharray: 440.0 440
     }
 }
 
@@ -13206,6 +16610,6 @@ body {
     }
 
     100% {
-        stroke-dasharray: 440 440
+        stroke-dasharray: 440.0 440
     }
 }

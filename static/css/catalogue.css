@@ -31,7 +31,7 @@
 		border: solid 1px #ddd;
 		font-size: 18px;
 		text-align: left;
-		line-height: 30px;
+		line-height: 40px;
 		margin-top: 2px;
 	}
 
@@ -60,10 +60,7 @@
 		padding: 0px 10px;
 		font-size: 16px;
 		height: 40px;
-		width: 460px;
-		max-width: 100%;
-
-
+		width: 100%;
 		background: white url("/static/image/ard01.svg") center right 15px no-repeat !important;
 		background-size: 16px auto !important;
 	}
@@ -81,6 +78,10 @@
 		font-size: 16px;
 	}
 
+	.select2-container--default {
+		width: 100% !important;
+		height: 40px;
+	}
 
 	.f-bold {
 		font-weight: bold !important;
