@@ -144,7 +144,8 @@ AWS_SES_REGION_NAME = env('AWS_SES_REGION_NAME', default='')
 AWS_SES_REGION_ENDPOINT = env('AWS_SES_REGION_ENDPOINT', default='')
 
 # Content Security Policy 
-CSP_DEFAULT_SRC = ("'self'", "https://www.google.com/recpatcha/", "https://www.google.com/",'http://web-admin.taicol.tw/','http://admin.taicol.tw/','https://web-admin.taicol.tw/',"http://18.183.59.124","https://fonts.googleapis.com/","https://api-staging.taicol.tw/","https://api.taicol.tw/","https://match.taibif.tw/") 
+CSP_DEFAULT_SRC = ("'self'", "https://www.google.com/recpatcha/", "https://www.google.com/",'http://web-admin.taicol.tw/','http://admin.taicol.tw/','https://web-admin.taicol.tw/',"http://18.183.59.124",
+"https://fonts.googleapis.com/","https://api-staging.taicol.tw/","https://api.taicol.tw/","https://match.taibif.tw/","https://www.google-analytics.com/") 
 CSP_STYLE_SRC = ["'self'","https://cdn.datatables.net","https://unpkg.com/","http://www.w3.org","https://cdnjs.cloudflare.com","https://fonts.googleapis.com/","https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/"]
 CSP_IMG_SRC = ("'self'","data: http://www.w3.org","data: https://data.taieol.tw/",'https://web-admin.taicol.tw/',"https://admin.taicol.tw/") 
 # CSP_MEDIA_SRC = ("'self'","https://*.s3.ap-northeast-1.amazonaws.com/","https://d3gg2vsgjlos1e.cloudfront.net/") 
@@ -154,7 +155,7 @@ CSP_SCRIPT_SRC = ["'self'", "https://cdnjs.cloudflare.com",
     "https://code.jquery.com",
     "https://cdn.datatables.net",
     "https://unpkg.com/", "data: http://www.w3.org", "https://www.google.com", "https://www.gstatic.com",
-    "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/"
+    "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/", "https://www.googletagmanager.com"
 ]
 
 CSRF_TRUSTED_ORIGINS = ['https://web-staging.taicol.tw','https://web-admin.taicol.tw', 'https://taicol.tw','https://admin.taicol.tw']
