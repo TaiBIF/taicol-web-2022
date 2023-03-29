@@ -5,7 +5,7 @@ services:
     links:
       - mysql
     depends_on:
-      - nginx
+      # - nginx
       - mysql
     container_name: taicol-react-app
     restart: always
