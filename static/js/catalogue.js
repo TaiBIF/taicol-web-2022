@@ -285,14 +285,19 @@
 		var input2 = $("<input>").attr("name", "name-select").attr("type", "hidden").val($('select[name=name-select] option:selected').val());
 		var input3 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
 		var input4 = $("<input>").attr("name", "date-select").attr("type", "hidden").val($('select[name=date-select] option:selected').val());
+		var input5 = $("<input>").attr("name", "taxon_group").attr("type", "hidden").val($('#taxon_group').select2('data')[0]['id']);
+		var input6 = $("<input>").attr("name", "taxon_group_str").attr("type", "hidden").val($('#taxon_group').select2('data')[0]['text']);
 
-		$('form#moreForm').append(input1).append(input2).append(input3).append(input4);
+
+		$('form#moreForm').append(input1).append(input2).append(input3).append(input4).append(input5).append(input6);
 		$('form#moreForm').attr('action','/download_search_results')
 		$('form#moreForm').submit()
 		$('form#moreForm input[name=keyword]').remove()
 		$('form#moreForm input[name=name-select]').remove()
 		$('form#moreForm input[name=file_format]').remove()
 		$('form#moreForm input[name=date-select]').remove()
+		$('form#moreForm input[name=taxon_group]').remove()
+		$('form#moreForm input[name=taxon_group_str]').remove()
 	}
 
 	function getData(from_url){
@@ -861,6 +866,13 @@
 		let query_str = "&keyword=" + $('input[name=keyword]').val() + '&name-select=' + $('select[name=name-select] option:selected').val() +
 					"&file_format=" + format + "&date-select=" + $('select[name=date-select] option:selected').val() +
 					"&download_email=" + $('input[name=download_email]').val()
+
+
+		if ( $('#taxon_group').select2('data').length > 0 ){
+			query_str = query_str
+				+ "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
+				"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
+		}
 
 		$.ajax({
 			url: "/send_download_request",

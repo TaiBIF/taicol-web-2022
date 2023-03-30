@@ -236,9 +236,7 @@ def get_conditioned_query(req, from_url=False):
         conserv_join = "LEFT JOIN api_conservation ac ON ac.taxon_id = at.taxon_id"
 
     # 較高分類群
-    # path_join = ''
     if higher_taxon_id := req.get('taxon_group'):
-        # path_join = "LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id"
         condition +=  f' AND att.path like "%>{higher_taxon_id}%"'
 
     if not from_url:
@@ -247,7 +245,6 @@ def get_conditioned_query(req, from_url=False):
             if facet == 'rank':
                 condition += f" AND tn.rank_id = {int(value)}"
             elif facet == 'kingdom':
-                # path_join = "LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id"
                 condition +=  f' AND att.path like "%>{value}%"'
             elif facet == 'endemic':
                 condition +=  f' AND at.is_endemic = 1'
@@ -385,7 +382,6 @@ def update_catalogue_table(request):
 
 def catalogue(request):
     response = {}
-    # print(request.POST)
     keyword = request.GET.get('keyword', '').strip()
     limit = 20
     if request.method == 'POST':
@@ -483,7 +479,7 @@ def taxon(request, taxon_id):
                     LEFT JOIN api_taxon_tree att ON at.taxon_id = att.taxon_id
                     LEFT JOIN api_conservation ac ON at.taxon_id = ac.taxon_id 
                     JOIN taxon_names tn ON at.accepted_taxon_name_id = tn.id
-                    WHERE at.taxon_id = %s AND atu.is_deleted = 0 AND atu.is_latest = 1
+                    WHERE at.taxon_id = %s AND atu.is_deleted = 0 AND atu.is_latest = 1 AND atu.status = 'accepted'
                 """
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
@@ -754,7 +750,6 @@ def taxon(request, taxon_id):
                                             ref_list += [[names.loc[r].ref, names.loc[r].reference_id, names.loc[r].publish_year, names.loc[r].r_type]]
                                 for pu in names[(names.taxon_name_id==n)&(names.ru_status=='misapplied')].per_usages:
                                     for ppu in pu:
-                                        print(ppu)
                                         if not ppu.get('is_from_published_ref', False):
                                             current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
                                             current_year = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'publish_year'].values[0]
