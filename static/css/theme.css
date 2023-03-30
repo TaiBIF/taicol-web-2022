@@ -5986,15 +5986,13 @@ body {
     }
 }
 
-@media only screen and (min-width: 1000px) {
-    .result-area .right-table table tr:nth-child(n+2):hover td {
-        transition: all .3s;
-        -moz-transition: all .3s;
-        -o-transition: all .3s;
-        -ms-transition: all .3s;
-        -webkit-transition: all .3s;
-        background-color: #F6F9FB
-    }
+.result-area .right-table table tr:nth-child(n+2):hover td {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    background-color: #F6F9FB
 }
 
 .result-area .right-table table tr:first-child td {
