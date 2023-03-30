@@ -1,3 +1,4 @@
+
     var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
     // 要有其中之一存在才送出
@@ -130,7 +131,6 @@
 	}
 
 	function updateData(page, from_url=false){
-
 	
 		let total_page = $('input[name=total_page]').val();
 		if (($('input[name=date]').val()!='')&(!isValidDate($('input[name=date]').val()))){
@@ -207,11 +207,11 @@
 						}
 					}
 					$('.table-style1').append(
-						`<tr>
+						`<tr class="open_taxon" data-href="/taxon/${results.data[i]['taxon_id']}">
 							<td>${results.data[i]['kingdom']}</td>
 							<td>${results.data[i]['taxon_group']}</td>
 							<td>${results.data[i]['rank']}</td>
-							<td><a href="/taxon/${results.data[i]['taxon_id']}" target="_blank">${results.data[i]['name']}</a></td>
+							<td>${results.data[i]['name']}</td>
 							<td>${results.data[i]['common_name_c']}</td>
 							<td>${results.data[i]['status']}</td>
 							<td>
@@ -220,6 +220,9 @@
 								</div>
 							</td>
 						</tr>`)
+					$('.open_taxon').on('click', function(){
+						window.open($(this).data('href'));
+					})
 				}
 
 				$('.page-num').remove()
@@ -474,7 +477,6 @@
 							$('select[name=mb-select-sub]').append(opt_str)
 							$('select[name=mb-select-sub]').niceSelect('update');
 						} else {
-							// 如果選擇空的則清空 但目前的判斷可能在他們完全還沒有選擇的時候就清空
 							if ($(".facet-btn").hasClass('now')){
 								$(".facet-btn").removeClass('now');
 								$('input[name=hidden-value]').val('');
@@ -485,11 +487,10 @@
 					});
 
 					$('select[name=mb-select-sub]').on('change', function(){
-
 						if ($('select[name=mb-select-sub] option:selected').text() != ''){
 							// changeFacet
 							let f_str = $('select[name=mb-select-sub] option:selected').attr('class');
-							changeFacet(f_str.split(' ')[1].split('-')[1],f_str.split(' ')[1].split('-')[2],false,1,true)
+							changeFacet(f_str.split(' ')[2].split('-')[1],f_str.split(' ')[2].split('-')[2],false,1,true)
 						} else {
 						// 如果選擇空的則清空
 							if ($(".facet-btn").hasClass('now')){
@@ -580,11 +581,11 @@
 							}
 						}
 						$('.table-style1').append(
-							`<tr>alien_type
+							`<tr class="open_taxon" data-href="/taxon/${results.data[i]['taxon_id']}">
 								<td>${results.data[i]['kingdom']}</td>
 								<td>${results.data[i]['taxon_group']}</td>
 								<td>${results.data[i]['rank']}</td>
-								<td><a href="/taxon/${results.data[i]['taxon_id']}" target="_blank">${results.data[i]['name']}</a></td>
+								<td>${results.data[i]['name']}</td>
 								<td>${results.data[i]['common_name_c']}</td>
 								<td>${results.data[i]['status']}</td>
 								<td>
@@ -593,6 +594,9 @@
 									</div>
 								</td>
 							</tr>`)
+						$('.open_taxon').on('click', function(){
+							window.open($(this).data('href'));
+						})
 					}
 
 					// 頁碼
