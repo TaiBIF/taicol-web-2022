@@ -65,10 +65,17 @@
 	padding: 0px 10px;
 	font-size: 16px;
 	height: 40px;
-	width: 100%;
+	width: 50%;
 	background: white url("/static/image/ard01.svg") center right 15px no-repeat !important;
 	background-size: 16px auto !important;
 }
+
+@media only screen and (max-width: 767px) {
+	.select2-container .select2-selection--single  {
+		width: 100%;
+	}
+}
+
 
 span.select2-selection.select2-selection--single {
 	outline: none;
