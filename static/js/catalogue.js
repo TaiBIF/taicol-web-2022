@@ -220,11 +220,13 @@
 								</div>
 							</td>
 						</tr>`)
-					$('.open_taxon').on('click', function(){
-						window.open($(this).data('href'));
-					})
-				}
 
+
+				}
+					
+				$('.open_taxon').on('click', function(){
+					window.open($(this).data('href'));
+				})
 				$('.page-num').remove()
 
 					// 頁碼
@@ -594,11 +596,11 @@
 									</div>
 								</td>
 							</tr>`)
-						$('.open_taxon').on('click', function(){
-							window.open($(this).data('href'));
-						})
-					}
 
+					}
+					$('.open_taxon').on('click', function(){
+						window.open($(this).data('href'));
+					})
 					// 頁碼
 					if (results.page.total_page > 1){  // 判斷超過一頁，有才加分頁按鈕
 						$('.scro-m').after(
