@@ -9,7 +9,7 @@ npm install webpack
 npm run build 
 ```
 
-> **NOTE** will generate `bundle.js` in `./static/react_component/` 
+> **Note** will generate `bundle.js` in `./static/react_component/` 
 
 
 4. start django & react frontend service
@@ -27,7 +27,7 @@ docker-compose up -d
 npm install
 npm run build
 ```
-> **NOTE** will generate `.next` folder
+> **Note** will generate `.next` folder
 4. start react backend service
 ```
 cd /path/to/taicol-web-2022/react-backend
@@ -43,7 +43,7 @@ sudo chown [your_user] /path/to/taicol-web-2022/react-backend/app/public/upload
 ```
 
 ## Stopping service
-> **NOTE** remember to unlink symbolic link
+> **Note** remember to unlink symbolic link
 
 ```
 docker-compose down
