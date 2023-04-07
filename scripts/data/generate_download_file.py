@@ -30,7 +30,7 @@ query = "SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, a
         JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id \
         LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id \
         LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id \
-        WHERE t.is_in_taiwan = 1 and t.is_deleted = 0"
+        WHERE t.is_deleted = 0"
 
 conn = pymysql.connect(**db_settings)
 with conn.cursor() as cursor:
@@ -98,68 +98,10 @@ for i in df.index:
 df['rank'] = df['rank'].apply(lambda x: rank_map[x])
 
 # 0 / 1 要改成 true / false
+
+
 is_list = ['is_hybrid','is_in_taiwan','is_endemic','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine']
 df[is_list] = df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
-
-# alien_type
-# for i in df.index:
-#     if i % 1000 == 0:
-#         print(i)
-#     row = df.iloc[i]
-#     aliens = []
-#     if row.alien_type:
-#         for a in json.loads(row.alien_type):
-#             # if a.get('alien_type') not in aliens:
-#             aliens.append(a.get('alien_type'))
-#     aliens = list(dict.fromkeys(aliens))
-#     df.loc[i,'alien_type'] = (',').join(aliens)
-    # # 保育資訊
-    # if row.cites_note:
-    #     if len(json.loads(row.cites_note)) > 1:
-    #         c_str = ''
-    #         for c in json.loads(row.cites_note):
-    #             c_str += f"{c['listing']},{c['name']};"
-    #         df.loc[i, 'cites_note'] = ''
-    #         df.loc[i, 'cites_note'] = c_str.rstrip(';')
-    #     else:
-    #         df.loc[i, 'cites_note'] = ''
-    # if row.iucn_note:
-    #     if len(json.loads(row.iucn_note)) > 1:
-    #         c_str = ''
-    #         for c in json.loads(row.iucn_note):
-    #             c_str += f"{c['category']},{c['name']};"
-    #         df.loc[i, 'iucn_note'] = ''
-    #         df.loc[i, 'iucn_note'] = c_str.rstrip(';')
-    #     else:
-    #         df.loc[i, 'iucn_note'] = ''
-    # if row.redlist_note:
-    #     if len(json.loads(row.redlist_note)) > 1:
-    #         c_str = ''
-    #         for c in json.loads(row.redlist_note):
-    #             c_str += f"{c['red_category']},{c['name']};"
-    #         df.loc[i, 'redlist_note'] = ''
-    #         df.loc[i, 'redlist_note'] = c_str.rstrip(';')
-    #     else:
-    #         df.loc[i, 'redlist_note'] = ''
-    # if row.protected_note:
-    #     if len(json.loads(row.protected_note)) > 1:
-    #         c_str = ''
-    #         for c in json.loads(row.protected_note):
-    #             c_str += f"{c['category']},{c['name']};"
-    #         df.loc[i, 'protected_note'] = ''
-    #         df.loc[i, 'protected_note'] = c_str.rstrip(';')
-    #     else:
-    #         df.loc[i, 'protected_note'] = ''
-    # if row.sensitive_note:
-    #     if len(json.loads(row.sensitive_note)) > 1:
-    #         c_str = ''
-    #         for c in json.loads(row.sensitive_note):
-    #             c_str += f"{c['suggest']},{c['name']};"
-    #         df.loc[i, 'sensitive_note'] = ''
-    #         df.loc[i, 'sensitive_note'] = c_str.rstrip(';')
-    #     else:
-    #         df.loc[i, 'sensitive_note'] = ''
-
 
 df = df.replace({np.nan: '', None: ''})
 
@@ -167,7 +109,7 @@ df = df.replace({np.nan: '', None: ''})
 cols = ['taxon_id','name_id','simple_name','name_author','formatted_name','synonyms','formatted_synonyms','rank',
         'common_name_c','alternative_name_c','is_hybrid','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater',
         'is_brackish','is_marine','cites','iucn','redlist','protected','sensitive','created_at','updated_at',
-        'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
+        'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c','is_in_taiwan']
 
 # cites要改成 I,II,III
 df['cites'] = df['cites'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III') if x else x)
@@ -178,7 +120,9 @@ taxon = df[cols]
 
 today = datetime.now() + timedelta(hours=8)
 
-taxon.to_csv(f"物種名錄_物種_{today.strftime('%Y%m%d')}.csv",index=False)
+
+
+taxon[taxon.is_in_taiwan=='true'].drop(columns=['is_in_taiwan']).to_csv(f"TaiCOL_taxon_{today.strftime('%Y%m%d')}.csv",index=False)
 
 
 # 名錄檔案（學名）
@@ -187,6 +131,8 @@ taxa_cols = ['name_id','taxon_id','common_name_c','alternative_name_c','is_in_ta
             'iucn','redlist','protected','sensitive','kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
 
 taxon_for_name = df[taxa_cols]
+
+
 
 # 先找出所有names
 query = """SELECT distinct(tn.id), n.name, tn.rank_id, tn.name, an.name_author, an.formatted_name,
@@ -235,7 +181,7 @@ with conn.cursor() as cursor:
 
 found_taxon = notaxon[['name_id']].merge(res[res['is_latest']==1], on='name_id')
 
-found_taxon.groupby('name_id').count('taxon_id')
+# found_taxon.groupby('name_id').count('taxon_id')
 
 x = found_taxon.groupby('name_id',as_index=False).taxon_id.nunique()
 x_list = x[x.taxon_id>1].name_id.to_list()
@@ -258,92 +204,13 @@ t_cols = ['common_name_c','alternative_name_c','is_in_taiwan','is_endemic','alie
 'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
 
 for f in found_taxon.index:
-    print(f)
+    if f % 1000 == 0:
+        print(f)
     row = found_taxon.loc[f]
     info_row = names[names.taxon_id==row.taxon_id]
     for t in t_cols:
         if info_row[t].values:
             names.loc[names.name_id==row.name_id,t] = info_row[t].values[0]
-
-
-
-
-# query = """SELECT ru.properties ->> '$.common_names', ru.properties ->> '$.is_fossil', ru.properties ->> '$.is_terrestrial',
-#            ru.properties ->> '$.is_freshwater', ru.properties ->> '$.is_brackish', ru.properties ->> '$.is_marine', 
-#            r.publish_year, ru.taxon_name_id, ru.id, r.id
-#            FROM reference_usages ru
-#            JOIN `references` r ON r.id = ru.reference_id
-#            WHERE taxon_name_id NOT IN (SELECT DISTINCT(taxon_name_id) FROM api_taxon_usages ) AND ru.is_title=0
-#         """
-    # res = pd.DataFrame(res, columns=['common_names','is_fossil', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine','publish_year','name_id', 'ru_id', 'reference_id'])
-
-
-# manual_list = []
-
-# for i in res.index:
-#     row = res.iloc[i]
-#     if len(res[res.name_id==row.name_id]) > 1:
-#         if len(res[res.name_id==row.name_id].reference_id.unique()) > 1:
-#             # 取最新的
-#             max_year = res[res.name_id==row.name_id].publish_year.max()
-#             res.loc[(res.name_id==row.name_id)&(res.publish_year==max_year),'is_latest'] = True
-#             res.loc[(res.name_id==row.name_id)&(res.publish_year!=max_year),'is_latest'] = False
-#         else:
-#             # 手動排除
-#             manual_list += list(res[res.name_id==row.name_id].index)
-#     else:
-#         res.loc[i, 'is_latest'] = True
-
-# res.loc[manual_list]
-# # 選 1619
-# res = res.drop(axis=0,index=1618)
-# res = res[res.is_latest==True]
-
-# res = res.reset_index(drop=True)
-
-# common_names
-# for i in res.index:
-#     if res.iloc[i].common_names:
-#         c_list = json.loads(res.iloc[i].common_names)
-#         c_list = [c['name'] for c in c_list if c['language']=='zh-tw']
-#         if len(c_list) == 1:
-#             res.loc[i,'common_name_c'] = c_list[0]
-#         elif len(c_list) > 1:
-#             res.loc[i,'alternative_name_c'] = ','.join(c_list[1:])
-
-# # merge back
-# test = names
-# m_cols = ['name_id','common_name_c','alternative_name_c','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine']
-# names[m_cols] = names[['name_id']].merge(res[m_cols],on='name_id',how='left')
-
-# # 階層
-# query = """SELECT taxon_name_id, path FROM taicol_tree
-#            WHERE taxon_name_id NOT IN (SELECT DISTINCT(taxon_name_id) FROM api_taxon_usages )
-#         """
-# conn = pymysql.connect(**db_settings)
-# with conn.cursor() as cursor:
-#     cursor.execute(query)
-#     higher = cursor.fetchall()
-
-# conn = pymysql.connect(**db_settings)
-# for h in higher:
-#     name_id = h[0]
-#     path = h[1].split('>')
-#     path = [p for p in path if p != str(name_id)]
-#     if path:
-#         query = f"""SELECT tn.rank_id, tn.name, au.properties ->> '$.common_names[0].name' FROM accepted_usages au
-#                     JOIN taxon_names tn ON au.taxon_name_id = tn.id
-#                     WHERE au.taxon_name_id IN ({str(path).replace('[','').replace(']','')}) AND 
-#                     tn.rank_id IN (3,12,18,22,26,30)"""
-#         with conn.cursor() as cursor:
-#             cursor.execute(query)
-#             results = cursor.fetchall()
-#             for r in results:
-#                 names.loc[names.name_id==name_id, f'{rank_map[r[0]].lower()}'] = r[1]
-#                 names.loc[names.name_id==name_id, f'{rank_map[r[0]].lower()}_c'] = r[2]
-
-# # rank_id to rank
-# names['rank'] = names['rank'].apply(lambda x: rank_map[x])
 
 # id to int
 names.original_name_id = names.original_name_id.replace({np.nan: 0})
@@ -378,17 +245,6 @@ for i in names.index:
             hybrid_name_result = cursor.fetchall()
         if hybrid_name_result:
             names.loc[names.name_id == row['name_id'], 'hybrid_parent'] = hybrid_name_result[0]
-# query_hybrid_parent = f"SELECT tnhp.taxon_name_id, GROUP_CONCAT(CONCAT_WS(' ', tn.name, an.name_author) SEPARATOR ' × ' ) FROM taxon_name_hybrid_parent AS tnhp \
-#                         JOIN taxon_names AS tn ON tn.id = tnhp.parent_taxon_name_id \
-#                         LEFT JOIN api_names an ON an.taxon_name_id = tn.id \
-#                         GROUP BY tnhp.taxon_name_id"
-# conn = pymysql.connect(**db_settings)
-# with conn.cursor() as cursor:
-#     cursor.execute(query_hybrid_parent)
-#     hybrid_name_result = cursor.fetchall()
-#     for h in hybrid_name_result:
-#         names.loc[names.name_id == h[0], 'hybrid_parent'] = h[1].strip()
-#         names.loc[names.name_id == h[0], 'is_hybrid'] = 'true'
 
 
 # 'null' to None
@@ -417,8 +273,23 @@ names = names.replace({np.nan: '', None: ''})
 
 today = datetime.now() + timedelta(hours=8)
 
-names.to_csv(f"物種名錄_學名_{today.strftime('%Y%m%d')}.csv",index=False)
+names.to_csv(f"TaiCOL_name_{today.strftime('%Y%m%d')}.csv",index=False)
 
 
+
+
+
+# 學名 101410 筆，其中對應TaiCOL物種 144646 筆
+
+
+# 101410
+
+
+# 144646
+
+
+# taxon[taxon.is_in_taiwan=='true'].groupby('rank',as_index=False).taxon_id.nunique()
+
+# 物種 92983 筆，7 界 81 門 220 綱 816 目 3827 科 20944 屬
 
 
