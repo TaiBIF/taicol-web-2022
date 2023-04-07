@@ -1,0 +1,31 @@
+WEB_ENV=dev
+ENV=dev
+DEBUG=on
+SECRET_KEY=
+ALLOWED_HOSTS=127.0.0.1,0.0.0.0
+STATIC_ROOT=/tc-web-volumes/static
+MEDIA_ROOT=/tc-web-volumes/media
+# db settings of TaiCOL web admin database (separate from React backend)
+POSTGRES_HOST=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_PORT=
+POSTGRES_DB=
+DATABASE_URL=postgress://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}
+TAICOL_API_ROOT=https://api.taicol.tw/v2
+NOMENMATCH_ROOT=http://match.taibif.tw/v2/api.php
+# db settings of TaiCOL database
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+DB_DBNAME=
+# react env
+REACT_API_URL=https://admin.taicol.tw
+TAICOL_API_URL=https://api.taicol.tw/v2
+NEXT_PUBLIC_PAGINATE_LIMIT=10
+# aws ses service
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_SES_REGION_NAME=
+AWS_SES_REGION_ENDPOINT=

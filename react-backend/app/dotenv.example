@@ -1,0 +1,11 @@
+# react env
+MYSQL_HOST=
+MYSQL_PORT=
+MYSQL_DATABASE=
+DATABASE_URL=mysql://root@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
+NEXT_PUBLIC_TAICOL_API_URL=https://api.taicol.tw/v2
+# change NEXT_PUBLIC_DOMAIN to official domain when running in production mode
+NEXT_PUBLIC_DOMAIN=http://127.0.0.1:4000
+SECRET=
+NEXTAUTH_SECRET=
+NEXT_PUBLIC_PAGINATE_LIMIT=10
