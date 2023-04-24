@@ -648,7 +648,7 @@ def taxon(request, taxon_id):
                             ru.reference_id, tn.reference_id, r.publish_year, tn.rank_id, r.type, tn.original_taxon_name_id
                             FROM api_taxon_usages atu 
                             LEFT JOIN api_names an ON an.taxon_name_id = atu.taxon_name_id
-                            LEFT JOIN reference_usages ru ON ru.id = atu.reference_usage_id
+                            LEFT JOIN reference_usages ru ON atu.reference_id = ru.reference_id and atu.accepted_taxon_name_id = ru.accepted_taxon_name_id
                             JOIN `references` r ON r.id = ru.reference_id
                             LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
                             JOIN taxon_names tn ON tn.id = atu.taxon_name_id
@@ -828,7 +828,7 @@ def taxon(request, taxon_id):
                     par1 = taxon_id
                     query = f"(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year, c.author, c.short_author, r.type \
                             FROM api_taxon_usages atu \
-                            JOIN reference_usages ru ON atu.reference_usage_id = ru.id \
+                            JOIN reference_usages ru ON atu.reference_id = ru.reference_id and atu.accepted_taxon_name_id = ru.accepted_taxon_name_id \
                             JOIN `references` r ON ru.reference_id = r.id \
                             JOIN api_citations c ON ru.reference_id = c.reference_id \
                             WHERE atu.taxon_id = %s and r.type != 4 and ru.status != '' AND atu.is_deleted = 0 GROUP BY r.id \
@@ -882,8 +882,8 @@ def taxon(request, taxon_id):
                 # 如果是backbone不給ref
                 with conn.cursor() as cursor:     
                     query = f'''SELECT ath.note, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), ru.reference_id, r.type FROM api_taxon_history ath
-                                LEFT JOIN reference_usages ru ON ath.reference_usage_id = ru.id
-                                LEFT JOIN `references` r ON ru.reference_id = r.id
+                                LEFT JOIN reference_usages ru ON ath.reference_id = ru.reference_id and ath.accepted_taxon_name_id = ru.accepted_taxon_name_id
+                                JOIN `references` r ON ru.reference_id = r.id
                                 WHERE ath.taxon_id = %s AND ath.`type` = 5 ORDER BY ath.updated_at ASC;'''
                     cursor.execute(query, (taxon_id,))
                     first = cursor.fetchone()
@@ -898,8 +898,8 @@ def taxon(request, taxon_id):
                                                  'ref': '', 'reference_id': None, 'updated_at': first[1]})
                 with conn.cursor() as cursor:     
                     query = f'''SELECT ath.note, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), ru.reference_id, r.type FROM api_taxon_history ath
-                                LEFT JOIN reference_usages ru ON ath.reference_usage_id = ru.id
-                                LEFT JOIN `references` r ON ru.reference_id = r.id
+                                LEFT JOIN reference_usages ru ON ath.reference_id = ru.reference_id and ath.accepted_taxon_name_id = ru.accepted_taxon_name_id
+                                JOIN `references` r ON ru.reference_id = r.id
                                 WHERE ath.taxon_id = %s AND ath.`type` = 0 ORDER BY ath.updated_at ASC;'''
                     cursor.execute(query, (taxon_id,))
                     nids = cursor.fetchall()
