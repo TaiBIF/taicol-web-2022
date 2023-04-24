@@ -133,6 +133,16 @@ taxa_cols = ['name_id','taxon_id','common_name_c','alternative_name_c','is_in_ta
 taxon_for_name = df[taxa_cols]
 
 
+# 要先補上所有的taxon
+query = """SELECT distinct taxon_id, taxon_name_id, `status` FROM api_taxon_usages """
+conn = pymysql.connect(**db_settings)
+with conn.cursor() as cursor:
+    cursor.execute(query)
+    all_taxon = cursor.fetchall()
+    all_taxon = pd.DataFrame(all_taxon, columns=['taxon_id','name_id','status'])
+
+
+all_taxon = all_taxon.merge(taxon_for_name.drop(columns=['name_id']))
 
 # 先找出所有names
 query = """SELECT distinct(tn.id), n.name, tn.rank_id, tn.name, an.name_author, an.formatted_name,
@@ -154,8 +164,10 @@ with conn.cursor() as cursor:
                                          'type_name_id','created_at','updated_at'])
 
 # 先找出可以直接對到taxon的
-names = names.merge(taxon_for_name,on='name_id',how='left')
-names.loc[names.taxon_id.notnull(),'usage_status'] = 'accepted'
+# x = names.merge(all_taxon,on='name_id',how='left').drop_duplicates()
+names = names.merge(all_taxon,on='name_id',how='left').drop_duplicates()
+names = names.rename(columns={'status': 'usage_status'})
+# names.loc[names.taxon_id.notnull(),'usage_status'] = 'accepted'
 
 
 # date
@@ -276,7 +288,7 @@ today = datetime.now() + timedelta(hours=8)
 names.to_csv(f"TaiCOL_name_{today.strftime('%Y%m%d')}.csv",index=False)
 
 
-
+df.to_csv(f"TaiCOL_name_20230325.csv",index=False)
 
 
 # 學名 101410 筆，其中對應TaiCOL物種 144646 筆
