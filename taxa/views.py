@@ -683,10 +683,10 @@ def taxon(request, taxon_id):
                         names['sci_name_ori'] = names['sci_name']
                         names['sci_name_ori_1'] = names['sci_name'] # 為了學名排序
                         names['author'] = names.apply(lambda x: f"{x.author}, {x.publish_year}" if x.nomenclature_id==2 and x.publish_year else x.author, axis=1)
-                        names['author'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/references/{int(x.o_reference_id)}" target="_blank">{x.author}</a>' if x.o_reference_id and not x.original_taxon_name_id else x.author, axis=1)
+                        names['author'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/zh-tw/references/{int(x.o_reference_id)}" target="_blank">{x.author}</a>' if x.o_reference_id and not x.original_taxon_name_id else x.author, axis=1)
                         names['sci_name'] = names.apply(lambda x: f'{x.sci_name} {x.author}' if x.author else x.sci_name, axis=1)
-                        names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name}</a>', axis=1)
-                        names['sci_name_ori'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name_ori}</a>', axis=1)
+                        names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/zh-tw/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name}</a>', axis=1)
+                        names['sci_name_ori'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/zh-tw/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name_ori}</a>', axis=1)
                         # 如果per_usages中有其他ref則補上
                         for pp in names['per_usages']:
                             for p in pp:
@@ -735,7 +735,7 @@ def taxon(request, taxon_id):
                                 else:
                                     ref_list = [r for r in ref_list if r[1] not in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].o_reference_id.to_list() and r[3]!=4 ]
                                 ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')                            
-                                ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
+                                ref_list = [f"<a href='https://nametool.taicol.tw/zh-tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                                 ref_str = ('; ').join(ref_list)
                                 if ref_str:
                                     name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]}; {ref_str}", names[names.taxon_name_id==n]['publish_year'].min(), names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
@@ -766,7 +766,7 @@ def taxon(request, taxon_id):
                                 ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                                 min_year = ref_list.year.min()
                                 # 決定排序的publish_year
-                                ref_list = [f"<a href='https://nametool.taicol.tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
+                                ref_list = [f"<a href='https://nametool.taicol.tw/zh-tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                                 ref_str = ('; ').join(ref_list)
                                 if ref_str:
                                     name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]} (誤用): {ref_str}",min_year, names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
@@ -796,7 +796,7 @@ def taxon(request, taxon_id):
                                     ref_list = [r for r in ref_list if r[1] not in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].o_reference_id.to_list() and r[3]!=4 ]
                                 ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                                 # 決定排序的publish_year
-                                ref_list = [f'<a href="https://nametool.taicol.tw/references/{int(r[1]["ref_id"])}" target="_blank">{r[1]["ref"]}</a>' for r in ref_list.iterrows()]
+                                ref_list = [f'<a href="https://nametool.taicol.tw/zh-tw/references/{int(r[1]["ref_id"])}" target="_blank">{r[1]["ref"]}</a>' for r in ref_list.iterrows()]
                                 ref_str = ('; ').join(ref_list)
                                 if ref_str:
                                     name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]}: {ref_str}",names[names.taxon_name_id==n]['publish_year'].min(), names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
@@ -1004,7 +1004,7 @@ def taxon(request, taxon_id):
                                 new_path_str_name = '更新後階層：無'
                             content_str.append(new_path_str_name)
                             content_str = '，'.join(content_str)
-                            row = [taxon_history_map[thh[0]], content_str, f'<a href="https://nametool.taicol.tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+                            row = [taxon_history_map[thh[0]], content_str, f'<a href="https://nametool.taicol.tw/zh-tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                         elif thh[0] == 6: # 刪除Taxon
                             if thh[5]:
                                 if new_taxon_id:
@@ -1020,9 +1020,9 @@ def taxon(request, taxon_id):
                                                                 <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
                                                             </g>
                                                         </g>
-                                                    </svg></a>''', f'<a href="https://nametool.taicol.tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+                                                    </svg></a>''', f'<a href="https://nametool.taicol.tw/zh-tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                                 else:
-                                    row = [taxon_history_map[thh[0]], '', f'<a href="https://nametool.taicol.tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+                                    row = [taxon_history_map[thh[0]], '', f'<a href="https://nametool.taicol.tw/zh-tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                             else:
                                 if new_taxon_id:
                                     row = [taxon_history_map[thh[0]], f'''請參見 <a class="new_taxon_aa" href="/taxon/{new_taxon_id}">{new_taxon_name_c if new_taxon_name_c else new_taxon_id}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
@@ -1042,7 +1042,7 @@ def taxon(request, taxon_id):
                                     row = [taxon_history_map[thh[0]], '', '', thh[3].strftime("%Y-%m-%d"), 'TaiCOL管理員']
 
                         elif thh[5] and thh[2] and thh[-1] != 4:
-                            row = [taxon_history_map[thh[0]], thh[1], f'<a href="https://nametool.taicol.tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+                            row = [taxon_history_map[thh[0]], thh[1], f'<a href="https://nametool.taicol.tw/zh-tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                         else:
                             row = [taxon_history_map[thh[0]], thh[1], '', thh[3].strftime("%Y-%m-%d"), thh[4]]
                         taxon_history.append(row)

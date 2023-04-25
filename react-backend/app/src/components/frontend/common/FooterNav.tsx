@@ -45,7 +45,7 @@ const menusCol2:Menu[] = [
       },
       {
         title: '學名管理工具',
-        href: 'https://nametool.taicol.tw/',
+        href: 'https://nametool.taicol.tw/zh-tw/',
         target: '_blank'
       },
     ]
