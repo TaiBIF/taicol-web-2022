@@ -729,7 +729,7 @@ def taxon(request, taxon_id):
                                                 if current_ref:
                                                     current_ref += ', pro parte'
                                             if current_ref not in ref_list:
-                                                ref_list.append([current_ref,ppu.get('reference_id')],current_year, current_r_type)
+                                                ref_list.append([current_ref,ppu.get('reference_id'),current_year, current_r_type])
                                 if has_original:
                                     ref_list = [r for r in ref_list if r[3]!=4 ]
                                 else:
