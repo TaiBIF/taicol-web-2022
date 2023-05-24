@@ -290,9 +290,14 @@
 		var input2 = $("<input>").attr("name", "name-select").attr("type", "hidden").val($('select[name=name-select] option:selected').val());
 		var input3 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
 		var input4 = $("<input>").attr("name", "date-select").attr("type", "hidden").val($('select[name=date-select] option:selected').val());
-		var input5 = $("<input>").attr("name", "taxon_group").attr("type", "hidden").val($('#taxon_group').select2('data')[0]['id']);
-		var input6 = $("<input>").attr("name", "taxon_group_str").attr("type", "hidden").val($('#taxon_group').select2('data')[0]['text']);
 
+		if ($('#taxon_group').select2('data').length > 0){
+			var input5 = $("<input>").attr("name", "taxon_group").attr("type", "hidden").val($('#taxon_group').select2('data')[0]['id']);
+			var input6 = $("<input>").attr("name", "taxon_group_str").attr("type", "hidden").val($('#taxon_group').select2('data')[0]['text']);
+		} else {
+			var input5 = $("<input>").attr("name", "taxon_group").attr("type", "hidden").val('');
+			var input6 = $("<input>").attr("name", "taxon_group_str").attr("type", "hidden").val('');
+		}
 
 		$('form#moreForm').append(input1).append(input2).append(input3).append(input4).append(input5).append(input6);
 		$('form#moreForm').attr('action','/download_search_results')
