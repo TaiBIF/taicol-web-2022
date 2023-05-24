@@ -33,20 +33,20 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     env_file:
      - .env
-  # nginx:
-  #   image: nginx:1.19.10-alpine
-  #   restart: always
-  #   ports:
-  #     - 80:80
-  #   volumes:
-  #     - ./scripts/nginx/staging:/etc/nginx/conf.d
-  #     - ../tc-web-volumes/static:/tc-web-volumes/static
-  #     - ../tc-web-volumes/media:/tc-web-volumes/media
-  #     - ../tc-web-volumes/logs/nginx:/var/log/nginx
-  #   links:
-  #     - django:django
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "1m"
-  #       max-file: "3"
+  nginx:
+    image: nginx:1.19.10-alpine
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./scripts/nginx/staging:/etc/nginx/conf.d
+      - ../tc-web-volumes/static:/tc-web-volumes/static
+      - ../tc-web-volumes/media:/tc-web-volumes/media
+      - ../tc-web-volumes/logs/nginx:/var/log/nginx
+    links:
+      - django:django
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "3"
