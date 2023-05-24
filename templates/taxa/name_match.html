@@ -1,5 +1,6 @@
 {% extends 'base.html' %} 
 {% load static %}
+{% load i18n %}
 {% block style %}
 <link rel=stylesheet type="text/css" href="{% static 'css/name_match.css' %}">
 {% endblock style %}
@@ -23,7 +24,7 @@
 			</div>
 			<div class="top-wave"></div>
 			<div class="path">
-				<a href="{% url 'index' %}">首頁</a> > <p>資料工具</p> > <p>學名比對工具</p>
+				<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "資料工具" %}</p> > <p>{% trans "學名比對工具" %}</p>
 			</div>
 			<div class="main-box">
 				<div class="pic-right2">
@@ -37,7 +38,7 @@
 					<img src="{% static 'image/cir_blue.png' %}">
 				</div>
 				<div class="title-box">
-					<h2>學名比對工具 <span></span></h2>
+					<h2>{% trans "學名比對工具" %} <span></span></h2>
 					<p>NAME MATCH</p>
 				</div>
 			</div>
@@ -45,7 +46,7 @@
 		<div class="main-box vivi-cont-top">
 			<div class="mark-title">
 				<img src="{% static 'image/title-mark.svg' %}">
-				<p>查詢設定</p>
+				<p>{% trans "查詢設定" %}</p>
 			</div>
 
 			<div class="name-checkitem-box">
@@ -61,38 +62,38 @@
 					</div>
 				</div>-->
 				<div class="flex-item">
-					<div class="left-title">最佳結果</div>
+					<div class="left-title">{% trans "最佳結果" %}</div>
 					<div class="radiobox">
 						<div class="flex">
 							<input type="radio" name="best" value="yes" checked>
-							<p>是</p>
+							<p>{% trans "是" %}</p>
 						</div>
 						<div class="flex">
 							<input type="radio" name="best" value="no">
-							<p>否</p>
+							<p>{% trans "否" %}</p>
 						</div>
 					</div>
 				</div>
 				<div class="text-areabox">
-					<p>學名/中文名</p>
+					<p>{% trans "學名/中文名" %}</p>
 					<textarea class="fs-14" name="name" id=""></textarea>
 				</div>
 				</form>
-				<button class="search">搜尋</button>
+				<button class="search">{% trans "搜尋" %}</button>
 			</div>
 		</div>
 		<div class="check-result-box  d-none">
 			<div class="main-box">
 				<div class="mark-title mb-0">
 					<img src="{% static 'image/title-mark.svg' %}">
-					<p>比對結果</p>
+					<p>{% trans "比對結果" %}</p>
 				</div>
 				<div class="result-area">
 					<div class="top-infbox mb-20">
 						<p></p>
 						<div class="button-two d-flex">
-							<button class="downloadData" data-type="csv">下載CSV</button>
-							<button class="downloadData" data-type="json">下載JSON</button>
+							<button class="downloadData" data-type="csv">{% trans "下載CSV" %}</button>
+							<button class="downloadData" data-type="json">{% trans "下載JSON" %}</button>
 						</div>
 					</div>
 					<div class="right-table">

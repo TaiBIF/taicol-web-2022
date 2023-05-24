@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -51,47 +52,47 @@
                     <!--目前所在頁面也可在li上面加上class="now"-->
                     <li>
                         <a href="{% url 'about' %}" class="big_title">
-                            關於TaiCOL
+                            {% trans "關於TaiCOL" %}
                             <span></span>
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'taxon_tree' %}" class="big_title">
-                            物種樹
+                            {% trans "物種樹" %}
                             <span></span>
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'catalogue' %}?filter=1" class="big_title">
-                            物種名錄
+                            {% trans "物種名錄" %}
                             <span></span>
                         </a>
                     </li>
                     <li class="mbli ">
                         <p class="big_title">
-                            資料工具
+                            {% trans "資料工具" %}
                             <span></span>
                         </p>
                         <div class="menu_2">
                             <div class="w_bg">
-                                <a href="{% url 'download' %}">資料下載</a>
-                                <a href="{% url 'api' %}">API</a>
-                                <a href="{% url 'name_match' %}">學名比對工具</a>
-                                <a href="https://nametool.taicol.tw/zh-tw/" target="_blank">學名管理工具</a>
+                                <a href="{% url 'download' %}">{% trans "資料下載" %}</a>
+                                <a href="{% url 'api' %}">{% trans "API" %}</a>
+                                <a href="{% url 'name_match' %}">{% trans "學名比對工具" %}</a>
+                                <a href="https://nametool.taicol.tw/zh-tw/" target="_blank">{% trans "學名管理工具" %}</a>
                             </div>
                         </div>
                     </li>
                     <li class="mbli ">
                         <p class="big_title">
-                            更多資訊
+                            {% trans "更多資訊" %}
                             <span></span>
                         </p>
                         <div class="menu_2">
                             <div class="w_bg">
-                                <a href="{% url 'news' %}">最新消息</a>
-                                <a href="{% url 'article' %}">主題文章</a>
-                                <a href="{% url 'statistics' %}">資料統計</a>
-                                <a href="{% url 'policy' %}">資料使用規範</a>
+                                <a href="{% url 'news' %}">{% trans "最新消息" %}</a>
+                                <a href="{% url 'article' %}">{% trans "主題文章" %}</a>
+                                <a href="{% url 'statistics' %}">{% trans "資料統計" %}</a>
+                                <a href="{% url 'policy' %}">{% trans "資料使用規範" %}</a>
                             </div>
                         </div>
                     </li>
@@ -117,7 +118,7 @@
                     <p>Catalogue of Life in Taiwan</p>
                 </div>
                 <div class="contact">
-                    <h4>聯絡我們</h4>
+                    <h4>{% trans "聯絡我們" %}</h4>
                     <a href="mailto:catalogueoflife.taiwan@gmail.com">catalogueoflife.taiwan@gmail.com</a>
                 </div>
             </div>
@@ -125,63 +126,63 @@
                 <li>
                     <a href="{% url 'about' %}" class="bit-title">
                         <span></span>
-                        <p>關於TaiCOL </p>
+                        <p>{% trans "關於TaiCOL" %} </p>
                     </a>
                     <a href="{% url 'taxon_tree' %}" class="bit-title">
                         <span></span>
-                        <p>物種樹</p>
+                        <p>{% trans "物種樹" %}</p>
                     </a>
                     <a href="{% url 'catalogue' %}?filter=1" class="bit-title">
                         <span></span>
-                        <p>物種名錄</p>
+                        <p>{% trans "物種名錄" %}</p>
                     </a>
                 </li>
                 <li>
                     <a href="#" class="bit-title disabled-a-link">
                         <span></span>
-                        <p>資料工具</p>
+                        <p>{% trans "資料工具" %}</p>
                     </a>
                     <a href="{% url 'download' %}" class="ss-title">
-                        <p>資料下載</p>
+                        <p>{% trans "資料下載" %}</p>
                     </a>
                     <a href="{% url 'api' %}" class="ss-title">
-                        <p>API</p>
+                        <p>{% trans "API" %}</p>
                     </a>
                     <a href="{% url 'name_match' %}" class="ss-title">
-                        <p>學名比對工具</p>
+                        <p>{% trans "學名比對工具" %}</p>
                     </a>
                     <a href="https://nametool.taicol.tw/zh-tw/" class="ss-title" target="_blank">
-                        <p>學名管理工具</p>
+                        <p>{% trans "學名管理工具" %}</p>
                     </a>
                 </li>
                 <li>
                     <a href="#" class="bit-title disabled-a-link">
                         <span></span>
-                        <p>更多資訊</p>
+                        <p>{% trans "更多資訊" %}</p>
                     </a>
                     <a href="{% url 'news' %}" class="ss-title">
-                        <p>最新消息</p>
+                        <p>{% trans "最新消息" %}</p>
                     </a>
                     <a href="{% url 'article' %}" class="ss-title">
-                        <p>主題文章</p>
+                        <p>{% trans "主題文章" %}</p>
                     </a>
                     <a href="{% url 'statistics' %}" class="ss-title">
-                        <p>資料統計</p>
+                        <p>{% trans "資料統計" %}</p>
                     </a>
                     <a href="{% url 'policy' %}" class="ss-title">
-                        <p>資料使用規範</p>
+                        <p>{% trans "資料使用規範" %}</p>
                     </a>
                 </li>
             </ul>
             <div class="two-related">
                 <div class="itembox">
-                    <p>指導單位</p>
+                    <p>{% trans "指導單位" %}</p>
                     <a target="_blank" href="https://www.forest.gov.tw">
                         <img src="{% static 'image/footer-logo1.png' %}">
                     </a>
                 </div>
                 <div class="itembox">
-                    <p>維護單位</p>
+                    <p>{% trans "維護單位" %}</p>
                     <a target="_blank"  href="https://portal.taibif.tw">
                         <img src="{% static 'image/footer-logo2.png' %}">
                     </a>

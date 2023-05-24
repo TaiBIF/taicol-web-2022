@@ -1,0 +1,554 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-23 08:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/base.html:56 templates/base.html:130 templates/pages/about.html:19
+#: templates/pages/about.html:32 templates/pages/about.html:59
+msgid "關於TaiCOL"
+msgstr "ABOUT"
+
+#: templates/base.html:62 templates/base.html:134
+#: templates/taxa/taxon_tree.html:29 templates/taxa/taxon_tree.html:39
+msgid "物種樹"
+msgstr "TAXON"
+
+#: templates/base.html:68 templates/base.html:138
+#: templates/taxa/catalogue.html:72 templates/taxa/catalogue.html:82
+msgid "物種名錄"
+msgstr "CATALOGUE"
+
+#: templates/base.html:74 templates/base.html:144
+#: templates/taxa/name_match.html:27
+msgid "資料工具"
+msgstr "TOOL"
+
+#: templates/base.html:79 templates/base.html:147
+msgid "資料下載"
+msgstr "Download"
+
+#: templates/base.html:80 templates/base.html:150
+msgid "API"
+msgstr "API"
+
+#: templates/base.html:81 templates/base.html:153
+#: templates/taxa/name_match.html:27 templates/taxa/name_match.html:41
+msgid "學名比對工具"
+msgstr "Name Match"
+
+#: templates/base.html:82 templates/base.html:156
+msgid "學名管理工具"
+msgstr "Name Management Tool"
+
+#: templates/base.html:88 templates/base.html:162
+#: templates/pages/data_policy.html:15
+msgid "更多資訊"
+msgstr "MORE"
+
+#: templates/base.html:93 templates/base.html:165
+msgid "最新消息"
+msgstr "News"
+
+#: templates/base.html:94 templates/base.html:168
+msgid "主題文章"
+msgstr "Articles"
+
+#: templates/base.html:95 templates/base.html:171
+msgid "資料統計"
+msgstr "Statistics"
+
+#: templates/base.html:96 templates/base.html:174
+#: templates/pages/data_policy.html:15 templates/pages/data_policy.html:31
+msgid "資料使用規範"
+msgstr "Data Policy"
+
+#: templates/base.html:122
+msgid "聯絡我們"
+msgstr "Contact Us"
+
+#: templates/base.html:180
+msgid "指導單位"
+msgstr "Funded by"
+
+#: templates/base.html:186
+msgid "維護單位"
+msgstr "Maintained by"
+
+#: templates/pages/about.html:19 templates/pages/data_policy.html:15
+#: templates/taxa/catalogue.html:72 templates/taxa/name_match.html:27
+#: templates/taxa/taxon_tree.html:29
+msgid "首頁"
+msgstr "HOME"
+
+#: templates/pages/about.html:62
+msgid ""
+"臺灣物種名錄 (Catalogue of Life in Taiwan, TaiCOL) 為一收集整合臺灣物種學名相"
+"關資訊並提供物種名錄的資料庫，早期稱為「臺灣生物多樣性國家資訊網」(TaiBNET)。"
+"資料庫建置之起源可溯至「生物多樣性公約」中，第十七條要求締約國應促進一切公眾"
+"可得的生物多樣性保護和永續利用相關資訊的交流。為配合行政院2001年頒布之《生物"
+"多樣性推動方案》，科技部 (原國科會) 於2002至2004年間委託中央研究院整合臺灣生"
+"物多樣性資訊並建置資料庫，臺灣物種名錄網站於2003年建立並對外公開。2006年起計"
+"畫經費改由農委會支助，持續修訂名錄且逐步擴充同物異名、中文俗名、文獻，以及原"
+"生/外來/保育屬性等物種相關資訊，並釋出物種學名編碼予國內各大生物多樣性資料庫"
+"作為資料骨幹或資料交換之用。"
+msgstr ""
+"Catalogue of Life in Taiwan (TaiCOL) is a database that collects and "
+"integrates information about species in Taiwan and provides species "
+"checklist. It was originally called \"Taiwan Biodiversity National "
+"Information Network\" (TaiBNET). The origin of the database establishment "
+"can be traced back to the Convention on Biological Diversity. Article 17 "
+"requires the contracting parties to promote the exchange of all publicly "
+"available information on the conservation and sustainable use of biological "
+"diversity. In order to coordinate with the \"Biodiversity Promotion Plan\" "
+"promulgated by the Taiwan Executive Yuan in 2001, the Ministry of Science "
+"and Technology (formerly the National Science Council) commissioned Academia "
+"Sinica to integrate Taiwan's biodiversity information and build a database "
+"from 2002 to 2004. TaiCOL website was established in 2003 and opened to the "
+"public. Since 2006, the project funds have been changed to be supported by "
+"the Council of Agriculture, and the list has been continuously revised and "
+"gradually expanded with synonyms, Chinese common names, literatures, and "
+"native/exotic/conservation attributes and other species-related information, "
+"and released species name codes to all domestic large biodiversity databases "
+"as data backbones or for data exchange."
+
+#: templates/pages/about.html:75
+msgid "TaiCOL工作目標"
+msgstr "Purpose & Mission"
+
+#: templates/pages/about.html:78
+msgid ""
+"物種名錄對生物多樣性資源的保育至關重要。推動生物多樣性保育的相關工作，從資源"
+"調查、監測，乃至於政策制定，皆須正確引用物種學名，才能確保有效的溝通與管理，"
+"因此建置物種名錄、使臺灣有一份最新最正確的物種名資料庫，是推動生物多樣性保育"
+"最首要，也是最基礎的工作。此外，物種分類研究與更新是持續不斷的，目前TaiCOL名"
+"錄修訂與資訊來源包括：專人依據發表文獻修訂名錄、邀請專家審訂分類群、分類專家"
+"於平台上自主修訂、定期比對物種資料庫，以及透過使用者回報錯誤等。本計畫希望能"
+"持續更新臺灣物種名錄，並建立與各生物領域分類學者長期合作的名錄修訂模式，以提"
+"供給政府部門、研究人員、公眾及生物多樣性資料庫最新的名錄資訊。"
+msgstr ""
+"Species checklist are important to the conservation of biodiversity "
+"resources. To promote the work related to biodiversity conservation, from "
+"resource investigation, monitoring, and even policy formulation, the "
+"scientific names of species must be correctly cited to ensure effective "
+"communication and management. Therefore, the establishment of a updated and "
+"accurate species checklist database is the most important and fundamental "
+"work to promote biodiversity conservation. In addition, the research and "
+"update of species classification is continuous. Currently, the revision and "
+"information sources for TaiCOL include: administrator revise based on "
+"published literature, invite experts to review taxa, taxonomic experts "
+"independently revise on the platform, regularly compare species databases, "
+"and user report bugs, etc. This project hopes to continuously update the "
+"list of species in Taiwan, to establish a long-term cooperation model with "
+"taxonomists in various biological fields, and to provide the latest species "
+"information for government departments, researchers, the public and "
+"biodiversity databases."
+
+#: templates/pages/data_policy.html:105
+msgid "臺灣物種名錄(TaiCOL)引用格式"
+msgstr "Citation of TaiCOL"
+
+#: templates/taxa/catalogue.html:45
+msgid "下載檔案"
+msgstr "Download"
+
+#: templates/taxa/catalogue.html:50
+msgid ""
+"檔案為離線產生，處理完成後，系統會寄下載資訊到您輸入的電子郵件信箱。如未收到"
+"信件，請聯絡我們。"
+msgstr ""
+
+#: templates/taxa/catalogue.html:54
+msgid "聯絡信箱"
+msgstr "Contact Email"
+
+#: templates/taxa/catalogue.html:63
+msgid "確認送出"
+msgstr "Submit"
+
+#: templates/taxa/catalogue.html:90 templates/taxa/name_match.html:78
+msgid "學名/中文名"
+msgstr "Name"
+
+#: templates/taxa/catalogue.html:92
+msgid "包含"
+msgstr "Include"
+
+#: templates/taxa/catalogue.html:93 templates/taxa/catalogue.html:458
+msgid "等於"
+msgstr "Equal to"
+
+#: templates/taxa/catalogue.html:94
+msgid "開頭為"
+msgstr "Begins with"
+
+#: templates/taxa/catalogue.html:98 templates/taxa/taxon_tree.html:57
+#: ui_slicing/index.html:58
+msgid "請輸入關鍵字"
+msgstr "Enter keywords"
+
+#: templates/taxa/catalogue.html:118
+msgid "進階選項"
+msgstr "Advanced"
+
+#: templates/taxa/catalogue.html:136
+msgid "較高分類群"
+msgstr "Higher Taxon"
+
+#: templates/taxa/catalogue.html:144
+msgid "分類階層"
+msgstr "Rank"
+
+#: templates/taxa/catalogue.html:150
+msgid "種"
+msgstr "Species"
+
+#: templates/taxa/catalogue.html:151
+msgid "亞種"
+msgstr "Subspecies"
+
+#: templates/taxa/catalogue.html:152
+msgid "變種"
+msgstr "Variety"
+
+#: templates/taxa/catalogue.html:153
+msgid "型"
+msgstr "Form"
+
+#: templates/taxa/catalogue.html:154
+msgid "亞型"
+msgstr "Subform"
+
+#: templates/taxa/catalogue.html:155
+msgid "亞變種"
+msgstr "Subvariety"
+
+#: templates/taxa/catalogue.html:156
+msgid "雜交亞種"
+msgstr "Nothosubspecies"
+
+#: templates/taxa/catalogue.html:157
+msgid "雜交變種"
+msgstr "Nothovariety"
+
+#: templates/taxa/catalogue.html:158
+msgid "特別品型"
+msgstr "Special Form"
+
+#: templates/taxa/catalogue.html:159
+msgid "雜交組合"
+msgstr "Hybrid Formula"
+
+#: templates/taxa/catalogue.html:160
+msgid "屬"
+msgstr "Genus"
+
+#: templates/taxa/catalogue.html:161
+msgid "亞屬"
+msgstr "Subgenus"
+
+#: templates/taxa/catalogue.html:162
+msgid "組|節"
+msgstr "Section"
+
+#: templates/taxa/catalogue.html:163
+msgid "亞組|亞節"
+msgstr "Subsection"
+
+#: templates/taxa/catalogue.html:164
+msgid "科"
+msgstr "Family"
+
+#: templates/taxa/catalogue.html:165
+msgid "亞科"
+msgstr "Subfamily"
+
+#: templates/taxa/catalogue.html:166
+msgid "族"
+msgstr "Tribe"
+
+#: templates/taxa/catalogue.html:167
+msgid "亞族"
+msgstr "Subtribe"
+
+#: templates/taxa/catalogue.html:168
+msgid "目"
+msgstr "Order"
+
+#: templates/taxa/catalogue.html:169
+msgid "亞目"
+msgstr "Suborder"
+
+#: templates/taxa/catalogue.html:170
+msgid "下目"
+msgstr "Infraorder"
+
+#: templates/taxa/catalogue.html:171
+msgid "超科|總科"
+msgstr "Superfamily"
+
+#: templates/taxa/catalogue.html:174
+msgid "綱"
+msgstr "Class"
+
+#: templates/taxa/catalogue.html:175
+msgid "亞綱"
+msgstr "Subclass"
+
+#: templates/taxa/catalogue.html:176
+msgid "下綱"
+msgstr "Infraclass"
+
+#: templates/taxa/catalogue.html:177
+msgid "超目|總目"
+msgstr "Superorder"
+
+#: templates/taxa/catalogue.html:178
+msgid "門"
+msgstr "Phylum"
+
+#: templates/taxa/catalogue.html:179
+msgid "亞門"
+msgstr "Subphylum"
+
+#: templates/taxa/catalogue.html:180
+msgid "下門"
+msgstr "Infraphylum"
+
+#: templates/taxa/catalogue.html:181
+msgid "微門"
+msgstr "Microphylum"
+
+#: templates/taxa/catalogue.html:182
+msgid "小門"
+msgstr "Parvphylum"
+
+#: templates/taxa/catalogue.html:183
+msgid "超綱|總綱"
+msgstr "Superclass"
+
+#: templates/taxa/catalogue.html:184
+msgid "部|類"
+msgstr "Division"
+
+#: templates/taxa/catalogue.html:185
+msgid "亞部|亞類"
+msgstr "Subdivision"
+
+#: templates/taxa/catalogue.html:186
+msgid "下部|下類"
+msgstr "Infradivision"
+
+#: templates/taxa/catalogue.html:187
+msgid "小部|小類"
+msgstr "Parvdivision"
+
+#: templates/taxa/catalogue.html:188
+msgid "超門|總門"
+msgstr "Superphylum"
+
+#: templates/taxa/catalogue.html:189 templates/taxa/catalogue.html:497
+msgid "界"
+msgstr "Kingdom"
+
+#: templates/taxa/catalogue.html:190
+msgid "亞界"
+msgstr "Subkingdom"
+
+#: templates/taxa/catalogue.html:192
+msgid "下界"
+msgstr "Infrakingdom"
+
+#: templates/taxa/catalogue.html:193
+msgid "超部|總部"
+msgstr "Superdivision"
+
+#: templates/taxa/catalogue.html:194
+msgid "域"
+msgstr "Domain"
+
+#: templates/taxa/catalogue.html:195
+msgid "總界"
+msgstr "Superkingdom"
+
+#: templates/taxa/catalogue.html:205 templates/taxa/catalogue.html:514
+msgid "特有性"
+msgstr "Endemism"
+
+#: templates/taxa/catalogue.html:208
+msgid "臺灣特有"
+msgstr "Endemic to Taiwan"
+
+#: templates/taxa/catalogue.html:231 templates/taxa/catalogue.html:531
+msgid "原生/外來性"
+msgstr "Native/Exotic"
+
+#: templates/taxa/catalogue.html:234
+msgid "原生"
+msgstr "Native"
+
+#: templates/taxa/catalogue.html:238
+msgid "歸化"
+msgstr "Naturalized"
+
+#: templates/taxa/catalogue.html:242
+msgid "入侵"
+msgstr "Invasive"
+
+#: templates/taxa/catalogue.html:246
+msgid "栽培豢養"
+msgstr "Cultured"
+
+#: templates/taxa/catalogue.html:254
+msgid "更多項目"
+msgstr "More"
+
+#: templates/taxa/catalogue.html:268
+msgid "棲地環境"
+msgstr "Environment"
+
+#: templates/taxa/catalogue.html:271
+msgid "陸生"
+msgstr "Terrestrial"
+
+#: templates/taxa/catalogue.html:275
+msgid "淡水"
+msgstr "Freshwater"
+
+#: templates/taxa/catalogue.html:279
+msgid "半鹹水"
+msgstr "Brackish"
+
+#: templates/taxa/catalogue.html:283
+msgid "海洋"
+msgstr "Marine"
+
+#: templates/taxa/catalogue.html:291
+msgid "保育類"
+msgstr "Protected Category"
+
+#: templates/taxa/catalogue.html:294 templates/taxa/catalogue.html:317
+#: templates/taxa/catalogue.html:372 templates/taxa/catalogue.html:432
+msgid "無"
+msgstr "Null"
+
+#: templates/taxa/catalogue.html:298
+msgid "第一級"
+msgstr "Endangered"
+
+#: templates/taxa/catalogue.html:302
+msgid "第二級"
+msgstr "Precious and Rare"
+
+#: templates/taxa/catalogue.html:306
+msgid "第三級"
+msgstr "Other Conserved"
+
+#: templates/taxa/catalogue.html:314
+msgid "臺灣紅皮書評估"
+msgstr "Red List of Taiwan"
+
+#: templates/taxa/catalogue.html:369
+msgid "IUCN評估"
+msgstr "IUCN"
+
+#: templates/taxa/catalogue.html:429
+msgid "CITES附錄"
+msgstr "CITES"
+
+#: templates/taxa/catalogue.html:436
+msgid "附錄一"
+msgstr "Appendix I"
+
+#: templates/taxa/catalogue.html:440
+msgid "附錄二"
+msgstr "Appendix II"
+
+#: templates/taxa/catalogue.html:444
+msgid "附錄三"
+msgstr "Appendix III"
+
+#: templates/taxa/catalogue.html:452
+msgid "更新日期"
+msgstr "Date Updated"
+
+#: templates/taxa/catalogue.html:457
+msgid "大於"
+msgstr "After"
+
+# TODO
+# msgid "等於"
+# msgstr "On"
+#: templates/taxa/catalogue.html:459
+msgid "小於"
+msgstr "Before"
+
+#: templates/taxa/catalogue.html:473
+msgid "清除"
+msgstr "Clear"
+
+#: templates/taxa/catalogue.html:474 templates/taxa/name_match.html:82
+msgid "搜尋"
+msgstr "Search"
+
+#: templates/taxa/catalogue.html:484
+msgid "筆"
+msgstr "results"
+
+#: templates/taxa/catalogue.html:486 templates/taxa/name_match.html:95
+msgid "下載CSV"
+msgstr "⇩CSV"
+
+#: templates/taxa/catalogue.html:487 templates/taxa/name_match.html:96
+msgid "下載JSON"
+msgstr "⇩JSON"
+
+#: templates/taxa/catalogue.html:505
+msgid "階層"
+msgstr "Rank"
+
+#: templates/taxa/catalogue.html:539
+msgid "地位"
+msgstr "Status"
+
+#: templates/taxa/name_match.html:49
+msgid "查詢設定"
+msgstr "Search Setting"
+
+#: templates/taxa/name_match.html:65
+msgid "最佳結果"
+msgstr "Best Result"
+
+#: templates/taxa/name_match.html:69
+msgid "是"
+msgstr "Yes"
+
+#: templates/taxa/name_match.html:73
+msgid "否"
+msgstr "No"
+
+#: templates/taxa/name_match.html:89
+msgid "比對結果"
+msgstr "Matching Result"
+
+#: templates/taxa/taxon_tree.html:47
+msgid "熱門搜尋階層"
+msgstr "Top Search Ranks"
+
+#: templates/taxa/taxon_tree.html:79
+msgid "包含栽培豢養"
+msgstr "Including Cultured"
