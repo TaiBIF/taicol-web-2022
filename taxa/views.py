@@ -1599,6 +1599,7 @@ def send_feedback(request):
         type = int(req.get('type',1)),
         title = req.get('title'),
         description = req.get('description'),
+        reference = req.get('reference'),
         notify = True if req.get('notify') == 'yes' else False,
         name = req.get('name'),
         email = req.get('email'),

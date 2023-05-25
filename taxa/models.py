@@ -37,6 +37,7 @@ class Feedback(models.Model): # 錯誤回報
     type = models.SmallIntegerField('類型',choices=TYPE_CHOICE, null=True, blank=True)
     title = models.CharField('主旨',max_length=1000, blank=True, null=True)
     description = models.TextField('錯誤描述',blank=True, null=True)
+    reference = models.TextField('來源文獻/參考資料',blank=True, null=True)
     notify = models.BooleanField('更新通知與否',default=True)
     name = models.CharField('姓名',max_length=1000, blank=True, null=True)
     email = models.CharField('email',max_length=1000, blank=True, null=True)
