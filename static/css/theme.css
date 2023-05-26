@@ -4283,6 +4283,10 @@ body {
         -webkit-transition: all .3s
     }
 
+    .tree-area .rank-1-red li>.item-box:hover>h2:hover {
+        text-decoration:underline;
+    }
+
     .tree-area .rank-1-red li>.item-box:hover>.cir-box {
         transition: all .3s;
         -moz-transition: all .3s;

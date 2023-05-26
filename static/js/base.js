@@ -69,5 +69,9 @@ $(function (){
         }
     });
 
+    $('.language-item').on('click',function (event) {
+        document.getElementById("language").setAttribute("value",event.target.getAttribute("value"));
+        document.getElementById("language-selected").submit();
+    });
 
 })
