@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-23 08:36+0000\n"
+"POT-Creation-Date: 2023-05-26 06:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,74 +18,78 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: templates/base.html:56 templates/base.html:130 templates/pages/about.html:19
+#: templates/base.html:56 templates/base.html:147 templates/pages/about.html:19
 #: templates/pages/about.html:32 templates/pages/about.html:59
 msgid "關於TaiCOL"
 msgstr "ABOUT"
 
-#: templates/base.html:62 templates/base.html:134
+#: templates/base.html:62 templates/base.html:151
 #: templates/taxa/taxon_tree.html:29 templates/taxa/taxon_tree.html:39
 msgid "物種樹"
 msgstr "TAXON"
 
-#: templates/base.html:68 templates/base.html:138
+#: templates/base.html:68 templates/base.html:155
 #: templates/taxa/catalogue.html:72 templates/taxa/catalogue.html:82
 msgid "物種名錄"
 msgstr "CATALOGUE"
 
-#: templates/base.html:74 templates/base.html:144
+#: templates/base.html:74 templates/base.html:161
 #: templates/taxa/name_match.html:27
 msgid "資料工具"
 msgstr "TOOL"
 
-#: templates/base.html:79 templates/base.html:147
+#: templates/base.html:79 templates/base.html:164
 msgid "資料下載"
 msgstr "Download"
 
-#: templates/base.html:80 templates/base.html:150
+#: templates/base.html:80 templates/base.html:167
 msgid "API"
 msgstr "API"
 
-#: templates/base.html:81 templates/base.html:153
+#: templates/base.html:81 templates/base.html:170
 #: templates/taxa/name_match.html:27 templates/taxa/name_match.html:41
 msgid "學名比對工具"
 msgstr "Name Match"
 
-#: templates/base.html:82 templates/base.html:156
+#: templates/base.html:82 templates/base.html:173
 msgid "學名管理工具"
 msgstr "Name Management Tool"
 
-#: templates/base.html:88 templates/base.html:162
+#: templates/base.html:88 templates/base.html:179
 #: templates/pages/data_policy.html:15
 msgid "更多資訊"
 msgstr "MORE"
 
-#: templates/base.html:93 templates/base.html:165
+#: templates/base.html:93 templates/base.html:182
 msgid "最新消息"
 msgstr "News"
 
-#: templates/base.html:94 templates/base.html:168
+#: templates/base.html:94 templates/base.html:185
 msgid "主題文章"
 msgstr "Articles"
 
-#: templates/base.html:95 templates/base.html:171
+#: templates/base.html:95 templates/base.html:188
 msgid "資料統計"
 msgstr "Statistics"
 
-#: templates/base.html:96 templates/base.html:174
+#: templates/base.html:96 templates/base.html:191
 #: templates/pages/data_policy.html:15 templates/pages/data_policy.html:31
 msgid "資料使用規範"
 msgstr "Data Policy"
 
-#: templates/base.html:122
-msgid "聯絡我們"
-msgstr "Contact Us"
+#: templates/base.html:103
+msgid "語言"
+msgstr "LANGUAGE"
 
-#: templates/base.html:180
+#: templates/base.html:139
+msgid "聯絡我們"
+msgstr "Contact us"
+
+#: templates/base.html:197
 msgid "指導單位"
 msgstr "Funded by"
 
-#: templates/base.html:186
+#: templates/base.html:203
 msgid "維護單位"
 msgstr "Maintained by"
 
@@ -197,7 +201,6 @@ msgid "開頭為"
 msgstr "Begins with"
 
 #: templates/taxa/catalogue.html:98 templates/taxa/taxon_tree.html:57
-#: ui_slicing/index.html:58
 msgid "請輸入關鍵字"
 msgstr "Enter keywords"
 
