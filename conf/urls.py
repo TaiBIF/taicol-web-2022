@@ -25,20 +25,16 @@ handler500 = 'pages.views.custom_error_view'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', include('pages.urls')),
-    # path('', include('taxa.urls')),
-    path('ckeditor/', include('ckeditor_uploader.urls')),
-    # re_path(r'^media/(?P<path>.*)$', serve, {
-    #     'document_root': settings.MEDIA_ROOT,
-    # }),
+    path('', include('taxa.urls_api')),
+    # path('ckeditor/', include('ckeditor_uploader.urls')),
+    re_path(r'^media/(?P<path>.*)$', serve, {
+        'document_root': settings.MEDIA_ROOT,
+    }),
 
 ]
 urlpatterns += i18n_patterns(
     path("i18n/", include("django.conf.urls.i18n")),
-    path('ckeditor/', include('ckeditor_uploader.urls')),
-    re_path(r'^media/(?P<path>.*)$', serve, {
-        'document_root': settings.MEDIA_ROOT,
-    }),
+
     path(r'', include('pages.urls')),
-    path(r'', include('taxa.urls')),
+    path(r'', include('taxa.urls_pages')),
 )
