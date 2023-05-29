@@ -4,6 +4,8 @@ import Item from './Item'
 import { NewsDataProps, NewsListProps, CategoryDataProps } from '../types'
 import useSWR from 'swr'
 import { fetcher } from '../utils/helper'
+import { Translation } from 'react-i18next';
+
 const NewsItem: React.FC = () => {
   const [selectedCategory, setSelectCategory] = React.useState<number | string>('all')
   const [page, setPage] = React.useState<number>(1)
@@ -28,17 +30,21 @@ const NewsItem: React.FC = () => {
   return (<div className="main-box vivi-cont-top padb-80">
 			<div className="cont-tab-area">
 				<ul>
+        <Translation>{t =>
           <li
             className={selectedCategory == 'all' ? 'now' : ''}
             onClick={() => handleCategoryClick('all')}>
-            全部
+            {t('全部')}
           </li>
+          }</Translation>
           {categories?.map((category) => {
-            return <li
+            return (<Translation>{t =>
+              <li
               onClick={() => handleCategoryClick(category.id)}
               className={selectedCategory === category.id ? 'now' : ''}>
-              {category.name}
+              {t(category.name)}
             </li>
+            }</Translation>)
           })}
 				</ul>
 			</div>
@@ -67,7 +73,7 @@ const NewsItem: React.FC = () => {
                   setPage(page - 1)
               }} className="back">
                 <img src="/static/image/pagear1.svg"/>
-                <p>上一頁</p>
+                <Translation>{t =><p>{t("上一頁")}</p>}</Translation>)
               </a>
               {link}
             </>
@@ -79,7 +85,7 @@ const NewsItem: React.FC = () => {
                   setPage(page + 1)
               }} className="next">
                 <img src="/static/image/pagear2.svg"/>
-                <p>下一頁</p>
+                <Translation>{t =><p>{t("下一頁")}</p>}</Translation>)
                 </a>
               {link}
             </>

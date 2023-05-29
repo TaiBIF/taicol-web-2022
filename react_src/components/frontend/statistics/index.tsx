@@ -13,6 +13,7 @@ import TaxonCountSection from './TaxonCountSection'
 import { speciesOptions } from './options'
 import PopupTable from './PopupTable'
 import { fetcher } from '../utils/helper'
+import { Translation } from 'react-i18next';
 
 
 const rankInfo:RankInfoProps[] = [
@@ -222,8 +223,9 @@ const StatisticsPage: React.FC = () => {
 
   return (<>
     <div className="page-top">
-      <Banner title='STATISTICS' zhTWTitle='資料統計' breadcrumbs={breadcrumbs} picType={'crap'} />
-      
+      <Translation>{ t =>
+        <Banner title={t('STATISTICS')} zhTWTitle={t('資料統計')} picType={'crap'}  breadcrumbs={breadcrumbs}/>
+      }</Translation>
         <TaxonCountSection />
         <div className="chart-box">
           <div className="main-box">

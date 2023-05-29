@@ -1,6 +1,7 @@
 import * as React from 'react';
 import type { EndemicProps } from '../types';
 import SpeciesAndEndemicRatios from './SpeciesAndEndemicRatios';
+import { Translation } from 'react-i18next';
 
 type Props = {
   data: EndemicProps[]
@@ -14,11 +15,15 @@ const SpeciesAndEndemicRatiosStatisics: React.FC<Props> = (props) => {
       <div className="title-flex">
         <div className="mark-title">
           <img src="/static/image/title-mark.svg"/>
-          <p>臺灣各類生物種數與特有比例</p>
+          <Translation>{ t =>
+            <p>{t('臺灣各類生物種數與特有比例')}</p>
+          }</Translation>
         </div>
         <div className="color-inf">
           <div className="blue-sq"></div>
-          <p>特有種</p>
+          <Translation>{ t =>
+            <p>{t('特有種')}</p>
+          }</Translation>
         </div>
       </div>
       <ul className="special-specise">

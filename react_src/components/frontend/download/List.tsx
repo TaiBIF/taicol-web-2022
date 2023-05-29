@@ -4,6 +4,8 @@ import type { DownloadDataProps,CategoryDataProps } from '../types'
 import Item from './Item'
 import useSWR from 'swr';
 import { fetcher } from '../utils/helper'
+import { Translation } from 'react-i18next';
+
 const DownloadItem: React.FC = () => {
   const [selectedCategory, setSelectCategory] = React.useState<number | string>('all')
   const GET_ARTICLE_LIST_URL = `${process.env.REACT_API_URL}/api/download?cid=${selectedCategory}`;
@@ -21,17 +23,21 @@ const DownloadItem: React.FC = () => {
     <div className="main-box vivi-cont-top download-box">
 			<div className="cont-tab-area">
 				<ul>
-          <li
-            className={selectedCategory == 'all' ? 'now' : ''}
-            onClick={() => handleCategoryClick('all')}>
-            全部
-          </li>
-          {categories?.map((category) => {
-            return <li
-              onClick={() => handleCategoryClick(category.id)}
-              className={selectedCategory === category.id ? 'now' : ''}>
-              {category.name}
+          <Translation>{t =>
+            <li
+              className={selectedCategory == 'all' ? 'now' : ''}
+              onClick={() => handleCategoryClick('all')}>
+              {t('全部')}
             </li>
+          }</Translation>
+          {categories?.map((category) => {
+            return (
+              <Translation>{t => <li
+                onClick={() => handleCategoryClick(category.id)}
+                className={selectedCategory === category.id ? 'now' : ''}>
+                {t(category.name)}
+                </li>
+              }</Translation>)
           })}
 				</ul>
       </div>
@@ -41,7 +47,7 @@ const DownloadItem: React.FC = () => {
         return <div className="classify-item" key={`download-category-${category.id}`}>
           {(selectedCategory == 'all' || selectedCategory == category.id) && <div className="mark-title">
             <img src="/static/image/title-mark.svg" />
-            <p>{category.name}</p>
+            <Translation>{t => <p>{t(category.name)}</p>}</Translation>
           </div>}
           <ul className="download-set">
             {downloadList?.filter((item: DownloadDataProps) => parseInt(item.Category.id) == category.id).map((download: DownloadDataProps, index: number) => <Item {...download} key={`news-${index}`} />)}
