@@ -2,6 +2,7 @@ import * as React from 'react';
 import { speciesOptions } from './options'
 import type { SpeciesCompareProps,KingdomInfoProps } from '../types'
 import CompareSpeciesBarChart from './CompareSpeciesBarChart'
+import { Translation } from 'react-i18next';
 
 type Props = {
   data: SpeciesCompareProps[],
@@ -37,22 +38,31 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
         <div className="left-box">
           <div className="mark-title">
             <img src="/static/image/title-mark.svg"/>
-            <p>臺灣與全球物種數比較</p>
+            <Translation>{ t =>
+            <p>{t('臺灣與全球物種數比較')}</p>
+            }</Translation>
           </div>
           <div className="color-inf">
             <div className="colorbox">
               <div className="color1"></div>
-              <p>全球現有種數</p>
+              <Translation>{ t =>
+              <p>{t('全球現有種數')}</p>
+              }</Translation>
             </div>
             <div className="colorbox">
               <div className="color2"></div>
-              <p>臺灣現有種數</p>
+              <Translation>{ t =>
+              <p>{t('臺灣現有種數')}</p>
+              }</Translation>
             </div>
           </div>
         </div>
         <div className="right-select">
           <select name="" id="" onChange={handleCompareTypeChange}>
-            {speciesOptions.map((item, index) => <option key={`species-option-${index}`} value={item.value}>{item.label}</option>)}
+            {speciesOptions.map((item, index) => 
+            <option key={`species-option-${index}`} value={item.value}>
+              {item.label}
+              </option>)}
           </select>
         </div>
       </div>
@@ -73,7 +83,7 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
         </div>}
       </div>
       <a href="#" className="btn-more" onClick={() => handleShowCompareTableClick(true)}>
-        <p>查看比較總表</p>
+        <Translation>{ t => <p>{t('查看比較總表')}</p> }</Translation>
         <div className="arr">
           <div className="arline"></div>
           <div className="arrrot">

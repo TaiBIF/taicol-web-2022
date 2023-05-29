@@ -3,6 +3,7 @@ import type {NewsDataProps} from '../types'
 import * as moment from 'moment';
 import {shortDescription} from '../utils/helper'
 import validateColor from "validate-color";
+import { Translation } from 'react-i18next';
 
 const LatestNews: React.FC<NewsDataProps> = (props) => {
   const { title, Category, publishedDate, slug } = props
@@ -17,9 +18,10 @@ const LatestNews: React.FC<NewsDataProps> = (props) => {
             <div className="day">{date.format('DD')}</div>
             <div className="mon-year">{date.format('MMM')}.{date.format('YYYY')}</div>
           </div>
+          <Translation>{t =>
           <div className={`tag`}  style={{backgroundColor: categoryBackgroundColor}}>
-            {Category.name}
-          </div>
+            {t(Category.name)}
+          </div>}</Translation>
         </div>
         <h3 className="news-title">
           {shortDescription(title, 100)}

@@ -4,6 +4,8 @@ import { NewsDataProps, NewsListProps, CategoryDataProps } from '../types'
 import useSWR from 'swr'
 import MoreButton from '../common/MoreButton'
 import { fetcher } from '../utils/helper'
+import { Translation } from 'react-i18next';
+
 const LatestNewsList: React.FC = () => {
   const [selectedCategory, setSelectCategory] = React.useState<number | string>('all')
   const [page, setPage] = React.useState<number>(1)
@@ -49,21 +51,20 @@ const LatestNewsList: React.FC = () => {
           <h3>NEWS <span></span></h3>
         </div>
         <ul className="news-tab-index">
-          <li
+        <Translation>{t => <li
             className={selectedCategory =='all' ? 'now' : ''}
             onClick={() => handleCategoryClick('all')}>
-            全部
-
+            {t('全部')}
             <div className={selectedCategory === 'all' ? "liney w-full" : 'liney'}></div>
-          </li>
+          </li>}</Translation>
           {categories?.map((category:CategoryDataProps,index:number) => {
-            return <li
+            return (<Translation>{t => <li
               key={`category-${index}`}
               onClick={() => handleCategoryClick(category.id)}
               className={selectedCategory === category.id ? 'now' : ''}>
-              {category.name}
+              {t(category.name)}
               <div className={selectedCategory === category.id ? "liney w-full" : 'liney'}></div>
-            </li>
+            </li>}</Translation>)
           })}
         </ul>
       </div>

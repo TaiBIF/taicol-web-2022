@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm'
 import useSWR from 'swr'
 import { fetcher } from '../utils/helper'
 import * as utf8 from 'utf8';
+import { Translation } from 'react-i18next';
 
 
 const  LinkRenderer = (props:any) => {
@@ -19,7 +20,7 @@ const  LinkRenderer = (props:any) => {
  
 const breadcrumbs = [
   { title: '首頁', href: '/' },
-  {title: '更多資訊'},
+  {title: '資料工具'},
   {title: 'API說明文件'}
 ]
 
@@ -28,10 +29,13 @@ const ApiPage: React.FC = () => {
  
   return (
     <div className="page-top">
-      <Banner title='API DOCUMENTATION' zhTWTitle='API說明文件' breadcrumbs={breadcrumbs} />
+      <Translation>{ t =>
+      <Banner title={t('API DOCUMENTATION')} zhTWTitle={t('API說明文件')} breadcrumbs={breadcrumbs}/>
+      }</Translation>
       <div className='main-box vivi-cont-top'>
-        <div className='page-update'>更新日期：{data && moment(data.createdAt).format('yyyy/MM/DD') }</div>
-
+        <Translation>{ t =>
+        <div className='page-update'>{t('更新日期')}：{data && moment(data.createdAt).format('yyyy/MM/DD') }</div>
+        }</Translation>
         <div id='markdown' className='api-box apitable-style'>
           {data &&
             <ReactMarkdown  components={{ a: LinkRenderer }} remarkPlugins={[remarkGfm]} children={utf8.decode(data.content)}  />

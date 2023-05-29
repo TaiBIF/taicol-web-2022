@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {formatNumber} from '../utils/helper';
 import type {TaxonCountProps} from '../types'
+import { Translation } from 'react-i18next';
 
 const TaxonCount: React.FC<TaxonCountProps> = (props) => {
   const { img, title, count ,CircleClassName,enTitle,tooltip } = props;
@@ -14,7 +15,9 @@ const TaxonCount: React.FC<TaxonCountProps> = (props) => {
         </div>
         <div className="txtbox">
           <div className="title">
-            <h3>{title}</h3>
+          <Translation>{ t =>
+          <h3>{t(title)}</h3>
+          }</Translation>
             {tooltip && <div className="markq">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
                 <g id="qs_mark" transform="translate(-1536.736 -1209.631)">
@@ -30,7 +33,9 @@ const TaxonCount: React.FC<TaxonCountProps> = (props) => {
               </div>
             </div>}
           </div>
-          <p className='uppercase'>{enTitle}</p>
+          <p className='uppercase'>
+            {enTitle}
+            </p>
         </div>
       </div>
       <div className="numberbox">

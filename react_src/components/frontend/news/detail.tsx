@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { NewsDataProps } from '../types'
 import { fetcher,replaceDomain,replaceIp } from '../utils/helper'
 import Banner from '../common/Banner'
+import { Translation } from 'react-i18next';
 
 type Props = {
 	current: NewsDataProps,
@@ -33,15 +34,21 @@ const News: React.FC = () => {
     description = data?.current?.description.replace(process.env.REACT_API_URL, '/static');
   }
 
+  const tag_name = data?.current?.Category?.name || ''
+
   return (
   <div className="page-top">
 		<div className="big-top">
-      		<Banner title='NEWS' zhTWTitle='最新消息' picType={'crap'} breadcrumbs={breadcrumbs}/>
+          <Translation>{ t =>
+            <Banner title={t('NEWS')} zhTWTitle={t('最新消息')} picType={'crap'} breadcrumbs={breadcrumbs}/>
+          }</Translation>
 		</div>
       <div className="main-box vivi-cont-top">
         <div className="news-cont-title">
 				<div className="cont-date-flex">
-					<div className="tag"  style={{ backgroundColor: categoryBackgroundColor}}>{data?.current?.Category?.name || ''}</div>
+					<div className="tag"  style={{ backgroundColor: categoryBackgroundColor}}>
+            <Translation>{t=> t(tag_name)}</Translation>  
+          </div>
 					<div className="date">{date}</div>
 				</div>
 				<h2>{data?.current?.title}</h2>
@@ -53,9 +60,9 @@ const News: React.FC = () => {
         {data && <div className='text-[#555]' dangerouslySetInnerHTML={{ __html: description }} />}
       </div>
       <div className="news-article-btn">
-		{data?.prev && <a href={`/news/${data.prev.slug}`}>上一則</a>}
-			<a href="/news">回列表</a>
-		{data?.next && <a href={`/news/${data.next.slug}`}>下一則</a>}
+		{data?.prev && <a href={`/news/${data.prev.slug}`}><Translation>{t=> t('上一則')}</Translation></a>}
+			<a href="/news"><Translation>{t=> t('回列表')}</Translation></a>
+		{data?.next && <a href={`/news/${data.next.slug}`}><Translation>{t=> t('下一則')}</Translation></a>}
 	  </div>
     </div>
 	</div>
