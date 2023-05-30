@@ -80,7 +80,7 @@
 			</div>
 			<div class="title-box">
 				<h2>{% trans "物種名錄" %}</h2>
-				<p>CATALOGUE</p>
+				<p>{% trans "CATALOGUE" %}</p>
 			</div>
 		</div>
 	</div>
@@ -455,7 +455,7 @@
 								<div class="input-item select-100">
 									<select class="wide" name="date-select">
 										<option value="gl">{% trans "大於" %}</option>
-										<option value="eq">{% trans "等於" %}</option>
+										<option value="eq">{% trans "等於" context "date equal" %}</option>
 										<option value="sl">{% trans "小於" %}</option>
 									</select>
 								</div>
@@ -481,7 +481,7 @@
 	<div class="result-area">
 		<div class="main-box">
 			<div class="top-infbox">
-				<p class="d-none">共<span id="total-count"></span>{% trans "筆" %}</p>
+				<p class="d-none">{% trans "共" %}<span id="total-count"></span>{% trans "筆" %}</p>
 				<div class="button-two d-none">
 					<button class="downloadData" data-type="csv">{% trans "下載CSV" %}</button>
 					<button class="downloadData" data-type="json">{% trans "下載JSON" %}</button>

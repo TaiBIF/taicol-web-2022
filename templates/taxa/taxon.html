@@ -71,7 +71,7 @@
 								<option value="1">{% trans "學名和中文名" %}</option>
 								<option value="2">{% trans "照片" %}</option>
 								<option value="3">{% trans "分類資訊" %}</option>
-								<option value="4">{% trans "分類階層" %}</option>
+								<option value="4">{% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}</option>
 								<option value="5">{% trans "物種資訊" %}</option>
 								<option value="6">{% trans "學名變遷" %}</option>
 								<option value="7">{% trans "文獻" %}</option>
@@ -185,7 +185,7 @@
 		<div class="splist-search-box de">
 			<div class="main-box">
 				<div class="cont-search-bar">
-					<input type="text" name="keyword" placeholder="請輸入關鍵字">
+					<input type="text" name="keyword" placeholder={% trans "請輸入關鍵字" %}>
 					<button class="search">
 						<svg id="Group_6882" data-name="Group 6882" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="36.847" height="36.775" viewBox="0 0 36.847 36.775">
 							<defs>
@@ -210,7 +210,7 @@
 					{% if stat_str %}
 					<button class="sticky_btn" data-hash="#taxon-sub">- {% trans "子階層統計" %}</button>
 					{% endif %}
-					<button class="sticky_btn" data-hash="#taxon-rank">- {% trans "分類階層" %}</button>
+					<button class="sticky_btn" data-hash="#taxon-rank">- {% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}</button>
 					<button class="sticky_btn" data-hash="#taxon-info">- {% trans "物種資訊" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-change">- {% trans "學名變遷" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-ref">- {% trans "文獻" %}</button>
@@ -271,7 +271,8 @@
 							</div>
 						</div>
 						<div class="rignt-pic_area">
-							<button class="mistake-btn">{% trans "回報" %}<br>{% trans "錯誤" %}</button>
+
+							<button class="mistake-btn">{% blocktrans context "回報錯誤"%}回報<br>錯誤{% endblocktrans %}</button>
 							<div class="pic-area mh-100">
 								{% if data.images|length > 1 %}
 									<div class="arr-left plusSlides" data-index="-1">
@@ -318,7 +319,8 @@
 									<a class="anchor" id="taxon-rank"></a>
 									<div class="mark-title">
 										<img src="{% static 'image/title-mark.svg' %}">
-										<p>{% trans "分類階層" %}</p>
+										
+										<p>{% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}
 									</div>
 									<div class="arr">
 										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
