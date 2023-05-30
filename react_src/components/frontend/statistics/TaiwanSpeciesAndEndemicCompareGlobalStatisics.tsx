@@ -3,6 +3,7 @@ import { speciesOptions } from './options'
 import type { SpeciesCompareProps,KingdomInfoProps } from '../types'
 import CompareSpeciesBarChart from './CompareSpeciesBarChart'
 import { Translation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   data: SpeciesCompareProps[],
@@ -31,7 +32,11 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
   if (compareType == 'kingdom_compare') {
     filterData = data.filter((item: SpeciesCompareProps, number: number) => kingdomSelected.includes(item.name))
   }
-
+  const { t, i18n } = useTranslation();
+  const speciesOptions_table = speciesOptions.map((item, index) => {
+    return (<option key={`species-option-${index}`} value={item.value}>
+      {t((item.label||'').toString())}
+      </option>)})
   return (
     <div className="item-p2">
       <div className="title-flex-box">
@@ -59,10 +64,7 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
         </div>
         <div className="right-select">
           <select name="" id="" onChange={handleCompareTypeChange}>
-            {speciesOptions.map((item, index) => 
-            <option key={`species-option-${index}`} value={item.value}>
-              {item.label}
-              </option>)}
+            {speciesOptions_table}
           </select>
         </div>
       </div>

@@ -30,7 +30,7 @@
     "保育指標":"CONSERVATION",
 	
     "資料統計":"STATISTICS",
-
+    "STATISTICS":"",
     "上一頁":"Last Page",
     "下一頁":"Next Page",
 
@@ -56,14 +56,23 @@
     "全球現有種數":"Global Species",
     "臺灣現有種數":"Taiwan Species",
     "查看比較總表":"Comparison Summary",
-    "SPECIES AND INFRASPECIES":"",
+    "SPECIES AND":"",
+    "INFRASPECIES":"",
     "SCIENTIFIC NAMES":"",
     "REFERENCES":"",
     "NEWS":"",
     "ARTICLES":"",
     "各界比較":"Compare Kingdoms",
+    "植物界比較":"Compare Plantae",
+    "動物界比較":"Compare Animalia",
+    "節肢動物比較":"Compare Arthropoda",
+    "脊索動物比較":"Compare Chordata",
     "臺灣名錄主要提供者":"Main Provider of TaiCOL",
     "界":"Kingdom",
     "門":"Phylum",
-    "綱":"Class"
+    "綱":"Class",
+    "原生":"Native",
+    "歸化":"Naturalized",
+    "入侵":"Invasive",
+    "栽培豢養":"Cultured"
 }

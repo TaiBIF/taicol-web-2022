@@ -4,7 +4,7 @@ import type {TaxonCountProps} from '../types'
 import { Translation } from 'react-i18next';
 
 const TaxonCount: React.FC<TaxonCountProps> = (props) => {
-  const { img, title, count ,CircleClassName,enTitle,tooltip } = props;
+  const { img, title, count ,CircleClassName, enTitle , tooltip } = props;
 
   return (
     <li>
