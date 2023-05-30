@@ -5,7 +5,7 @@ export type TaxonCountProps = {
   count: number;
   type:string;
   CircleClassName: string;
-  tooltip?: string;
+  tooltip?: string | React.ReactNode;
 }
 
 export type NewsDataProps = {

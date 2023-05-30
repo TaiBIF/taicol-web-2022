@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-29 08:45+0000\n"
+"POT-Creation-Date: 2023-05-30 00:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,7 +73,6 @@ msgid "資料統計"
 msgstr "Statistics"
 
 #: templates/base.html:96 templates/base.html:191
-#: templates/pages/data_policy.html:15 templates/pages/data_policy.html:31
 msgid "資料使用規範"
 msgstr "Data Policy"
 
@@ -98,6 +97,10 @@ msgstr "Maintained by"
 #: templates/taxa/taxon_tree.html:29
 msgid "首頁"
 msgstr "HOME"
+
+#: templates/pages/about.html:33
+msgid "ABOUT"
+msgstr " "
 
 #: templates/pages/about.html:62
 msgid ""
@@ -162,6 +165,20 @@ msgstr ""
 "information for government departments, researchers, the public and "
 "biodiversity databases."
 
+#: templates/pages/data_policy.html:15
+msgctxt "BreadCrumb"
+msgid "資料使用規範"
+msgstr "DATA POLICY"
+
+#: templates/pages/data_policy.html:31
+msgctxt "title"
+msgid "資料使用規範"
+msgstr "DATA POLICY"
+
+#: templates/pages/data_policy.html:32
+msgid "Data Policy"
+msgstr " "
+
 #: templates/pages/data_policy.html:105
 msgid "臺灣物種名錄(TaiCOL)引用格式"
 msgstr "Citation of TaiCOL"
@@ -184,6 +201,10 @@ msgstr "Contact Email"
 msgid "確認送出"
 msgstr "Submit"
 
+#: templates/taxa/catalogue.html:83
+msgid "CATALOGUE"
+msgstr " "
+
 #: templates/taxa/catalogue.html:90 templates/taxa/name_match.html:78
 msgid "學名/中文名"
 msgstr "Name"
@@ -192,7 +213,7 @@ msgstr "Name"
 msgid "包含"
 msgstr "Include"
 
-#: templates/taxa/catalogue.html:93 templates/taxa/catalogue.html:458
+#: templates/taxa/catalogue.html:93
 msgid "等於"
 msgstr "Equal to"
 
@@ -200,7 +221,8 @@ msgstr "Equal to"
 msgid "開頭為"
 msgstr "Begins with"
 
-#: templates/taxa/catalogue.html:98 templates/taxa/taxon_tree.html:57
+#: templates/taxa/catalogue.html:98 templates/taxa/taxon.html:188
+#: templates/taxa/taxon_tree.html:57
 msgid "請輸入關鍵字"
 msgstr "Enter keywords"
 
@@ -212,8 +234,7 @@ msgstr "Advanced"
 msgid "較高分類群"
 msgstr "Higher Taxon"
 
-#: templates/taxa/catalogue.html:144 templates/taxa/taxon.html:74
-#: templates/taxa/taxon.html:213 templates/taxa/taxon.html:321
+#: templates/taxa/catalogue.html:144
 msgid "分類階層"
 msgstr "Rank"
 
@@ -441,7 +462,7 @@ msgstr "Brackish"
 msgid "海洋"
 msgstr "Marine"
 
-#: templates/taxa/catalogue.html:291 templates/taxa/taxon.html:390
+#: templates/taxa/catalogue.html:291 templates/taxa/taxon.html:392
 msgid "保育類"
 msgstr "Protected Category"
 
@@ -494,9 +515,11 @@ msgstr "Date Updated"
 msgid "大於"
 msgstr "After"
 
-# TODO
-# msgid "等於"
-# msgstr "On"
+#: templates/taxa/catalogue.html:458
+msgctxt "date equal"
+msgid "等於"
+msgstr "On"
+
 #: templates/taxa/catalogue.html:459
 msgid "小於"
 msgstr "Before"
@@ -510,8 +533,12 @@ msgid "搜尋"
 msgstr "Search"
 
 #: templates/taxa/catalogue.html:484
+msgid "共"
+msgstr " "
+
+#: templates/taxa/catalogue.html:484
 msgid "筆"
-msgstr "results"
+msgstr " results"
 
 #: templates/taxa/catalogue.html:486 templates/taxa/name_match.html:95
 msgid "下載CSV"
@@ -528,6 +555,10 @@ msgstr "Rank"
 #: templates/taxa/catalogue.html:539
 msgid "地位"
 msgstr "Status"
+
+#: templates/taxa/name_match.html:42
+msgid "NAME MATCH"
+msgstr " "
 
 #: templates/taxa/name_match.html:49
 msgid "查詢設定"
@@ -570,38 +601,44 @@ msgstr ""
 msgid "分類資訊"
 msgstr "Checklist Status"
 
+#: templates/taxa/taxon.html:74 templates/taxa/taxon.html:213
+#: templates/taxa/taxon.html:323
+msgctxt "分類動詞"
+msgid "分類階層"
+msgstr "Classification"
+
 #: templates/taxa/taxon.html:75 templates/taxa/taxon.html:214
-#: templates/taxa/taxon.html:358
+#: templates/taxa/taxon.html:360
 msgid "物種資訊"
 msgstr "Taxon Information"
 
 #: templates/taxa/taxon.html:76 templates/taxa/taxon.html:215
-#: templates/taxa/taxon.html:459
+#: templates/taxa/taxon.html:461
 msgid "學名變遷"
 msgstr "Synonym"
 
 #: templates/taxa/taxon.html:77 templates/taxa/taxon.html:216
-#: templates/taxa/taxon.html:484 templates/taxa/taxon.html:606
-#: templates/taxa/taxon.html:646
+#: templates/taxa/taxon.html:486 templates/taxa/taxon.html:608
+#: templates/taxa/taxon.html:648
 msgid "文獻"
 msgstr "Reference"
 
 #: templates/taxa/taxon.html:78 templates/taxa/taxon.html:217
-#: templates/taxa/taxon.html:509
+#: templates/taxa/taxon.html:511
 msgid "專家"
 msgstr "Expert"
 
 #: templates/taxa/taxon.html:79 templates/taxa/taxon.html:218
-#: templates/taxa/taxon.html:540
+#: templates/taxa/taxon.html:542
 msgid "相關連結"
 msgstr "External Link"
 
-#: templates/taxa/taxon.html:80 templates/taxa/taxon.html:588
+#: templates/taxa/taxon.html:80 templates/taxa/taxon.html:590
 msgid "有效名版本紀錄"
 msgstr "Accepted Name History"
 
 #: templates/taxa/taxon.html:81 templates/taxa/taxon.html:220
-#: templates/taxa/taxon.html:628
+#: templates/taxa/taxon.html:630
 msgid "變更歷史"
 msgstr "Modified History"
 
@@ -637,34 +674,28 @@ msgstr "Accepted Name History"
 msgid "物種編號"
 msgstr "Taxon ID"
 
-#: templates/taxa/taxon.html:274
-msgid "回報"
-msgstr ""
+#: templates/taxa/taxon.html:275
+msgctxt "回報錯誤"
+msgid "回報<br>錯誤"
+msgstr "Feedback"
 
-#: templates/taxa/taxon.html:274
-msgid "錯誤"
-msgstr ""
-
-#: templates/taxa/taxon.html:405
-#, fuzzy
-#| msgid "臺灣紅皮書評估"
+#: templates/taxa/taxon.html:407
 msgid "臺灣紅皮書"
 msgstr "Red List of Taiwan"
 
-#: templates/taxa/taxon.html:604 templates/taxa/taxon.html:644
+#: templates/taxa/taxon.html:606 templates/taxa/taxon.html:646
 msgid "日期"
 msgstr "Date"
 
-#: templates/taxa/taxon.html:605
-#, fuzzy
+#: templates/taxa/taxon.html:607
 msgid "有效名"
 msgstr "Accepted Name"
 
-#: templates/taxa/taxon.html:645
+#: templates/taxa/taxon.html:647
 msgid "變更內容"
 msgstr "Action"
 
-#: templates/taxa/taxon.html:647
+#: templates/taxa/taxon.html:649
 msgid "編輯者"
 msgstr "By"
 

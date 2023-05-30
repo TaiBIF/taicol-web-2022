@@ -12,7 +12,7 @@
 			</div>
 			<div class="top-wave"></div>
 			<div class="path">
-				<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "更多資訊" %}</p> > <p>{% trans "資料使用規範" %}</p>
+				<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "更多資訊" %}</p> > <p>{% trans "資料使用規範" context "BreadCrumb" %}</p>
 			</div>
 			<div class="main-box ">
 				<div class="pic-right1">
@@ -28,8 +28,8 @@
 					<img src="{% static 'image/cir_blue.png' %}">
 				</div>
 				<div class="title-box">
-					<h2>{% trans "資料使用規範" %} <span></span></h2>
-					<p>Data Policy</p>
+					<h2>{% trans "資料使用規範" context "title" %} <span></span></h2>
+					<p>{% trans "Data Policy" %}</p>
 				</div>
 			</div>
 		</div>
