@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-30 00:31+0000\n"
+"POT-Creation-Date: 2023-05-31 07:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -191,7 +191,9 @@ msgstr "Download"
 msgid ""
 "檔案為離線產生，處理完成後，系統會寄下載資訊到您輸入的電子郵件信箱。如未收到"
 "信件，請聯絡我們。"
-msgstr "Your download is under processing. The download link will be sent to your email later."
+msgstr ""
+"Your download is under processing. The download link will be sent to your "
+"email later."
 
 #: templates/taxa/catalogue.html:54 templates/taxa/taxon.html:119
 msgid "聯絡信箱"
@@ -584,9 +586,18 @@ msgstr "Matching Result"
 msgid "全部"
 msgstr "ALL"
 
-#: templates/taxa/taxon.html:56
+#: templates/taxa/taxon.html:56 templates/taxa/taxon.html:62
 msgid "回報錯誤"
 msgstr "Feedback"
+
+#: templates/taxa/taxon.html:62
+msgid "針對"
+msgstr " "
+
+#: templates/taxa/taxon.html:66
+msgctxt "Email"
+msgid "主旨"
+msgstr "Subject"
 
 #: templates/taxa/taxon.html:71
 msgid "學名和中文名"
