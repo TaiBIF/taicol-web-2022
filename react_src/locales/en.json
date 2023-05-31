@@ -65,8 +65,8 @@
     "各界比較":"Compare Kingdoms",
     "植物界比較":"Compare Plantae",
     "動物界比較":"Compare Animalia",
-    "節肢動物比較":"Compare Arthropoda",
-    "脊索動物比較":"Compare Chordata",
+    "節肢動物門比較":"Compare Arthropoda",
+    "脊索動物門比較":"Compare Chordata",
     "臺灣名錄主要提供者":"Main Provider of TaiCOL",
     "界":"Kingdom",
     "門":"Phylum",
@@ -74,5 +74,16 @@
     "原生":"Native",
     "歸化":"Naturalized",
     "入侵":"Invasive",
-    "栽培豢養":"Cultured"
+    "栽培豢養":"Cultured",
+    "物種數":"Species",
+    "包含種下分類群":"Include infraspecies",
+    "包含種上階層學名":"Include higher taxon rank names",
+    "請至少輸入一個搜尋項目，若有輸入日期必須填入完整年月日":"Please fill at least one searching item. Date must include year, month and day.",
+    "錯誤描述":"Your feedback",
+    "來源文獻/參考資料":"Reference",
+    "更新通知與否":"Update notification",
+    "聯絡姓名":"Your name",
+    "請輸入主旨":"Please enter a subject",
+    "主旨":"Subject"
+    
 }

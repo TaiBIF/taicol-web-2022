@@ -90,7 +90,7 @@ $(function(){
 	})
 
 	$('.sticky_btn').on('click',function(){
-		document.location=`/taxon/${$('[name=taxon_id]').val()}${$(this).data('hash')}`
+		document.location=document.location.pathname+`${$(this).data('hash')}`
 	})
 	
 	$('.plusSlides').on('click',function(){

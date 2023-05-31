@@ -191,15 +191,15 @@ msgstr "Download"
 msgid ""
 "檔案為離線產生，處理完成後，系統會寄下載資訊到您輸入的電子郵件信箱。如未收到"
 "信件，請聯絡我們。"
-msgstr ""
+msgstr "Your download is under processing. The download link will be sent to your email later."
 
 #: templates/taxa/catalogue.html:54 templates/taxa/taxon.html:119
 msgid "聯絡信箱"
-msgstr "Contact Email"
+msgstr "Email"
 
 #: templates/taxa/catalogue.html:63 templates/taxa/taxon.html:124
 msgid "確認送出"
-msgstr "Submit"
+msgstr "Send"
 
 #: templates/taxa/catalogue.html:83
 msgid "CATALOGUE"
@@ -590,11 +590,11 @@ msgstr "Feedback"
 
 #: templates/taxa/taxon.html:71
 msgid "學名和中文名"
-msgstr ""
+msgstr "Name"
 
 #: templates/taxa/taxon.html:72
 msgid "照片"
-msgstr ""
+msgstr "Picture"
 
 #: templates/taxa/taxon.html:73 templates/taxa/taxon.html:209
 #: templates/taxa/taxon.html:239
@@ -644,27 +644,27 @@ msgstr "Modified History"
 
 #: templates/taxa/taxon.html:85
 msgid "請輸入主旨"
-msgstr ""
+msgstr "Please enter a subject"
 
 #: templates/taxa/taxon.html:90
 msgid "錯誤描述"
-msgstr ""
+msgstr "Your feedback"
 
 #: templates/taxa/taxon.html:95
 msgid "來源文獻/參考資料"
-msgstr ""
+msgstr "Reference"
 
 #: templates/taxa/taxon.html:99
 msgid "更新通知與否"
-msgstr ""
+msgstr "Update notification"
 
 #: templates/taxa/taxon.html:115
 msgid "聯絡姓名"
-msgstr ""
+msgstr "Your name"
 
 #: templates/taxa/taxon.html:211 templates/taxa/taxon.html:266
 msgid "子階層統計"
-msgstr ""
+msgstr "Child Taxa"
 
 #: templates/taxa/taxon.html:219
 msgid "有效名版本"

@@ -12,6 +12,7 @@ import type { ChartData } from 'chart.js';
 import { Bar  } from 'react-chartjs-2';
 import "chartjs-plugin-datalabels";
 import type { SpeciesCompareProps } from '../types';
+import { useTranslation } from 'react-i18next';
 
 ChartJS.register(
   CategoryScale,
@@ -61,25 +62,26 @@ const options = {
     },
   },
 };
-
 type Props = {
   data: SpeciesCompareProps[]
 }
 const CompareSpeciesBarChart: React.FC<Props> = (props) => {
   const { data } = props;
-
+  const { t, i18n } = useTranslation();
+  const taiwanCountLable = t('臺灣現有種數')
+  const globalCountLable = t('全球現有種數')
   const chartData:ChartData<'bar'> = {
     labels: data.map((item) => item.name),
     datasets: [
       {
-        label: '臺灣現有種數',
+        label: taiwanCountLable,
         data:  data.map((item) => item.TaiwanCount || 0),
         backgroundColor: '#FDD440',
         borderWidth: 0,
         stack: 'Stack 0',
       },
       {
-        label: '全球現有種數',
+        label: globalCountLable,
         data: data.map((item) => item.GlobalCount || 0),
         backgroundColor: '#85BBD0',
         borderWidth: 0,
