@@ -664,7 +664,7 @@ msgstr "Your name"
 
 #: templates/taxa/taxon.html:211 templates/taxa/taxon.html:266
 msgid "子階層統計"
-msgstr ""
+msgstr "Child Taxa"
 
 #: templates/taxa/taxon.html:219
 msgid "有效名版本"
