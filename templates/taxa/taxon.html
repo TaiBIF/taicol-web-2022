@@ -59,11 +59,11 @@
 					<form id="errorForm">
 					<input type="hidden" name="taxon_id" value="{{ taxon_id }}">
 					<div class="case-num">
-						針對({{ taxon_id|default_if_none:'' }}){{ data.sci_name|safe }}回報錯誤
+						{% trans "針對" %}({{ taxon_id|default_if_none:'' }}){{ data.sci_name|safe }} {% trans "回報錯誤" %}
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<p>{% trans "主旨" %}</p>
+						<p>{% trans "主旨" context "Email" %}</p>
 					</div>
 					<div class="input-item2">
 						<div class="input-item">
@@ -82,7 +82,7 @@
 							</select>
 						</div>
 						<div class="input-item">
-							<input type="text" name="title" placeholder={% trans "請輸入主旨" %}>
+							<input type="text" name="title" placeholder="{% trans "請輸入主旨" %}">
 						</div>
 					</div>
 					<div class="mark-title">
@@ -300,7 +300,12 @@
 										<div class="picbox mySlides fade">
 											<div class="rel">
 												<div class="posa">
-													<img class="nopic" src="{% static 'image/no_pic.png' %}">
+													{% get_current_language as LANGUAGE_CODE %}
+													{% if LANGUAGE_CODE == "en-us" %}
+														<img class="nopic" src="{% static 'image/no_pic.png' %}">
+													{% else %}
+														<img class="nopic" src="{% static 'image/no_pic.png' %}">
+													{% endif %}
 													<div class="text"></div>
 												</div>
 											</div>
