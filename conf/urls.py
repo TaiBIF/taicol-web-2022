@@ -26,7 +26,7 @@ handler500 = 'pages.views.custom_error_view'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('taxa.urls_api')),
-    # path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     re_path(r'^media/(?P<path>.*)$', serve, {
         'document_root': settings.MEDIA_ROOT,
     }),
