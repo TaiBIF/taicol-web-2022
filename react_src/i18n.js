@@ -2,16 +2,13 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 import en from "./locales/en.json";
-import zh_TW from "./locales/zh_TW.json";
 
 const resources = {
   returnNull: false,
   'en': {
     translation: en,
   },
-  'zh-hant': {
-    translation: zh_TW,
-  },
+  
 };
 
 i18n.use(initReactI18next).init({
