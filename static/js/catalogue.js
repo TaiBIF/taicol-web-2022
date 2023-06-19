@@ -170,6 +170,7 @@
 				if (results['total_count'] > 1000){
 					$('.downloadData').off('click')
 					$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
+
 					$('.offlineDownloadData').on('click', function(){
 						offlineDownloadData()
 						$('button.download_check').data('type', $(this).data('type'))
@@ -451,7 +452,8 @@
 						$('.downloadData').off('click')
 						$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
 						$('.offlineDownloadData').on('click', function(){
-							offlineDownloadData($(this).data('type'))
+							offlineDownloadData()
+							$('button.download_check').data('type', $(this).data('type'))
 						})
 					} else {
 						$('.offlineDownloadData').off('click')
