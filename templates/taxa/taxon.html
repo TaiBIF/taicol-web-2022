@@ -13,6 +13,8 @@
 {% endblock style %}
 
 {% block body %}
+{% get_current_language as LANGUAGE_CODE %}
+
 {% csrf_token %}
 <div class="loadingbox d-none">
 	<img class="center-logo" src="{% static 'image/logo-img.svg' %}" alt="臺灣物種名錄">
@@ -127,7 +129,7 @@
 		</div>
 	</div>
 	<div class="popbox imagepop d-none">
-		<div class="rel imgpop-style">
+		<div class="rel">
 			<div class="w-bg m-auto">
 				<div class="xx">
 					<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
@@ -272,7 +274,7 @@
 						</div>
 						<div class="rignt-pic_area">
 
-							<button class="mistake-btn">{% blocktrans context "回報錯誤"%}回報<br>錯誤{% endblocktrans %}</button>
+							<button class="mistake-btn {% if LANGUAGE_CODE == 'en-us' %} mistake-btn-en {% endif %}">{% blocktrans context "回報錯誤"%}回報<br>錯誤{% endblocktrans %}</button>
 							<div class="pic-area mh-100">
 								{% if data.images|length > 1 %}
 									<div class="arr-left plusSlides" data-index="-1">
@@ -300,7 +302,6 @@
 										<div class="picbox mySlides fade">
 											<div class="rel">
 												<div class="posa">
-													{% get_current_language as LANGUAGE_CODE %}
 													{% if LANGUAGE_CODE == "en-us" %}
 														<img class="nopic" src="{% static 'image/no_pic.png' %}">
 													{% else %}

@@ -348,10 +348,6 @@ a.anchor {
     font-size: 16px
 }
 
-.imgpop-style {
-    display: block;
-    overflow: auto
-}
 
 .m-auto {
     margin: auto
@@ -480,3 +476,12 @@ a.anchor {
 
 
 
+
+.mistake-btn-en {
+    font-size: 14px !important;
+}
+
+.mistakepop .rel .w-bg, .imagepop .rel .w-bg {
+    max-height: 100%;
+    overflow: auto;
+}
