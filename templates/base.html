@@ -139,7 +139,8 @@
                     <a href="mailto:catalogueoflife.taiwan@gmail.com">catalogueoflife.taiwan@gmail.com</a>
                 </div>
             </div>
-            <ul class="site-map">
+            {% get_current_language as LANGUAGE_CODE %}
+            <ul class="site-map {% if LANGUAGE_CODE == 'en-us' %} site-map-en {% endif %}">
                 <li>
                     <a href="{% url 'about' %}" class="bit-title">
                         <span></span>
