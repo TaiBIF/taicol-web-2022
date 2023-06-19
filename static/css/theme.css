@@ -632,7 +632,7 @@ body {
 .header .main_menu li .big_title {
     position: relative;
     color: #555;
-    cursor: pointer;
+   /* cursor: pointer;*/
     display: block;
     transition: all .3s;
     -moz-transition: all .3s;

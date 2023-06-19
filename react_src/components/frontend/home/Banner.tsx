@@ -42,9 +42,9 @@ const Banner: React.FC = () => {
 			<div className="flex-box">
 				<div className="left-box">
 					<div className="slogan">
-					<Translation>{t => <h3>{t('臺灣最具指標性且全面的')}<br/>{t('物種名錄資料庫')}</h3> }</Translation>
+					<h3>臺灣最具指標性且全面的<br/></h3>
 						<h2>
-						<Translation>{t => <span>{t('The most complete, authoritative list of Taiwan’s species')}</span> }</Translation>
+							<span>The most complete, authoritative list of Taiwan’s species</span>
 							<div className="line"></div>
 						</h2>
 					</div>

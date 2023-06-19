@@ -29,3 +29,8 @@
         margin-right: 5px
     }
 }
+
+
+.header .main_menu li {
+    cursor: pointer;
+}
