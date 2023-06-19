@@ -51,9 +51,6 @@
       margin-top:30px;
 }
 
-#markdown h1:target {
-  scroll-margin-top: 100px;
-}
 
 
 #markdown h2,
