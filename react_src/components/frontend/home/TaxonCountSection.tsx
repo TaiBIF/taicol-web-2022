@@ -3,7 +3,7 @@ import TaxonCount from './TaxonCount'
 import type {TaxonCountProps} from '../types'
 import MoreButton from '../common/MoreButton'
 import useSWR from 'swr';
-import { Translation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 
 const taxonCountList:TaxonCountProps[] = [
   {

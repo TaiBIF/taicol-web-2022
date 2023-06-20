@@ -1571,8 +1571,10 @@ body {
 }
 
 .statis-3 li .cir_icon {
-    width: 6.7708vw;
-    height: 6.7708vw;
+    width: 70px;
+    height: 70px;
+    min-width: 70px;
+    min-height: 70px;
     border-radius: 50%;
     border: 1px solid #DAEAF1;
     display: flex;
@@ -1594,12 +1596,12 @@ body {
 
 .statis-3 li .cir_icon .cir-line1 {
     position: absolute;
-    width: 6.8708vw;
-    height: 6.8708vw;
+    width: 70px;
+    height: 70px;
     background: url("../image/cir-line.svg") top left no-repeat;
-    left: -0.1vw;
-    top: -0.1vw;
-    background-size: 3.41708542vw auto
+    left: -1px;
+    top: -1px;
+    background-size: 35px auto
 }
 
 @media only screen and (max-width: 767px) {
@@ -1615,12 +1617,12 @@ body {
 
 .statis-3 li .cir_icon .cir-line2 {
     position: absolute;
-    width: 6.8708vw;
-    height: 6.8708vw;
+    width: 70px;
+    height: 70px;
     background: url("../image/cir-line.svg") top left no-repeat;
-    left: -0.1vw;
-    top: -0.1vw;
-    background-size: 3.41708542vw auto
+    left: -1px;
+    top: -1px;
+    background-size: 35px auto
 }
 
 @media only screen and (max-width: 767px) {
@@ -1635,12 +1637,12 @@ body {
 }
 
 .statis-3 li .cir_icon img {
-    width: 3.645833vw
+    width: 60%
 }
 
 @media only screen and (max-width: 767px) {
     .statis-3 li .cir_icon img {
-        width: 40px
+        width: 60%
     }
 }
 
@@ -1672,7 +1674,11 @@ body {
 
 .statis-3 li .txtbox .title h3 {
     font-size: 24px;
-    font-weight: normal
+    font-weight: normal;
+}
+
+.w-min-content {
+    width: min-content;
 }
 
 @media only screen and (max-width: 1599px) {
@@ -1701,7 +1707,8 @@ body {
 
 .statis-3 li .txtbox .title .markq {
     cursor: pointer;
-    position: relative
+    position: relative;
+    margin-left: 5px
 }
 
 .statis-3 li .txtbox .title .markq:hover .hvbubble {
@@ -1716,6 +1723,7 @@ body {
     -ms-transition: all .3s;
     -webkit-transition: all .3s
 }
+
 
 .statis-3 li .txtbox .title .markq svg {
     display: block;
@@ -1751,6 +1759,16 @@ body {
     margin-left: -70px
 }
 
+.statis-3 li .txtbox .title .markq .en-tooltip {
+    top: -50px;
+}
+
+.statis-3 li .txtbox .title .markq:hover .en-tooltip {
+    top: -45px;
+}
+
+
+
 .statis-3 li .txtbox .title .markq .hvbubble p {
     color: #4C8DA7;
     font-size: 14px;
@@ -1780,13 +1798,13 @@ body {
 
 .statis-3 li .numberbox {
     color: #4C8DA7;
-    font-size: 4.1666vw;
+    font-size: 3vw;
     letter-spacing: 0
 }
 
 @media only screen and (max-width: 767px) {
     .statis-3 li .numberbox {
-        font-size: 9vw;
+        font-size: 7vw;
         letter-spacing: 0
     }
 }
@@ -5542,7 +5560,7 @@ body {
 .more-selection-area .item-box .left-title {
     color: #555;
     width: 160px;
-    flex: 0 0 160px;
+    flex: 0 0 200px;
     display: flex;
     margin-right: 10px;
     align-items: center;
@@ -9474,7 +9492,9 @@ body {
 
 .statis-3-cont .statis-3 li .cir_icon {
     width: 120px;
-    height: 120px
+    height: 120px;
+    min-width: 120px;
+    min-height: 120px
 }
 
 @media only screen and (max-width: 999px) {
@@ -9494,6 +9514,8 @@ body {
     .statis-3-cont .statis-3 li .cir_icon {
         width: 80px;
         height: 80px;
+        min-width: 80px;
+        min-height: 80px;
         flex: 0 0 80px
     }
 }
