@@ -84,6 +84,71 @@
     "更新通知與否":"Update notification",
     "聯絡姓名":"Your name",
     "請輸入主旨":"Please enter a subject",
-    "主旨":"Subject"
+    "主旨":"Subject",
+
+
+    "病毒界": "Viruses",
+    "細菌界": "Bacteria",
+    "古菌界": "Archaea",
+    "原生生物界": "Protozoa",
+    "原藻界": "Chromista",
+    "真菌界": "Fungi",
+    "植物界": "Plantae",
+    "動物界": "Animalia",
+
+    "藻類植物": "Charophyta, Chlorophyta, Rhodophyta",
+    "苔蘚植物": "Anthocerotophyta, Bryophyta, Marchantiophyta",
+    "蕨類植物": "Lycopodiopsida, Polypodiopsida",
+    "裸子植物": "Cycadopsida, Ginkgoopsida, Pinopsida",
+    "顯花植物": "Magnoliopsida",
+
+    "海綿動物門": "Porifera",
+    "刺胞動物門": "Cnidaria",
+    "扁形動物門": "Platyhelminthes",
+    "圓形動物門": "Nematoda",
+    "線形動物門": "Nematomorpha",
+    "鉤頭動物門": "Acanthocephala",
+    "輪蟲動物門": "Rotifera",
+    "節肢動物門": "Arthropoda",
+
+    "紐形動物門": "Nemertea",
+    "環節動物門": "Annelida",
+    "星蟲動物門": "Sipuncula",
+    "軟體動物門": "Mollusca",
+    "腕足動物門": "Brachiopoda",
+    "緩步動物門": "Tardigrada",
+    "苔蘚動物門": "Bryozoa",
+    "毛顎動物門": "Chaetognatha",
+    "棘皮動物門": "Echinodermata",
+    "脊索動物門": "Chordata",
+
+
+    "介形蟲綱": "Ostracoda",
+    "海蜘蛛綱": "Pycnogonida",
+    "軟甲綱": "Malacostraca",
+    "橈足綱": "Copepoda",
+    "鞘甲綱": "Thecostraca",
+
+    "蛛形綱": "Arachnida",
+    "倍足綱": "Diplopoda",
+    "唇足綱": "Chilopoda",
+    "內口綱": "Entognatha",
+    "彈尾綱": "Collembola",
+    "昆蟲綱": "Insecta",
+
+    "鰓足綱": "Branchiopoda",
+    "肢口綱": "Merostomata",
     
+    "狹心綱": "Leptocardii",
+    "海樽綱": "Thaliacea",
+    "海鞘綱": "Ascidiacea",
+    "盲鰻綱": "Myxini",
+    "軟骨魚綱": "Chondrichthyes",
+    "條鰭魚綱": "Actinopterygii",
+    "爬蟲綱": "Reptilia",
+    "兩生綱": "Amphibia",
+    "鳥綱": "Aves",
+    "哺乳綱": "Mammalia",
+
+    "合計": "Total"
 }

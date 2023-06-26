@@ -50,7 +50,7 @@ function showSlides(n) {
 	// 修改彈跳視窗內的照片
 	let current_elem = slides[slideIndex-1];
 	if (current_elem!=undefined){
-		if (current_elem.getElementsByClassName('nopic').length == 0){
+		if (current_elem.getElementsByClassName('no-pic').length == 0){
 			$('.imagepop #spe-image').attr("src",current_elem.getElementsByTagName('img')[0].src);
 			$('.imagepop #image_author').html(current_elem.getElementsByClassName('image_author')[0].innerText);
 			$('.imagepop #image_provider').html(current_elem.getElementsByClassName('image_provider')[0].innerText);
@@ -72,6 +72,9 @@ function controlAll(){
 
 	}
 }
+
+
+
 
 $(function(){
 

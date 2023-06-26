@@ -23,6 +23,8 @@ from django.template.loader import render_to_string
 
 from django.contrib import messages
 
+from  django.utils.translation import get_language, gettext
+
 db_settings = {
     "host": env('DB_HOST'),
     "port": int(env('DB_PORT')),
@@ -464,7 +466,6 @@ def taxon(request, taxon_id):
     if has_taxon:
         query = f"""SELECT tn.name, an.formatted_name as f_name, concat_WS(' ', an.formatted_name, an.name_author ) as sci_name, 
                     at.common_name_c, at.accepted_taxon_name_id as name_id, at.rank_id,
-                    CONCAT(r.display ->> '$."zh-tw"', ' ', r.display ->> '$."en-us"') as rank_d,
                     atu.status, att.path, at.is_endemic, at.is_terrestrial, at.is_freshwater, at.is_brackish,
                     at.is_marine, at.is_in_taiwan, at.alien_type,
                     ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, ac.iucn_taxon_id, 
@@ -474,7 +475,6 @@ def taxon(request, taxon_id):
                     FROM api_taxon at 
                     LEFT JOIN api_names an ON at.accepted_taxon_name_id =  an.taxon_name_id 
                     LEFT JOIN api_namecode anc ON at.accepted_taxon_name_id =  anc.taxon_name_id 
-                    JOIN ranks r ON at.rank_id = r.id
                     JOIN api_taxon_usages atu ON at.taxon_id = atu.taxon_id
                     LEFT JOIN api_taxon_tree att ON at.taxon_id = att.taxon_id
                     LEFT JOIN api_conservation ac ON at.taxon_id = ac.taxon_id 
@@ -514,21 +514,22 @@ def taxon(request, taxon_id):
                         conn.close()
                         if n:
                             data['sci_name'] = n[0] 
-                data['status'] = f"{status_map_taxon_c[data['status']]['zh-tw']} {status_map_taxon_c[data['status']]['en-us']}"
+                data['status'] =  status_map_taxon_c[data['status']]['en-us'] if get_language() == 'en-us' else f"{status_map_taxon_c[data['status']]['zh-tw']} {status_map_taxon_c[data['status']]['en-us']}"
+                data['rank_d'] =  rank_map[data['rank_id']]if get_language() == 'en-us' else f"{rank_map_c[data['rank_id']]} {rank_map[data['rank_id']]}"
                 is_list = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine']
                 data['is_list'] = []
                 for i in is_list:
                     if data[i] == 1:
                         data['is_list'].append(is_map_c[i])
                 if not is_in_taiwan:
-                    data['is_list'].append('不存在於臺灣')
+                    data['is_list'].append(gettext('不存在於臺灣'))
                 
                 # 保育資訊
                 if c_cites := data['cites_listing']:
                     c_list = c_cites.split('/')
                     c_list_str = []
                     for cl in c_list:
-                        c_list_str += [cites_map_c[cl]]
+                        c_list_str.append(cites_map[cl] if get_language() == 'en-us' else cites_map_c[cl])
                     data['cites_listing'] = '/'.join(c_list_str)
 
                 if data['cites_note']:
@@ -547,7 +548,7 @@ def taxon(request, taxon_id):
                         data['cites_note'] = ''
 
                 if c_iucn := data['iucn_category']:
-                    data['iucn_category'] = iucn_map_c[c_iucn] + ' ' + c_iucn
+                    data['iucn_category'] = c_iucn if get_language() == 'en-us' else iucn_map_c[c_iucn] + ' ' + c_iucn
                     data['iucn_url'] = "https://apiv3.iucnredlist.org/api/v3/taxonredirect/" + str(data['iucn_taxon_id'])
 
                 if data['iucn_note']:
@@ -560,7 +561,7 @@ def taxon(request, taxon_id):
                         data['iucn_note'] = ''
 
                 if c_red := data['red_category']:
-                    data['red_category'] = redlist_map_c[c_red] + ' ' + c_red
+                    data['red_category'] =  c_red if get_language() == 'en-us' else redlist_map_c[c_red] + ' ' + c_red
 
                 if data['red_note']:
                     if len(json.loads(data['red_note'])) > 1:
@@ -572,7 +573,7 @@ def taxon(request, taxon_id):
                         data['red_note'] = ''
 
                 if c_protected := data['protected_category']:
-                    data['protected_category'] = f'第 {c_protected} 級 {protected_map_c[c_protected]}'
+                    data['protected_category'] =  protected_map[c_protected] if get_language() == 'en-us' else f'第 {c_protected} 級 {protected_map_c[c_protected]}'
 
                 if data['protected_note']:
                     if len(json.loads(data['protected_note'])) > 1:
@@ -623,7 +624,10 @@ def taxon(request, taxon_id):
                             for h in higher.index:
                                 current_h_row = higher.loc[h]
                                 current_h_dict = {}
-                                current_h_dict['a_content'] = f'{current_h_row.formatted_name} {current_h_row.common_name_c}'
+                                if get_language() == 'en-us':
+                                    current_h_dict['a_content'] = f'{rank_map[current_h_row.rank_id]} {current_h_row.formatted_name}'
+                                else:
+                                    current_h_dict['a_content'] = f'{current_h_row.formatted_name} {current_h_row.common_name_c}'
                                 if current_h_row.taxon_id:
                                     taxon_href = '/taxon/' + current_h_row.taxon_id
                                     current_h_dict['a_href'] = taxon_href
@@ -706,7 +710,7 @@ def taxon(request, taxon_id):
                         names['per_usages'] = names['per_usages'].apply(json.loads)
                         # 給保育資訊note使用的學名連結
                         names['sci_name_ori'] = names['sci_name']
-                        names['sci_name_ori'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/zh-tw/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name_ori}</a>', axis=1)
+                        names['sci_name_ori'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name_ori}</a>', axis=1)
                         # 為了學名排序
                         names['sci_name_ori_1'] = names['sci_name'] 
                         # 植物要補上學名發表年份
@@ -714,7 +718,7 @@ def taxon(request, taxon_id):
                         # 如果有author資訊 加上去
                         names['sci_name'] = names.apply(lambda x: f'{x.sci_name} {x.author}' if x.author else x.sci_name, axis=1)
                         # 加上學名連結
-                        names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/zh-tw/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name}</a>', axis=1)
+                        names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name}</a>', axis=1)
                         
                         # 如果per_usages中有其他ref則補上
                         for pp in names['per_usages']:
@@ -761,12 +765,12 @@ def taxon(request, taxon_id):
                                 ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                                 min_year = ref_list.year.min()
                                 # 決定排序的publish_year
-                                ref_list = [f"<a href='https://nametool.taicol.tw/zh-tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
+                                ref_list = [f"<a href='https://nametool.taicol.tw/{'en-us' if get_language() == 'en-us' else 'zh-tw'}/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                                 ref_str = ('; ').join(ref_list)
                                 if ref_str:
-                                    name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]} (誤用): {ref_str}",min_year, names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                                    name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]} ({gettext('誤用')}): {ref_str}",min_year, names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                                 else:
-                                    name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0] + ' (誤用)', '', names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                                    name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('誤用')})", '', names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                             # 歧異名
                             elif n in is_ambiguous:
                                 for pu in names[(names.taxon_name_id==n)].per_usages:
@@ -790,12 +794,12 @@ def taxon(request, taxon_id):
                                 ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                                 min_year = ref_list.year.min()
                                 # 決定排序的publish_year
-                                ref_list = [f"<a href='https://nametool.taicol.tw/zh-tw/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
+                                ref_list = [f"<a href='https://nametool.taicol.tw/{'en-us' if get_language() == 'en-us' else 'zh-tw'}/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                                 ref_str = ('; ').join(ref_list)
                                 if ref_str:
-                                    name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]} (歧異): {ref_str}",min_year, names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                                    name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]} ({gettext('歧異')}): {ref_str}",min_year, names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                                 else:
-                                    name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0] + ' (歧異)', '', names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                                    name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('歧異')})", '', names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                             # 非誤用名
                             elif len(names[(names.taxon_name_id==n)&(names.taxon_status!='misapplied')]):
                                 if len(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref):
@@ -820,7 +824,7 @@ def taxon(request, taxon_id):
                                     ref_list = [r for r in ref_list if r[1] not in names[names.taxon_name_id==n].o_reference_id.to_list()]
                                 ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                                 # 決定排序的publish_year
-                                ref_list = [f'<a href="https://nametool.taicol.tw/zh-tw/references/{int(r[1]["ref_id"])}" target="_blank">{r[1]["ref"]}</a>' for r in ref_list.iterrows()]
+                                ref_list = [f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/references/{int(r[1]["ref_id"])}" target="_blank">{r[1]["ref"]}</a>' for r in ref_list.iterrows()]
                                 ref_str = ('; ').join(ref_list)
                                 sep = ':' if has_original else ';'
                                 if ref_str:
@@ -1029,7 +1033,7 @@ def taxon(request, taxon_id):
                                 new_path_str_name = '更新後階層：無'
                             content_str.append(new_path_str_name)
                             content_str = '，'.join(content_str)
-                            row = [taxon_history_map[thh[0]], content_str, f'<a href="https://nametool.taicol.tw/zh-tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+                            row = [taxon_history_map[thh[0]], content_str, f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                         elif thh[0] == 6: # 刪除Taxon
                             if thh[5]:
                                 if new_taxon_id:
@@ -1045,9 +1049,9 @@ def taxon(request, taxon_id):
                                                                 <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
                                                             </g>
                                                         </g>
-                                                    </svg></a>''', f'<a href="https://nametool.taicol.tw/zh-tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+                                                    </svg></a>''', f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                                 else:
-                                    row = [taxon_history_map[thh[0]], '', f'<a href="https://nametool.taicol.tw/zh-tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+                                    row = [taxon_history_map[thh[0]], '', f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                             else:
                                 if new_taxon_id:
                                     row = [taxon_history_map[thh[0]], f'''請參見 <a class="new_taxon_aa" href="/taxon/{new_taxon_id}">{new_taxon_name_c if new_taxon_name_c else new_taxon_id}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
@@ -1067,7 +1071,7 @@ def taxon(request, taxon_id):
                                     row = [taxon_history_map[thh[0]], '', '', thh[3].strftime("%Y-%m-%d"), 'TaiCOL管理員']
 
                         elif thh[5] and thh[2] and thh[-1] != 4:
-                            row = [taxon_history_map[thh[0]], thh[1], f'<a href="https://nametool.taicol.tw/zh-tw/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+                            row = [taxon_history_map[thh[0]], thh[1], f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
                         else:
                             row = [taxon_history_map[thh[0]], thh[1], '', thh[3].strftime("%Y-%m-%d"), thh[4]]
                         taxon_history.append(row)
@@ -1080,7 +1084,11 @@ def taxon(request, taxon_id):
                                 'rank_c': rank_map_c[data['rank_id']],
                                 'name_c': data['common_name_c']}
 
+        # 子階層統計
         taxon_group_str = data['taxon_group_str']
+        rank_map_dict = rank_map if get_language() == 'en-us' else rank_map_c
+        # 種下
+        infra_str = 'Infraspecies' if get_language() == 'en-us' else '種下'
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
@@ -1094,20 +1102,23 @@ def taxon(request, taxon_id):
             spp = 0
             for sr in stats.rank_id.unique():
                 c = stats[stats.rank_id==sr]['count'].sum()
+                count_str = f'{rank_map_dict[sr]} {c}' if get_language() == 'en-us' else f'{c}{rank_map_dict[sr]}'
                 if sr <= 46 and sr >= 35:
                     spp += c
                 elif sr == 47:
                     if spp > 0:
-                        stat_str += f"<a target='_blank' href='/catalogue?rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{spp}種下 </a>"
-                    stat_str += f"<a target='_blank' href='/catalogue?&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{c}{rank_map_c[sr]} </a>"
+                        infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+                        stat_str += f"<a target='_blank' href='/catalogue?rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str} </a>"
+                    stat_str += f"<a target='_blank' href='/catalogue?&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"
                 else:
-                    stat_str += f"<a target='_blank' href='/catalogue?&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{c}{rank_map_c[sr]} </a>"
-            if spp > 0 and '種下' not in stat_str:
+                    stat_str += f"<a target='_blank' href='/catalogue?&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"
+            if spp > 0 and infra_str not in stat_str:
                 # 如果沒有47 最後要把種下加回去
-                stat_str += f"<a target='_blank' href='/catalogue?rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{spp}種下</a>"
+                infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+                stat_str += f"<a target='_blank' href='/catalogue?rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str}</a>"
     
         if is_deleted:
-            data['rank_d'] = '已刪除 Deleted'
+            data['rank_d'] = 'Deleted' if get_language() == 'en-us' else '已刪除 Deleted'
             data['transfer_taxon'] = new_taxon_id
             data['is_deleted'] = True
             data['new_taxon_name_c'] = new_taxon_name_c
@@ -1125,6 +1136,9 @@ def taxon_tree(request):
     kingdom_dict = []
     kingdom_dict_c = []
     # for k in kingdom_map.keys():
+    infra_str = 'Infraspecies' if get_language() == 'en-us' else '種下'
+    rank_map_dict = rank_map if get_language() == 'en-us' else rank_map_c
+
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
         query = f"""SELECT substring(att.path, -8, 8) as kingdom_taxon, COUNT(distinct(att.taxon_id)), at.rank_id, at.is_cultured FROM api_taxon_tree att 
@@ -1143,32 +1157,47 @@ def taxon_tree(request):
         stat_str = ''
         for sr in stats_c.rank_id.unique():
             c = stats_c[stats_c.rank_id==sr]['count'].sum()
+            count_str = f'{rank_map_dict[sr]} {c}' if get_language() == 'en-us' else f'{c}{rank_map_dict[sr]}'
+
             if sr <= 46 and sr >= 35:
                 spp += c
             elif sr == 47:
-                stat_str += f"{spp}種下 {c}{rank_map_c[sr]}"
+                infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+                stat_str += f"{infra_count_str} {count_str}"
             else:
-                stat_str += f"{c}{rank_map_c[sr]} "
-        if spp > 0 and '種下' not in stat_str:
+                stat_str += f"{count_str} "
+        if spp > 0 and infra_str not in stat_str:
             # 如果沒有47 最後要把種下加回去
-            stat_str += f"{spp}種下"
+            infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+            stat_str += infra_count_str
 
-        kingdom_dict_c += [{'taxon_id': k, 'name': f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",'stat': stat_str.strip()}]
+        kingdom_dict_c.append({'taxon_id': k, 
+                               'name': f"Kingdom {kingdom_map[k]['name']}" if get_language() == 'en-us' else f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",
+                               'stat': stat_str.strip()})
+        
+        
         spp = 0
         stat_str = ''
         for sr in stats.rank_id.unique():
             c = stats[stats.rank_id==sr]['count'].sum()
+            count_str = f'{rank_map_dict[sr]} {c}' if get_language() == 'en-us' else f'{c}{rank_map_dict[sr]}'
+
             if sr <= 46 and sr >= 35:
                 spp += c
             elif sr == 47:
-                stat_str += f"{spp}種下 {c}{rank_map_c[sr]}"
+                infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+                stat_str += f"{infra_count_str} {count_str}"
             else:
-                stat_str += f"{c}{rank_map_c[sr]} "
-        if spp > 0 and '種下' not in stat_str:
+                stat_str += f"{count_str} "
+        if spp > 0 and infra_str not in stat_str:
             # 如果沒有47 最後要把種下加回去
-            stat_str += f"{spp}種下"
+            infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+            stat_str += infra_count_str
 
-        kingdom_dict += [{'taxon_id': k, 'name': f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",'stat': stat_str.strip()}]
+        kingdom_dict.append({'taxon_id': k, 
+                             'name': f"Kingdom {kingdom_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",
+                             'stat': stat_str.strip()})
+    
     search_stat = SearchStat.objects.all().order_by('-count')[:6]
     s_taxon = [s.taxon_id for s in search_stat]
     if s_taxon:

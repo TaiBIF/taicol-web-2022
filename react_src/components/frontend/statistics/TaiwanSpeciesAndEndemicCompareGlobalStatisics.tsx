@@ -74,7 +74,7 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
           <div className='item-box check-set"'>
             <div className="right-check">
               {kingdomInfo?.map((item: KingdomInfoProps, index: number): React.ReactElement => {
-                return <label className="check-item mr-[8px]">{item.chineseName}
+                return <label className="check-item mr-[8px]">{i18n.language == 'en-us' ? item.kingdom : item.chineseName} 
                   <input type="checkbox" name="alien_type" checked={kingdomSelected.includes(item.chineseName) ? true : false} value={item.chineseName} onChange={handleKingdomChange} />
                   <span className="checkmark"></span>
                 </label>
@@ -85,7 +85,7 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
         </div>}
       </div>
       <a href="#" className="btn-more" onClick={() => handleShowCompareTableClick(true)}>
-        <Translation>{ t => <p>{t('查看比較總表')}</p> }</Translation>
+        <Translation>{ t => <p className={i18n.language == 'en-us' ? 'fs-12' : ''}>{t('查看比較總表')}</p> }</Translation>
         <div className="arr">
           <div className="arline"></div>
           <div className="arrrot">

@@ -46,7 +46,7 @@ const sourceInfo:SourceInfoProps[] = [
 ]
 
 const kingdomInfo:KingdomInfoProps[] = [
-  { kingdom: 'Viruses',chineseName:'病毒' },
+  { kingdom: 'Viruses',chineseName:'病毒界' },
   { kingdom: 'Bacteria',chineseName:'細菌界' },
   { kingdom: 'Archaea',chineseName:'古菌界' },
   { kingdom: 'Protozoa',chineseName:'原生生物界' },
@@ -154,7 +154,7 @@ const StatisticsPage: React.FC = () => {
         const count = kingdom ? kingdom[1] as number : 0
         const chineseName = kingdom ? kingdomInfo.find((r) => r.kingdom == name)?.chineseName || '' : ''
         return {
-          name: [chineseName, name],
+          name: chineseName,
           count: count,
         }
     });

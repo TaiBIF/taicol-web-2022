@@ -93,9 +93,11 @@ iucn_map_c = {
 
 
 cites_map_c = { '1': '附錄 I 有滅種威脅須嚴格管制','2':'附錄 II 族群數量稀少須有效管制','3':'附錄 III 特定國家指定有效管制','NC':'NC 非管制'}
+cites_map = { '1': 'Appendix I','2':'Appendix II','3':'Appendix III','NC':'NC'}
 
 
 protected_map_c = {'I': '瀕臨絕種野生動物', 'II': '珍貴稀有野生動物', 'III': '其他應予保育之野生動物'}
+protected_map = {'I': 'I Endangered', 'II': 'II Precious and Rare', 'III': 'III Other Conserved', '1': 'Rare and Valuable Plants'}
 
 # 一）瀕臨絕種野生動物。 （二）珍貴稀有野生動物。 （三）其他應予保育之野生動物。
 

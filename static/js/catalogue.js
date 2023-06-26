@@ -1,5 +1,6 @@
 
     var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
+    var $lang = $('[name="lang"]').attr('value');
 
     // 要有其中之一存在才送出
 	let params = ['keyword','taxon_group','rank','is_endemic',
@@ -428,7 +429,7 @@
 			}
 
 			$.ajax({
-				url: "/catalogue",
+				url: `/${$lang}/catalogue`,
 				data: query_str + '&csrfmiddlewaretoken=' +  $csrf_token,
 				type: 'POST',
 				dataType : 'json',
@@ -685,6 +686,31 @@
 
 	$(function(){		
 
+		let date_locale = { days: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+		daysShort: ['日', '一', '二', '三', '四', '五', '六'],
+		daysMin: ['日', '一', '二', '三', '四', '五', '六'],
+		months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+		monthsShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+		today: '今天',
+		clear: '清除',
+		dateFormat: 'yyyy-MM-dd',   
+		timeFormat: 'HH:mm',
+		firstDay: 1}
+	if ($lang == 'en-us') {
+		date_locale = {   days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+		daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+		daysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+		months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+		monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+		today: 'Today',
+		clear: 'Clear',
+		dateFormat: 'yyyy-MM-dd',
+		timeFormat: 'hh:mm aa',
+		firstDay: 1}
+	} 
+
+		let date_picker = new AirDatepicker('#updated_at', {locale: date_locale});
+
         $('.changeFacet').on('click',function(){
             changeFacet($(this).data('facet'), $(this).data('value'))
         })
@@ -711,21 +737,21 @@
 
 		// 較高分類群 autocomplete
 		$("#taxon_group").select2({
-			placeholder: "請輸入查詢字串",
+			placeholder: $lang == 'en-us' ? "Enter keywords" : "請輸入查詢字串" ,
 			language: {
 				"noResults": function(params){
-					return "查無結果";
+					return $lang == 'en-us' ? "No result" : "查無結果";
 				},		 
 				searching: function(params) {
 					if (params.term != undefined ){
 						if (params.term.match(/[\u3400-\u9FBF]/)){
 							if (params.term.length >1){
-								return '查詢中...';
+								return $lang == 'en-us' ? "Searching..." : '查詢中...';
 							} else {
 								throw false;  
 							}
 						} else if (params.term.trim().length  > 2){
-							return '查詢中...';
+							return $lang == 'en-us' ? "Searching..." : '查詢中...';
 							
 						} else {
 							throw false;  

@@ -71,7 +71,7 @@ const CompareSpeciesBarChart: React.FC<Props> = (props) => {
   const taiwanCountLable = t('臺灣現有種數')
   const globalCountLable = t('全球現有種數')
   const chartData:ChartData<'bar'> = {
-    labels: data.map((item) => item.name),
+    labels: data.map((item) => t(item.name)),
     datasets: [
       {
         label: taiwanCountLable,

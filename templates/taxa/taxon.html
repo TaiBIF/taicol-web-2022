@@ -84,7 +84,7 @@
 							</select>
 						</div>
 						<div class="input-item">
-							<input type="text" name="title" placeholder="{% trans "請輸入主旨" %}">
+							<input type="text" name="title" placeholder="{% trans '請輸入主旨' %}">
 						</div>
 					</div>
 					<div class="mark-title">
@@ -168,15 +168,15 @@
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<p>作者：<span id="image_author"></span></p>
+						<p>{% trans '作者' %}：<span id="image_author"></span></p>
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<p>典藏者：<span id="image_provider"></span></p>
+						<p>{% trans '典藏者' %}：<span id="image_provider"></span></p>
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<p>照片提供：<a target="_blank" id="image_permalink" href="#">臺灣生命大百科</a></p>
+						<p>{% trans '照片提供' %}：<a target="_blank" id="image_permalink" href="#">{% trans '臺灣生命大百科' %}</a></p>
 					</div>
 				</div>
 			</div>
@@ -187,7 +187,7 @@
 		<div class="splist-search-box de">
 			<div class="main-box">
 				<div class="cont-search-bar">
-					<input type="text" name="keyword" placeholder={% trans "請輸入關鍵字" %}>
+					<input type="text" name="keyword" placeholder="{% trans '請輸入關鍵字' %}">
 					<button class="search">
 						<svg id="Group_6882" data-name="Group 6882" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="36.847" height="36.775" viewBox="0 0 36.847 36.775">
 							<defs>
@@ -302,12 +302,14 @@
 										<div class="picbox mySlides fade">
 											<div class="rel">
 												<div class="posa">
+													<div><span class="no-pic">{% trans '無照片' %}</span></div>
+													<!--
 													{% if LANGUAGE_CODE == "en-us" %}
 														<img class="nopic" src="{% static 'image/no_pic.png' %}">
 													{% else %}
 														<img class="nopic" src="{% static 'image/no_pic.png' %}">
 													{% endif %}
-													<div class="text"></div>
+													<div class="text"></div>-->
 												</div>
 											</div>
 										</div>
@@ -345,10 +347,11 @@
 												{{ i.rank_c  }}
 											</div>
 											<a {% if i.a_href %} class="rank-p" target="_blank" href="{{ i.a_href }}" {% else %} class="rank-p a-disabled" {% endif %}>
-											{{ i.a_content|safe  }}</a>
+											{{ i.a_content|safe  }}
+											</a>
 											{% if i.search_href %}
-											<a class="d-none search-rank" target="_blank" href="{{ i.search_href }}">
-											<i class="ml-5 fa-solid fa-magnifying-glass"></i></a>
+												<a class="search-rank d-none" target="_blank" href="{{ i.search_href }}">
+												<i class="ml-5 fa-solid fa-magnifying-glass"></i></a>
 											{% endif %}
 											</div>
 										{% endfor %}
@@ -377,7 +380,7 @@
 								<div class="w-content">
 									<div class="green-tag-box">
 										{% for i in data.alien_types  %}
-											<div class="item">{{ i.alien_type }}</div>
+											<div class="item">{% trans i.alien_type %}</div>
 											{% if i.note %}
 											<div class="alien-tooltip">
 												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle cl-blue" viewBox="0 0 16 16">
@@ -389,7 +392,7 @@
 											{% endif %}
 										{% endfor %}
 										{% for i in data.is_list  %}
-											<div class="item">{{ i }}</div>
+											<div class="item">{% trans i %}</div>
 										{% endfor %}
 									</div>
 									<div class="inf-short">
@@ -503,7 +506,7 @@
 						<div class="w-content">
 							<ul class="book-list">
 								{% for r in refs %}
-									<li><a href="https://nametool.taicol.tw/zh-tw/references/{{ r.0 }}" target="_blank">{{ r.1|safe }}</a></li>
+									<li><a href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/references/{{ r.0 }}" target="_blank">{{ r.1|safe }}</a></li>
 								{% endfor %}
 							</ul>
 						</div>
@@ -618,7 +621,7 @@
 										<td>{{ t.updated_at|safe }}</td>
 										<td>{{ t.name|safe }}</td>
 										<td>{% if t.reference_id %}
-											<a target="_blank" href="https://nametool.taicol.tw/zh-tw/references/{{ t.reference_id }}">{{ t.ref|default_if_none:''|safe }}</a>
+											<a target="_blank" href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/references/{{ t.reference_id }}">{{ t.ref|default_if_none:''|safe }}</a>
 										{% endif %}</td>
 									</tr>
 								{% endfor %}

@@ -4216,7 +4216,8 @@ body {
     -moz-transition: all .3s;
     -o-transition: all .3s;
     -ms-transition: all .3s;
-    -webkit-transition: all .3s
+    -webkit-transition: all .3s;
+    min-width: 270px;
 }
 
 @media only screen and (max-width: 999px) {
@@ -9491,10 +9492,10 @@ body {
 }
 
 .statis-3-cont .statis-3 li .cir_icon {
-    width: 120px;
-    height: 120px;
-    min-width: 120px;
-    min-height: 120px
+    width: 90px;
+    height: 90px;
+    min-width: 90px;
+    min-height: 90px
 }
 
 @media only screen and (max-width: 999px) {
@@ -9506,7 +9507,7 @@ body {
 
 @media only screen and (max-width: 999px) {
     .statis-3-cont .statis-3 li .cir_icon img {
-        width: 50px
+        width: 60%
     }
 }
 
@@ -9527,9 +9528,9 @@ body {
 }
 
 .statis-3-cont .statis-3 li .cir_icon .cir-line1 {
-    width: 120px;
-    height: 120px;
-    background-size: 60px auto;
+    width: 90px;
+    height: 90px;
+    background-size: 45px auto;
     -moz-animation: rotate-line1 1s 0.6s linear forwards;
     -webkit-animation: rotate-line1 1s 0.6s linear forwards;
     animation: rotate-line1 1s 0.6s linear forwards
@@ -9544,9 +9545,9 @@ body {
 }
 
 .statis-3-cont .statis-3 li .cir_icon .cir-line2 {
-    width: 120px;
-    height: 120px;
-    background-size: 60px auto;
+    width: 90px;
+    height: 90px;
+    background-size: 45px auto;
     -moz-animation: rotate-line2 1.5s 0.6s linear forwards;
     -webkit-animation: rotate-line2 1.5s 0.6s linear forwards;
     animation: rotate-line2 1.5s 0.6s linear forwards
@@ -9662,7 +9663,17 @@ body {
 .chart-box .item-p2 .btn-more {
     position: absolute;
     right: 20px;
-    bottom: -30px
+    bottom: -30px;
+    width: 220px;
+}
+
+
+.chart-box .item-p2 .btn-more p.fs-12 {
+    font-size: 12px
+}
+
+.chart-box .item-p2 .btn-more p {
+    font-size: 14px;
 }
 
 @media only screen and (max-width: 767px) {
@@ -9745,7 +9756,7 @@ body {
 }
 
 .chart-box .title-flex-box .right-select select {
-    width: 120px;
+    width: 180px;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;

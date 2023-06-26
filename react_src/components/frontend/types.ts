@@ -70,7 +70,7 @@ export type Link = {
 }
 
 export type KingdomProps = {
-  name: [string, string];
+  name: string;
   count: number;
 }
 

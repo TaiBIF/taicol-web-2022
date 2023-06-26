@@ -82,7 +82,7 @@ const SpeciesCountBarChart: React.VFC<Props> = (props) => {
   const { t, i18n } = useTranslation();
   const countLable = t('物種數')
   const chartData:ChartData<'bar'> = {
-    labels: data.map((item) => item.name),
+    labels: data.map((item) => t(item.name)),
     datasets: [
       {
         label: countLable,

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-19 11:29+0800\n"
+"POT-Creation-Date: 2023-06-21 14:07+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgid "物種樹"
 msgstr "TAXON"
 
 #: templates/base.html:68 templates/base.html:156
-#: templates/taxa/catalogue.html:72 templates/taxa/catalogue.html:82
+#: templates/taxa/catalogue.html:76 templates/taxa/catalogue.html:86
 msgid "物種名錄"
 msgstr "CATALOGUE"
 
@@ -93,7 +93,7 @@ msgid "維護單位"
 msgstr "Maintained by"
 
 #: templates/pages/about.html:19 templates/pages/data_policy.html:15
-#: templates/taxa/catalogue.html:72 templates/taxa/name_match.html:27
+#: templates/taxa/catalogue.html:76 templates/taxa/name_match.html:27
 #: templates/taxa/taxon_tree.html:29
 msgid "首頁"
 msgstr "HOME"
@@ -183,11 +183,11 @@ msgstr " "
 msgid "臺灣物種名錄(TaiCOL)引用格式"
 msgstr "Citation of TaiCOL"
 
-#: templates/taxa/catalogue.html:45
+#: templates/taxa/catalogue.html:49
 msgid "下載檔案"
 msgstr "Download"
 
-#: templates/taxa/catalogue.html:50
+#: templates/taxa/catalogue.html:54
 msgid ""
 "檔案為離線產生，處理完成後，系統會寄下載資訊到您輸入的電子郵件信箱。如未收到"
 "信件，請聯絡我們。"
@@ -195,366 +195,366 @@ msgstr ""
 "Your download is under processing. The download link will be sent to your "
 "email later."
 
-#: templates/taxa/catalogue.html:54 templates/taxa/taxon.html:119
+#: templates/taxa/catalogue.html:58 templates/taxa/taxon.html:121
 msgid "聯絡信箱"
 msgstr "Email"
 
-#: templates/taxa/catalogue.html:63 templates/taxa/taxon.html:124
+#: templates/taxa/catalogue.html:67 templates/taxa/taxon.html:126
 msgid "確認送出"
 msgstr "Send"
 
-#: templates/taxa/catalogue.html:83
+#: templates/taxa/catalogue.html:87
 msgid "CATALOGUE"
 msgstr " "
 
-#: templates/taxa/catalogue.html:90 templates/taxa/name_match.html:78
+#: templates/taxa/catalogue.html:94 templates/taxa/name_match.html:78
 msgid "學名/中文名"
 msgstr "Name"
 
-#: templates/taxa/catalogue.html:92
+#: templates/taxa/catalogue.html:96
 msgid "包含"
 msgstr "Include"
 
-#: templates/taxa/catalogue.html:93
+#: templates/taxa/catalogue.html:97
 msgid "等於"
 msgstr "Equal to"
 
-#: templates/taxa/catalogue.html:94
+#: templates/taxa/catalogue.html:98
 msgid "開頭為"
 msgstr "Begins with"
 
-#: templates/taxa/catalogue.html:98 templates/taxa/taxon.html:188
+#: templates/taxa/catalogue.html:102 templates/taxa/taxon.html:190
 #: templates/taxa/taxon_tree.html:57
 msgid "請輸入關鍵字"
 msgstr "Enter keywords"
 
-#: templates/taxa/catalogue.html:118
+#: templates/taxa/catalogue.html:122
 msgid "進階選項"
 msgstr "Advanced"
 
-#: templates/taxa/catalogue.html:136
+#: templates/taxa/catalogue.html:140
 msgid "較高分類群"
 msgstr "Higher Taxon"
 
-#: templates/taxa/catalogue.html:144
+#: templates/taxa/catalogue.html:148
 msgid "分類階層"
 msgstr "Rank"
 
-#: templates/taxa/catalogue.html:150
+#: templates/taxa/catalogue.html:154
 msgid "種"
 msgstr "Species"
 
-#: templates/taxa/catalogue.html:151
+#: templates/taxa/catalogue.html:155
 msgid "亞種"
 msgstr "Subspecies"
 
-#: templates/taxa/catalogue.html:152
+#: templates/taxa/catalogue.html:156
 msgid "變種"
 msgstr "Variety"
 
-#: templates/taxa/catalogue.html:153
+#: templates/taxa/catalogue.html:157
 msgid "型"
 msgstr "Form"
 
-#: templates/taxa/catalogue.html:154
+#: templates/taxa/catalogue.html:158
 msgid "亞型"
 msgstr "Subform"
 
-#: templates/taxa/catalogue.html:155
+#: templates/taxa/catalogue.html:159
 msgid "亞變種"
 msgstr "Subvariety"
 
-#: templates/taxa/catalogue.html:156
+#: templates/taxa/catalogue.html:160
 msgid "雜交亞種"
 msgstr "Nothosubspecies"
 
-#: templates/taxa/catalogue.html:157
+#: templates/taxa/catalogue.html:161
 msgid "雜交變種"
 msgstr "Nothovariety"
 
-#: templates/taxa/catalogue.html:158
+#: templates/taxa/catalogue.html:162
 msgid "特別品型"
 msgstr "Special Form"
 
-#: templates/taxa/catalogue.html:159
+#: templates/taxa/catalogue.html:163
 msgid "雜交組合"
 msgstr "Hybrid Formula"
 
-#: templates/taxa/catalogue.html:160
+#: templates/taxa/catalogue.html:164
 msgid "屬"
 msgstr "Genus"
 
-#: templates/taxa/catalogue.html:161
+#: templates/taxa/catalogue.html:165
 msgid "亞屬"
 msgstr "Subgenus"
 
-#: templates/taxa/catalogue.html:162
+#: templates/taxa/catalogue.html:166
 msgid "組|節"
 msgstr "Section"
 
-#: templates/taxa/catalogue.html:163
+#: templates/taxa/catalogue.html:167
 msgid "亞組|亞節"
 msgstr "Subsection"
 
-#: templates/taxa/catalogue.html:164
+#: templates/taxa/catalogue.html:168
 msgid "科"
 msgstr "Family"
 
-#: templates/taxa/catalogue.html:165
+#: templates/taxa/catalogue.html:169
 msgid "亞科"
 msgstr "Subfamily"
 
-#: templates/taxa/catalogue.html:166
+#: templates/taxa/catalogue.html:170
 msgid "族"
 msgstr "Tribe"
 
-#: templates/taxa/catalogue.html:167
+#: templates/taxa/catalogue.html:171
 msgid "亞族"
 msgstr "Subtribe"
 
-#: templates/taxa/catalogue.html:168
+#: templates/taxa/catalogue.html:172
 msgid "目"
 msgstr "Order"
 
-#: templates/taxa/catalogue.html:169
+#: templates/taxa/catalogue.html:173
 msgid "亞目"
 msgstr "Suborder"
 
-#: templates/taxa/catalogue.html:170
+#: templates/taxa/catalogue.html:174
 msgid "下目"
 msgstr "Infraorder"
 
-#: templates/taxa/catalogue.html:171
+#: templates/taxa/catalogue.html:175
 msgid "超科|總科"
 msgstr "Superfamily"
 
-#: templates/taxa/catalogue.html:174
+#: templates/taxa/catalogue.html:178
 msgid "綱"
 msgstr "Class"
 
-#: templates/taxa/catalogue.html:175
+#: templates/taxa/catalogue.html:179
 msgid "亞綱"
 msgstr "Subclass"
 
-#: templates/taxa/catalogue.html:176
+#: templates/taxa/catalogue.html:180
 msgid "下綱"
 msgstr "Infraclass"
 
-#: templates/taxa/catalogue.html:177
+#: templates/taxa/catalogue.html:181
 msgid "超目|總目"
 msgstr "Superorder"
 
-#: templates/taxa/catalogue.html:178
+#: templates/taxa/catalogue.html:182
 msgid "門"
 msgstr "Phylum"
 
-#: templates/taxa/catalogue.html:179
+#: templates/taxa/catalogue.html:183
 msgid "亞門"
 msgstr "Subphylum"
 
-#: templates/taxa/catalogue.html:180
+#: templates/taxa/catalogue.html:184
 msgid "下門"
 msgstr "Infraphylum"
 
-#: templates/taxa/catalogue.html:181
+#: templates/taxa/catalogue.html:185
 msgid "微門"
 msgstr "Microphylum"
 
-#: templates/taxa/catalogue.html:182
+#: templates/taxa/catalogue.html:186
 msgid "小門"
 msgstr "Parvphylum"
 
-#: templates/taxa/catalogue.html:183
+#: templates/taxa/catalogue.html:187
 msgid "超綱|總綱"
 msgstr "Superclass"
 
-#: templates/taxa/catalogue.html:184
+#: templates/taxa/catalogue.html:188
 msgid "部|類"
 msgstr "Division"
 
-#: templates/taxa/catalogue.html:185
+#: templates/taxa/catalogue.html:189
 msgid "亞部|亞類"
 msgstr "Subdivision"
 
-#: templates/taxa/catalogue.html:186
+#: templates/taxa/catalogue.html:190
 msgid "下部|下類"
 msgstr "Infradivision"
 
-#: templates/taxa/catalogue.html:187
+#: templates/taxa/catalogue.html:191
 msgid "小部|小類"
 msgstr "Parvdivision"
 
-#: templates/taxa/catalogue.html:188
+#: templates/taxa/catalogue.html:192
 msgid "超門|總門"
 msgstr "Superphylum"
 
-#: templates/taxa/catalogue.html:189 templates/taxa/catalogue.html:497
+#: templates/taxa/catalogue.html:193 templates/taxa/catalogue.html:501
 msgid "界"
 msgstr "Kingdom"
 
-#: templates/taxa/catalogue.html:190
+#: templates/taxa/catalogue.html:194
 msgid "亞界"
 msgstr "Subkingdom"
 
-#: templates/taxa/catalogue.html:192
+#: templates/taxa/catalogue.html:196
 msgid "下界"
 msgstr "Infrakingdom"
 
-#: templates/taxa/catalogue.html:193
+#: templates/taxa/catalogue.html:197
 msgid "超部|總部"
 msgstr "Superdivision"
 
-#: templates/taxa/catalogue.html:194
+#: templates/taxa/catalogue.html:198
 msgid "域"
 msgstr "Domain"
 
-#: templates/taxa/catalogue.html:195
+#: templates/taxa/catalogue.html:199
 msgid "總界"
 msgstr "Superkingdom"
 
-#: templates/taxa/catalogue.html:205 templates/taxa/catalogue.html:514
+#: templates/taxa/catalogue.html:209 templates/taxa/catalogue.html:518
 msgid "特有性"
 msgstr "Endemism"
 
-#: templates/taxa/catalogue.html:208
+#: templates/taxa/catalogue.html:212
 msgid "臺灣特有"
 msgstr "Endemic to Taiwan"
 
-#: templates/taxa/catalogue.html:231 templates/taxa/catalogue.html:531
+#: templates/taxa/catalogue.html:235 templates/taxa/catalogue.html:535
 msgid "原生/外來性"
 msgstr "Native/Exotic"
 
-#: templates/taxa/catalogue.html:234
+#: templates/taxa/catalogue.html:238
 msgid "原生"
 msgstr "Native"
 
-#: templates/taxa/catalogue.html:238
+#: templates/taxa/catalogue.html:242
 msgid "歸化"
 msgstr "Naturalized"
 
-#: templates/taxa/catalogue.html:242
+#: templates/taxa/catalogue.html:246
 msgid "入侵"
 msgstr "Invasive"
 
-#: templates/taxa/catalogue.html:246
+#: templates/taxa/catalogue.html:250
 msgid "栽培豢養"
 msgstr "Cultured"
 
-#: templates/taxa/catalogue.html:254
+#: templates/taxa/catalogue.html:258
 msgid "更多項目"
 msgstr "More"
 
-#: templates/taxa/catalogue.html:268
+#: templates/taxa/catalogue.html:272
 msgid "棲地環境"
 msgstr "Environment"
 
-#: templates/taxa/catalogue.html:271
+#: templates/taxa/catalogue.html:275
 msgid "陸生"
 msgstr "Terrestrial"
 
-#: templates/taxa/catalogue.html:275
+#: templates/taxa/catalogue.html:279
 msgid "淡水"
 msgstr "Freshwater"
 
-#: templates/taxa/catalogue.html:279
+#: templates/taxa/catalogue.html:283
 msgid "半鹹水"
 msgstr "Brackish"
 
-#: templates/taxa/catalogue.html:283
+#: templates/taxa/catalogue.html:287
 msgid "海洋"
 msgstr "Marine"
 
-#: templates/taxa/catalogue.html:291 templates/taxa/taxon.html:397
+#: templates/taxa/catalogue.html:295 templates/taxa/taxon.html:401
 msgid "保育類"
 msgstr "Protected Category"
 
-#: templates/taxa/catalogue.html:294 templates/taxa/catalogue.html:317
-#: templates/taxa/catalogue.html:372 templates/taxa/catalogue.html:432
+#: templates/taxa/catalogue.html:298 templates/taxa/catalogue.html:321
+#: templates/taxa/catalogue.html:376 templates/taxa/catalogue.html:436
 msgid "無"
 msgstr "Null"
 
-#: templates/taxa/catalogue.html:298
+#: templates/taxa/catalogue.html:302
 msgid "第一級"
 msgstr "Endangered"
 
-#: templates/taxa/catalogue.html:302
+#: templates/taxa/catalogue.html:306
 msgid "第二級"
 msgstr "Precious and Rare"
 
-#: templates/taxa/catalogue.html:306
+#: templates/taxa/catalogue.html:310
 msgid "第三級"
 msgstr "Other Conserved"
 
-#: templates/taxa/catalogue.html:314
+#: templates/taxa/catalogue.html:318
 msgid "臺灣紅皮書評估"
 msgstr "Red List of Taiwan"
 
-#: templates/taxa/catalogue.html:369
+#: templates/taxa/catalogue.html:373
 msgid "IUCN評估"
 msgstr "IUCN"
 
-#: templates/taxa/catalogue.html:429
+#: templates/taxa/catalogue.html:433
 msgid "CITES附錄"
 msgstr "CITES"
 
-#: templates/taxa/catalogue.html:436
+#: templates/taxa/catalogue.html:440
 msgid "附錄一"
 msgstr "Appendix I"
 
-#: templates/taxa/catalogue.html:440
+#: templates/taxa/catalogue.html:444
 msgid "附錄二"
 msgstr "Appendix II"
 
-#: templates/taxa/catalogue.html:444
+#: templates/taxa/catalogue.html:448
 msgid "附錄三"
 msgstr "Appendix III"
 
-#: templates/taxa/catalogue.html:452
+#: templates/taxa/catalogue.html:456
 msgid "更新日期"
 msgstr "Date Updated"
 
-#: templates/taxa/catalogue.html:457
+#: templates/taxa/catalogue.html:461
 msgid "大於"
 msgstr "After"
 
-#: templates/taxa/catalogue.html:458
+#: templates/taxa/catalogue.html:462
 msgctxt "date equal"
 msgid "等於"
 msgstr "On"
 
-#: templates/taxa/catalogue.html:459
+#: templates/taxa/catalogue.html:463
 msgid "小於"
 msgstr "Before"
 
-#: templates/taxa/catalogue.html:473
+#: templates/taxa/catalogue.html:477
 msgid "清除"
 msgstr "Clear"
 
-#: templates/taxa/catalogue.html:474 templates/taxa/name_match.html:82
+#: templates/taxa/catalogue.html:478 templates/taxa/name_match.html:82
 msgid "搜尋"
 msgstr "Search"
 
-#: templates/taxa/catalogue.html:484
+#: templates/taxa/catalogue.html:488
 msgid "共"
 msgstr " "
 
-#: templates/taxa/catalogue.html:484
+#: templates/taxa/catalogue.html:488
 msgid "筆"
 msgstr " results"
 
-#: templates/taxa/catalogue.html:486 templates/taxa/name_match.html:95
+#: templates/taxa/catalogue.html:490 templates/taxa/name_match.html:95
 msgid "下載CSV"
 msgstr "⇩CSV"
 
-#: templates/taxa/catalogue.html:487 templates/taxa/name_match.html:96
+#: templates/taxa/catalogue.html:491 templates/taxa/name_match.html:96
 msgid "下載JSON"
 msgstr "⇩JSON"
 
-#: templates/taxa/catalogue.html:505
+#: templates/taxa/catalogue.html:509
 msgid "階層"
 msgstr "Rank"
 
-#: templates/taxa/catalogue.html:539
+#: templates/taxa/catalogue.html:543
 msgid "地位"
 msgstr "Status"
 
@@ -570,11 +570,11 @@ msgstr "Search Setting"
 msgid "最佳結果"
 msgstr "Best Result"
 
-#: templates/taxa/name_match.html:69 templates/taxa/taxon.html:103
+#: templates/taxa/name_match.html:69 templates/taxa/taxon.html:105
 msgid "是"
 msgstr "Yes"
 
-#: templates/taxa/name_match.html:73 templates/taxa/taxon.html:109
+#: templates/taxa/name_match.html:73 templates/taxa/taxon.html:111
 msgid "否"
 msgstr "No"
 
@@ -582,131 +582,151 @@ msgstr "No"
 msgid "比對結果"
 msgstr "Matching Result"
 
-#: templates/taxa/taxon.html:27
+#: templates/taxa/taxon.html:29
 msgid "全部"
 msgstr "ALL"
 
-#: templates/taxa/taxon.html:56 templates/taxa/taxon.html:62
+#: templates/taxa/taxon.html:58 templates/taxa/taxon.html:64
 msgid "回報錯誤"
 msgstr "Feedback"
 
-#: templates/taxa/taxon.html:62
+#: templates/taxa/taxon.html:64
 msgid "針對"
 msgstr " "
 
-#: templates/taxa/taxon.html:66
+#: templates/taxa/taxon.html:68
 msgctxt "Email"
 msgid "主旨"
 msgstr "Subject"
 
-#: templates/taxa/taxon.html:71
+#: templates/taxa/taxon.html:73
 msgid "學名和中文名"
 msgstr "Name"
 
-#: templates/taxa/taxon.html:72
+#: templates/taxa/taxon.html:74
 msgid "照片"
 msgstr "Picture"
 
-#: templates/taxa/taxon.html:73 templates/taxa/taxon.html:209
-#: templates/taxa/taxon.html:239
+#: templates/taxa/taxon.html:75 templates/taxa/taxon.html:211
+#: templates/taxa/taxon.html:241
 msgid "分類資訊"
 msgstr "Checklist Status"
 
-#: templates/taxa/taxon.html:74 templates/taxa/taxon.html:213
-#: templates/taxa/taxon.html:328
+#: templates/taxa/taxon.html:76 templates/taxa/taxon.html:215
+#: templates/taxa/taxon.html:331
 msgctxt "分類動詞"
 msgid "分類階層"
 msgstr "Classification"
 
-#: templates/taxa/taxon.html:75 templates/taxa/taxon.html:214
-#: templates/taxa/taxon.html:365
+#: templates/taxa/taxon.html:77 templates/taxa/taxon.html:216
+#: templates/taxa/taxon.html:369
 msgid "物種資訊"
 msgstr "Taxon Information"
 
-#: templates/taxa/taxon.html:76 templates/taxa/taxon.html:215
-#: templates/taxa/taxon.html:466
+#: templates/taxa/taxon.html:78 templates/taxa/taxon.html:217
+#: templates/taxa/taxon.html:470
 msgid "學名變遷"
 msgstr "Synonym"
 
-#: templates/taxa/taxon.html:77 templates/taxa/taxon.html:216
-#: templates/taxa/taxon.html:491 templates/taxa/taxon.html:613
-#: templates/taxa/taxon.html:653
+#: templates/taxa/taxon.html:79 templates/taxa/taxon.html:218
+#: templates/taxa/taxon.html:495 templates/taxa/taxon.html:617
+#: templates/taxa/taxon.html:657
 msgid "文獻"
 msgstr "Reference"
 
-#: templates/taxa/taxon.html:78 templates/taxa/taxon.html:217
-#: templates/taxa/taxon.html:516
+#: templates/taxa/taxon.html:80 templates/taxa/taxon.html:219
+#: templates/taxa/taxon.html:520
 msgid "專家"
 msgstr "Expert"
 
-#: templates/taxa/taxon.html:79 templates/taxa/taxon.html:218
-#: templates/taxa/taxon.html:547
+#: templates/taxa/taxon.html:81 templates/taxa/taxon.html:220
+#: templates/taxa/taxon.html:551
 msgid "相關連結"
 msgstr "External Link"
 
-#: templates/taxa/taxon.html:80 templates/taxa/taxon.html:595
+#: templates/taxa/taxon.html:82 templates/taxa/taxon.html:599
 msgid "有效名版本紀錄"
 msgstr "Accepted Name History"
 
-#: templates/taxa/taxon.html:81 templates/taxa/taxon.html:220
-#: templates/taxa/taxon.html:635
+#: templates/taxa/taxon.html:83 templates/taxa/taxon.html:222
+#: templates/taxa/taxon.html:639
 msgid "變更歷史"
 msgstr "Modified History"
 
-#: templates/taxa/taxon.html:85
+#: templates/taxa/taxon.html:87
 msgid "請輸入主旨"
 msgstr "Please enter a subject"
 
-#: templates/taxa/taxon.html:90
+#: templates/taxa/taxon.html:92
 msgid "錯誤描述"
 msgstr "Your feedback"
 
-#: templates/taxa/taxon.html:95
+#: templates/taxa/taxon.html:97
 msgid "來源文獻/參考資料"
 msgstr "Reference"
 
-#: templates/taxa/taxon.html:99
+#: templates/taxa/taxon.html:101
 msgid "更新通知與否"
 msgstr "Update notification"
 
-#: templates/taxa/taxon.html:115
+#: templates/taxa/taxon.html:117
 msgid "聯絡姓名"
 msgstr "Your name"
 
-#: templates/taxa/taxon.html:211 templates/taxa/taxon.html:266
+#: templates/taxa/taxon.html:171
+msgid "作者"
+msgstr "Creator"
+
+#: templates/taxa/taxon.html:175
+msgid "典藏者"
+msgstr "Archive"
+
+#: templates/taxa/taxon.html:179
+msgid "照片提供"
+msgstr "Provided by"
+
+#: templates/taxa/taxon.html:179
+msgid "臺灣生命大百科"
+msgstr "Taiwan Encyclopedia of Life"
+
+#: templates/taxa/taxon.html:213 templates/taxa/taxon.html:268
 msgid "子階層統計"
 msgstr "Child Taxa"
 
-#: templates/taxa/taxon.html:219
+#: templates/taxa/taxon.html:221
 msgid "有效名版本"
 msgstr "Accepted Name History"
 
-#: templates/taxa/taxon.html:232
+#: templates/taxa/taxon.html:234
 msgid "物種編號"
 msgstr "Taxon ID"
 
-#: templates/taxa/taxon.html:275
+#: templates/taxa/taxon.html:277
 msgctxt "回報錯誤"
 msgid "回報<br>錯誤"
 msgstr "Feedback"
 
-#: templates/taxa/taxon.html:412
+#: templates/taxa/taxon.html:305
+msgid "無照片"
+msgstr "No Photo"
+
+#: templates/taxa/taxon.html:416
 msgid "臺灣紅皮書"
 msgstr "Red List of Taiwan"
 
-#: templates/taxa/taxon.html:611 templates/taxa/taxon.html:651
+#: templates/taxa/taxon.html:615 templates/taxa/taxon.html:655
 msgid "日期"
 msgstr "Date"
 
-#: templates/taxa/taxon.html:612
+#: templates/taxa/taxon.html:616
 msgid "有效名"
 msgstr "Accepted Name"
 
-#: templates/taxa/taxon.html:652
+#: templates/taxa/taxon.html:656
 msgid "變更內容"
 msgstr "Action"
 
-#: templates/taxa/taxon.html:654
+#: templates/taxa/taxon.html:658
 msgid "編輯者"
 msgstr "By"
 
@@ -717,3 +737,15 @@ msgstr "Top Search Ranks"
 #: templates/taxa/taxon_tree.html:79
 msgid "包含栽培豢養"
 msgstr "Including Cultured"
+
+#: 
+msgid "不存在於臺灣"
+msgstr "Not Exist in Taiwan"
+
+#: 
+msgid "誤用"
+msgstr "misapplied"
+
+#: 
+msgid "歧異"
+msgstr "ambiguous"

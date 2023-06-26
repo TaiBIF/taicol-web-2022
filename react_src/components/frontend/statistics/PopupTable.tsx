@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {CompareTableDataProps} from '../types'
-import { Translation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 
 type Props = {
   data: CompareTableDataProps[];
@@ -8,6 +8,8 @@ type Props = {
   handleShowCompareTableClick: (status:boolean) => void,
 }
 const PopupTable: React.FC<Props> = (props) => {
+  const { t, i18n } = useTranslation();
+
   const { data, show,handleShowCompareTableClick } = props;
 
   return (show ? <div className="popbox-table">
@@ -28,9 +30,7 @@ const PopupTable: React.FC<Props> = (props) => {
             </svg>
           </div>
           <div className="title-area">
-          <Translation>{ t =>
-            <h2>{t('臺灣與全球物種數比較')}<span></span></h2>
-            }</Translation>
+          <Translation>{ t => <h2>{t('臺灣與全球物種數比較')}<span></span></h2>}</Translation>
           </div>
           <Translation>{ t =>
             <p className="pad-note">
@@ -49,9 +49,9 @@ const PopupTable: React.FC<Props> = (props) => {
               </tr>
               {data.map((item:CompareTableDataProps, index:number) => (
                 <tr key={`species-compare-table-tr-${index}`}>
-                  <td>{item.kingdomName}</td>
-                  <td>{item.phylumName}</td>
-                  <td>{item.className}</td>
+                  <td>{t(item.kingdomName)}</td>
+                  <td>{t(item.phylumName)}</td>
+                  <td>{t(item.className)}</td>
                   <td>{item.globalCount}</td>
                   <td>{item.taiwanCount}</td>
                   <td>{item.twProvider}</td>

@@ -78,7 +78,7 @@
                                 <a href="{% url 'download' %}">{% trans "資料下載" %}</a>
                                 <a href="{% url 'api' %}">{% trans "API" %}</a>
                                 <a href="{% url 'name_match' %}">{% trans "學名比對工具" %}</a>
-                                <a href="https://nametool.taicol.tw/zh-tw/" target="_blank">{% trans "學名管理工具" %}</a>
+                                <a href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/" target="_blank">{% trans "學名管理工具" %}</a>
                             </div>
                         </div>
                     </li>
@@ -169,7 +169,7 @@
                     <a href="{% url 'name_match' %}" class="ss-title">
                         <p>{% trans "學名比對工具" %}</p>
                     </a>
-                    <a href="https://nametool.taicol.tw/zh-tw/" class="ss-title" target="_blank">
+                    <a href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/" class="ss-title" target="_blank">
                         <p>{% trans "學名管理工具" %}</p>
                     </a>
                 </li>
