@@ -5942,7 +5942,8 @@ body {
     -moz-transition: all .3s;
     -o-transition: all .3s;
     -ms-transition: all .3s;
-    -webkit-transition: all .3s
+    -webkit-transition: all .3s;
+    text-align: start;
 }
 
 @media only screen and (min-width: 1000px) {
@@ -5961,7 +5962,8 @@ body {
 }
 
 .result-area .right-table {
-    width: 100%
+    width: 100%;
+    overflow-y: auto;
 }
 
 .result-area .right-table .scro-m {

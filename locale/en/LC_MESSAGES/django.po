@@ -764,5 +764,31 @@ msgstr "Chinese Name"
 
 # templates/taxa/name_match.html: 
 msgid "所屬類群"
-msgstr "HigherTaxon"
+msgstr "Higher Taxon"
+
+# templates/taxa/catalogue.html: 
+msgid "學名"
+msgstr "Scientific Name"
+
+# templates/taxa/catalogue.html: 
+msgid "上一頁"
+msgstr "Previous"
+
+# templates/taxa/catalogue.html: 
+msgid "下一頁"
+msgstr "Next"
+
+
+# templates/taxa/taxon.html: 
+msgid "新增Taxon"
+msgstr "Taxon created"
+
+
+# templates/taxa/taxon.html: 
+msgid "TaiCOL管理員"
+msgstr "TaiCOL administrator"
+
+# templates/taxa/taxon.html: 
+msgid "請參見"
+msgstr "Please refer to"
 

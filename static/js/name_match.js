@@ -46,25 +46,20 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 							<td></td>
 						</tr>`)
 				} else {
+					
 					let tag = '';
-					if (results.data[i]['is_endemic'] != ''){
-						tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
+					for (ii of ['is_endemic','alien_type']){
+						if (results.data[i][ii] !=''){
+							tag += `<div class="item">${results.data[i][ii]}</div>`
+						}
 					}
-					if (results.data[i]['alien_type'] != ''){
-						tag += '<div class="item">' + results.data[i]['alien_type'] + '</div>'
-					}
+
+					is_array = ['is_terrestrial','is_freshwater','is_brackish','is_marine']
 					let tag1 = '';
-					if (results.data[i]['is_terrestrial'] ==1 ){
-						tag1 += '<div class="item">陸生</div>'
-					}
-					if (results.data[i]['is_freshwater'] ==1 ){
-						tag1 += '<div class="item">淡水</div>'
-					}
-					if (results.data[i]['is_brackish'] ==1 ){
-						tag1 += '<div class="item">半鹹水</div>'
-					}
-					if (results.data[i]['is_marine'] ==1 ){
-						tag1 += '<div class="item">海洋</div>'
+					for (ii of is_array){
+						if (results.data[i][ii] !=''){
+							tag1 += `<div class="item">${results.data[i][ii]}</div>`
+						}
 					}
 
 					console.log(results.data[i])
@@ -105,10 +100,10 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 					<a href="javascript:;" data-page="1" class="num page-start getData">1</a>
 					<a href="javascript:;" data-page="${results.page.current_page - 1}" class="back getData">
 						<img src="/static/image/pagear1.svg">
-						<p>上一頁</p>
+						<p>${results.prev}</p>
 					</a>
 					<a href="javascript:;" data-page="${results.page.current_page + 1}" class="next getData">
-						<p>下一頁</p>
+						<p>${results.next}</p>
 						<img src="/static/image/pagear2.svg">
 					</a>
 					<a href="javascript:;" data-page="${results.page.total_page}" class="num getData" id="page-end">${results.page.total_page}</a>

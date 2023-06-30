@@ -164,6 +164,7 @@
 				dataType : 'json',
 			})
 			.done(function(results) {
+
 				$('.loadingbox').addClass('d-none');
 				// 修改共幾筆
 				$('#total-count').html(results['total_count']);
@@ -187,15 +188,7 @@
 
 				// 清空頁碼
 				$('.page-num').remove()
-				$('.table-style1').html(`<tr>
-											<td>界</td>
-											<td>所屬類群</td>
-											<td>階層</td>
-											<td>學名</td>
-											<td>中文名</td>
-											<td>地位</td>
-											<td>原生/外來/特有性</td>
-										</tr>`)
+				$('.table-style1').html(results.header)
 				for (let i = 0; i < results.data.length; i++) {
 					let tag = '';
 					if (results.data[i]['is_endemic'] != ''){
@@ -222,8 +215,6 @@
 								</div>
 							</td>
 						</tr>`)
-
-
 				}
 					
 				$('.open_taxon').on('click', function(){
@@ -239,10 +230,10 @@
 							<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
 							<a href="javascript:;" data-page="${results.page.current_page - 1}" class="back updateData">
 								<img src="/static/image/pagear1.svg">
-								<p>上一頁</p>
+								<p>${results.prev}</p>
 							</a>
 							<a href="javascript:;" data-page="${results.page.current_page + 1}" class="next updateData">
-								<p>下一頁</p>
+								<p>${results.next}</p>
 								<img src="/static/image/pagear2.svg">
 							</a>
 							<a href="javascript:;" data-page="${results.page.total_page}" class="num updateData" id="page-end">${results.page.total_page}</a>
@@ -568,15 +559,7 @@
 						$('.status-box').parent('li').addClass('d-none')
 					}
 
-					$('.table-style1').html(`<tr>
-												<td>界</td>
-												<td>所屬類群</td>
-												<td>階層</td>
-												<td>學名</td>
-												<td>中文名</td>
-												<td>地位</td>
-												<td>原生/特有性</td>
-											</tr>`)
+					$('.table-style1').html(results['header'])
 
 					for (let i = 0; i < results.data.length; i++) {
 						let tag = '';
@@ -617,10 +600,10 @@
 							<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
 							<a href="javascript:;" data-page="${results.page.current_page - 1}" class="back updateData">
 								<img src="/static/image/pagear1.svg">
-								<p>上一頁</p>
+								<p>${results.prev}</p>
 							</a>
 							<a href="javascript:;" data-page="${results.page.current_page + 1}" class="next updateData">
-								<p>下一頁</p>
+								<p>${results.next}</p>
 								<img src="/static/image/pagear2.svg">
 							</a>
 							<a href="javascript:;" data-page="${results.page.total_page}" class="num updateData" id="page-end">${results.page.total_page}</a>
@@ -724,6 +707,8 @@
         })
 
         $('.getData').on('click',function(){
+			// 如果是從搜尋 要把facet拿掉
+			$('input[name=hidden-facet]').val('');
             getData()
         })
 

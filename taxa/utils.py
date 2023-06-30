@@ -75,6 +75,7 @@ rank_color_map = { 3: 'rank-1-red', 12: 'rank-2-org', 18: 'rank-3-yell', 22: 'ra
                   30: 'rank-6-deepblue', 34: 'rank-7-purple'}
 
 is_map_c = {'is_in_taiwan':'存在於臺灣','is_endemic':'臺灣特有','is_terrestrial':'陸生','is_freshwater':'淡水','is_brackish':'半鹹水','is_marine':'海洋'}
+is_map = {'is_in_taiwan':'Exist in Taiwan','is_endemic':'Endemic to Taiwan','is_terrestrial':'Terrestrial','is_freshwater':'Freshwater','is_brackish':'Brackish','is_marine':'Marine'}
 
 is_in_taiwan_map_c =  {
   1: '存在', 0: '不存在', '1': '存在', '0': '不存在'
@@ -100,7 +101,7 @@ protected_map = {'I': 'I Endangered', 'II': 'II Precious and Rare', 'III': 'III 
 
 # 一）瀕臨絕種野生動物。 （二）珍貴稀有野生動物。 （三）其他應予保育之野生動物。
 
-taxon_history_map = {0: '有效名變更',
+taxon_history_map_c = {0: '有效名變更',
     1: '新增同物異名',
     2: '新增文獻',
     4: '分類階層更新',
@@ -116,22 +117,22 @@ taxon_history_map = {0: '有效名變更',
     14: '新增屬性',
     15: '移除屬性'}
 
-# taxon_history_map = {
-#     0: 'Accepted name changed',
-#     1: 'New synonym',
-#     2: 'New references',
-#     4: 'Classification updated',
-#     5: 'Taxon created',
-#     6: 'Taxon deleted',
-#     7: 'New common name',
-#     8: 'Taxon information added',
-#     9: 'Taxon information removed',
-#     10: 'Taxon information updated',
-#     11: 'Taxon information added',
-#     12: 'Taxon information removed',
-#     13: 'Taxon information updated',
-#     14: 'Taxon information added',
-#     15: 'Taxon information removed'}
+taxon_history_map = {
+    0: 'Accepted name changed',
+    1: 'New synonym',
+    2: 'New references',
+    4: 'Classification updated',
+    5: 'Taxon created',
+    6: 'Taxon deleted',
+    7: 'New common name',
+    8: 'Taxon information added',
+    9: 'Taxon information removed',
+    10: 'Taxon information updated',
+    11: 'Taxon information added',
+    12: 'Taxon information removed',
+    13: 'Taxon information updated',
+    14: 'Taxon information added',
+    15: 'Taxon information removed'}
 
 # 林奈階層
 
