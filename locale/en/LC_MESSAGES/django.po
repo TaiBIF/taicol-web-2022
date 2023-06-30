@@ -749,3 +749,20 @@ msgstr "misapplied"
 #: 
 msgid "歧異"
 msgstr "ambiguous"
+
+# templates/taxa/name_match.html: 
+msgid "原生/外來/特有性"
+msgstr "Native/Exotic/Endemism"
+
+# templates/taxa/name_match.html: 
+msgid "查詢字串"
+msgstr "Query String"
+
+# templates/taxa/name_match.html: 
+msgid "中文名"
+msgstr "Chinese Name"
+
+# templates/taxa/name_match.html: 
+msgid "所屬類群"
+msgstr "HigherTaxon"
+

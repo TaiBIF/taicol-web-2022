@@ -7146,8 +7146,8 @@ body {
 
 .name-checkitem-box .left-title {
     color: #555;
-    width: 100px;
-    flex: 0 0 100px;
+    width: 150px;
+    flex: 0 0 150px;
     display: flex;
     margin-right: 10px;
     align-items: center;

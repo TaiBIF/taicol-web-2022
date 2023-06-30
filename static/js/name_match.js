@@ -26,21 +26,8 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 			$('.loadingbox').addClass('d-none');
 			$('.check-result-box').removeClass('d-none');
 			//清空表格
-			$('.table-style1').html(`<tr>
-				<td>查詢字串</td>
-				<td>比對結果</td>
-				<td>中文名</td>
-				<td>界</td>
-				<td>所屬類群</td>
-				<td>階層</td>
-				<td>原生/外來/特有性</td>
-				<td>棲地環境</td>
-				<td>保育類</td>
-				<td>臺灣紅皮書</td>
-				<td>IUCN評估</td>
-				<td>CITES附錄</td>
-			</tr>`)
-			console.log(results.data)
+			$('.table-style1').html(results.header)
+			//console.log(results.data)
 			for (let i = 0; i < results.data.length; i++) {
 				if ((results.data[i]['taxon_id'] == '')|results.data[i]['taxon_id'] == undefined){
 					$('.table-style1').append(

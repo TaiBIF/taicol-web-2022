@@ -1451,6 +1451,21 @@ def get_match_result(request):
     best = request.POST.get('best','yes')
     name = request.POST.get('name')
     page = int(request.POST.get('page', 1))
+
+    response['header'] = f'''<tr>
+				<td>{gettext("查詢字串")}</td>
+				<td>{gettext("比對結果")}</td>
+				<td>{gettext("中文名")}</td>
+				<td>{gettext("界")}</td>
+				<td>{gettext("所屬類群")}</td>
+				<td>{gettext("階層")}</td>
+				<td>{gettext("原生/外來/特有性")}</td>
+				<td>{gettext("棲地環境")}</td>
+				<td>{gettext("保育類")}</td>
+				<td>{gettext("臺灣紅皮書")}</td>
+				<td>{gettext("IUCN評估")}</td>
+				<td>{gettext("CITES附錄")}</td>
+			</tr>'''
     
     # 用loop取得name match結果 每頁10筆
     if name:
@@ -1535,6 +1550,7 @@ def get_match_result(request):
             df = df.replace({np.nan: '', None: ''})
             df = df.drop_duplicates()
             response['data'] = json.loads(df.to_json(orient='records'))
+            
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
