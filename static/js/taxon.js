@@ -130,18 +130,20 @@ $(function(){
 			.done(function(results) {
 				//$('.loadingbox').addClass('d-none');
 				$('.mistakepop').fadeOut("slow");
-				alert('回報已送出，謝謝您！');
-
+				//alert('回報已送出，謝謝您！');
+				$lang == 'en-us' ? alert("Your feedback has been sent. Thank you!") : alert("回報已送出，謝謝您！");
 			})
 			.fail(function( xhr, status, errorThrown ) {
 				$('.loadingbox').addClass('d-none');
-				alert('發生未知錯誤！請聯絡管理員')
+				$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
 				console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
 			}) 
 	
 
 		} else {
-			alert('請檢查表格是否填寫完整，或電子郵件格式是否正確')
+			$lang == 'en-us' ? alert("Please fill out the form completely") : alert("請檢查表格是否填寫完整，或電子郵件格式是否正確");
+
+			//alert('請檢查表格是否填寫完整，或電子郵件格式是否正確')
 		}
 
 	})
@@ -155,7 +157,9 @@ $(function(){
 
 	$('.search').click(function(){
 		if ($('input[name=keyword]').val()==''){
-			alert('請輸入關鍵字')
+			//alert('請輸入關鍵字')
+			$lang == 'en-us' ? alert("Please enter keywords") : alert("請輸入關鍵字");
+
 		} else {
 			window.location = '/catalogue?keyword=' + $('input[name=keyword]').val()
 		}

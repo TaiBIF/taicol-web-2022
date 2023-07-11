@@ -142,7 +142,7 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 		})
 		.fail(function( xhr, status, errorThrown ) {
 			$('.loadingbox').addClass('d-none');
-			alert('發生未知錯誤！請聯絡管理員')
+			$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
 			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
 		}) 
 
@@ -162,8 +162,9 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 		$('.search').click(function (){
 			if ($('textarea').val()!=''){
 				getData(1)
-			}else{
-				alert('請輸入查詢學名')
+			} else {
+				//alert('請輸入查詢學名')
+				$lang == 'en-us' ? alert('Please enter at least one searching name') : alert('請輸入查詢學名')
 			}
 		})
 

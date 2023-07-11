@@ -1,3 +1,6 @@
+
+var $lang = $('[name="lang"]').attr('value');
+
 $(function (){
 
     $('.go-topbtn').on('click', function(){

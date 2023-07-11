@@ -18,7 +18,6 @@
 
 {% block body %}
 {% csrf_token %}
-<input type="hidden" name="lang" value="{{ LANGUAGE_CODE }}">
 <input type="hidden" name="filter" value="{{ filter }}">
 <div class="loadingbox d-none">
 	<img class="center-logo" src="{% static 'image/logo-img.svg' %}" alt="臺灣物種名錄">
@@ -309,6 +308,10 @@
 								</label>
 								<label class="check-item">{% trans "第三級" %}
 									<input type="checkbox" name="protected_category" value="III">
+									<span class="checkmark"></span>
+								</label>
+								<label class="check-item">{% trans "珍貴稀有植物" %}
+									<input type="checkbox" name="protected_category" value="1">
 									<span class="checkmark"></span>
 								</label>
 							</div>

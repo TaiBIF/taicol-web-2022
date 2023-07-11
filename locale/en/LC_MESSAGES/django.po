@@ -485,6 +485,10 @@ msgstr "Precious and Rare"
 msgid "第三級"
 msgstr "Other Conserved"
 
+#: templates/taxa/catalogue.html:310
+msgid "珍貴稀有植物"
+msgstr "Rare and Valuable Plants"
+
 #: templates/taxa/catalogue.html:318
 msgid "臺灣紅皮書評估"
 msgstr "Red List of Taiwan"

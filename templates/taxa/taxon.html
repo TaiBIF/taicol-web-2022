@@ -327,7 +327,6 @@
 									<a class="anchor" id="taxon-rank"></a>
 									<div class="mark-title">
 										<img src="{% static 'image/title-mark.svg' %}">
-										
 										<p>{% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}
 									</div>
 									<div class="arr">
@@ -346,11 +345,11 @@
 											<div class="cir-box {{ i.rank_color }}">
 												{{ i.rank_c  }}
 											</div>
-											<a {% if i.a_href %} class="rank-p" target="_blank" href="{{ i.a_href }}" {% else %} class="rank-p a-disabled" {% endif %}>
+											<a {% if i.a_href %} class="rank-p" href="{{ i.a_href }}" {% else %} class="rank-p a-disabled" {% endif %}>
 											{{ i.a_content|safe  }}
 											</a>
 											{% if i.search_href %}
-												<a class="search-rank d-none" target="_blank" href="{{ i.search_href }}">
+												<a class="search-rank d-none" href="{{ i.search_href }}">
 												<i class="ml-5 fa-solid fa-magnifying-glass"></i></a>
 											{% endif %}
 											</div>

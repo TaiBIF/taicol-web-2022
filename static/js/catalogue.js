@@ -1,6 +1,5 @@
 
     var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
-    var $lang = $('[name="lang"]').attr('value');
 
     // 要有其中之一存在才送出
 	let params = ['keyword','taxon_group','rank','is_endemic',
@@ -268,7 +267,10 @@
 			})
 			.fail(function( xhr, status, errorThrown ) {
 			$('.loadingbox').addClass('d-none');
-			alert('發生未知錯誤！請聯絡管理員')
+			//alert('發生未知錯誤！請聯絡管理員')
+			$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
+			//condition ? true_expression : false_expression
+
 			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
 			}) 
 			
@@ -404,11 +406,14 @@
 		}
 
 		if (!has_search_parm) {
-			alert('請至少輸入一個搜尋項目，若有輸入日期必須填入完整年月日');
+			//alert('請至少輸入一個搜尋項目，若有輸入日期必須填入完整年月日');
+			$lang == 'en-us' ? alert('Please fill at least one searching item. Date must include year, month and day.') : alert('請至少輸入一個搜尋項目，若有輸入日期必須填入完整年月日')
+
 			window.enterPressed = false;
 
 		} else if ((!isValidDate($('input[name=date]').val()))&($('input[name=date]').val()!='')){
-			alert('日期格式錯誤');
+			//alert('日期格式錯誤');
+			$lang == 'en-us' ? alert('Incorrect date format') : alert('日期格式錯誤')
 			window.enterPressed = false;
 		} else {
 
@@ -510,7 +515,7 @@
 													  ${results.count.kingdom[i]['category_c']}(${results.count.kingdom[i]['count']})</button>`)
 						}
 						// 手機選單
-						$('select[name=mb-select]').append(`<option value="kingdom">界</option>`)
+						$('select[name=mb-select]').append(`<option value="kingdom">${results.kingdom_title}</option>`)
 					} else {
 						$('.kingdom-box').parent('li').addClass('d-none')
 					}
@@ -521,7 +526,7 @@
 							$('.rank-box').append(`<button class="changeFacet facet-btn  facet-rank-${results.count.rank[i]['category']}" data-facet="rank" data-value="${results.count.rank[i]['category']}">
 													${results.count.rank[i]['category_c']}(${results.count.rank[i]['count']})</button>`)
 						}
-						$('select[name=mb-select]').append(`<option value="rank">階層</option>`)
+						$('select[name=mb-select]').append(`<option value="rank">${results.rank_title}</option>`)
 					} else {
 						$('.rank-box').parent('li').addClass('d-none')
 					}
@@ -532,7 +537,7 @@
 							$('.endemic-box').append(`<button class="changeFacet facet-btn facet-endemic-${results.count.is_endemic[i]['category']}" data-facet="endemic" data-value="${results.count.is_endemic[i]['category']}">
 													  ${results.count.is_endemic[i]['category_c']}(${results.count.is_endemic[i]['count']})</button>`)
 						}
-						$('select[name=mb-select]').append(`<option value="endemic">特有性</option>`)
+						$('select[name=mb-select]').append(`<option value="endemic">${results.endemic_title}</option>`)
 					} else {
 						$('.endemic-box').parent('li').addClass('d-none')
 					}
@@ -543,7 +548,7 @@
 							$('.alien_type-box').append(`<button class="changeFacet facet-btn facet-alien_type-${results.count.alien_type[i]['category']}" data-facet="alien_type" data-value="${results.count.alien_type[i]['category']}">
 													${results.count.alien_type[i]['category_c']}(${results.count.alien_type[i]['count']})</button>`)
 						}
-						$('select[name=mb-select]').append(`<option value="alien_type">原生/外來性</option>`)
+						$('select[name=mb-select]').append(`<option value="alien_type">${results.native_title}</option>`)
 					} else {
 						$('.alien_type-box').parent('li').addClass('d-none')
 					}
@@ -554,7 +559,7 @@
 							$('.status-box').append(`<button class="changeFacet facet-btn facet-status-${results.count.status[i]['category']}" data-facet="status" data-value="${results.count.status[i]['category']}">
 													${results.count.status[i]['category_c']}(${results.count.status[i]['count']})</button>`)
 						}
-						$('select[name=mb-select]').append(`<option value="status">地位</option>`)
+						$('select[name=mb-select]').append(`<option value="status">${results.status_title}</option>`)
 					} else {
 						$('.status-box').parent('li').addClass('d-none')
 					}
@@ -660,7 +665,7 @@
 			})
 			.fail(function( xhr, status, errorThrown ) {
 			$('.loadingbox').addClass('d-none');
-			alert('發生未知錯誤！請聯絡管理員')
+			$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
 			window.enterPressed = false;
 			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
 			}) 
@@ -728,6 +733,7 @@
 					return $lang == 'en-us' ? "No result" : "查無結果";
 				},		 
 				searching: function(params) {
+					console.log(params)
 					if (params.term != undefined ){
 						if (params.term.match(/[\u3400-\u9FBF]/)){
 							if (params.term.length >1){
@@ -935,7 +941,9 @@
 
 	$('.download_check').on('click', function(){
 		sendOfflineDownloadData($(this).data('type'))
-		alert('請求已送出')
+		// alert('請求已送出')
+		$lang == 'en-us' ? alert('Your request has been sent.') : alert('請求已送出')
+
 		$('.downloadpop').fadeOut("slow");
 		$('.downloadpop').addClass('d-none')
 
