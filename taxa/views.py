@@ -126,7 +126,7 @@ def get_autocomplete_taxon(request):
                     JOIN api_taxon at ON at.taxon_id = atu.taxon_id
                     JOIN taxon_names tnn ON tnn.id = at.accepted_taxon_name_id
                     {'JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id' if request.GET.get('from_tree') else ''}
-                    WHERE tn.deleted_at IS NULL AND at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} {'AND at.rank_id in (3,12,18,22,26)' if request.GET.get('lin_rank') == 'on' else ''}
+                    WHERE tn.deleted_at IS NULL AND at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} {'AND at.rank_id in (3,12,18,22,26,30,34)' if request.GET.get('lin_rank') == 'on' else ''}
                     AND (tn.name REGEXP '{keyword_str}' OR at.common_name_c REGEXP '{keyword_str}' OR at.alternative_name_c REGEXP '{keyword_str}')
                     LIMIT 10
                     """
@@ -1378,7 +1378,6 @@ def taxon_tree(request):
 
 
 def get_sub_tree(request):
-    print(request.POST)
     taxon_id = request.POST.get('taxon_id')
     cultured = request.POST.get('cultured')
     rank_id = request.POST.get('rank_id')
@@ -1441,8 +1440,6 @@ def Reverse(lst):
  
 
 def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank):
-    print(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank)
-    # t0000009 on 3 False zh-hant on
     sub_dict = {}
     sub_titles = []
     rank_id = int(rank_id)
@@ -1469,7 +1466,8 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank):
                 SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) AS p_group
                 FROM api_taxon_tree att 
                 JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s
+                WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s AND at.is_in_taiwan = 1 
+                AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s
                 GROUP BY at.rank_id, p_group;
             """
     with conn.cursor() as cursor:
@@ -1478,8 +1476,8 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank):
         sub_stat = cursor.fetchall()
         sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id'])
         sub_stat = sub_stat.sort_values('rank_id')
-        # if lin_rank == 'on':
-        #     sub_stat = sub_stat[sub_stat.rank_id.isin(lin_ranks)]
+        if lin_rank == 'on':
+            sub_stat = sub_stat[sub_stat.rank_id.isin(lin_ranks)]
         conn.close()
 
     query = f"""SELECT at.taxon_id, at.rank_id, 
@@ -1620,9 +1618,14 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank):
     for r in lack_r:
         final_sub_dict[rank_map_c[r]]['parent_rank_id'] = total_ranks[total_ranks.index(r) - 1]
 
+    # TODO 要把補了地位未定的階層拿掉
     if lack_r:
         final_sub_dict['has_lack'] = True
         final_sub_dict[rank_map_c[total_ranks[total_ranks.index(max(lack_r)) + 1]]]['parent_rank_id'] = max(lack_r)
+        if not from_search_click:
+            for ur in uncertain_rank:
+                if rank_map_c[ur] in final_sub_dict.keys():
+                    final_sub_dict.pop(rank_map_c[ur])
 
     return final_sub_dict
 

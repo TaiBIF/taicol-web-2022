@@ -323,7 +323,6 @@ $(function (){
         $('.select2-search__field').get(0).focus()
     });
 
-
     $('#keyword').on('select2:select', function (e) {
         var data = e.params.data;
         searchClick(data.id,true)
@@ -483,7 +482,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                         `
                     }
                 }
-                html_str = `<ul class="d-block ${results[r][j]['rank_color']}">` + html_str + '</ul>'
+                html_str = `<ul class="${results[r][j]['rank_color']}">` + html_str + '</ul>'
                 $(item).after(html_str) 
 
                 for (j of Object.keys(results[r])){
@@ -591,10 +590,15 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
             
         }
 
+        // 關閉所有的樹
+        $('.main-box .item-box').removeClass('now');
+        $(`.main-box ul`).not('.rank-1-red').addClass('d-none').removeClass('d-block');
+
         if (!$(`div[data-taxon="${keyword_taxon_id}"]`).hasClass('now')){
             $(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')
         }
-        $(`div [data-taxon="${keyword_taxon_id}"]`).data('fetched','1');
+        $(`div [data-taxon="${keyword_taxon_id}"]`).data('fetched','1')
+
         $(`div [data-taxon="${keyword_taxon_id}"]`).parent().parents('ul').addClass('d-block').removeClass('d-none');
         $(`div [data-taxon="${keyword_taxon_id}"]`).nextAll('ul').addClass('d-block').removeClass('d-none');
 
