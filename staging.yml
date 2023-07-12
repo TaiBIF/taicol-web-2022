@@ -9,8 +9,10 @@ services:
       - 8001:8001
     depends_on:
       - postgres
+      - mysql
     links:
       - postgres:postgres
+      - mysql:mysql
     volumes:
       - .:/code
       - ../tc-web-volumes/static:/tc-web-volumes/static
@@ -42,8 +44,8 @@ services:
       - "3307:3306"
     image: tc-web-mysql-image
     restart: always
-    # environment:
-    #   MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
     # env_file:
       # - ./app/.env
     volumes:
