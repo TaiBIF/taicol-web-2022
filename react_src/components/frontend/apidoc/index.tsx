@@ -40,7 +40,13 @@ const breadcrumbs = [
 ]
 
 const ApiPage: React.FC = () => {
-  const { data} = useSWR(`${process.env.REACT_API_URL}/api/apidoc/info`,fetcher);
+  let lang = ''
+  if (window.location.pathname == '/en-us/api'){
+    lang = '_eng'
+  }
+
+  const {data} = useSWR(`http://127.0.0.1:3000/api/apidoc${lang}/info`,fetcher);
+
   return (
     <div className="page-top">
       <Translation>{ t =>
