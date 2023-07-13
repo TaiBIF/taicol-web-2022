@@ -22,26 +22,26 @@ const navigation = (): VerticalNavItemsType => {
 			title: 'Dashboard',
 			icon: HomeOutline,
 			path: '/',
-    },
+		},
 		{
 			title: 'Users',
 			icon: AccountOutline,
 			path: '/admin/user',
 		},
-    {
+		{
 			sectionTitle: 'News',
 		},
 		{
 			title: 'News List',
-			icon: NewspaperVariantOutline ,
+			icon: NewspaperVariantOutline,
 			path: '/admin/news',
-    },
+		},
 		{
 			title: 'News Categories',
-			icon: CardOutline ,
+			icon: CardOutline,
 			path: '/admin/category?type=news',
-    },
-    {
+		},
+		{
 			sectionTitle: 'Article',
 		},
 		{
@@ -53,28 +53,36 @@ const navigation = (): VerticalNavItemsType => {
 			title: 'Article Categories',
 			icon: CardOutline,
 			path: '/admin/category?type=article',
-    },
-    {
+		},
+		{
 			sectionTitle: 'Download',
 		},
 		{
 			title: 'Download List',
 			icon: DownloadBoxOutline,
 			path: '/admin/download',
-    },
+		},
 		{
 			title: 'Download Categories',
 			icon: CardOutline,
 			path: '/admin/category?type=download',
-    },
-    {
+		},
+		{
 			sectionTitle: 'API Doc',
 		},
 		{
 			title: 'API Markdown',
 			icon: DownloadBoxOutline,
 			path: '/admin/apidoc/update',
-    },
+		},
+		{
+			sectionTitle: 'API ENG Doc',
+		},
+		{
+			title: 'API English Markdown',
+			icon: DownloadBoxOutline,
+			path: '/admin/apidoc_eng/update',
+		},
 	];
 };
 
