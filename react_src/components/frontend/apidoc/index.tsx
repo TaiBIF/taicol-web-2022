@@ -45,7 +45,7 @@ const ApiPage: React.FC = () => {
     lang = '_eng'
   }
 
-  const {data} = useSWR(`http://127.0.0.1:3000/api/apidoc${lang}/info`,fetcher);
+  const {data} = useSWR(`${process.env.REACT_API_URL}/api/apidoc${lang}/info`,fetcher);
 
   return (
     <div className="page-top">
