@@ -46,11 +46,47 @@ CREATE TABLE `apidoc` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+--
+-- Table structure for table `apidoc`
+--
+
+DROP TABLE IF EXISTS `apidoc_eng`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `apidoc_eng` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `markdown` varchar(1000) DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  `content` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 --
 -- Table structure for table `apidoc_params`
 --
 
 DROP TABLE IF EXISTS `apidoc_params`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `apidoc_params` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `keyword` varchar(256) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `url` varchar(256) DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `apidoc_params`
+--
+
+DROP TABLE IF EXISTS `apidoc_eng_params`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `apidoc_params` (
@@ -80,12 +116,46 @@ CREATE TABLE `apidoc_responses` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+--
+-- Table structure for table `apidoc_responses`
+--
+
+DROP TABLE IF EXISTS `apidoc_eng_responses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `apidoc_responses` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(256) NOT NULL,
+  `content` text NOT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `apidoc_return_params`
 --
 
 DROP TABLE IF EXISTS `apidoc_return_params`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `apidoc_return_params` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `keyword` varchar(256) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `remark` varchar(256) DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `apidoc_return_params`
+--
+
+DROP TABLE IF EXISTS `apidoc_eng_return_params`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `apidoc_return_params` (
