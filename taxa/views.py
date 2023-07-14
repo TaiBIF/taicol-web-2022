@@ -120,7 +120,7 @@ def get_autocomplete_taxon(request):
         if request.GET.get('cultured') != 'on':
             cultured_condition = ' AND at.is_cultured != 1'
         # if request.GET.get('from_tree'):
-        query = f"""SELECT distinct at.taxon_id, tn.name, CONCAT_WS (' ',tnn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c)), atu.status
+        query = f"""SELECT distinct at.taxon_id, tn.name,{ "tnn.name" if get_language() == 'en-us' else " CONCAT_WS (' ',tnn.name, CONCAT_WS(',', at.common_name_c, at.alternative_name_c))" }, atu.status
                     FROM taxon_names tn
                     JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
                     JOIN api_taxon at ON at.taxon_id = atu.taxon_id
@@ -152,7 +152,10 @@ def get_autocomplete_taxon(request):
 
             ds = pd.DataFrame(results, columns=['id','name','text','name_status'])
             if len(ds):
-                ds['text'] = ds.apply(lambda x: x['name'] + f" ({x['text']} {name_status_map[x['name_status']]})" if x['name_status'] != 'accepted' else x['text'], axis=1)
+                if get_language() == 'en-us':
+                    ds['text'] = ds.apply(lambda x: x['name'] + f" ({name_status_map[x['name_status']]} {x['text']})" if x['name_status'] != 'accepted' else x['text'], axis=1)
+                else:
+                    ds['text'] = ds.apply(lambda x: x['name'] + f" ({x['text']} {name_status_map_c[x['name_status']]})" if x['name_status'] != 'accepted' else x['text'], axis=1)
                 # ds = ds[['text','value']].to_json(orient='records')
             names = ds[['text','id']].to_json(orient='records')
 
@@ -1157,9 +1160,9 @@ def taxon(request, taxon_id):
                                                                 <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
                                                             </g>
                                                         </g>
-                                                    </svg></a>''', '', thh[3].strftime("%Y-%m-%d"), gettext('TaiCOL管理員')]
+                                                    </svg></a>''', '', thh[3].strftime("%Y-%m-%d"), 'TaiCOL管理員']
                                 else:
-                                    row = [taxon_history_dict[thh[0]], '', '', thh[3].strftime("%Y-%m-%d"), gettext('TaiCOL管理員')]
+                                    row = [taxon_history_dict[thh[0]], '', '', thh[3].strftime("%Y-%m-%d"), 'TaiCOL管理員']
 
                         elif thh[5] and thh[2] and thh[-1] != 4:
                             row = [taxon_history_dict[thh[0]], thh[1], f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
@@ -1168,6 +1171,7 @@ def taxon(request, taxon_id):
                         taxon_history.append(row)
                 taxon_history = pd.DataFrame(taxon_history, columns=['type','content','ref','datetime','editor'])
                 taxon_history.loc[taxon_history['type']==gettext('新增Taxon'),'content'] = ''
+                taxon_history.loc[taxon_history['editor']=='TaiCOL管理員','editor'] = gettext('TaiCOL管理員')
                 taxon_history = taxon_history.drop_duplicates(subset=['type','content','ref']).to_dict(orient='records')
 
                 data['self'] = ''
@@ -1369,7 +1373,7 @@ def taxon_tree(request):
             conn.close()
             search_stat = []
             for t in tags:
-                if t[1]:
+                if t[1] and get_language() == 'zh-hant':
                     search_stat.append({'taxon_id': t[0], 'name': t[1]})
                 else:
                     search_stat.append({'taxon_id': t[0], 'name': t[2]})

@@ -65,10 +65,16 @@ with conn.cursor() as cursor:
 #               19: '亞綱', 20: '下綱', 21: '超目|總目', 22: '目', 23: '亞目', 24: '下目', 25: '超科|總科', 26: '科', 27: '亞科', 28: '族', 29: '亞族', 30: '屬', 31: '亞屬', 32: '組|節', 33: '亞組|亞節', 34: '種', 35: '亞種', 36: '雜交亞種',
 #               37: '變種', 38: '亞變種', 39: '雜交變種', 40: '型', 41: '亞型', 42: '特別品型', 43: '種族', 44: '種族', 45: '形態型', 46: '異常個體', 47: '雜交組合'}
 
-name_status_map = {
+name_status_map_c = {
     # 'accepted': 'Accepted',
     'not-accepted': '的無效名',
     'misapplied': '的誤用名',
+}
+
+name_status_map = {
+    # 'accepted': 'Accepted',
+    'not-accepted': 'synonym of',
+    'misapplied': 'misapplied to',
 }
 
 alien_map_c = {'native': '原生','naturalized':'歸化','invasive':'入侵','cultured':'栽培豢養'}
