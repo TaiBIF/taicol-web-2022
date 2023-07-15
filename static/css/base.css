@@ -35,15 +35,9 @@
     cursor: pointer;
 }
 
-.lang_icon {
-    stroke:none !important;
-    fill-rule:nonzero !important;
-    fill:#555 !important;
-    fill-opacity:1 !important;
-    width:15px !important;
-    height:15px !important;
-}
 
-.lang_icon:hover{
-    fill:#4C8DA7 !important;
+
+.lang_icon {
+    width: 15px !important;
+    height: 15px !important;
 }

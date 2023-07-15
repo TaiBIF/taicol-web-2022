@@ -753,6 +753,15 @@ body {
         -webkit-transition: all .3s
     }
 
+    .header .main_menu li:hover .big_title svg {
+        fill: #4C8DA7;
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s
+    }
+
     .header .main_menu li:hover .big_title span, .header .main_menu li.now .big_title span {
         width: 100%;
         transition: all .3s;
