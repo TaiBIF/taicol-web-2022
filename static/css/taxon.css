@@ -477,11 +477,6 @@ a.anchor {
 }
 
 
-
-.mistake-btn-en {
-    font-size: 14px !important;
-}
-
 .mistakepop .rel .w-bg, .imagepop .rel .w-bg {
     max-height: 100%;
     overflow: auto;
@@ -501,4 +496,9 @@ a.anchor {
 
 .pic-area .picbox-all .picbox .rel {
     height: 100%;
+}
+
+.species-de-content .sticky-left-en {
+    width: 260px;
+    flex: 0 0 260px
 }

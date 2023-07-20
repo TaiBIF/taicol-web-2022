@@ -201,7 +201,7 @@
 						}
 					}
 					$('.table-style1').append(
-						`<tr class="open_taxon" data-href="/taxon/${results.data[i]['taxon_id']}">
+						`<tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}">
 							<td>${results.data[i]['kingdom']}</td>
 							<td>${results.data[i]['taxon_group']}</td>
 							<td>${results.data[i]['rank']}</td>
@@ -579,7 +579,7 @@
 							}
 						}
 						$('.table-style1').append(
-							`<tr class="open_taxon" data-href="/taxon/${results.data[i]['taxon_id']}">
+							`<tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}">
 								<td>${results.data[i]['kingdom']}</td>
 								<td>${results.data[i]['taxon_group']}</td>
 								<td>${results.data[i]['rank']}</td>

@@ -206,7 +206,7 @@
 
 		<div class="species-de-content">
 			<div class="main-box">
-				<div class="sticky-left">
+				<div class='sticky-left {% if LANGUAGE_CODE == "en-us" %} sticky-left-en {% endif %} '>
 					<input type="hidden" name="taxon_id" value="{{ taxon_id }}">
 					<button class="sticky_btn" data-hash="#taxon-status">- {% trans "分類資訊" %}</button>
 					{% if stat_str %}
@@ -274,7 +274,7 @@
 						</div>
 						<div class="rignt-pic_area">
 
-							<button class="mistake-btn {% if LANGUAGE_CODE == 'en-us' %} mistake-btn-en {% endif %}">{% blocktrans context "回報錯誤"%}回報<br>錯誤{% endblocktrans %}</button>
+							<button class="mistake-btn">{% blocktrans context "回報錯誤"%}回報<br>錯誤{% endblocktrans %}</button>
 							<div class="pic-area mh-100">
 								{% if data.images|length > 1 %}
 									<div class="arr-left plusSlides" data-index="-1">

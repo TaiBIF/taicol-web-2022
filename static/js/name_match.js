@@ -67,7 +67,7 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 					$('.table-style1').append(
 						`<tr>
 							<td>${results.data[i]['search_term']}</td>
-							<td><a href="/taxon/${results.data[i]['taxon_id']}" target="_blank">${results.data[i]['formatted_name']}</a></td>
+							<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}" target="_blank">${results.data[i]['formatted_name']}</a></td>
 							<td>${results.data[i]['common_name_c']}</a></td>
 							<td>${results.data[i]['kingdom']}</td>
 							<td>${results.data[i]['taxon_group']}</td>

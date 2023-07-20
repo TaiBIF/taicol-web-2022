@@ -44,7 +44,7 @@
     "昆蟲":"Insects",
     "魚類":"Fishes",
     "爬蟲類":"Reptiles",
-    "真菌(含地衣)":"Fungi",
+    "真菌":"Fungi",
     "植物":"Plants",
     "鳥類":"Birds",
     "哺乳類":"Mammals",
@@ -87,7 +87,7 @@
     "主旨":"Subject",
 
 
-    "病毒界": "Viruses",
+    "病毒": "Viruses",
     "細菌界": "Bacteria",
     "古菌界": "Archaea",
     "原生生物界": "Protozoa",

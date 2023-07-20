@@ -41,3 +41,8 @@
     width: 15px !important;
     height: 15px !important;
 }
+
+
+.editor-box ul, .editor-box ol {
+    margin-left: 20px;
+}

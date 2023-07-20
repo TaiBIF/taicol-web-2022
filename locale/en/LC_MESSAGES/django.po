@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-14 18:27+0800\n"
+"POT-Creation-Date: 2023-07-14 18:45+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,12 +23,12 @@ msgid "臺灣特有"
 msgstr "Endemic to Taiwan"
 
 # templates/taxa/catalogue.html: 
-#: taxa/views.py:440 taxa/views.py:524 taxa/views.py:1764
+#: taxa/views.py:440 taxa/views.py:524 taxa/views.py:1765
 msgid "下一頁"
 msgstr "Next"
 
 # templates/taxa/catalogue.html: 
-#: taxa/views.py:441 taxa/views.py:525 taxa/views.py:1765
+#: taxa/views.py:441 taxa/views.py:525 taxa/views.py:1766
 msgid "上一頁"
 msgstr "Previous"
 
@@ -60,70 +60,70 @@ msgid "不存在於臺灣"
 msgstr "Not Exist in Taiwan"
 
 # templates/taxa/taxon.html: 
-#: taxa/views.py:1163 taxa/views.py:1165
-msgid "TaiCOL管理員"
-msgstr "TaiCOL administrator"
-
-# templates/taxa/taxon.html: 
 #: taxa/views.py:1173
 msgid "新增Taxon"
 msgstr "Taxon created"
 
-#: templates/base.html:58 templates/base.html:150 templates/pages/about.html:19
+# templates/taxa/taxon.html: 
+#: taxa/views.py:1174
+msgid "TaiCOL管理員"
+msgstr "TaiCOL administrator"
+
+#: templates/base.html:58 templates/base.html:151 templates/pages/about.html:19
 #: templates/pages/about.html:32 templates/pages/about.html:59
 msgid "關於TaiCOL"
 msgstr "ABOUT"
 
-#: templates/base.html:64 templates/base.html:154
+#: templates/base.html:64 templates/base.html:155
 #: templates/taxa/taxon_tree.html:29 templates/taxa/taxon_tree.html:39
 msgid "物種樹"
 msgstr "TAXON"
 
-#: templates/base.html:70 templates/base.html:158
+#: templates/base.html:70 templates/base.html:159
 #: templates/taxa/catalogue.html:75 templates/taxa/catalogue.html:85
 msgid "物種名錄"
 msgstr "CATALOGUE"
 
-#: templates/base.html:76 templates/base.html:164
+#: templates/base.html:76 templates/base.html:165
 #: templates/taxa/name_match.html:27
 msgid "資料工具"
 msgstr "TOOL"
 
-#: templates/base.html:81 templates/base.html:167
+#: templates/base.html:81 templates/base.html:168
 msgid "資料下載"
 msgstr "Download"
 
-#: templates/base.html:82 templates/base.html:170
+#: templates/base.html:82 templates/base.html:171
 msgid "API"
 msgstr "API"
 
-#: templates/base.html:83 templates/base.html:173
+#: templates/base.html:83 templates/base.html:174
 #: templates/taxa/name_match.html:27 templates/taxa/name_match.html:41
 msgid "學名比對工具"
 msgstr "Name Match"
 
-#: templates/base.html:84 templates/base.html:176
+#: templates/base.html:84 templates/base.html:177
 msgid "學名管理工具"
 msgstr "Name Management Tool"
 
-#: templates/base.html:90 templates/base.html:182
+#: templates/base.html:90 templates/base.html:183
 #: templates/pages/data_policy.html:15
 msgid "更多資訊"
 msgstr "MORE"
 
-#: templates/base.html:95 templates/base.html:185
+#: templates/base.html:95 templates/base.html:186
 msgid "最新消息"
 msgstr "News"
 
-#: templates/base.html:96 templates/base.html:188
+#: templates/base.html:96 templates/base.html:189
 msgid "主題文章"
 msgstr "Articles"
 
-#: templates/base.html:97 templates/base.html:191
+#: templates/base.html:97 templates/base.html:192
 msgid "資料統計"
 msgstr "Statistics"
 
-#: templates/base.html:98 templates/base.html:194
+#: templates/base.html:98 templates/base.html:195
 msgid "資料使用規範"
 msgstr "Data Policy"
 
@@ -131,15 +131,15 @@ msgstr "Data Policy"
 msgid "語言"
 msgstr "LANGUAGE"
 
-#: templates/base.html:141
+#: templates/base.html:142
 msgid "聯絡我們"
 msgstr "Contact us"
 
-#: templates/base.html:200
+#: templates/base.html:201
 msgid "指導單位"
 msgstr "Funded by"
 
-#: templates/base.html:206
+#: templates/base.html:207
 msgid "維護單位"
 msgstr "Maintained by"
 
@@ -153,7 +153,12 @@ msgstr "HOME"
 msgid "ABOUT"
 msgstr " "
 
-#: templates/pages/about.html:62
+#: templates/pages/about.html:61
+msgctxt "關於TaiCOL-content"
+msgid "關於TaiCOL"
+msgstr "About TaiCOL"
+
+#: templates/pages/about.html:65
 msgid ""
 "臺灣物種名錄 (Catalogue of Life in Taiwan, TaiCOL) 為一收集整合臺灣物種學名相"
 "關資訊並提供物種名錄的資料庫，早期稱為「臺灣生物多樣性國家資訊網」(TaiBNET)。"
@@ -184,11 +189,11 @@ msgstr ""
 "and released species name codes to all domestic large biodiversity databases "
 "as data backbones or for data exchange."
 
-#: templates/pages/about.html:75
+#: templates/pages/about.html:78
 msgid "TaiCOL工作目標"
 msgstr "Purpose & Mission"
 
-#: templates/pages/about.html:78
+#: templates/pages/about.html:81
 msgid ""
 "物種名錄對生物多樣性資源的保育至關重要。推動生物多樣性保育的相關工作，從資源"
 "調查、監測，乃至於政策制定，皆須正確引用物種學名，才能確保有效的溝通與管理，"
@@ -510,15 +515,15 @@ msgstr "Null"
 
 #: templates/taxa/catalogue.html:301
 msgid "第一級"
-msgstr "Endangered"
+msgstr "I: Endangered"
 
 #: templates/taxa/catalogue.html:305
 msgid "第二級"
-msgstr "Precious and Rare"
+msgstr "II: Precious and Rare"
 
 #: templates/taxa/catalogue.html:309
 msgid "第三級"
-msgstr "Other Conserved"
+msgstr "III: Other Conserved"
 
 #: templates/taxa/catalogue.html:313
 msgid "珍貴稀有植物"
@@ -740,7 +745,7 @@ msgstr "Please refer to"
 #: templates/taxa/taxon.html:277
 msgctxt "回報錯誤"
 msgid "回報<br>錯誤"
-msgstr "Feedback"
+msgstr "Report"
 
 #: templates/taxa/taxon.html:305
 msgid "無照片"
@@ -778,30 +783,30 @@ msgstr "Including Cultured"
 msgid "僅顯示林奈階層"
 msgstr "Show Linnaean ranks only"
 
-# templates/taxa/taxon.html: 
+#: templates/taxa/taxon.html: 
 msgid "誤用"
 msgstr "misapplied"
 
-# templates/taxa/taxon.html: 
+#: templates/taxa/taxon.html: 
 msgid "歧異"
 msgstr "ambiguous"
 
-# templates/taxa/name_match.html: 
+#: templates/taxa/name_match.html: 
 msgid "原生/外來/特有性"
 msgstr "Native/Exotic/Endemism"
 
-# templates/taxa/name_match.html: 
+#: templates/taxa/name_match.html: 
 msgid "查詢字串"
 msgstr "Query String"
 
-# templates/taxa/name_match.html: 
+#: templates/taxa/name_match.html: 
 msgid "中文名"
 msgstr "Chinese Name"
 
-# templates/taxa/name_match.html: 
+#: templates/taxa/name_match.html: 
 msgid "所屬類群"
 msgstr "Higher Taxon"
 
-# templates/taxa/catalogue.html: 
+#: templates/taxa/catalogue.html: 
 msgid "學名"
 msgstr "Scientific Name"

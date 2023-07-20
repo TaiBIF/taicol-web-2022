@@ -30,7 +30,7 @@ const endemicInfo:EndemicInfoProps[] = [
   { endemic: '昆蟲',image:'/static/image/statistic-icon01.svg' },
   { endemic: '魚類',image:'/static/image/statistic-icon02.svg' },
   { endemic: '爬蟲類',image:'/static/image/statistic-icon03.svg' },
-  { endemic: '真菌(含地衣)',image:'/static/image/statistic-icon04.svg' },
+  { endemic: '真菌',image:'/static/image/statistic-icon04.svg' },
   { endemic: '植物',image:'/static/image/statistic-icon05.svg' },
   { endemic: '鳥類',image:'/static/image/statistic-icon06.svg' },
   { endemic: '哺乳類',image:'/static/image/statistic-icon07.svg' },
@@ -46,7 +46,7 @@ const sourceInfo:SourceInfoProps[] = [
 ]
 
 const kingdomInfo:KingdomInfoProps[] = [
-  { kingdom: 'Viruses',chineseName:'病毒界' },
+  { kingdom: 'Viruses',chineseName:'病毒' },
   { kingdom: 'Bacteria',chineseName:'細菌界' },
   { kingdom: 'Archaea',chineseName:'古菌界' },
   { kingdom: 'Protozoa',chineseName:'原生生物界' },
