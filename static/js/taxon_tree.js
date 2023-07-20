@@ -103,7 +103,7 @@ function getSubList(item){
             $('.redirectTaxonPage').on('click', function(event){
                 event.stopPropagation();
                 //window.open(`/taxon/${$(this).data('taxon_id')}`);
-                window.location = `/taxon/${$(this).data('taxon_id')}`
+                window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
             })   
  
         })
@@ -144,7 +144,7 @@ $(function (){
     $('.redirectTaxonPage').on('click', function(event){
         event.stopPropagation();
         //window.open(`/taxon/${$(this).data('taxon_id')}`);
-        window.location = `/taxon/${$(this).data('taxon_id')}`
+        window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
     })    
 
     // 栽培豢養
@@ -213,7 +213,7 @@ $(function (){
             $('.redirectTaxonPage').on('click', function(event){
                 event.stopPropagation();
                 //window.open(`/taxon/${$(this).data('taxon_id')}`);
-                window.location = `/taxon/${$(this).data('taxon_id')}`
+                window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
             })    
 
             if (current_taxon_id){
@@ -585,7 +585,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
             $('.redirectTaxonPage').on('click', function(event){
                 event.stopPropagation();
                 // window.open(`/taxon/${$(this).data('taxon_id')}`);
-                window.location = `/taxon/${$(this).data('taxon_id')}`
+                window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
             })
             
         }
