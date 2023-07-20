@@ -81,8 +81,8 @@ WSGI_APPLICATION = 'conf.wsgi.application'
 
 # i18n Django setting
 LANGUAGES = [
-    ("zh-hant", ("Traditional Chinese")),
-    ("en-us", ("English")),
+    ("zh-hant", _("Traditional Chinese")),
+    ("en-us", _("English")),
 ]
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
