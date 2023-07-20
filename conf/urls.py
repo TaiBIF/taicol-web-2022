@@ -31,13 +31,13 @@ urlpatterns = [
     re_path(r'^media/(?P<path>.*)$', serve, {
         'document_root': settings.MEDIA_ROOT,
     }),
+    path('', include('pages.urls')),
+    path('', include('taxa.urls_pages')),
 ]
 
 
 urlpatterns += i18n_patterns(
     path("i18n/", include("django.conf.urls.i18n")),
-    path(r'', include('pages.urls')),
-    path(r'', include('taxa.urls_pages')),
+    path('', include('pages.urls')),
+    path('', include('taxa.urls_pages')),
 )
-
-# path("i18n/", include("django.conf.urls.i18n")),
