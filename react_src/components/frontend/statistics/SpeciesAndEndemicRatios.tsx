@@ -1,6 +1,7 @@
 import * as React from 'react';
 import type { EndemicProps } from '../types';
 import { formatNumber } from '../utils/helper';
+import { Translation } from 'react-i18next';
 
 import Tooltip from '@mui/material/Tooltip';
 
@@ -12,7 +13,9 @@ const RankCountStatisics: React.VFC<EndemicProps> = (props) => {
   return (
     <li>
       <div className="title-sp">
-        <p>{name} <span></span></p>
+        <Translation>{ t =>
+          <p>{t(name)}<span></span></p>
+        }</Translation>
         <div className="num">{formatNumber(total)}</div>
       </div>
       <div className="pie-box">

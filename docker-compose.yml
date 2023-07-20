@@ -31,3 +31,24 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     env_file:
      - .env
+  mysql:
+    build: ./scripts/mysql
+    container_name: tc-web-mysql-container
+    ports:
+      - "3307:3306"
+    image: tc-web-mysql-image
+    restart: always
+    # environment:
+    #   MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    # env_file:
+      # - ./app/.env
+    volumes:
+      - ../tc-web-volumes/mysql:/var/lib/mysql:rw
+      - ../tc-web-volumes/bucket:/bucket
+      # - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:rw
+    command:
+      [
+        "mysqld",
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+      ]

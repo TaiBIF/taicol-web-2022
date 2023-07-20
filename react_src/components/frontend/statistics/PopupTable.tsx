@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {CompareTableDataProps} from '../types'
+import { Translation, useTranslation } from 'react-i18next';
 
 type Props = {
   data: CompareTableDataProps[];
@@ -7,6 +8,8 @@ type Props = {
   handleShowCompareTableClick: (status:boolean) => void,
 }
 const PopupTable: React.FC<Props> = (props) => {
+  const { t, i18n } = useTranslation();
+
   const { data, show,handleShowCompareTableClick } = props;
 
   return (show ? <div className="popbox-table">
@@ -27,26 +30,28 @@ const PopupTable: React.FC<Props> = (props) => {
             </svg>
           </div>
           <div className="title-area">
-            <h2>臺灣與全球物種數比較表 <span></span></h2>
+          <Translation>{ t => <h2>{t('臺灣與全球物種數比較')}<span></span></h2>}</Translation>
           </div>
-          <p className="pad-note">
-            請往右滑動 &gt;&gt;&gt;
-          </p>
+          <Translation>{ t =>
+            <p className="pad-note">
+              {t('請往右滑動')}&gt;&gt;&gt;
+            </p>
+            }</Translation>
           <div className="pad-mb-scro">
             <table className="table-style1 b-0" cellPadding="0" cellSpacing="0">
               <tbody><tr>
-                <td>界</td>
-                <td>門</td>
-                <td>綱</td>
-                <td>全球現有種數</td>
-                <td>臺灣現有種數</td>
-                <td width="22%">臺灣名錄主要提供者</td>
+              <Translation>{ t => <td>{t('界')}</td>}</Translation>
+              <Translation>{ t => <td>{t('門')}</td>}</Translation>
+              <Translation>{ t => <td>{t('綱')}</td>}</Translation>
+              <Translation>{ t => <td>{t('全球現有種數')}</td>}</Translation>
+              <Translation>{ t => <td>{t('臺灣現有種數')}</td>}</Translation>
+              <Translation>{ t => <td width="22%">{t('臺灣名錄主要提供者')}</td>}</Translation>
               </tr>
               {data.map((item:CompareTableDataProps, index:number) => (
                 <tr key={`species-compare-table-tr-${index}`}>
-                  <td>{item.kingdomName}</td>
-                  <td>{item.phylumName}</td>
-                  <td>{item.className}</td>
+                  <td>{t(item.kingdomName)}</td>
+                  <td>{t(item.phylumName)}</td>
+                  <td>{t(item.className)}</td>
                   <td>{item.globalCount}</td>
                   <td>{item.taiwanCount}</td>
                   <td>{item.twProvider}</td>

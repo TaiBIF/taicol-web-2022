@@ -50,7 +50,7 @@ function showSlides(n) {
 	// 修改彈跳視窗內的照片
 	let current_elem = slides[slideIndex-1];
 	if (current_elem!=undefined){
-		if (current_elem.getElementsByClassName('nopic').length == 0){
+		if (current_elem.getElementsByClassName('no-pic').length == 0){
 			$('.imagepop #spe-image').attr("src",current_elem.getElementsByTagName('img')[0].src);
 			$('.imagepop #image_author').html(current_elem.getElementsByClassName('image_author')[0].innerText);
 			$('.imagepop #image_provider').html(current_elem.getElementsByClassName('image_provider')[0].innerText);
@@ -73,6 +73,9 @@ function controlAll(){
 	}
 }
 
+
+
+
 $(function(){
 
 	$('#errorForm select[name=type]').niceSelect();
@@ -90,7 +93,7 @@ $(function(){
 	})
 
 	$('.sticky_btn').on('click',function(){
-		document.location=`/taxon/${$('[name=taxon_id]').val()}${$(this).data('hash')}`
+		document.location=document.location.pathname+`${$(this).data('hash')}`
 	})
 	
 	$('.plusSlides').on('click',function(){
@@ -127,18 +130,20 @@ $(function(){
 			.done(function(results) {
 				//$('.loadingbox').addClass('d-none');
 				$('.mistakepop').fadeOut("slow");
-				alert('回報已送出，謝謝您！');
-
+				//alert('回報已送出，謝謝您！');
+				$lang == 'en-us' ? alert("Your feedback has been sent. Thank you!") : alert("回報已送出，謝謝您！");
 			})
 			.fail(function( xhr, status, errorThrown ) {
 				$('.loadingbox').addClass('d-none');
-				alert('發生未知錯誤！請聯絡管理員')
+				$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
 				console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
 			}) 
 	
 
 		} else {
-			alert('請檢查表格是否填寫完整，或電子郵件格式是否正確')
+			$lang == 'en-us' ? alert("Please fill out the form completely") : alert("請檢查表格是否填寫完整，或電子郵件格式是否正確");
+
+			//alert('請檢查表格是否填寫完整，或電子郵件格式是否正確')
 		}
 
 	})
@@ -152,7 +157,9 @@ $(function(){
 
 	$('.search').click(function(){
 		if ($('input[name=keyword]').val()==''){
-			alert('請輸入關鍵字')
+			//alert('請輸入關鍵字')
+			$lang == 'en-us' ? alert("Please enter keywords") : alert("請輸入關鍵字");
+
 		} else {
 			window.location = '/catalogue?keyword=' + $('input[name=keyword]').val()
 		}

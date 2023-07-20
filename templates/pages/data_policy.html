@@ -1,6 +1,6 @@
 {% extends 'base.html' %} 
 {% load static %}
-
+{% load i18n %}
 {% block body %}
 	<div class="page-top">
 		<div class="big-top">
@@ -12,7 +12,7 @@
 			</div>
 			<div class="top-wave"></div>
 			<div class="path">
-				<a href="{% url 'index' %}">首頁</a> > <p>更多資訊</p> > <p>資料使用規範</p>
+				<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "更多資訊" %}</p> > <p>{% trans "資料使用規範" context "BreadCrumb" %}</p>
 			</div>
 			<div class="main-box ">
 				<div class="pic-right1">
@@ -28,8 +28,8 @@
 					<img src="{% static 'image/cir_blue.png' %}">
 				</div>
 				<div class="title-box">
-					<h2>資料使用規範 <span></span></h2>
-					<p>Data Policy</p>
+					<h2>{% trans "資料使用規範" context "title" %} <span></span></h2>
+					<p>{% trans "Data Policy" %}</p>
 				</div>
 			</div>
 		</div>
@@ -102,7 +102,7 @@
 						</a>
 					</div>
 				</div>
-				<h2>臺灣物種名錄(TaiCOL)引用格式</h2>
+				<h2>{% trans "臺灣物種名錄(TaiCOL)引用格式" %}</h2>
 				<div class="gray-infbox">
 					鍾國芳、邵廣昭 (2022) 臺灣物種名錄 https://taicol.tw (於{{ today }}查詢)
 					<br><br>

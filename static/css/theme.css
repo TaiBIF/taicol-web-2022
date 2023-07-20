@@ -632,7 +632,7 @@ body {
 .header .main_menu li .big_title {
     position: relative;
     color: #555;
-    cursor: pointer;
+   /* cursor: pointer;*/
     display: block;
     transition: all .3s;
     -moz-transition: all .3s;
@@ -746,6 +746,15 @@ body {
 @media only screen and (min-width: 1000px) {
     .header .main_menu li:hover .big_title, .header .main_menu li.now .big_title {
         color: #4C8DA7;
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s
+    }
+
+    .header .main_menu li:hover .big_title svg {
+        fill: #4C8DA7;
         transition: all .3s;
         -moz-transition: all .3s;
         -o-transition: all .3s;
@@ -1571,8 +1580,10 @@ body {
 }
 
 .statis-3 li .cir_icon {
-    width: 6.7708vw;
-    height: 6.7708vw;
+    width: 70px;
+    height: 70px;
+    min-width: 70px;
+    min-height: 70px;
     border-radius: 50%;
     border: 1px solid #DAEAF1;
     display: flex;
@@ -1594,12 +1605,12 @@ body {
 
 .statis-3 li .cir_icon .cir-line1 {
     position: absolute;
-    width: 6.8708vw;
-    height: 6.8708vw;
+    width: 70px;
+    height: 70px;
     background: url("../image/cir-line.svg") top left no-repeat;
-    left: -0.1vw;
-    top: -0.1vw;
-    background-size: 3.41708542vw auto
+    left: -1px;
+    top: -1px;
+    background-size: 35px auto
 }
 
 @media only screen and (max-width: 767px) {
@@ -1615,12 +1626,12 @@ body {
 
 .statis-3 li .cir_icon .cir-line2 {
     position: absolute;
-    width: 6.8708vw;
-    height: 6.8708vw;
+    width: 70px;
+    height: 70px;
     background: url("../image/cir-line.svg") top left no-repeat;
-    left: -0.1vw;
-    top: -0.1vw;
-    background-size: 3.41708542vw auto
+    left: -1px;
+    top: -1px;
+    background-size: 35px auto
 }
 
 @media only screen and (max-width: 767px) {
@@ -1635,12 +1646,12 @@ body {
 }
 
 .statis-3 li .cir_icon img {
-    width: 3.645833vw
+    width: 60%
 }
 
 @media only screen and (max-width: 767px) {
     .statis-3 li .cir_icon img {
-        width: 40px
+        width: 60%
     }
 }
 
@@ -1672,7 +1683,11 @@ body {
 
 .statis-3 li .txtbox .title h3 {
     font-size: 24px;
-    font-weight: normal
+    font-weight: normal;
+}
+
+.w-min-content {
+    width: min-content;
 }
 
 @media only screen and (max-width: 1599px) {
@@ -1701,7 +1716,8 @@ body {
 
 .statis-3 li .txtbox .title .markq {
     cursor: pointer;
-    position: relative
+    position: relative;
+    margin-left: 5px
 }
 
 .statis-3 li .txtbox .title .markq:hover .hvbubble {
@@ -1716,6 +1732,7 @@ body {
     -ms-transition: all .3s;
     -webkit-transition: all .3s
 }
+
 
 .statis-3 li .txtbox .title .markq svg {
     display: block;
@@ -1751,6 +1768,16 @@ body {
     margin-left: -70px
 }
 
+.statis-3 li .txtbox .title .markq .en-tooltip {
+    top: -50px;
+}
+
+.statis-3 li .txtbox .title .markq:hover .en-tooltip {
+    top: -45px;
+}
+
+
+
 .statis-3 li .txtbox .title .markq .hvbubble p {
     color: #4C8DA7;
     font-size: 14px;
@@ -1780,13 +1807,13 @@ body {
 
 .statis-3 li .numberbox {
     color: #4C8DA7;
-    font-size: 4.1666vw;
+    font-size: 3vw;
     letter-spacing: 0
 }
 
 @media only screen and (max-width: 767px) {
     .statis-3 li .numberbox {
-        font-size: 9vw;
+        font-size: 7vw;
         letter-spacing: 0
     }
 }
@@ -4198,7 +4225,8 @@ body {
     -moz-transition: all .3s;
     -o-transition: all .3s;
     -ms-transition: all .3s;
-    -webkit-transition: all .3s
+    -webkit-transition: all .3s;
+    min-width: 270px;
 }
 
 @media only screen and (max-width: 999px) {
@@ -4281,6 +4309,10 @@ body {
         -o-transition: all .3s;
         -ms-transition: all .3s;
         -webkit-transition: all .3s
+    }
+
+    .tree-area .rank-1-red li>.item-box:hover>h2:hover {
+        text-decoration:underline;
     }
 
     .tree-area .rank-1-red li>.item-box:hover>.cir-box {
@@ -5538,7 +5570,7 @@ body {
 .more-selection-area .item-box .left-title {
     color: #555;
     width: 160px;
-    flex: 0 0 160px;
+    flex: 0 0 200px;
     display: flex;
     margin-right: 10px;
     align-items: center;
@@ -5919,7 +5951,8 @@ body {
     -moz-transition: all .3s;
     -o-transition: all .3s;
     -ms-transition: all .3s;
-    -webkit-transition: all .3s
+    -webkit-transition: all .3s;
+    text-align: start;
 }
 
 @media only screen and (min-width: 1000px) {
@@ -5938,7 +5971,8 @@ body {
 }
 
 .result-area .right-table {
-    width: 100%
+    width: 100%;
+    overflow-y: auto;
 }
 
 .result-area .right-table .scro-m {
@@ -7123,8 +7157,8 @@ body {
 
 .name-checkitem-box .left-title {
     color: #555;
-    width: 100px;
-    flex: 0 0 100px;
+    width: 150px;
+    flex: 0 0 150px;
     display: flex;
     margin-right: 10px;
     align-items: center;
@@ -9469,8 +9503,10 @@ body {
 }
 
 .statis-3-cont .statis-3 li .cir_icon {
-    width: 120px;
-    height: 120px
+    width: 90px;
+    height: 90px;
+    min-width: 90px;
+    min-height: 90px
 }
 
 @media only screen and (max-width: 999px) {
@@ -9482,7 +9518,7 @@ body {
 
 @media only screen and (max-width: 999px) {
     .statis-3-cont .statis-3 li .cir_icon img {
-        width: 50px
+        width: 60%
     }
 }
 
@@ -9490,6 +9526,8 @@ body {
     .statis-3-cont .statis-3 li .cir_icon {
         width: 80px;
         height: 80px;
+        min-width: 80px;
+        min-height: 80px;
         flex: 0 0 80px
     }
 }
@@ -9501,9 +9539,9 @@ body {
 }
 
 .statis-3-cont .statis-3 li .cir_icon .cir-line1 {
-    width: 120px;
-    height: 120px;
-    background-size: 60px auto;
+    width: 90px;
+    height: 90px;
+    background-size: 45px auto;
     -moz-animation: rotate-line1 1s 0.6s linear forwards;
     -webkit-animation: rotate-line1 1s 0.6s linear forwards;
     animation: rotate-line1 1s 0.6s linear forwards
@@ -9518,9 +9556,9 @@ body {
 }
 
 .statis-3-cont .statis-3 li .cir_icon .cir-line2 {
-    width: 120px;
-    height: 120px;
-    background-size: 60px auto;
+    width: 90px;
+    height: 90px;
+    background-size: 45px auto;
     -moz-animation: rotate-line2 1.5s 0.6s linear forwards;
     -webkit-animation: rotate-line2 1.5s 0.6s linear forwards;
     animation: rotate-line2 1.5s 0.6s linear forwards
@@ -9636,7 +9674,17 @@ body {
 .chart-box .item-p2 .btn-more {
     position: absolute;
     right: 20px;
-    bottom: -30px
+    bottom: -30px;
+    width: 220px;
+}
+
+
+.chart-box .item-p2 .btn-more p.fs-12 {
+    font-size: 12px
+}
+
+.chart-box .item-p2 .btn-more p {
+    font-size: 14px;
 }
 
 @media only screen and (max-width: 767px) {
@@ -9719,7 +9767,7 @@ body {
 }
 
 .chart-box .title-flex-box .right-select select {
-    width: 120px;
+    width: 180px;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;

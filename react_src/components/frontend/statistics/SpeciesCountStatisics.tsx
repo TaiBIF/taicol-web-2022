@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { KingdomProps } from '../types';
 import SpeciesCountBarChart from './SpeciesCountBarChart';
+import { Translation } from 'react-i18next';
 
 type Props = {
   data:KingdomProps[]
@@ -12,7 +13,10 @@ const SpeciesCountStatisics: React.FC<Props> = (props) => {
     <div className="item-p2">
       <div className="mark-title">
         <img src="/static/image/title-mark.svg"/>
-        <p>各界物種數統計</p>
+        <Translation>{ t =>
+        <p>{t('各界物種數統計')}</p>
+      }</Translation>
+        
       </div>
       <div className="for-canvas">
         <SpeciesCountBarChart data={data}/>

@@ -2,6 +2,8 @@ import * as React from 'react';
 import { speciesOptions } from './options'
 import type { SpeciesCompareProps,KingdomInfoProps } from '../types'
 import CompareSpeciesBarChart from './CompareSpeciesBarChart'
+import { Translation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   data: SpeciesCompareProps[],
@@ -30,29 +32,39 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
   if (compareType == 'kingdom_compare') {
     filterData = data.filter((item: SpeciesCompareProps, number: number) => kingdomSelected.includes(item.name))
   }
-
+  const { t, i18n } = useTranslation();
+  const speciesOptions_table = speciesOptions.map((item, index) => {
+    return (<option key={`species-option-${index}`} value={item.value}>
+      {t((item.label||'').toString())}
+      </option>)})
   return (
     <div className="item-p2">
       <div className="title-flex-box">
         <div className="left-box">
           <div className="mark-title">
             <img src="/static/image/title-mark.svg"/>
-            <p>臺灣與全球物種數比較</p>
+            <Translation>{ t =>
+            <p>{t('臺灣與全球物種數比較')}</p>
+            }</Translation>
           </div>
           <div className="color-inf">
             <div className="colorbox">
               <div className="color1"></div>
-              <p>全球現有種數</p>
+              <Translation>{ t =>
+              <p>{t('全球現有種數')}</p>
+              }</Translation>
             </div>
             <div className="colorbox">
               <div className="color2"></div>
-              <p>臺灣現有種數</p>
+              <Translation>{ t =>
+              <p>{t('臺灣現有種數')}</p>
+              }</Translation>
             </div>
           </div>
         </div>
         <div className="right-select">
           <select name="" id="" onChange={handleCompareTypeChange}>
-            {speciesOptions.map((item, index) => <option key={`species-option-${index}`} value={item.value}>{item.label}</option>)}
+            {speciesOptions_table}
           </select>
         </div>
       </div>
@@ -62,7 +74,7 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
           <div className='item-box check-set"'>
             <div className="right-check">
               {kingdomInfo?.map((item: KingdomInfoProps, index: number): React.ReactElement => {
-                return <label className="check-item mr-[8px]">{item.chineseName}
+                return <label className="check-item mr-[8px]">{i18n.language == 'en-us' ? item.kingdom : item.chineseName} 
                   <input type="checkbox" name="alien_type" checked={kingdomSelected.includes(item.chineseName) ? true : false} value={item.chineseName} onChange={handleKingdomChange} />
                   <span className="checkmark"></span>
                 </label>
@@ -73,7 +85,7 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
         </div>}
       </div>
       <a href="#" className="btn-more" onClick={() => handleShowCompareTableClick(true)}>
-        <p>查看比較總表</p>
+        <Translation>{ t => <p className={i18n.language == 'en-us' ? 'fs-12' : ''}>{t('查看比較總表')}</p> }</Translation>
         <div className="arr">
           <div className="arline"></div>
           <div className="arrrot">

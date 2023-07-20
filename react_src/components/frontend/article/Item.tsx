@@ -2,6 +2,7 @@ import * as React from 'react';
 import type { ArticleDataProps } from '../types'
 import * as moment from 'moment';
 import validateColor from "validate-color";
+import { Translation } from 'react-i18next';
 
 const ArticleItem: React.FC<ArticleDataProps> = (props) => {
   const {   title, author, Category,publishedDate,slug } = props
@@ -18,7 +19,7 @@ const ArticleItem: React.FC<ArticleDataProps> = (props) => {
             <div className="mon-year">{date.format('MMM')}.{date.format('YYYY')}</div>
             </div>
           <div className={`tag`}  style={{backgroundColor: categoryBackgroundColor}}>
-            {Category.name}
+          <Translation>{t=> t(Category.name)}</Translation>  
             </div>
           </div>
           <div className="right-name">

@@ -13,6 +13,7 @@ import TaxonCountSection from './TaxonCountSection'
 import { speciesOptions } from './options'
 import PopupTable from './PopupTable'
 import { fetcher } from '../utils/helper'
+import { Translation } from 'react-i18next';
 
 
 const rankInfo:RankInfoProps[] = [
@@ -29,7 +30,7 @@ const endemicInfo:EndemicInfoProps[] = [
   { endemic: '昆蟲',image:'/static/image/statistic-icon01.svg' },
   { endemic: '魚類',image:'/static/image/statistic-icon02.svg' },
   { endemic: '爬蟲類',image:'/static/image/statistic-icon03.svg' },
-  { endemic: '真菌(含地衣)',image:'/static/image/statistic-icon04.svg' },
+  { endemic: '真菌',image:'/static/image/statistic-icon04.svg' },
   { endemic: '植物',image:'/static/image/statistic-icon05.svg' },
   { endemic: '鳥類',image:'/static/image/statistic-icon06.svg' },
   { endemic: '哺乳類',image:'/static/image/statistic-icon07.svg' },
@@ -153,7 +154,7 @@ const StatisticsPage: React.FC = () => {
         const count = kingdom ? kingdom[1] as number : 0
         const chineseName = kingdom ? kingdomInfo.find((r) => r.kingdom == name)?.chineseName || '' : ''
         return {
-          name: [chineseName, name],
+          name: chineseName,
           count: count,
         }
     });
@@ -222,8 +223,9 @@ const StatisticsPage: React.FC = () => {
 
   return (<>
     <div className="page-top">
-      <Banner title='STATISTICS' zhTWTitle='資料統計' breadcrumbs={breadcrumbs} picType={'crap'} />
-      
+      <Translation>{ t =>
+        <Banner title={t('STATISTICS')} zhTWTitle={t('資料統計')} picType={'crap'}  breadcrumbs={breadcrumbs}/>
+      }</Translation>
         <TaxonCountSection />
         <div className="chart-box">
           <div className="main-box">

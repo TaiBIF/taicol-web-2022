@@ -1,5 +1,6 @@
 {% extends 'base.html' %} 
 {% load static %}
+{% load i18n %}
 
 {% block head %}
 <script src="{% static 'js/jquery.nice-select.js' %}"></script>
@@ -12,6 +13,8 @@
 {% endblock style %}
 
 {% block body %}
+{% get_current_language as LANGUAGE_CODE %}
+
 {% csrf_token %}
 <div class="loadingbox d-none">
 	<img class="center-logo" src="{% static 'image/logo-img.svg' %}" alt="臺灣物種名錄">
@@ -23,7 +26,7 @@
 	<!--側邊收和鈕，加上now控制開關-->
 	<div class="all-open-close">
 		<div class="center controlAll">
-			<p>全部</p>
+			<p>{% trans "全部" %}</p>
 			<svg xmlns="http://www.w3.org/2000/svg" width="16.828" height="9.828" viewBox="0 0 16.828 9.828">
 				<g id="Group_7699" data-name="Group 7699" transform="translate(1561.442 559.678) rotate(180)">
 					<line id="Line_177" data-name="Line 177" x2="7" y2="7" transform="translate(1546.028 551.264)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
@@ -52,76 +55,81 @@
 					</svg>
 				</div>
 				<div class="title-area">
-					<h2>回報錯誤 <span></span></h2>
+					<h2>{% trans "回報錯誤" %} <span></span></h2>
 				</div>
 				<div class="error-form">
 					<form id="errorForm">
 					<input type="hidden" name="taxon_id" value="{{ taxon_id }}">
 					<div class="case-num">
-						針對({{ taxon_id|default_if_none:'' }}){{ data.sci_name|safe }}回報錯誤
+						{% trans "針對" %}({{ taxon_id|default_if_none:'' }}){{ data.sci_name|safe }} {% trans "回報錯誤" %}
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<p>主旨</p>
+						<p>{% trans "主旨" context "Email" %}</p>
 					</div>
 					<div class="input-item2">
 						<div class="input-item">
 							<select class="subject wide" name="type" id="">
-								<option value="1">學名和中文名</option>
-								<option value="2">照片</option>
-								<option value="3">分類資訊</option>
-								<option value="4">分類階層</option>
-								<option value="5">物種資訊</option>
-								<option value="6">學名變遷</option>
-								<option value="7">文獻</option>
-								<option value="8">專家</option>
-								<option value="9">相關連結</option>
-								<option value="11">有效名版本紀錄</option>
-								<option value="10">變更歷史</option>
+								<option value="1">{% trans "學名和中文名" %}</option>
+								<option value="2">{% trans "照片" %}</option>
+								<option value="3">{% trans "分類資訊" %}</option>
+								<option value="4">{% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}</option>
+								<option value="5">{% trans "物種資訊" %}</option>
+								<option value="6">{% trans "學名變遷" %}</option>
+								<option value="7">{% trans "文獻" %}</option>
+								<option value="8">{% trans "專家" %}</option>
+								<option value="9">{% trans "相關連結" %}</option>
+								<option value="11">{% trans "有效名版本紀錄" %}</option>
+								<option value="10">{% trans "變更歷史" %}</option>
 							</select>
 						</div>
 						<div class="input-item">
-							<input type="text" name="title" placeholder="請輸入主旨">
+							<input type="text" name="title" placeholder="{% trans '請輸入主旨' %}">
 						</div>
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<p>錯誤描述</p>
+						<p>{% trans "錯誤描述" %}</p>
 					</div>
 					<textarea name="description" id="" class="fs-16"></textarea>
+					<div class="mark-title">
+						<img src="{% static 'image/title-mark.svg' %}">
+						<p>{% trans "來源文獻/參考資料" %}</p>
+					</div>
+					<textarea name="reference" id="" class="fs-16"></textarea>
 					<div class="notice">
-						<h3>更新通知與否</h3>
+						<h3>{% trans "更新通知與否" %}</h3>
 						<div class="radiobox">
 							<div class="flex">
 								<input type="radio" name="notify" value="yes" checked>
-								<p>是</p>
+								<p>{% trans "是" %}</p>
 							</div>
 						</div>
 						<div class="radiobox">
 							<div class="flex">
 								<input type="radio" name="notify" value="no">
-								<p>否</p>
+								<p>{% trans "否" %}</p>
 							</div>
 						</div>
 					</div>
 					<div class="input-item2">
 						<div class="input-item">
-							<p>聯絡姓名</p>
+							<p>{% trans "聯絡姓名" %}</p>
 							<input type="text" name="name">
 						</div>
 						<div class="input-item">
-							<p>聯絡信箱</p>
+							<p>{% trans "聯絡信箱" %}</p>
 							<input type="text" name="email">
 						</div>
 					</div>
 					</form>
-					<button class="send-btn feedback">確認送出</button>
+					<button class="send-btn feedback">{% trans "確認送出" %}</button>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="popbox imagepop d-none">
-		<div class="rel imgpop-style">
+		<div class="rel">
 			<div class="w-bg m-auto">
 				<div class="xx">
 					<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
@@ -160,15 +168,15 @@
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<p>作者：<span id="image_author"></span></p>
+						<p>{% trans '作者' %}：<span id="image_author"></span></p>
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<p>典藏者：<span id="image_provider"></span></p>
+						<p>{% trans '典藏者' %}：<span id="image_provider"></span></p>
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<p>照片提供：<a target="_blank" id="image_permalink" href="#">臺灣生命大百科</a></p>
+						<p>{% trans '照片提供' %}：<a target="_blank" id="image_permalink" href="#">{% trans '臺灣生命大百科' %}</a></p>
 					</div>
 				</div>
 			</div>
@@ -179,7 +187,7 @@
 		<div class="splist-search-box de">
 			<div class="main-box">
 				<div class="cont-search-bar">
-					<input type="text" name="keyword" placeholder="請輸入關鍵字">
+					<input type="text" name="keyword" placeholder="{% trans '請輸入關鍵字' %}">
 					<button class="search">
 						<svg id="Group_6882" data-name="Group 6882" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="36.847" height="36.775" viewBox="0 0 36.847 36.775">
 							<defs>
@@ -198,20 +206,20 @@
 
 		<div class="species-de-content">
 			<div class="main-box">
-				<div class="sticky-left">
+				<div class='sticky-left {% if LANGUAGE_CODE == "en-us" %} sticky-left-en {% endif %} '>
 					<input type="hidden" name="taxon_id" value="{{ taxon_id }}">
-					<button class="sticky_btn" data-hash="#taxon-status">- 分類資訊</button>
+					<button class="sticky_btn" data-hash="#taxon-status">- {% trans "分類資訊" %}</button>
 					{% if stat_str %}
-					<button class="sticky_btn" data-hash="#taxon-sub">- 子階層統計</button>
+					<button class="sticky_btn" data-hash="#taxon-sub">- {% trans "子階層統計" %}</button>
 					{% endif %}
-					<button class="sticky_btn" data-hash="#taxon-rank">- 分類階層</button>
-					<button class="sticky_btn" data-hash="#taxon-info">- 物種資訊</button>
-					<button class="sticky_btn" data-hash="#taxon-change">- 學名變遷</button>
-					<button class="sticky_btn" data-hash="#taxon-ref">- 文獻</button>
-					<button class="sticky_btn" data-hash="#taxon-expert">- 專家</button>
-					<button class="sticky_btn" data-hash="#taxon-link">- 相關連結</button>
-					<button class="sticky_btn" data-hash="#taxon-version">- 有效名版本</button>
-					<button class="sticky_btn" data-hash="#taxon-history">- 變更歷史</button>
+					<button class="sticky_btn" data-hash="#taxon-rank">- {% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}</button>
+					<button class="sticky_btn" data-hash="#taxon-info">- {% trans "物種資訊" %}</button>
+					<button class="sticky_btn" data-hash="#taxon-change">- {% trans "學名變遷" %}</button>
+					<button class="sticky_btn" data-hash="#taxon-ref">- {% trans "文獻" %}</button>
+					<button class="sticky_btn" data-hash="#taxon-expert">- {% trans "專家" %}</button>
+					<button class="sticky_btn" data-hash="#taxon-link">- {% trans "相關連結" %}</button>
+					<button class="sticky_btn" data-hash="#taxon-version">- {% trans "有效名版本" %}</button>
+					<button class="sticky_btn" data-hash="#taxon-history">- {% trans "變更歷史" %}</button>
 				</div>
 				<div class="right-de-box">
 					<a class="anchor" id="taxon-status"></a>
@@ -223,20 +231,20 @@
 								{% if data.alternative_name_c %}
 									<p>{{ data.alternative_name_c }}</p>
 								{% endif %}
-								<p>物種編號：{{ taxon_id|default_if_none:'' }}</p>
+								<p>{% trans "物種編號" %}：{{ taxon_id|default_if_none:'' }}</p>
 							</div>
 							<div class="infobox">
 								<div class="class-inf {% if data.is_deleted or data.not_in_taiwan %} deleted_t {% endif %} mr-5">
 									<a class="anchor" id="taxon-status"></a>
 									<div class="mark-title">
 										<img src="{% static 'image/title-markw.svg' %}">
-										<p>分類資訊</p>
+										<p>{% trans "分類資訊" %}</p>
 									</div>
 									<p>{{ data.rank_d }}</p>
 									<p>{% if not data.is_deleted %}
 										{{ data.status|safe }}
 										{% elif data.transfer_taxon %}
-										請參見 <a class="new_taxon_a" href="/taxon/{{ data.transfer_taxon }}">{% if data.new_taxon_name_c %} {{ data.new_taxon_name_c }} {% else %} {{ data.transfer_taxon }} {% endif %}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
+										{% trans '請參見' %} <a class="new_taxon_a" href="/taxon/{{ data.transfer_taxon }}">{% if data.new_taxon_name %} {{ data.new_taxon_name }} {% else %} {{ data.transfer_taxon }} {% endif %}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
 											<defs>
 												<clipPath id="clip-path">
 													<rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#fff"></rect>
@@ -257,7 +265,7 @@
 									<a class="anchor" id="taxon-sub"></a>
 									<div class="mark-title">
 										<img src="{% static 'image/title-mark.svg' %}">
-										<p>子階層統計</p>
+										<p>{% trans "子階層統計" %}</p>
 									</div>
 									<p>{{ stat_str|safe }}</p>
 								</div>
@@ -265,7 +273,8 @@
 							</div>
 						</div>
 						<div class="rignt-pic_area">
-							<button class="mistake-btn">回報<br>錯誤</button>
+
+							<button class="mistake-btn">{% blocktrans context "回報錯誤"%}回報<br>錯誤{% endblocktrans %}</button>
 							<div class="pic-area mh-100">
 								{% if data.images|length > 1 %}
 									<div class="arr-left plusSlides" data-index="-1">
@@ -293,8 +302,14 @@
 										<div class="picbox mySlides fade">
 											<div class="rel">
 												<div class="posa">
-													<img class="nopic" src="{% static 'image/no_pic.png' %}">
-													<div class="text"></div>
+													<div><span class="no-pic">{% trans '無照片' %}</span></div>
+													<!--
+													{% if LANGUAGE_CODE == "en-us" %}
+														<img class="nopic" src="{% static 'image/no_pic.png' %}">
+													{% else %}
+														<img class="nopic" src="{% static 'image/no_pic.png' %}">
+													{% endif %}
+													<div class="text"></div>-->
 												</div>
 											</div>
 										</div>
@@ -312,7 +327,7 @@
 									<a class="anchor" id="taxon-rank"></a>
 									<div class="mark-title">
 										<img src="{% static 'image/title-mark.svg' %}">
-										<p>分類階層</p>
+										<p>{% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}
 									</div>
 									<div class="arr">
 										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -330,11 +345,12 @@
 											<div class="cir-box {{ i.rank_color }}">
 												{{ i.rank_c  }}
 											</div>
-											<a {% if i.a_href %} class="rank-p" target="_blank" href="{{ i.a_href }}" {% else %} class="rank-p a-disabled" {% endif %}>
-											{{ i.a_content|safe  }}</a>
+											<a {% if i.a_href %} class="rank-p" href="{{ i.a_href }}" {% else %} class="rank-p a-disabled" {% endif %}>
+											{{ i.a_content|safe  }}
+											</a>
 											{% if i.search_href %}
-											<a class="d-none search-rank" target="_blank" href="{{ i.search_href }}">
-											<i class="ml-5 fa-solid fa-magnifying-glass"></i></a>
+												<a class="search-rank d-none" href="{{ i.search_href }}">
+												<i class="ml-5 fa-solid fa-magnifying-glass"></i></a>
 											{% endif %}
 											</div>
 										{% endfor %}
@@ -349,7 +365,7 @@
 									<a class="anchor" id="taxon-info"></a>
 									<div class="mark-title">
 										<img src="{% static 'image/title-mark.svg' %}">
-										<p>物種資訊</p>
+										<p>{% trans "物種資訊" %}</p>
 									</div>
 									<div class="arr">
 										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -363,7 +379,7 @@
 								<div class="w-content">
 									<div class="green-tag-box">
 										{% for i in data.alien_types  %}
-											<div class="item">{{ i.alien_type }}</div>
+											<div class="item">{% trans i.alien_type %}</div>
 											{% if i.note %}
 											<div class="alien-tooltip">
 												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle cl-blue" viewBox="0 0 16 16">
@@ -375,13 +391,13 @@
 											{% endif %}
 										{% endfor %}
 										{% for i in data.is_list  %}
-											<div class="item">{{ i }}</div>
+											<div class="item">{% trans i %}</div>
 										{% endfor %}
 									</div>
 									<div class="inf-short">
 										{% if data.protected_category  %}
 										<div class="d-flex">
-										<p>保育類：{{ data.protected_category }} 
+										<p>{% trans "保育類" %}：{{ data.protected_category }} 
 											{% if data.protected_note %}
 											<div class="tooltip">
 												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle cl-blue" viewBox="0 0 16 16">
@@ -396,7 +412,7 @@
 										{% endif %}										
 										{% if data.red_category  %}
 										<div class="d-flex">
-										<p>臺灣紅皮書：{{ data.red_category }} 
+										<p>{% trans "臺灣紅皮書" %}：{{ data.red_category }} 
 											{% if data.red_note %}
 											<div class="tooltip">
 												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle cl-blue" viewBox="0 0 16 16">
@@ -450,7 +466,7 @@
 							<a class="anchor" id="taxon-change"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
-								<p>學名變遷</p>
+								<p>{% trans "學名變遷" %}</p>
 							</div>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -475,7 +491,7 @@
 							<a class="anchor" id="taxon-ref"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
-								<p>文獻</p>
+								<p>{% trans "文獻" %}</p>
 							</div>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -489,7 +505,7 @@
 						<div class="w-content">
 							<ul class="book-list">
 								{% for r in refs %}
-									<li><a href="https://nametool.taicol.tw/zh-tw/references/{{ r.0 }}" target="_blank">{{ r.1|safe }}</a></li>
+									<li><a href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/references/{{ r.0 }}" target="_blank">{{ r.1|safe }}</a></li>
 								{% endfor %}
 							</ul>
 						</div>
@@ -500,7 +516,7 @@
 							<a class="anchor" id="taxon-expert"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
-								<p>專家</p>
+								<p>{% trans "專家" %}</p>
 							</div>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -531,7 +547,7 @@
 							<a class="anchor" id="taxon-link"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
-								<p>相關連結</p>
+								<p>{% trans "相關連結" %}</p>
 							</div>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -579,7 +595,7 @@
 							<a class="anchor" id="taxon-version"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
-								<p>有效名版本紀錄</p>
+								<p>{% trans "有效名版本紀錄" %}</p>
 							</div>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -595,16 +611,16 @@
 							{% if name_history|length > 0 %}
 							<table class="history-edit" cellspacing="0" cellpadding="0" border="0">
 								<tr>
-									<td>日期</td>
-									<td>有效名</td>
-									<td width="50%">文獻</td>
+									<td>{% trans "日期" %}</td>
+									<td>{% trans "有效名" %}</td>
+									<td width="50%">{% trans "文獻" %}</td>
 								</tr>
 								{% for t in name_history %}
 									<tr>
 										<td>{{ t.updated_at|safe }}</td>
 										<td>{{ t.name|safe }}</td>
 										<td>{% if t.reference_id %}
-											<a target="_blank" href="https://nametool.taicol.tw/zh-tw/references/{{ t.reference_id }}">{{ t.ref|default_if_none:''|safe }}</a>
+											<a target="_blank" href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/references/{{ t.reference_id }}">{{ t.ref|default_if_none:''|safe }}</a>
 										{% endif %}</td>
 									</tr>
 								{% endfor %}
@@ -619,7 +635,7 @@
 							<a class="anchor" id="taxon-history"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
-								<p>變更歷史</p>
+								<p>{% trans "變更歷史" %}</p>
 							</div>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -635,10 +651,10 @@
 							{% if taxon_history|length > 0 %}
 							<table class="history-edit" cellspacing="0" cellpadding="0" border="0">
 								<tr>
-									<td>日期</td>
-									<td>變更內容</td>
-									<td width="50%">文獻</td>
-									<td>編輯者</td>
+									<td>{% trans "日期" %}</td>
+									<td>{% trans "變更內容" %}</td>
+									<td width="50%">{% trans "文獻" %}</td>
+									<td>{% trans "編輯者" %}</td>
 								</tr>
 								{% for t in taxon_history %}
 									<tr>

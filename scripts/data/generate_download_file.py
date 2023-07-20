@@ -148,10 +148,11 @@ all_taxon = all_taxon.merge(taxon_for_name.drop(columns=['name_id']))
 query = """SELECT distinct(tn.id), n.name, tn.rank_id, tn.name, an.name_author, an.formatted_name,
                   tn.properties ->> '$.latin_genus', tn.properties ->> '$.latin_s1', tn.properties ->> '$.species_layers',
                   tn.original_taxon_name_id, tn.properties ->> '$.is_hybrid', CONCAT_WS(' ', c.author,  c.content),
-                  tn.properties ->> '$.type_name', tn.created_at, tn.updated_at
+                  tn.properties ->> '$.type_name', anc.namecode, tn.created_at, tn.updated_at
            FROM taxon_names tn 
            JOIN nomenclatures n ON n.id = tn.nomenclature_id
            LEFT JOIN api_names an ON an.taxon_name_id = tn.id
+           LEFT JOIN api_namecode anc ON anc.taxon_name_id = tn.id
            LEFT JOIN api_citations c ON tn.reference_id = c.reference_id
            WHERE tn.deleted_at IS NULL
         """
@@ -161,7 +162,7 @@ with conn.cursor() as cursor:
     names = cursor.fetchall()
     names = pd.DataFrame(names, columns=['name_id','nomenclature_name','rank','simple_name','name_author','formatted_name',
                                          'latin_genus','latin_s1','species_layers','original_name_id','is_hybrid','protologue',
-                                         'type_name_id','created_at','updated_at'])
+                                         'type_name_id','created_at','namecode','updated_at'])
 
 # 先找出可以直接對到taxon的
 # x = names.merge(all_taxon,on='name_id',how='left').drop_duplicates()
@@ -266,7 +267,7 @@ names = names.replace({np.nan: None, 'null': None})
 
 
 name_cols = ['name_id','nomenclature_name','rank','simple_name','name_author','formatted_name','latin_genus','latin_s1','s2_rank','latin_s2',
-'s3_rank','latin_s3','original_name_id','is_hybrid','hybrid_parent','protologue','type_name_id','created_at','updated_at',
+'s3_rank','latin_s3','original_name_id','is_hybrid','hybrid_parent','protologue','type_name_id','namecode','created_at','updated_at',
 'usage_status','taxon_id','common_name_c','alternative_name_c','is_in_taiwan','is_endemic','alien_type',
 'is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','cites','iucn','redlist','protected','sensitive',
 'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
@@ -303,5 +304,3 @@ df.to_csv(f"TaiCOL_name_20230325.csv",index=False)
 # taxon[taxon.is_in_taiwan=='true'].groupby('rank',as_index=False).taxon_id.nunique()
 
 # 物種 92983 筆，7 界 81 門 220 綱 816 目 3827 科 20944 屬
-
-

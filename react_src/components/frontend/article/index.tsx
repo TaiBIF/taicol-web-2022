@@ -1,6 +1,7 @@
 import List from './List'
 import Banner from '../common/Banner'
 import * as React from 'react'
+import { Translation } from 'react-i18next';
 
 const breadcrumbs = [
   { title: '首頁', href: '/' },
@@ -10,7 +11,9 @@ const breadcrumbs = [
 const ArticlePage:React.FC = () => {
   return (
     <div className="page-top">
-      <Banner title='ARTICLES' zhTWTitle='主題文章' breadcrumbs={breadcrumbs}/>
+      <Translation>{ t =>
+        <Banner title={t('ARTICLES')} zhTWTitle={t('主題文章')} breadcrumbs={breadcrumbs}/>
+      }</Translation>
       <List/>
     </div>
   )

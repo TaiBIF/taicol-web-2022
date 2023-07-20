@@ -1,3 +1,6 @@
+
+var $lang = $('[name="lang"]').attr('value');
+
 $(function (){
 
     $('.go-topbtn').on('click', function(){
@@ -69,5 +72,9 @@ $(function (){
         }
     });
 
+    $('.language-item').on('click',function (event) {
+        document.getElementById("language").setAttribute("value",event.target.getAttribute("value"));
+        document.getElementById("language-selected").submit();
+    });
 
 })

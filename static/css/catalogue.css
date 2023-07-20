@@ -219,3 +219,7 @@ span.select2-selection.select2-selection--single {
 button.download_check:disabled {
 	background-color: grey !important;
 }
+
+.fs-14 {
+    font-size: 14px
+}

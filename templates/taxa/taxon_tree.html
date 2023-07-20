@@ -1,9 +1,10 @@
 {% extends 'base.html' %} 
+{% load i18n %}
 {% load static %}
 
 {% block head %}
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link href="{% static 'css/select2.min.css' %}" rel="stylesheet">
+<script src="{% static 'js/select2.min.js' %}"></script>
 
 {% endblock head %}
 
@@ -25,7 +26,7 @@
 	<div class="page-top">
 		<div class="short-top">
 			<div class="path">
-				<a href="{% url 'index' %}">首頁</a> > <p>物種樹</p>
+				<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "物種樹" %}</p>
 			</div>
 			<div class="main-box">
 				<div class="float-dot-yel">
@@ -35,15 +36,15 @@
 					<img src="{% static 'image/cir_blue.png' %}">
 				</div>
 				<div class="title-box">
-					<h2>物種樹</h2>
-					<p>TAXON TREE</p>
+					<h2>{% trans "物種樹" %}</h2>
+					<p>{% if LANGUAGE_CODE != 'en-us' %}TAXON TREE{% endif %}</p>
 				</div>
 			</div>
 		</div>
 		<div class="hot-search-box">
 			<div class="main-box">
 				{% if search_stat|length %}
-				<h3>熱門搜尋階層</h3>
+				<h3>{% trans "熱門搜尋階層" %}</h3>
 				<div class="seach-tag-area">
 					{% for ss in search_stat %}
 						<a class="search_a" href="javascript:;" data-taxon_id="{{ ss.taxon_id }}">
@@ -53,7 +54,7 @@
 				</div>
 				{% endif %}
 				<div class="cont-search-bar">
-					<select class="keyword" id="keyword" data-placeholder="請輸入關鍵字"></select>
+					<select class="keyword" id="keyword" data-placeholder="{% trans "請輸入關鍵字" %}"></select>
 					<!--
 					<input type="text" name="keyword" id="keyword" placeholder="請輸入關鍵字">
 					<input type="hidden" name="keyword_taxon_id" id="keyword_taxon_id">-->
@@ -75,8 +76,16 @@
 				</div>
 				<div class="item-box check-set">
 					<div class="right-check">
-						<label class="check-item">包含栽培豢養
+						<label class="check-item">{% trans "包含栽培豢養" %}
 							<input type="checkbox" name="cultured" class="d-none" checked>
+							<span class="checkmark"></span>
+						</label>
+					</div>
+				</div>
+				<div class="item-box check-set">
+					<div class="right-check">
+						<label class="check-item">{% trans "僅顯示林奈階層" %}
+							<input type="checkbox" name="lin_rank" class="d-none" checked>
 							<span class="checkmark"></span>
 						</label>
 					</div>
@@ -90,7 +99,7 @@
 					{% for k in kingdom_dict %}
 					<li>
 						<span class="anchor" id="{{ k.taxon_id }}" ></span>
-						<div class="item-box getSubList" data-cultured="on" data-fetched="0" data-taxon="{{ k.taxon_id }}" data-rank="3">
+						<div class="item-box getSubList" data-cultured="on" data-lin_rank="on" data-fetched="0" data-taxon="{{ k.taxon_id }}" data-rank="3">
 							<div class="cir-box">
 								界
 							</div>
@@ -108,8 +117,9 @@
 					</li>
 					{% endfor %}
 				</ul>
+
+				<!--
 				<ul class="rank-1-red kingdom_c d-none">
-					<!--選到的給now並展開第二層-->
 					{% for k in kingdom_dict_c %}
 					<li>
 						<span class="anchor" id="{{ k.taxon_id }}" ></span>
@@ -131,6 +141,8 @@
 					</li>
 					{% endfor %}
 				</ul>
+				-->
+
 			</div>
 		</div>
 	</div>

@@ -3,31 +3,31 @@ import TaxonCount from './TaxonCount'
 import type {TaxonCountProps} from '../types'
 import MoreButton from '../common/MoreButton'
 import useSWR from 'swr';
+import { Translation, useTranslation } from 'react-i18next';
 
 const taxonCountList:TaxonCountProps[] = [
   {
     img: '/static/image/ssicon01.svg',
     title: '收錄物種數',
-    enTitle:<>SPECIES AND <br/>INFRASPECIES</>,
+    enTitle:<Translation>{t => <>{t('SPECIES AND')}<br/>{t('INFRASPECIES')}</>}</Translation>,
     count: 0,
     type: 'taxon',
     CircleClassName: 'cir-line1',
-    tooltip: '包含種下分類群',
-
+    tooltip: <Translation>{t => <>{t('包含種下分類群')}</>}</Translation>,
   },
   {
     img: '/static/image/ssicon02.svg',
     title: '收錄學名數',
-    enTitle:'SCIENTIFIC NAMES',
+    enTitle:<Translation>{t => <>{t('SCIENTIFIC NAMES')}</>}</Translation>,
     count: 0,
     type:'name',
     CircleClassName: 'cir-line2',
-    tooltip: '包含種上階層學名',
+    tooltip: <Translation>{t => <>{t('包含種上階層學名')}</>}</Translation>,
   },
   {
     img: '/static/image/ssicon03.svg',
     title: '收錄文獻數',
-    enTitle:'REFERENCES',
+    enTitle:<Translation>{t => <>{t('REFERENCES')}</>}</Translation>,
     count: 0,
     type:'reference',
     CircleClassName: 'cir-line1',

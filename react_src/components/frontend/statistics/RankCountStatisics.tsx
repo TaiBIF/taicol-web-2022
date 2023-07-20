@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {RankProps} from '../types'
 import RankCount from '../statistics/RankCount'
+import { Translation } from 'react-i18next';
 
 type Props = {
   data:RankProps[]
@@ -36,7 +37,9 @@ const RankCountStatisics: React.VFC<Props> = (props) => {
     <div className="item-p1">
       <div className="mark-title">
         <img src="/static/image/title-mark.svg"/>
-        <p>各階層數量統計</p>
+        <Translation>{ t =>
+        <p>{t('各階層數量統計')}</p>
+        }</Translation>
       </div>
       <ul className="stsrank-area">
         {data.map((item:RankProps, index:number) => <RankCount {...item} zhTWTitle={zhTWTitles[item.enTitle]} className={classNames[index]} key={`class-count-${index}`} />)}

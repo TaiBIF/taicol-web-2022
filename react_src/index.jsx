@@ -9,6 +9,12 @@ import ArticleDetailPage from './components/frontend/article/detail';
 import DownloadPage from './components/frontend/download';
 import StatisticsPage from './components/frontend/statistics';
 import ApiPage from './components/frontend/apidoc';
+import "./i18n";
+import i18n from "i18next";
+import Cookies from 'js-cookie';
+
+let lang = Cookies.get('django_language')
+i18n.changeLanguage(lang)
 
 const homeElement = document.querySelector('#home-container');
 

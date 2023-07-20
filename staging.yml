@@ -9,8 +9,10 @@ services:
       - 8001:8001
     depends_on:
       - postgres
+      - mysql
     links:
       - postgres:postgres
+      - mysql:mysql
     volumes:
       - .:/code
       - ../tc-web-volumes/static:/tc-web-volumes/static
@@ -20,6 +22,8 @@ services:
     restart: always
     env_file:
       - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   postgres:
     image: postgres:14-alpine
     shm_size: '1g'
@@ -33,6 +37,28 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     env_file:
      - .env
+  mysql:
+    build: ./scripts/mysql
+    container_name: tc-web-mysql-container
+    ports:
+      - "3307:3306"
+    image: tc-web-mysql-image
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    # env_file:
+      # - ./app/.env
+    volumes:
+      - ../tc-web-volumes/mysql:/var/lib/mysql:rw
+      - ../tc-web-volumes/bucket:/bucket
+      # - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:rw
+    command:
+      [
+        "mysqld",
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+      ]
+
   # nginx:
   #   image: nginx:1.19.10-alpine
   #   restart: always

@@ -28,7 +28,7 @@ const endemicInfo:EndemicInfoProps[] = [
   { endemic: '昆蟲',image:'/images/statistic-icon01.svg' },
   { endemic: '魚類',image:'/images/statistic-icon02.svg' },
   { endemic: '爬蟲類',image:'/images/statistic-icon03.svg' },
-  { endemic: '真菌(含地衣)',image:'/images/statistic-icon04.svg' },
+  { endemic: '真菌',image:'/images/statistic-icon04.svg' },
   { endemic: '植物',image:'/images/statistic-icon05.svg' },
   { endemic: '鳥類',image:'/images/statistic-icon06.svg' },
   { endemic: '哺乳類',image:'/images/statistic-icon07.svg' },

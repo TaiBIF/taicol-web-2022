@@ -20,6 +20,7 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+import { useTranslation } from 'react-i18next';
 
 const options:any = {
   legend: {
@@ -78,11 +79,13 @@ type Props = {
 const SpeciesCountBarChart: React.VFC<Props> = (props) => {
   const { data } = props;
 
+  const { t, i18n } = useTranslation();
+  const countLable = t('物種數')
   const chartData:ChartData<'bar'> = {
-    labels: data.map((item) => item.name),
+    labels: data.map((item) => t(item.name)),
     datasets: [
       {
-        label: '物種數',
+        label: countLable,
         data: data.map((item) => item.count),
         backgroundColor: '#85BBD0',
         borderWidth: 0,

@@ -5,6 +5,8 @@ import { Doughnut  } from 'react-chartjs-2';
 import "chartjs-plugin-datalabels";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import type { SourceProps } from '../types';
+import { Translation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
@@ -50,9 +52,10 @@ type Props = {
 const SourceDoughnutChart: React.FC<Props> = (props) => {
   const { data } = props;
   const total = getTotal(data)
+  const { t, i18n } = useTranslation();
 
   const chartData:ChartData<'doughnut'> = {
-    labels: data.map((item) => item.name),
+    labels: data.map((item) => t(item.name)),
     datasets: [
       {
         data: data.map((item) => item.count),
@@ -62,14 +65,14 @@ const SourceDoughnutChart: React.FC<Props> = (props) => {
 
     ]
   }
-
   const options:ChartOptions<'doughnut'> = getOptions(data,total);
-
   return (
     <div className="item-p1">
       <div className="mark-title">
         <img src="/static/image/title-mark.svg"/>
-        <p>物種來源比例</p>
+        <Translation>{ t =>
+        <p>{t('物種來源比例')}</p>
+        }</Translation>
       </div>
       <div className="for-canvas doughnut">
         <Doughnut data={chartData}  options={options}  />

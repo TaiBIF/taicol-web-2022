@@ -46,3 +46,4 @@ upload
 
 # react backend docker db folder
 react-backend/db/*
+static/react_component/bundle.js

@@ -163,6 +163,7 @@
 				dataType : 'json',
 			})
 			.done(function(results) {
+
 				$('.loadingbox').addClass('d-none');
 				// 修改共幾筆
 				$('#total-count').html(results['total_count']);
@@ -170,6 +171,7 @@
 				if (results['total_count'] > 1000){
 					$('.downloadData').off('click')
 					$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
+
 					$('.offlineDownloadData').on('click', function(){
 						offlineDownloadData()
 						$('button.download_check').data('type', $(this).data('type'))
@@ -185,15 +187,7 @@
 
 				// 清空頁碼
 				$('.page-num').remove()
-				$('.table-style1').html(`<tr>
-											<td>界</td>
-											<td>所屬類群</td>
-											<td>階層</td>
-											<td>學名</td>
-											<td>中文名</td>
-											<td>地位</td>
-											<td>原生/外來/特有性</td>
-										</tr>`)
+				$('.table-style1').html(results.header)
 				for (let i = 0; i < results.data.length; i++) {
 					let tag = '';
 					if (results.data[i]['is_endemic'] != ''){
@@ -207,7 +201,7 @@
 						}
 					}
 					$('.table-style1').append(
-						`<tr class="open_taxon" data-href="/taxon/${results.data[i]['taxon_id']}">
+						`<tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}">
 							<td>${results.data[i]['kingdom']}</td>
 							<td>${results.data[i]['taxon_group']}</td>
 							<td>${results.data[i]['rank']}</td>
@@ -220,8 +214,6 @@
 								</div>
 							</td>
 						</tr>`)
-
-
 				}
 					
 				$('.open_taxon').on('click', function(){
@@ -237,10 +229,10 @@
 							<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
 							<a href="javascript:;" data-page="${results.page.current_page - 1}" class="back updateData">
 								<img src="/static/image/pagear1.svg">
-								<p>上一頁</p>
+								<p>${results.prev}</p>
 							</a>
 							<a href="javascript:;" data-page="${results.page.current_page + 1}" class="next updateData">
-								<p>下一頁</p>
+								<p>${results.next}</p>
 								<img src="/static/image/pagear2.svg">
 							</a>
 							<a href="javascript:;" data-page="${results.page.total_page}" class="num updateData" id="page-end">${results.page.total_page}</a>
@@ -275,7 +267,10 @@
 			})
 			.fail(function( xhr, status, errorThrown ) {
 			$('.loadingbox').addClass('d-none');
-			alert('發生未知錯誤！請聯絡管理員')
+			//alert('發生未知錯誤！請聯絡管理員')
+			$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
+			//condition ? true_expression : false_expression
+
 			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
 			}) 
 			
@@ -411,11 +406,14 @@
 		}
 
 		if (!has_search_parm) {
-			alert('請至少輸入一個搜尋項目，若有輸入日期必須填入完整年月日');
+			//alert('請至少輸入一個搜尋項目，若有輸入日期必須填入完整年月日');
+			$lang == 'en-us' ? alert('Please fill at least one searching item. Date must include year, month and day.') : alert('請至少輸入一個搜尋項目，若有輸入日期必須填入完整年月日')
+
 			window.enterPressed = false;
 
 		} else if ((!isValidDate($('input[name=date]').val()))&($('input[name=date]').val()!='')){
-			alert('日期格式錯誤');
+			//alert('日期格式錯誤');
+			$lang == 'en-us' ? alert('Incorrect date format') : alert('日期格式錯誤')
 			window.enterPressed = false;
 		} else {
 
@@ -427,7 +425,7 @@
 			}
 
 			$.ajax({
-				url: "/catalogue",
+				url: `/${$lang}/catalogue`,
 				data: query_str + '&csrfmiddlewaretoken=' +  $csrf_token,
 				type: 'POST',
 				dataType : 'json',
@@ -451,7 +449,8 @@
 						$('.downloadData').off('click')
 						$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
 						$('.offlineDownloadData').on('click', function(){
-							offlineDownloadData($(this).data('type'))
+							offlineDownloadData()
+							$('button.download_check').data('type', $(this).data('type'))
 						})
 					} else {
 						$('.offlineDownloadData').off('click')
@@ -516,7 +515,7 @@
 													  ${results.count.kingdom[i]['category_c']}(${results.count.kingdom[i]['count']})</button>`)
 						}
 						// 手機選單
-						$('select[name=mb-select]').append(`<option value="kingdom">界</option>`)
+						$('select[name=mb-select]').append(`<option value="kingdom">${results.kingdom_title}</option>`)
 					} else {
 						$('.kingdom-box').parent('li').addClass('d-none')
 					}
@@ -527,7 +526,7 @@
 							$('.rank-box').append(`<button class="changeFacet facet-btn  facet-rank-${results.count.rank[i]['category']}" data-facet="rank" data-value="${results.count.rank[i]['category']}">
 													${results.count.rank[i]['category_c']}(${results.count.rank[i]['count']})</button>`)
 						}
-						$('select[name=mb-select]').append(`<option value="rank">階層</option>`)
+						$('select[name=mb-select]').append(`<option value="rank">${results.rank_title}</option>`)
 					} else {
 						$('.rank-box').parent('li').addClass('d-none')
 					}
@@ -538,7 +537,7 @@
 							$('.endemic-box').append(`<button class="changeFacet facet-btn facet-endemic-${results.count.is_endemic[i]['category']}" data-facet="endemic" data-value="${results.count.is_endemic[i]['category']}">
 													  ${results.count.is_endemic[i]['category_c']}(${results.count.is_endemic[i]['count']})</button>`)
 						}
-						$('select[name=mb-select]').append(`<option value="endemic">特有性</option>`)
+						$('select[name=mb-select]').append(`<option value="endemic">${results.endemic_title}</option>`)
 					} else {
 						$('.endemic-box').parent('li').addClass('d-none')
 					}
@@ -549,7 +548,7 @@
 							$('.alien_type-box').append(`<button class="changeFacet facet-btn facet-alien_type-${results.count.alien_type[i]['category']}" data-facet="alien_type" data-value="${results.count.alien_type[i]['category']}">
 													${results.count.alien_type[i]['category_c']}(${results.count.alien_type[i]['count']})</button>`)
 						}
-						$('select[name=mb-select]').append(`<option value="alien_type">原生/外來性</option>`)
+						$('select[name=mb-select]').append(`<option value="alien_type">${results.native_title}</option>`)
 					} else {
 						$('.alien_type-box').parent('li').addClass('d-none')
 					}
@@ -560,20 +559,12 @@
 							$('.status-box').append(`<button class="changeFacet facet-btn facet-status-${results.count.status[i]['category']}" data-facet="status" data-value="${results.count.status[i]['category']}">
 													${results.count.status[i]['category_c']}(${results.count.status[i]['count']})</button>`)
 						}
-						$('select[name=mb-select]').append(`<option value="status">地位</option>`)
+						$('select[name=mb-select]').append(`<option value="status">${results.status_title}</option>`)
 					} else {
 						$('.status-box').parent('li').addClass('d-none')
 					}
 
-					$('.table-style1').html(`<tr>
-												<td>界</td>
-												<td>所屬類群</td>
-												<td>階層</td>
-												<td>學名</td>
-												<td>中文名</td>
-												<td>地位</td>
-												<td>原生/特有性</td>
-											</tr>`)
+					$('.table-style1').html(results['header'])
 
 					for (let i = 0; i < results.data.length; i++) {
 						let tag = '';
@@ -588,7 +579,7 @@
 							}
 						}
 						$('.table-style1').append(
-							`<tr class="open_taxon" data-href="/taxon/${results.data[i]['taxon_id']}">
+							`<tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}">
 								<td>${results.data[i]['kingdom']}</td>
 								<td>${results.data[i]['taxon_group']}</td>
 								<td>${results.data[i]['rank']}</td>
@@ -614,10 +605,10 @@
 							<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
 							<a href="javascript:;" data-page="${results.page.current_page - 1}" class="back updateData">
 								<img src="/static/image/pagear1.svg">
-								<p>上一頁</p>
+								<p>${results.prev}</p>
 							</a>
 							<a href="javascript:;" data-page="${results.page.current_page + 1}" class="next updateData">
-								<p>下一頁</p>
+								<p>${results.next}</p>
 								<img src="/static/image/pagear2.svg">
 							</a>
 							<a href="javascript:;" data-page="${results.page.total_page}" class="num updateData" id="page-end">${results.page.total_page}</a>
@@ -674,7 +665,7 @@
 			})
 			.fail(function( xhr, status, errorThrown ) {
 			$('.loadingbox').addClass('d-none');
-			alert('發生未知錯誤！請聯絡管理員')
+			$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
 			window.enterPressed = false;
 			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
 			}) 
@@ -682,6 +673,31 @@
 	}
 
 	$(function(){		
+
+		let date_locale = { days: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+		daysShort: ['日', '一', '二', '三', '四', '五', '六'],
+		daysMin: ['日', '一', '二', '三', '四', '五', '六'],
+		months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+		monthsShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+		today: '今天',
+		clear: '清除',
+		dateFormat: 'yyyy-MM-dd',   
+		timeFormat: 'HH:mm',
+		firstDay: 1}
+	if ($lang == 'en-us') {
+		date_locale = {   days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+		daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+		daysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+		months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+		monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+		today: 'Today',
+		clear: 'Clear',
+		dateFormat: 'yyyy-MM-dd',
+		timeFormat: 'hh:mm aa',
+		firstDay: 1}
+	} 
+
+		let date_picker = new AirDatepicker('#updated_at', {locale: date_locale});
 
         $('.changeFacet').on('click',function(){
             changeFacet($(this).data('facet'), $(this).data('value'))
@@ -696,6 +712,8 @@
         })
 
         $('.getData').on('click',function(){
+			// 如果是從搜尋 要把facet拿掉
+			$('input[name=hidden-facet]').val('');
             getData()
         })
 
@@ -709,21 +727,22 @@
 
 		// 較高分類群 autocomplete
 		$("#taxon_group").select2({
-			placeholder: "請輸入查詢字串",
+			placeholder: $lang == 'en-us' ? "Enter keywords" : "請輸入查詢字串" ,
 			language: {
 				"noResults": function(params){
-					return "查無結果";
+					return $lang == 'en-us' ? "No result" : "查無結果";
 				},		 
 				searching: function(params) {
+					console.log(params)
 					if (params.term != undefined ){
 						if (params.term.match(/[\u3400-\u9FBF]/)){
 							if (params.term.length >1){
-								return '查詢中...';
+								return $lang == 'en-us' ? "Searching..." : '查詢中...';
 							} else {
 								throw false;  
 							}
 						} else if (params.term.trim().length  > 2){
-							return '查詢中...';
+							return $lang == 'en-us' ? "Searching..." : '查詢中...';
 							
 						} else {
 							throw false;  
@@ -922,7 +941,9 @@
 
 	$('.download_check').on('click', function(){
 		sendOfflineDownloadData($(this).data('type'))
-		alert('請求已送出')
+		// alert('請求已送出')
+		$lang == 'en-us' ? alert('Your request has been sent.') : alert('請求已送出')
+
 		$('.downloadpop').fadeOut("slow");
 		$('.downloadpop').addClass('d-none')
 

@@ -1,8 +1,12 @@
 import * as React from 'react';
 import {formatNumber} from '../utils/helper';
 import type {TaxonCountProps} from '../types'
+import { Translation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 const TaxonCount: React.FC<TaxonCountProps> = (props) => {
+  const { t, i18n } = useTranslation();
+
   const { img, title, count ,CircleClassName,enTitle,tooltip } = props;
 
   return (
@@ -14,7 +18,9 @@ const TaxonCount: React.FC<TaxonCountProps> = (props) => {
         </div>
         <div className="txtbox">
           <div className="title">
-            <h3>{title}</h3>
+
+          <h3 className={i18n.language == 'en-us' ? 'w-min-content' : ''}><Trans i18nKey={title} components={[<br />]} /></h3>
+
             {tooltip && <div className="markq">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
                 <g id="qs_mark" transform="translate(-1536.736 -1209.631)">
@@ -25,12 +31,14 @@ const TaxonCount: React.FC<TaxonCountProps> = (props) => {
                   <text id="_" data-name="?" transform="translate(1545.736 1230.631)" fill="#aaa" fontSize="20" fontFamily="Fredoka-Regular, Fredoka" letterSpacing="0.05em"><tspan x="0" y="0">?</tspan></text>
                 </g>
               </svg>
-              <div className="hvbubble">
+              <div className={`hvbubble ${i18n.language == 'en-us' ? 'en-tooltip' : ''}`} >
                 <p>{tooltip}</p>
               </div>
             </div>}
           </div>
-          <p className='uppercase'>{enTitle}</p>
+          <p className='uppercase'>
+            {enTitle}
+            </p>
         </div>
       </div>
       <div className="numberbox">

@@ -17,3 +17,32 @@
 .ml-5 {
     margin-left: 5px
 }
+
+
+.footer .main-box .site-map-en li {
+    margin-right: 20px
+}
+
+
+@media only screen and (max-width: 1279px) {
+    .footer .main-box .site-map-en li {
+        margin-right: 5px
+    }
+}
+
+
+.header .main_menu li {
+    cursor: pointer;
+}
+
+
+
+.lang_icon {
+    width: 15px !important;
+    height: 15px !important;
+}
+
+
+.editor-box ul, .editor-box ol {
+    margin-left: 20px;
+}

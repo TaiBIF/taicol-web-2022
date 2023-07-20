@@ -1,4 +1,5 @@
 {% extends 'base.html' %} 
+{% load i18n %}
 {% load static %}
 
 {% block head %}
@@ -6,6 +7,9 @@
 <link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}">
 <link href="{% static 'css/select2.min.css' %}" rel="stylesheet">
 <script src="{% static 'js/select2.min.js' %}"></script>
+<link href="/static/air-datepicker/dist/air-datepicker.css" rel="stylesheet" />
+<script src="/static/air-datepicker/dist/air-datepicker.js" ></script>
+
 {% endblock head %}
 
 {% block style %}
@@ -41,16 +45,16 @@
 				</svg>
 			</div>
 			<div class="title-area">
-				<h2>下載檔案 <span></span></h2>
+				<h2>{% trans "下載檔案" %}<span></span></h2>
 			</div>
 			<div class="error-form">
 				<form id="downloadForm">
 					<div class="mark-title">
-						<p>檔案為離線產生，處理完成後，系統會寄下載資訊到您輸入的電子郵件信箱。如未收到信件，請聯絡我們。</p>
+						<p>{% trans "檔案為離線產生，處理完成後，系統會寄下載資訊到您輸入的電子郵件信箱。如未收到信件，請聯絡我們。" %}</p>
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<span class="ml-5">聯絡信箱</span>
+						<span class="ml-5">{% trans "聯絡信箱" %}</span>
 					</div>
 					<div class="d-flex mb-20px">
 						<input type="text" name="download_email" class="w-50" id="download_email">
@@ -59,7 +63,7 @@
 						</svg>
 					</div>
 				</form>
-				<button class="send-btn download_check" disabled>確認送出</button>
+				<button class="send-btn download_check" disabled>{% trans "確認送出" %}</button>
 			</div>
 		</div>
 	</div>
@@ -68,7 +72,7 @@
 <div class="page-top">
 	<div class="short-top">
 		<div class="path">
-			<a href="{% url 'index' %}">首頁</a> > <p>物種名錄</p>
+			<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "物種名錄" %}</p>
 		</div>
 		<div class="main-box">
 			<div class="float-dot-yel">
@@ -78,23 +82,23 @@
 				<img src="{% static 'image/cir_blue.png' %}">
 			</div>
 			<div class="title-box">
-				<h2>物種名錄</h2>
-				<p>CATALOGUE</p>
+				<h2>{% trans "物種名錄" %}</h2>
+				<p>{% trans "CATALOGUE" %}</p>
 			</div>
 		</div>
 	</div>
 		<div class="splist-search-box">
 			<div class="main-box">
 				<div class="left-box">
-					<p>學名/中文名</p>
+					<p>{% trans "學名/中文名" %}</p>
 					<select class="select-box" name="name-select" id="">
-						<option value="contain">包含</option>
-						<option value="equal">等於</option>
-						<option value="startwith">開頭為</option>
+						<option value="contain">{% trans "包含" %}</option>
+						<option value="equal">{% trans "等於" %}</option>
+						<option value="startwith">{% trans "開頭為" %}</option>
 					</select>
 				</div>
 				<div class="cont-search-bar">
-					<input type="text" id="keyword" name="keyword" placeholder="請輸入關鍵字" value='{{ keyword|default_if_none:"" }}'>
+					<input type="text" id="keyword" name="keyword" placeholder="{% trans "請輸入關鍵字" %}" value='{{ keyword|default_if_none:"" }}'>
 					<button class="search getData">
 						<svg id="Group_6882" data-name="Group 6882" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="36.847" height="36.775" viewBox="0 0 36.847 36.775">
 							<defs>
@@ -114,7 +118,7 @@
 			<!--按下select-button時加上now的class-->
 			<div class="select-button ">
 				<div class="main-box">
-					<p>進階選項</p>
+					<p>{% trans "進階選項" %}</p>
 					<div class="arr">
 						<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
 							<g id="tree-arr" transform="translate(-1545.086 -550.086)">
@@ -132,7 +136,7 @@
 					<div class="option-box1">
 						<div class="item-box">
 							<div class="left-title">
-								<p>較高分類群</p>
+								<p>{% trans "較高分類群" %}</p>
 							</div>
 							<div class="input-item">
 								<select class="taxon_group" id="taxon_group"></select>
@@ -140,58 +144,58 @@
 						</div>
 						<div class="item-box">
 							<div class="left-title">
-								<p>分類階層</p>
+								<p>{% trans "分類階層" %}</p>
 							</div>
 							<div class="right-option">
 								<div class="input-item select-170">
 									<select class="wide" name="rank-select">
 										<option value="none"></option>
-										<option value="34">種</option>
-										<option value="35">亞種</option>
-										<option value="37">變種</option>
-										<option value="40">型</option>
-										<option value="41">亞型</option>
-										<option value="38">亞變種</option>
-										<option value="36">雜交亞種</option>
-										<option value="39">雜交變種</option>
-										<option value="42">特別品型</option>
-										<option value="47">雜交組合</option>
-										<option value="30">屬</option>
-										<option value="31">亞屬</option>
-										<option value="32">組|節</option>
-										<option value="33">亞組|亞節</option>
-										<option value="26">科</option>
-										<option value="27">亞科</option>
-										<option value="28">族</option>
-										<option value="29">亞族</option>
-										<option value="22">目</option>
-										<option value="23">亞目</option>
-										<option value="24">下目</option>
-										<option value="25">超科|總科</option>
+										<option value="34">{% trans "種" %}</option>
+										<option value="35">{% trans "亞種" %}</option>
+										<option value="37">{% trans "變種" %}</option>
+										<option value="40">{% trans "型" %}</option>
+										<option value="41">{% trans "亞型" %}</option>
+										<option value="38">{% trans "亞變種" %}</option>
+										<option value="36">{% trans "雜交亞種" %}</option>
+										<option value="39">{% trans "雜交變種" %}</option>
+										<option value="42">{% trans "特別品型" %}</option>
+										<option value="47">{% trans "雜交組合" %}</option>
+										<option value="30">{% trans "屬" %}</option>
+										<option value="31">{% trans "亞屬" %}</option>
+										<option value="32">{% trans "組|節" %}</option>
+										<option value="33">{% trans "亞組|亞節" %}</option>
+										<option value="26">{% trans "科" %}</option>
+										<option value="27">{% trans "亞科" %}</option>
+										<option value="28">{% trans "族" %}</option>
+										<option value="29">{% trans "亞族" %}</option>
+										<option value="22">{% trans "目" %}</option>
+										<option value="23">{% trans "亞目" %}</option>
+										<option value="24">{% trans "下目" %}</option>
+										<option value="25">{% trans "超科|總科" %}</option>
 										<!--<option value="">系</option>-->
 										<!--<option value="">組</option>-->
-										<option value="18">綱</option>
-										<option value="19">亞綱</option>
-										<option value="20">下綱</option>
-										<option value="21">超目|總目</option>
-										<option value="12">門</option>
-										<option value="13">亞門</option>
-										<option value="14">下門</option>
-										<option value="15">微門</option>
-										<option value="16">小門</option>
-										<option value="17">超綱|總綱</option>
-										<option value="7">部|類</option>
-										<option value="8">亞部|亞類</option>
-										<option value="9">下部|下類</option>
-										<option value="10">小部|小類</option>
-										<option value="11">超門|總門</option>
-										<option value="3">界</option>
-										<option value="4">亞界</option>
+										<option value="18">{% trans "綱" %}</option>
+										<option value="19">{% trans "亞綱" %}</option>
+										<option value="20">{% trans "下綱" %}</option>
+										<option value="21">{% trans "超目|總目" %}</option>
+										<option value="12">{% trans "門" %}</option>
+										<option value="13">{% trans "亞門" %}</option>
+										<option value="14">{% trans "下門" %}</option>
+										<option value="15">{% trans "微門" %}</option>
+										<option value="16">{% trans "小門" %}</option>
+										<option value="17">{% trans "超綱|總綱" %}</option>
+										<option value="7">{% trans "部|類" %}</option>
+										<option value="8">{% trans "亞部|亞類" %}</option>
+										<option value="9">{% trans "下部|下類" %}</option>
+										<option value="10">{% trans "小部|小類" %}</option>
+										<option value="11">{% trans "超門|總門" %}</option>
+										<option value="3">{% trans "界" %}</option>
+										<option value="4">{% trans "亞界" %}</option>
 										<!--<option value="">支</option>-->
-										<option value="5">下界</option>
-										<option value="6">超部|總部</option>
-										<option value="1">域</option>
-										<option value="2">總界</option>
+										<option value="5">{% trans "下界" %}</option>
+										<option value="6">{% trans "超部|總部" %}</option>
+										<option value="1">{% trans "域" %}</option>
+										<option value="2">{% trans "總界" %}</option>
 										<!--<option value="">亞域</option>-->					
 									</select>
 								</div>							
@@ -201,10 +205,10 @@
 						</div>
 						<div class="item-box check-set">
 							<div class="left-title">
-								<p>特有性</p>
+								<p>{% trans "特有性" %}</p>
 							</div>
 							<div class="right-check">
-								<label class="check-item">臺灣特有
+								<label class="check-item">{% trans "臺灣特有" %}
 									<input type="checkbox" name="is_endemic">
 									<span class="checkmark"></span>
 								</label>
@@ -227,22 +231,22 @@
 						</div>-->
 						<div class="item-box check-set">
 							<div class="left-title">
-								<p>原生/外來性</p>
+								<p>{% trans "原生/外來性" %}</p>
 							</div>
 							<div class="right-check">
-								<label class="check-item">原生
+								<label class="check-item">{% trans "原生" %}
 									<input type="checkbox" name="alien_type" value="native">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">歸化
+								<label class="check-item">{% trans "歸化" %}
 									<input type="checkbox" name="alien_type" value="naturalized">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">入侵
+								<label class="check-item">{% trans "入侵" %}
 									<input type="checkbox" name="alien_type" value="invasive">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">栽培豢養
+								<label class="check-item">{% trans "栽培豢養" %}
 									<input type="checkbox" name="alien_type" value="cultured">
 									<span class="checkmark"></span>
 								</label>
@@ -250,8 +254,8 @@
 						</div>
 						<!--點擊後給class now-->
 						<div class="more-option-button">
-							<p>更多項目</p>
-							<svg xmlns="http://www.w3.org/2000/svg" width="15.043" height="15.043" viewBox="0 0 15.043 15.043">
+							<p>{% trans "更多項目" %}</p>
+							<svg {% if LANGUAGE_CODE == 'en-us' %} class="ml-5"  {% endif %} xmlns="http://www.w3.org/2000/svg" width="15.043" height="15.043" viewBox="0 0 15.043 15.043">
 								<g id="plussvg" transform="translate(-1553.5 -534.5)">
 									<line id="Line_211" data-name="Line 211" x1="13.043" transform="translate(1554.5 542.021)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
 									<line class="minus" id="Line_213" data-name="Line 213" x1="13.043" transform="translate(1561.021 535.5) rotate(90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
@@ -264,22 +268,22 @@
 					<div class="option-box2">
 						<div class="item-box check-set">
 							<div class="left-title">
-								<p>棲地環境</p>
+								<p>{% trans "棲地環境" %}</p>
 							</div>
 							<div class="right-check">
-								<label class="check-item">陸生
+								<label class="check-item">{% trans "陸生" %}
 									<input type="checkbox" name="is_terrestrial">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">淡水
+								<label class="check-item">{% trans "淡水" %}
 									<input type="checkbox" name="is_freshwater">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">半鹹水
+								<label class="check-item">{% trans "半鹹水" %}
 									<input type="checkbox" name="is_brackish">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">海洋
+								<label class="check-item">{% trans "海洋" %}
 									<input type="checkbox" name="is_marine">
 									<span class="checkmark"></span>
 								</label>
@@ -287,33 +291,37 @@
 						</div>
 						<div class="item-box check-set">
 							<div class="left-title">
-								<p>保育類</p>
+								<p>{% trans "保育類" %}</p>
 							</div>
 							<div class="right-check">
-								<label class="check-item">無
+								<label class="check-item">{% trans "無" %}
 									<input type="checkbox" name="protected_category" value="none">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">第一級
+								<label class="check-item">{% trans "第一級" %}
 									<input type="checkbox" name="protected_category" value="I">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">第二級
+								<label class="check-item">{% trans "第二級" %}
 									<input type="checkbox" name="protected_category" value="II">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">第三級
+								<label class="check-item">{% trans "第三級" %}
 									<input type="checkbox" name="protected_category" value="III">
+									<span class="checkmark"></span>
+								</label>
+								<label class="check-item">{% trans "珍貴稀有植物" %}
+									<input type="checkbox" name="protected_category" value="1">
 									<span class="checkmark"></span>
 								</label>
 							</div>
 						</div>
 						<div class="item-box check-set">
 							<div class="left-title">
-								<p>臺灣紅皮書評估</p>
+								<p>{% trans "臺灣紅皮書評估" %}</p>
 							</div>
 							<div class="right-check">
-								<label class="check-item">無
+								<label class="check-item">{% trans "無" %}
 									<input type="checkbox" name="red_category" value="none">
 									<span class="checkmark"></span>
 								</label>
@@ -365,10 +373,10 @@
 						</div>
 						<div class="item-box check-set">
 							<div class="left-title">
-								<p>IUCN評估</p>
+								<p>{% trans "IUCN評估" %}</p>
 							</div>
 							<div class="right-check">
-								<label class="check-item">無
+								<label class="check-item">{% trans "無" %}
 									<input type="checkbox" name="iucn_category" value="none">
 									<span class="checkmark"></span>
 								</label>
@@ -425,22 +433,22 @@
 						</div>
 						<div class="item-box check-set">
 							<div class="left-title">
-								<p>CITES附錄</p>
+								<p>{% trans "CITES附錄" %}</p>
 							</div>
 							<div class="right-check">
-								<label class="check-item">無
+								<label class="check-item">{% trans "無" %}
 									<input type="checkbox" name="cites" value="none">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">附錄一
+								<label class="check-item">{% trans "附錄一" %}
 									<input type="checkbox" name="cites" value="1">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">附錄二
+								<label class="check-item">{% trans "附錄二" %}
 									<input type="checkbox" name="cites" value="2">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">附錄三
+								<label class="check-item">{% trans "附錄三" %}
 									<input type="checkbox" name="cites" value="3">
 									<span class="checkmark"></span>
 								</label>
@@ -448,29 +456,29 @@
 						</div>
 						<div class="item-box">
 							<div class="left-title">
-								<p>更新日期</p>
+								<p>{% trans "更新日期" %}</p>
 							</div>
 							<div class="item-box-set2">
 								<div class="input-item select-100">
 									<select class="wide" name="date-select">
-										<option value="gl">大於</option>
-										<option value="eq">等於</option>
-										<option value="sl">小於</option>
+										<option value="gl">{% trans "大於" %}</option>
+										<option value="eq">{% trans "等於" context "date equal" %}</option>
+										<option value="sl">{% trans "小於" %}</option>
 									</select>
 								</div>
 								<div class="input-item w-350">
 									<div class="icon">
 										<img src="{% static 'image/cald.svg' %}">
 									</div>
-									<input type="date" placeholder="1990-01-01" name="date">
+									<input type="text" placeholder="YYYY-MM-DD" name="date" id="updated_at" data-language='en'>
 								</div>
 							</div>
 						</div>
 					</div>
 					</form>
 					<div class="btn-are">
-						<button class="resetForm">清除</button>
-						<button class="blue-btn getData">搜尋</button>
+						<button class="resetForm">{% trans "清除" %}</button>
+						<button class="blue-btn getData">{% trans "搜尋" %}</button>
 					</div>
 
 				</div>
@@ -480,10 +488,10 @@
 	<div class="result-area">
 		<div class="main-box">
 			<div class="top-infbox">
-				<p class="d-none">共<span id="total-count"></span>筆</p>
+				<p class="d-none">{% trans "共" %}<span id="total-count"></span>{% trans "筆" %}</p>
 				<div class="button-two d-none">
-					<button class="downloadData" data-type="csv">下載CSV</button>
-					<button class="downloadData" data-type="json">下載JSON</button>
+					<button class="downloadData" data-type="csv">{% trans "下載CSV" %}</button>
+					<button class="downloadData" data-type="json">{% trans "下載JSON" %}</button>
 				</div>
 			</div>
 			<div class="result-flexbox d-none">
@@ -493,7 +501,7 @@
 						<input type="hidden" name="hidden-value" value="">
 						<li>
 							<div class="title-box">
-								<h3>界</h3>
+								<h3>{% trans "界" %}</h3>
 								<div class="blue-line"></div>
 							</div>
 							<div class="item-box kingdom-box">
@@ -501,7 +509,7 @@
 						</li>
 						<li>
 							<div class="title-box">
-								<h3>階層</h3>
+								<h3>{% trans "階層" %}</h3>
 								<div class="blue-line"></div>
 							</div>
 							<div class="item-box rank-box">
@@ -510,7 +518,7 @@
 						</li>
 						<li>
 							<div class="title-box">
-								<h3>特有性</h3>
+								<h3>{% trans "特有性" %}</h3>
 								<div class="blue-line"></div>
 							</div>
 							<div class="item-box endemic-box">
@@ -527,7 +535,7 @@
 						</li>-->
 						<li>
 							<div class="title-box">
-								<h3>原生/外來性</h3>
+								<h3>{% trans "原生/外來性" %}</h3>
 								<div class="blue-line"></div>
 							</div>
 							<div class="item-box alien_type-box">
@@ -535,7 +543,7 @@
 						</li>
 						<li>
 							<div class="title-box">
-								<h3>地位</h3>
+								<h3>{% trans "地位" %}</h3>
 								<div class="blue-line"></div>
 							</div>
 							<div class="item-box status-box">

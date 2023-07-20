@@ -2,7 +2,7 @@ export type CompareType = 'kingdom_compare' | 'plantae_compare' | 'animalia_comp
 
 export type OptionProp = {
   value: CompareType;
-  label: string | number;
+  label: string | number | React.ReactNode ;
 }
 
 export const speciesOptions:OptionProp[] = [
@@ -13,3 +13,6 @@ export const speciesOptions:OptionProp[] = [
   {value:'chordata_compare',label:'脊索動物門比較'}
 ]
 
+export default {
+  speciesOptions,
+}
