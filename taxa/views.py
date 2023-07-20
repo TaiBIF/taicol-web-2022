@@ -57,9 +57,9 @@ def download_search_results_offline(request):
 
     df = get_download_file(tids)
     # df_file_name = 
-
+    now = datetime.datetime.now()+datetime.timedelta(hours=8)
     if file_format == 'json':
-        df_file_name = f'taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.json'
+        df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
         # response = HttpResponse(content_type="application/json")
         # response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.json'
         # df.to_json(f'/tc-web-volumes/media/download/{df_file_name}', orient='records')
@@ -68,7 +68,7 @@ def download_search_results_offline(request):
         df.to_json(f'/tc-web-volumes/media/download/{zip_file_name}', orient='records', compression=compression_options)
 
     else:
-        df_file_name = f'taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.csv'
+        df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
         # response = HttpResponse(content_type='text/csv')
         # response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.csv'
         # df.to_csv(f'/tc-web-volumes/media/download/{df_file_name}', index=False)
@@ -100,13 +100,14 @@ def download_search_results(request):
 
     df = get_download_file(tids)
 
+    now = datetime.datetime.now()+datetime.timedelta(hours=8)
     if file_format == 'json':
         response = HttpResponse(content_type="application/json")
-        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.json'
+        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
         df.to_json(response, orient='records')
     else:
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.csv'
+        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
         df.to_csv(response, index=False)
 
     return response
@@ -1856,18 +1857,19 @@ def download_match_results(request):
 
     final_df = final_df.drop_duplicates()
 
+    now = datetime.datetime.now()+datetime.timedelta(hours=8)
     is_list = ['是否為特有',"是否為陸生生物","是否為淡水生物","是否為半鹹水生物","是否為海洋生物"]
     if file_format == 'json':
         # 改成True False                
         final_df[is_list] = final_df[is_list].replace({0: False, 1: True, '0': False, '1': True})
         response = HttpResponse(content_type="application/json")
-        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.json'
+        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
         final_df.to_json(response, orient='records')
     else:
         # 改成字串true false
         final_df[is_list] = final_df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.csv'
+        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
         final_df.to_csv(response, index=False)
 
     return response
