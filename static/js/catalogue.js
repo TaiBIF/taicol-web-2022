@@ -217,7 +217,7 @@
 				}
 					
 				$('.open_taxon').on('click', function(){
-					window.open($(this).data('href'));
+					window.open($(this).data('href'),"_self");
 				})
 				$('.page-num').remove()
 
@@ -595,7 +595,7 @@
 
 					}
 					$('.open_taxon').on('click', function(){
-						window.open($(this).data('href'));
+						window.open($(this).data('href'),"_self");
 					})
 					// 頁碼
 					if (results.page.total_page > 1){  // 判斷超過一頁，有才加分頁按鈕
