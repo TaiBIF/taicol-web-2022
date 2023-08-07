@@ -31,12 +31,12 @@
 	
     "資料統計":"STATISTICS",
     "STATISTICS":"",
-    "上一頁":"Last Page",
-    "下一頁":"Next Page",
+    "上一頁":"Previous",
+    "下一頁":"Next",
 
 
-    "上一則":"Last Page",
-    "下一則":"Next Page",
+    "上一則":"Previous",
+    "下一則":"Next",
     "回列表":"Back to List",
     
     "各界物種數統計":"Statistics of Species of Each Kingdom",

@@ -6,6 +6,7 @@ import re
 # from datetime import datetime, timedelta, strftime
 import json
 import numpy as np
+from  django.utils.translation import get_language, gettext
 
 
 def get_page_list(current_page, total_page, window=3):
@@ -37,8 +38,10 @@ with conn.cursor() as cursor:
 
 kingdom_map = {}
 conn = pymysql.connect(**db_settings)
-query = "SELECT tn.name, at.taxon_id, at.common_name_c FROM taxon_names tn\
-         JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id WHERE tn.rank_id = 3 ORDER BY tn.name"
+query = "SELECT tn.name, at.taxon_id, acn.name_c FROM taxon_names tn \
+         JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id \
+         JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1\
+         WHERE tn.rank_id = 3 ORDER BY tn.name"
 with conn.cursor() as cursor:
     cursor.execute(query)
     kingdom = cursor.fetchall()
@@ -77,7 +80,11 @@ name_status_map = {
     'misapplied': 'misapplied to',
 }
 
-alien_map_c = {'native': '原生','naturalized':'歸化','invasive':'入侵','cultured':'栽培豢養'}
+# attr_map_c
+# attr_map_c
+# attr_map
+
+# attr_map_c = {'native': '原生','naturalized':'歸化','invasive':'入侵','cultured':'栽培豢養'}
 
 status_map_c = {'accepted': '有效', 'not-accepted': '無效', 'undetermined': '未決', 'misapplied': '誤用'}
 status_map_taxon_c = {'accepted': {'en-us': 'Accepted', 'zh-tw': '接受名'}, 'not-accepted': {'en-us': 'Not accepted', 'zh-tw': '無效'}, 
@@ -86,12 +93,14 @@ status_map_taxon_c = {'accepted': {'en-us': 'Accepted', 'zh-tw': '接受名'}, '
 rank_color_map = { 3: 'rank-1-red', 12: 'rank-2-org', 18: 'rank-3-yell', 22: 'rank-4-green', 26: 'rank-5-blue', 
                   30: 'rank-6-deepblue', 34: 'rank-7-purple'}
 
-is_map_c = {'is_in_taiwan':'存在於臺灣','is_endemic':'臺灣特有','is_terrestrial':'陸生','is_freshwater':'淡水','is_brackish':'半鹹水','is_marine':'海洋'}
-is_map = {'is_in_taiwan':'Exist in Taiwan','is_endemic':'Endemic to Taiwan','is_terrestrial':'Terrestrial','is_freshwater':'Freshwater','is_brackish':'Brackish','is_marine':'Marine'}
+attr_map_c = {'is_in_taiwan':'存在於臺灣','is_endemic':'臺灣特有','is_terrestrial':'陸生','is_freshwater':'淡水','is_brackish':'半鹹水','is_marine':'海洋','native': '原生','naturalized':'歸化','invasive':'入侵','cultured':'栽培豢養', 'is_cultured': '栽培豢養'}
+attr_map = {'is_in_taiwan':'Exist in Taiwan','is_endemic':'Endemic to Taiwan','is_terrestrial':'Terrestrial','is_freshwater':'Freshwater','is_brackish':'Brackish','is_marine':'Marine', 'native': 'Native','naturalized':'Naturalized','invasive':'Invasive','cultured':'Cultured', 'is_cultured': 'Cultured'}
 
 is_in_taiwan_map_c =  {
   1: '存在', 0: '不存在', '1': '存在', '0': '不存在'
 }
+
+
 
 # 台灣紅皮書
 redlist_map_c = {
@@ -113,38 +122,10 @@ protected_map = {'I': 'I Endangered', 'II': 'II Precious and Rare', 'III': 'III 
 
 # 一）瀕臨絕種野生動物。 （二）珍貴稀有野生動物。 （三）其他應予保育之野生動物。
 
-taxon_history_map_c = {0: '有效名變更',
-    1: '新增同物異名',
-    2: '新增文獻',
-    4: '分類階層更新',
-    5: '新增Taxon',
-    6: '已刪除',
-    7: '新增中文名',
-    8: '新增屬性',
-    9: '移除屬性',
-    10: '修改屬性',
-    11: '新增保育資訊',
-    12: '移除保育資訊',
-    13: '修改保育資訊',
-    14: '新增屬性',
-    15: '移除屬性'}
 
-taxon_history_map = {
-    0: 'Accepted name changed',
-    1: 'New synonym',
-    2: 'New references',
-    4: 'Classification updated',
-    5: 'Taxon created',
-    6: 'Taxon deleted',
-    7: 'New common name',
-    8: 'Taxon information added',
-    9: 'Taxon information removed',
-    10: 'Taxon information updated',
-    11: 'Taxon information added',
-    12: 'Taxon information removed',
-    13: 'Taxon information updated',
-    14: 'Taxon information added',
-    15: 'Taxon information removed'}
+conserv_map = {'iucn_category': 'IUCN', 'cites_listing': 'CITES', 
+               'protected_category': '保育類', 'red_category': '臺灣紅皮書', 'sensitive_suggest': '敏感物種建議模糊層級'}
+
 
 # 林奈階層
 
@@ -293,21 +274,39 @@ def get_variants(string):
 
 
 def get_download_file(taxon_list=[]):
-  query = f"SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, \
-          t.rank_id, t.common_name_c, t.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), t.is_fossil, t.is_terrestrial, \
-          t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, \
-          ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, \
-          t.created_at, t.updated_at, att.path \
-          FROM api_taxon t \
-          JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
-          JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id \
-          LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id \
-          LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id \
-          WHERE t.taxon_id IN %s"
-
+  # query = f"SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, \
+  #         t.rank_id, t.common_name_c, t.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), t.is_fossil, t.is_terrestrial, \
+  #         t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, \
+  #         ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, \
+  #         t.created_at, t.updated_at, att.path \
+  #         FROM api_taxon t \
+  #         JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
+  #         JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id \
+  #         LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id \
+  #         LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id \
+  #         LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id \
+  #         WHERE t.taxon_id IN %s"
+  
+  query = """
+          WITH base_query AS (SELECT taxon_id, GROUP_CONCAT(name_c SEPARATOR ', ') AS alternative_name_c 
+                              FROM api_common_name WHERE is_primary = 0 AND taxon_id IN %s GROUP BY taxon_id)
+          SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, 
+                    t.rank_id, acn.name_c, bq.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), t.is_fossil, t.is_terrestrial, 
+                    t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, 
+                    ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, 
+                    t.created_at, t.updated_at, att.path 
+                    FROM api_taxon t 
+                    JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id 
+                    JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id 
+                    LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id 
+                    LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id 
+                    LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1
+                    LEFT JOIN base_query bq ON bq.taxon_id = t.taxon_id
+                    WHERE t.taxon_id IN %s;
+  """
   conn = pymysql.connect(**db_settings)
   with conn.cursor() as cursor:
-      cursor.execute(query, (taxon_list,))
+      cursor.execute(query, (taxon_list,taxon_list))
       df = cursor.fetchall()
       df = pd.DataFrame(df, columns=['taxon_id','name_id','simple_name','name_author','formatted_name','rank','common_name_c','alternative_name_c',  
                                       'is_hybrid','is_in_taiwan','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine',
@@ -345,9 +344,10 @@ def get_download_file(taxon_list=[]):
             if p != row.taxon_id and p not in total_path:
               total_path.append(p)
 
-  query = f"SELECT t.taxon_id, tn.name, t.rank_id, t.common_name_c \
+  query = f"SELECT t.taxon_id, tn.name, t.rank_id, acn.name_c \
           FROM api_taxon t \
           JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
+          LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1\
           WHERE t.taxon_id IN %s"
 
   conn = pymysql.connect(**db_settings)
@@ -410,3 +410,255 @@ def get_download_file(taxon_list=[]):
 
   # taxon.to_csv(f"物種名錄_物種_{today.strftime('%Y%m%d')}.csv",index=False)
 
+
+
+
+taxon_history_map = {
+    0: 'Accepted name changed', 
+    1: 'New synonym: ',
+    2: 'New reference',
+    4: 'Classification updated',
+    5: 'Taxon created',
+    6: 'Taxon deleted',
+    7: 'New common name: ',
+    8: 'Taxon information added: ',
+    9: 'Taxon information removed: ',
+    # 10: 'Taxon information updated',
+    11: 'Taxon information added: ',
+    12: 'Taxon information removed: ',
+    13: 'Taxon information updated: ',
+    14: 'Taxon merged ',
+    15: 'Taxon divided '}
+
+
+taxon_history_map_c = {
+    0: '有效名變更', # v
+    1: '新增同物異名：', # v
+    2: '新增文獻', # v
+    4: '分類階層更新',  # v
+    5: '新增Taxon', # v
+    6: '已刪除', # v
+    7: '新增中文名：', # v
+    8: '新增屬性：',  # v
+    9: '移除屬性：', # v
+    # 10: '修改屬性', # deprecated
+    11: '新增保育資訊：', #v
+    12: '移除保育資訊：', #v
+    13: '修改保育資訊：', #v
+    14: '物種合併 ', #v
+    15: '物種拆分 ' #v
+    }
+
+
+def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
+  taxon_history_dict = taxon_history_map if lang == 'en-us' else taxon_history_map_c
+  # taxon_history = []
+  taxon_history = pd.DataFrame(columns=['history_type', 'content', 'short_author', 'updated_at', 'user_name', 'reference_id', 'note', 'reference_type'])
+  query = f"""SELECT distinct ath.type, ath.content, ac.short_author, ath.updated_at, usr.name, ru.reference_id, ath.note, r.type
+                FROM api_taxon_history ath 
+                LEFT JOIN reference_usages ru ON ru.reference_id = ath.reference_id and ru.taxon_name_id = ath.taxon_name_id and ru.accepted_taxon_name_id = ath.accepted_taxon_name_id
+                LEFT JOIN import_usage_logs iul ON iul.reference_id = ru.reference_id
+                LEFT JOIN users usr ON usr.id = iul.user_id
+                LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
+                LEFT JOIN `references` r ON ath.reference_id = r.id
+                WHERE ath.taxon_id = %s ORDER BY ath.updated_at DESC"""
+  conn = pymysql.connect(**db_settings)
+  with conn.cursor() as cursor:
+      cursor.execute(query, (taxon_id, ))
+      th = cursor.fetchall()
+      conn.close()
+      taxon_history = pd.DataFrame(th, columns=['history_type', 'content', 'short_author', 'updated_at', 'editor', 'reference_id', 'note', 'reference_type'])
+  # 整理文獻
+  taxon_history['ref'] = taxon_history.apply(lambda x: f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(x.reference_id)}" target="_blank">{x.short_author}</a>' if x.short_author and x.reference_type != 4 else '', axis=1)
+  # 整理時間
+  taxon_history['updated_at'] = taxon_history.updated_at.dt.strftime('%Y-%m-%d')
+  # 整理編輯者
+  taxon_history.loc[taxon_history['editor']=='TaiCOL管理員','editor'] = gettext('TaiCOL管理員')
+  # 整理標題
+  taxon_history['title'] = taxon_history['history_type'].apply(lambda x: taxon_history_dict[x])
+  # 整理內容
+  # 新增同物異名
+  for i in taxon_history[taxon_history.history_type==1].index:
+    row = taxon_history.iloc[i]
+    c = json.loads(row.note)
+    taxon_history.loc[i,'content'] = names[names.taxon_name_id==c.get('taxon_name_id')]['sci_name'].values[0]
+
+  # 已刪除
+  for i in taxon_history[taxon_history.history_type==6].index:
+    row = taxon_history.iloc[i]
+    if new_taxon_id:
+      taxon_history.loc[i,'content'] = f'''{gettext("請參見")} <a class="new_taxon_aa" href="/{"en-us" if lang == "en-us" else "zh-hant"}/taxon/{new_taxon_id}">{new_taxon_name if new_taxon_name else new_taxon_id}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
+                                          <defs>
+                                              <clipPath id="clip-path">
+                                                  <rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"></rect>
+                                              </clipPath>
+                                          </defs>
+                                          <g id="link-icon" transform="translate(0 0.359)">
+                                              <g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
+                                                  <path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"></path>
+                                                  <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
+                                              </g>
+                                          </g>
+                                      </svg></a>'''
+    else:
+      taxon_history.loc[i,'content'] = ''
+  # 物種拆分 物種合併
+  for i in taxon_history[taxon_history.history_type.isin([14,15])].index:
+      row = taxon_history.iloc[i]
+      new_taxon_id, new_taxon_name = '', ''
+      query = f"""SELECT tn.name, at.taxon_id FROM api_taxon at
+      JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
+      WHERE at.taxon_id = %s
+      """
+      conn = pymysql.connect(**db_settings)
+      with conn.cursor() as cursor:
+          cursor.execute(query, (row.note,))
+          new_taxon_id = cursor.fetchone()
+          if new_taxon_id:
+              new_taxon_name = new_taxon_id[0]
+              new_taxon_id = new_taxon_id[1]
+          conn.close()
+      if new_taxon_id:
+        taxon_history.loc[i,'content'] = f'''{gettext("請參見")} <a class="new_taxon_aa" href="/{"en-us" if lang == "en-us" else "zh-hant"}/taxon/{new_taxon_id}">{new_taxon_name if new_taxon_name else new_taxon_id}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
+                                            <defs>
+                                                <clipPath id="clip-path">
+                                                    <rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"></rect>
+                                                </clipPath>
+                                            </defs>
+                                            <g id="link-icon" transform="translate(0 0.359)">
+                                                <g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
+                                                    <path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"></path>
+                                                    <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
+                                                </g>
+                                            </g>
+                                        </svg></a>'''
+      else:
+        taxon_history.loc[i,'content'] = ''
+  # 分類階層更新
+  for i in taxon_history[taxon_history.history_type==4].index:
+      row = taxon_history.iloc[i]
+      c = json.loads(row.note)
+      content_str = ''
+      if c.get('old'):
+          o_path_list = c.get('old').split('>')
+          if len(o_path_list) > 1: # 不包含自己
+              query = f"""SELECT an.formatted_name
+                          FROM api_taxon at
+                          JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
+                          WHERE at.taxon_id IN %s
+                          ORDER BY at.rank_id ASC"""
+              conn = pymysql.connect(**db_settings)
+              with conn.cursor() as cursor:
+                  cursor.execute(query, (o_path_list, ))
+                  ops = cursor.fetchall()
+                  ops = [o[0] for o in ops]
+                  content_str = (' > ').join(ops)
+                  if content_str:
+                      content_str = f'({gettext("原階層：")}{content_str})'
+      taxon_history.loc[i,'content'] = content_str
+  # 新增/移除屬性
+  taxon_history.loc[taxon_history.history_type.isin([8,9]),'content'] = taxon_history[taxon_history.history_type.isin([8,9])].note.apply(lambda x: attr_map[x] if lang == 'en-us' else attr_map_c[x] )
+  drop_conserv = []
+  for i in taxon_history[taxon_history.history_type.isin([11,12,13])].index:
+    row = taxon_history.iloc[i]
+    c = json.loads(row.note)
+    source = c.get('source')
+    value = c.get('value')
+    content = gettext(conserv_map[source]) + ' '
+    if source == 'sensitive_suggest':
+        drop_conserv.append(i)
+    elif source == 'cites_listing':
+        c_list = value.split('/')
+        c_list_str = []
+        for cl in c_list:
+            c_list_str.append(cites_map[cl] if lang == 'en-us' else cites_map_c[cl])
+        content += '/'.join(c_list_str)
+    elif source == 'iucn_category':
+        content += value if lang == 'en-us' else iucn_map_c[value] + ' ' + value
+    elif source == 'red_category':
+        content +=  value if lang == 'en-us' else redlist_map_c[value] + ' ' + value
+    elif source == 'protected_category':
+        content +=  protected_map[value] if get_language() == 'en-us' else f'第 {value} 級 {protected_map_c[value]}'
+    taxon_history.loc[i,'content'] = content
+  taxon_history = taxon_history.drop(index=drop_conserv)
+
+  # 如果是新增文獻，且文獻的type==4 -> 移除
+  taxon_history = taxon_history[~((taxon_history.reference_type==4)&(taxon_history.history_type==2))]
+  taxon_history = taxon_history[['title','content','ref','updated_at','editor']]
+  taxon_history.loc[taxon_history['title']==gettext('新增Taxon'),'content'] = ''
+  # taxon_history.loc[taxon_history['editor']=='TaiCOL管理員','editor'] = gettext('TaiCOL管理員')
+  taxon_history = taxon_history.drop_duplicates(subset=['title','content','ref']).to_dict(orient='records')
+  return taxon_history
+
+
+
+
+    # for i in taxon_history[taxon_history.history_type.isin([8,9])].index:
+    #     row = taxon_history.iloc[i]
+    #     taxon_history.loc[i,'content'] = content_str
+
+      # for thh in th:
+      #     if thh[0] == 4:
+      #         c = json.loads(thh[6])
+      #         # content_str = []
+      #         content_str = ''
+      #         if c.get('old'):
+      #             o_path_list = c.get('old').split('>')
+      #             if len(o_path_list) > 1: # 不包含自己
+      #                 query = f"""SELECT an.formatted_name
+      #                             FROM api_taxon at
+      #                             JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
+      #                             WHERE at.taxon_id IN %s
+      #                             ORDER BY at.rank_id ASC"""
+      #                 conn = pymysql.connect(**db_settings)
+      #                 with conn.cursor() as cursor:
+      #                     cursor.execute(query, (o_path_list, ))
+      #                     ops = cursor.fetchall()
+      #                     ops = [o[0] for o in ops]
+      #                     content_str = (' > ').join(ops)
+      #                     if content_str:
+      #                         content_str = f'({gettext("原階層：")}{content_str})'
+      #         # content_str = old_path_str_name
+      #         # row = [taxon_history_dict[thh[0]], content_str, f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+      #     elif thh[0] == 6: # 刪除Taxon
+      #         if thh[5]:
+      #             if new_taxon_id:
+      #                 row = [taxon_history_dict[thh[0]], f'''{gettext("請參見")} <a class="new_taxon_aa" href="/{"en-us" if lang == "en-us" else "zh-hant"}/taxon/{new_taxon_id}">{new_taxon_name if new_taxon_name else new_taxon_id}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
+      #                                     <defs>
+      #                                         <clipPath id="clip-path">
+      #                                             <rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"></rect>
+      #                                         </clipPath>
+      #                                     </defs>
+      #                                     <g id="link-icon" transform="translate(0 0.359)">
+      #                                         <g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
+      #                                             <path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"></path>
+      #                                             <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
+      #                                         </g>
+      #                                     </g>
+      #                                 </svg></a>''', f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+      #             else:
+      #                 row = [taxon_history_dict[thh[0]], '', f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+      #         else:
+      #             if new_taxon_id:
+      #                 row = [taxon_history_dict[thh[0]], f'''{gettext("請參見")} <a class="new_taxon_aa" href="/{"en-us" if lang == "en-us" else "zh-hant"}/taxon/{new_taxon_id}">{new_taxon_name if new_taxon_name else new_taxon_id}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
+      #                                     <defs>
+      #                                         <clipPath id="clip-path">
+      #                                             <rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"></rect>
+      #                                         </clipPath>
+      #                                     </defs>
+      #                                     <g id="link-icon" transform="translate(0 0.359)">
+      #                                         <g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
+      #                                             <path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"></path>
+      #                                             <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
+      #                                         </g>
+      #                                     </g>
+      #                                 </svg></a>''', '', thh[3].strftime("%Y-%m-%d"), 'TaiCOL管理員']
+      #             else:
+      #                 row = [taxon_history_dict[thh[0]], '', '', thh[3].strftime("%Y-%m-%d"), 'TaiCOL管理員']
+
+      #     elif thh[5] and thh[2] and thh[-1] != 4:
+      #         row = [taxon_history_dict[thh[0]], thh[1], f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
+      #     else:
+      #         row = [taxon_history_dict[thh[0]], thh[1], '', thh[3].strftime("%Y-%m-%d"), thh[4]]
+      #     taxon_history.append(row)
+  # taxon_history = pd.DataFrame(taxon_history, columns=['type','content','ref','datetime','editor'])
