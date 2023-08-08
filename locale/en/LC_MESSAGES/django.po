@@ -742,6 +742,10 @@ msgstr "Taxon ID"
 msgid "請參見"
 msgstr "Please refer to"
 
+#: taxa/views.py
+msgid "原階層："
+msgstr "Previous classification: "
+
 #: templates/taxa/taxon.html:277
 msgctxt "回報錯誤"
 msgid "回報<br>錯誤"

@@ -181,14 +181,13 @@ def get_conditioned_query(req, from_url=False):
         keyword = get_variants(keyword)
         keyword_type = req.get('name-select','contain')
         if keyword_type == "equal":
-            keyword_str = f"REGEXP '^{keyword}$'"
+            keyword_str = f"= '{keyword}'"
             # alt_str = f"find_in_set('{keyword}', at.alternative_name_c)"
         elif keyword_type == "startwith":
             keyword_str = f"REGEXP '^{keyword}'"
         else: # contain
             keyword_str = f"REGEXP '{keyword}'"
         condition += f""" AND (tn.name {keyword_str} OR acn.name_c {keyword_str})"""
-
     # is_ 系列
 
     if req.get('is_endemic'):
@@ -306,7 +305,7 @@ def get_conditioned_query(req, from_url=False):
                 JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
                 JOIN api_taxon at ON atu.taxon_id = at.taxon_id
                 LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
-                LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
+                LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id
                 {conserv_join}
                 WHERE {condition}
             """
@@ -319,13 +318,15 @@ def get_query_data(base, offset, response, limit):
     conn = pymysql.connect(**db_settings)
     base = base.split('WHERE')
     query = f"""
-                SELECT distinct(at.taxon_id), tn.name, tn.rank_id, an.formatted_name, acn.name_c, atu.status,
+                SELECT distinct(at.taxon_id), tn.name, tn.rank_id, an.formatted_name, acnn.name_c, atu.status,
                     at.is_endemic, at.alien_type, att.path   
                 {base[0]}
                 JOIN api_names an ON an.taxon_name_id = tn.id
-                WHERE {base[1]} AND acn.is_primary = 1
+                LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
+                WHERE {base[1]} 
                 ORDER BY tn.name LIMIT {limit} OFFSET {offset} 
             """
+    # acnn 是為了join主要使用學名 
     with conn.cursor() as cursor:
         cursor.execute(query)
         results = cursor.fetchall()
@@ -769,7 +770,6 @@ def taxon(request, taxon_id):
                     cursor.execute(query, (taxon_id, ))
                     is_ambiguous = cursor.fetchall()
                     is_ambiguous = [i[0] for i in is_ambiguous]
-                    # is_ambiguous = pd.DataFrame(is_ambiguous, columns=['taxon_name_id'])
                     conn.close()
 
                 query = f"""SELECT atu.taxon_name_id, an.formatted_name, an.name_author, ac.short_author, atu.status,

@@ -140,6 +140,10 @@ lin_map = {
 lin_ranks = [3,12,18,22,26,30,34]
 
 var_df = pd.DataFrame([
+('刺','[刺刺]'),
+('刺','[刺刺]'),
+('葉','[葉葉]'),
+('葉','[葉葉]'),
 ('鈎','[鈎鉤]'),
 ('鉤','[鈎鉤]'),
 ('臺','[臺台]'),
@@ -273,20 +277,7 @@ def get_variants(string):
 
 
 
-def get_download_file(taxon_list=[]):
-  # query = f"SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, \
-  #         t.rank_id, t.common_name_c, t.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), t.is_fossil, t.is_terrestrial, \
-  #         t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, \
-  #         ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, \
-  #         t.created_at, t.updated_at, att.path \
-  #         FROM api_taxon t \
-  #         JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
-  #         JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id \
-  #         LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id \
-  #         LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id \
-  #         LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id \
-  #         WHERE t.taxon_id IN %s"
-  
+def get_download_file(taxon_list=[]):  
   query = """
           WITH base_query AS (SELECT taxon_id, GROUP_CONCAT(name_c SEPARATOR ', ') AS alternative_name_c 
                               FROM api_common_name WHERE is_primary = 0 AND taxon_id IN %s GROUP BY taxon_id)
@@ -435,9 +426,9 @@ taxon_history_map_c = {
     0: '有效名變更', # v
     1: '新增同物異名：', # v
     2: '新增文獻', # v
-    4: '分類階層更新',  # v
+    4: '分類階層更新 ',  # v
     5: '新增Taxon', # v
-    6: '已刪除', # v
+    6: '已刪除 ', # v
     7: '新增中文名：', # v
     8: '新增屬性：',  # v
     9: '移除屬性：', # v
