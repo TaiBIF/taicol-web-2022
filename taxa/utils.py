@@ -464,7 +464,7 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
   # 整理時間
   taxon_history['updated_at'] = taxon_history.updated_at.dt.strftime('%Y-%m-%d')
   # 整理編輯者
-  taxon_history.loc[taxon_history['editor']=='TaiCOL管理員','editor'] = gettext('TaiCOL管理員')
+  taxon_history.loc[taxon_history['editor']=='TaiCOL管理員','editor'] = 'TaiCOL'
   # 整理標題
   taxon_history['title'] = taxon_history['history_type'].apply(lambda x: taxon_history_dict[x])
   # 整理內容
@@ -472,7 +472,7 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
   for i in taxon_history[taxon_history.history_type==1].index:
     row = taxon_history.iloc[i]
     c = json.loads(row.note)
-    taxon_history.loc[i,'content'] = names[names.taxon_name_id==c.get('taxon_name_id')]['sci_name'].values[0]
+    taxon_history.loc[i,'content'] = names[names.taxon_name_id==c.get('taxon_name_id')]['sci_name_ori'].values[0]
 
   # 已刪除
   for i in taxon_history[taxon_history.history_type==6].index:
@@ -577,7 +577,6 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
   taxon_history = taxon_history[~((taxon_history.reference_type==4)&(taxon_history.history_type==2))]
   taxon_history = taxon_history[['title','content','ref','updated_at','editor']]
   taxon_history.loc[taxon_history['title']==gettext('新增Taxon'),'content'] = ''
-  # taxon_history.loc[taxon_history['editor']=='TaiCOL管理員','editor'] = gettext('TaiCOL管理員')
   taxon_history = taxon_history.drop_duplicates(subset=['title','content','ref']).to_dict(orient='records')
   return taxon_history
 
