@@ -643,10 +643,10 @@ def taxon(request, taxon_id):
                     if len(json.loads(data['cites_note'])) > 1:
                         c_str = ''
                         for c in json.loads(data['cites_note']):
-                            c_str += f"{c['listing']}，{c['name']}；"
+                            c_str += f"{c['listing']}, {c['name']}; "
                             if c.get('is_primary'):
                                 data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + c['name']
-                        data['cites_note'] = c_str.rstrip('；')
+                        data['cites_note'] = c_str.rstrip(';')
                     elif len(json.loads(data['cites_note'])) == 1:
                         if json.loads(data['cites_note'])[0].get('is_primary'):
                             data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + json.loads(data['cites_note'])[0]['name']
@@ -662,22 +662,22 @@ def taxon(request, taxon_id):
                     if len(json.loads(data['iucn_note'])) > 1:
                         c_str = ''
                         for c in json.loads(data['iucn_note']):
-                            c_str += f"{c['category']}，{c['name']}；"
-                        data['iucn_note'] = c_str.rstrip('；')
+                            c_str += f"{c['category']}, {c['name']}; "
+                        data['iucn_note'] = c_str.rstrip(';')
                     else:
                         data['iucn_note'] = ''
 
                 if c_red := data['red_category']:
                     data['red_category'] =  c_red if get_language() == 'en-us' else redlist_map_c[c_red] + ' ' + c_red
 
-                if data['red_note']:
-                    if len(json.loads(data['red_note'])) > 1:
+                if data['red_note']: # 紅皮書的note全部都放
+                    if len(json.loads(data['red_note'])):
                         c_str = ''
                         for c in json.loads(data['red_note']):
-                            c_str += f"{c['red_category']}，{c['name']}；<br>"
-                        data['red_note'] = c_str.rstrip('；<br>')
-                    else:
-                        data['red_note'] = ''
+                            c_str += f"{c['red_category']}, {c['name']}; <br>"
+                        data['red_note'] = c_str.rstrip(';<br>')
+                    # else:
+                    #     data['red_note'] = ''
 
                 if c_protected := data['protected_category']:
                     data['protected_category'] =  protected_map[c_protected] if get_language() == 'en-us' else f'第 {c_protected} 級 {protected_map_c[c_protected]}'
@@ -686,8 +686,8 @@ def taxon(request, taxon_id):
                     if len(json.loads(data['protected_note'])) > 1:
                         c_str = ''
                         for c in json.loads(data['protected_note']):
-                            c_str += f"{c['category']}，{c['name']}；"
-                        data['protected_note'] = c_str.rstrip('；')
+                            c_str += f"{c['category']}, {c['name']}; "
+                        data['protected_note'] = c_str.rstrip(';')
                     else:
                         data['protected_note'] = ''
 
@@ -761,7 +761,7 @@ def taxon(request, taxon_id):
                 # 確認是否為歧異
                 query = """
                     select taxon_name_id from api_taxon_usages 
-                    where  `status` = 'not-accepted' and taxon_name_id in (select taxon_name_id from api_taxon_usages where taxon_id = %s) 
+                    where  `status` = 'not-accepted' and is_deleted != 1 and taxon_name_id in (select taxon_name_id from api_taxon_usages where taxon_id = %s) 
                     group by taxon_name_id having count(distinct(taxon_id)) > 1;
                 """
                 is_ambiguous = []
@@ -1104,11 +1104,19 @@ def taxon(request, taxon_id):
         infra_str = 'Infraspecies' if get_language() == 'en-us' else '種下'
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
-            query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
-                    JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                    WHERE att.path LIKE %s AND at.rank_id > %s AND at.is_in_taiwan = 1
-                    GROUP BY at.rank_id ORDER BY at.rank_id ASC;"""
-            cursor.execute(query, (f'%{taxon_id}%', data.get('rank_id'), ))
+            # 如果自己是種下的話要調整
+            if data.get('rank_id') <= 46 and data.get('rank_id') >= 35:
+                query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
+                        JOIN api_taxon at ON att.taxon_id = at.taxon_id
+                        WHERE att.path LIKE %s AND at.rank_id > 34 AND at.is_in_taiwan = 1 AND att.taxon_id != %s
+                        GROUP BY at.rank_id ORDER BY at.rank_id ASC;"""
+                cursor.execute(query, (f'%{taxon_id}%', taxon_id ))
+            else:
+                query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
+                        JOIN api_taxon at ON att.taxon_id = at.taxon_id
+                        WHERE att.path LIKE %s AND at.rank_id > %s AND at.is_in_taiwan = 1
+                        GROUP BY at.rank_id ORDER BY at.rank_id ASC;"""
+                cursor.execute(query, (f'%{taxon_id}%', data.get('rank_id'), ))
             stats = cursor.fetchall()
             conn.close()
             stats = pd.DataFrame(stats, columns=['count','rank_id'])
