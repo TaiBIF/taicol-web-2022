@@ -779,9 +779,9 @@ def taxon(request, taxon_id):
                             FROM api_taxon_usages atu 
                             LEFT JOIN reference_usages ru ON atu.reference_id = ru.reference_id and atu.accepted_taxon_name_id = ru.accepted_taxon_name_id and atu.taxon_name_id = ru.taxon_name_id
                             LEFT JOIN api_names an ON an.taxon_name_id = atu.taxon_name_id
-                            JOIN `references` r ON r.id = ru.reference_id
+                            LEFT JOIN `references` r ON r.id = ru.reference_id
                             LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
-                            JOIN taxon_names tn ON tn.id = atu.taxon_name_id
+                            LEFT JOIN taxon_names tn ON tn.id = atu.taxon_name_id
                             WHERE atu.taxon_id = %s"""
                             # WHERE atu.taxon_id = %s AND atu.is_deleted = 0
                 conn = pymysql.connect(**db_settings)
@@ -820,7 +820,7 @@ def taxon(request, taxon_id):
                                 conn.close()
                                 if n:
                                     names.loc[names.taxon_name_id==tnid,'sci_name'] = n[0] 
-                        names['per_usages'] = names['per_usages'].apply(json.loads)
+                        names['per_usages'] = names['per_usages'].apply(lambda x: json.loads(x) if x else [])
                         # 給保育資訊note使用的學名連結
                         names['sci_name_ori'] = names['sci_name']
                         names['sci_name_ori'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name_ori}</a>', axis=1)
@@ -980,7 +980,7 @@ def taxon(request, taxon_id):
                             FROM taxon_names tn \
                             JOIN api_citations c ON tn.reference_id = c.reference_id     \
                             JOIN `references` r ON c.reference_id = r.id \
-                            WHERE tn.id IN (SELECT taxon_name_id FROM api_taxon_usages WHERE taxon_id = %s) \
+                            WHERE tn.id IN (SELECT taxon_name_id FROM api_taxon_usages WHERE taxon_id = %s)) \
                             ORDER BY author ASC, publish_year DESC "  
                             # WHERE tn.id IN (SELECT taxon_name_id FROM api_taxon_usages WHERE taxon_id = %s AND is_deleted = 0)) \
                 # 不給backbone, 要給taxon_names底下的
@@ -1218,11 +1218,8 @@ def taxon_tree(request):
     # 預設僅顯示林奈階層&包含栽培豢養
     # 第一層 kingdom
     kingdom_dict = []
-    # kingdom_dict_c = []
-    # for k in kingdom_map.keys():
     infra_str = 'Infraspecies' if get_language() == 'en-us' else '種下'
     rank_map_dict = rank_map if get_language() == 'en-us' else rank_map_c
-
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
         query = f"""SELECT substring(att.lin_path, -8, 8) as kingdom_taxon, COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
@@ -1233,34 +1230,9 @@ def taxon_tree(request):
         total_stats = cursor.fetchall()
         conn.close()
         total_stats = pd.DataFrame(total_stats, columns=['kingdom_taxon','count','rank_id'])
-        total_stats = total_stats[total_stats.rank_id.isin(lin_ranks)]
+        total_stats = total_stats[(total_stats.rank_id.isin(lin_ranks))|(total_stats.rank_id.isin(sub_lin_ranks))]
     for k in kingdom_map.keys():
         stats = total_stats[total_stats.kingdom_taxon==k]
-        # stats_c = stats[stats.is_cultured!=1].reset_index(drop=True).sort_values('rank_id') # 排除栽培豢養
-        # spp = 0
-        # stat_str = ''
-        # for sr in stats_c.rank_id.unique():
-        #     c = stats_c[stats_c.rank_id==sr]['count'].sum()
-        #     count_str = f'{rank_map_dict[sr]} {c}' if get_language() == 'en-us' else f'{c}{rank_map_dict[sr]}'
-        #     if sr <= 46 and sr >= 35:
-        #         spp += c
-        #     elif sr == 47:
-        #         if spp > 0:
-        #             infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-        #             stat_str += f"{infra_count_str} {count_str}"
-        #         else:
-        #             stat_str += f"{count_str} "
-        #     else:
-        #         stat_str += f"{count_str} "
-        # if spp > 0 and infra_str not in stat_str:
-        #     # 如果沒有47 最後要把種下加回去
-        #     infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-        #     stat_str += infra_count_str
-
-        # kingdom_dict_c.append({'taxon_id': k, 
-        #                        'name': f"Kingdom {kingdom_map[k]['name']}" if get_language() == 'en-us' else f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",
-        #                        'stat': stat_str.strip()})
-
         spp = 0
         stat_str = ''
         for sr in stats.rank_id.unique():
@@ -1403,13 +1375,16 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank):
                 GROUP BY at.rank_id, p_group;
             """
     with conn.cursor() as cursor:
-        # cursor.execute(query, (f'>{taxon_id}', f'%>{taxon_id}%', is_cultured, rank_id, ))
-        cursor.execute(query, (f'>{taxon_id}', f'%>{taxon_id}%', is_cultured, rank_id, ))
+        # 如果自己是種下的話要調整
+        if rank_id <= 46 and rank_id >= 35:
+            cursor.execute(query, (f'>{taxon_id}', f'%>{taxon_id}%', is_cultured, 34, ))
+        else:
+            cursor.execute(query, (f'>{taxon_id}', f'%>{taxon_id}%', is_cultured, rank_id, ))
         sub_stat = cursor.fetchall()
         sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id'])
         sub_stat = sub_stat.sort_values('rank_id')
         if lin_rank == 'on':
-            sub_stat = sub_stat[sub_stat.rank_id.isin(lin_ranks)]
+            sub_stat = sub_stat[(sub_stat.rank_id.isin(lin_ranks))&(sub_stat.rank_id.isin(sub_lin_ranks))]
         conn.close()
 
     query = f"""SELECT at.taxon_id, at.rank_id, 
@@ -1426,7 +1401,11 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank):
                 {'AND at.rank_id in (3,12,18,22,26,30,34)' if lin_rank == 'on' else ''} ORDER BY at.rank_id DESC, tn.name;"""
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
-        cursor.execute(query, (taxon_id, is_cultured, rank_id, ))
+        # 如果自己是種下的話要調整
+        if rank_id <= 46 and rank_id >= 35:
+            cursor.execute(query, (taxon_id, is_cultured, 34, ))
+        else:
+            cursor.execute(query, (taxon_id, is_cultured, rank_id, ))
         sub_titles = cursor.fetchall()
         # 下一層的rank有可能不一樣
         conn.close() 
@@ -1474,12 +1453,8 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank):
                         stat_str += f"{infra_count_str} {count_str}"
                     else:
                         stat_str += f"{count_str} "
-                    # if spp > 0:
-                    #     stat_str += f"{spp}種下 "
-                    # stat_str += f"{s['count']}{rank_map_c[r_id]} "
                 else:
                     stat_str += f"{count_str} "
-                    # stat_str += f"{s['count']}{rank_map_c[r_id]} "
         if spp > 0 and infra_str not in stat_str:
             # 如果沒有47 最後要把種下加回去
             infra_count_str = f'{infra_str} {spp}' if lang == 'en-us' else f'{spp}{infra_str}'
