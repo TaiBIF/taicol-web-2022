@@ -3,11 +3,11 @@
 
     // 要有其中之一存在才送出
 	let params = ['keyword','taxon_group','rank','is_endemic',
-				  'alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine',
+				  'alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil',
 				  'protected_category','red_category','iucn_category','cites','date']
 
 
-	let more_opts = ['is_terrestrial','is_freshwater','is_brackish','is_marine',
+	let more_opts = ['is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil',
 				  'protected_category','red_category','iucn_category','cites','date']
 
 
@@ -367,7 +367,7 @@
 			}
 
 			// is 系列
-			let is = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine']
+			let is = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
 			is.forEach(function(i) {
 				if (urlParams.get(i)=='on') {
 					$(`input[name=${i}]`).prop('checked', true)
@@ -733,7 +733,6 @@
 					return $lang == 'en-us' ? "No result" : "查無結果";
 				},		 
 				searching: function(params) {
-					console.log(params)
 					if (params.term != undefined ){
 						if (params.term.match(/[\u3400-\u9FBF]/)){
 							if (params.term.length >1){
@@ -758,13 +757,15 @@
 							if (params.term.length >1){
 								return {
 									keyword: params.term,
-									from_tree: 'true'
+									from_tree: 'true',
+									lang: $lang
 									};
 							}
 						} else if (params.term.trim().length  > 2){
 							return {
 								keyword: params.term,
-								from_tree: 'false'
+								from_tree: 'false',
+								lang: $lang
 								};
 		
 						} else {

@@ -504,6 +504,18 @@ msgstr "Brackish"
 msgid "海洋"
 msgstr "Marine"
 
+#: templates/taxa/catalogue.html:
+msgid "化石"
+msgstr "Fossil"
+
+#: templates/taxa/catalogue.html:
+msgid "化石種"
+msgstr "Fossil Species"
+
+#: templates/taxa/catalogue.html:
+msgid "僅有化石紀錄"
+msgstr "Fossil records only"
+
 #: templates/taxa/catalogue.html:294 templates/taxa/taxon.html:400
 msgid "保育類"
 msgstr "Protected Category"

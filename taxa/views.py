@@ -16,7 +16,7 @@ from django.contrib.postgres.aggregates import StringAgg
 import time
 import requests
 from django.db.models import F
-from django.utils import timezone
+from django.utils import timezone, translation
 from django.core.mail import send_mail
 import threading
 from django.template.loader import render_to_string
@@ -114,6 +114,7 @@ def download_search_results(request):
 
 
 def get_autocomplete_taxon(request):
+    translation.activate(request.GET.get('lang'))
     names = '[]'
     if keyword_str := request.GET.get('keyword','').strip():
         keyword_str = get_variants(keyword_str)
@@ -199,7 +200,11 @@ def get_conditioned_query(req, from_url=False):
 
     if is_cond:
         condition += f" AND ({' OR '.join(is_cond)})"
-    
+
+    # fossil要獨立出來
+    if req.get('is_fossil'):
+        condition += " AND at.is_fossil = 1 "
+
     # rank
     rank = req.getlist('rank')
     if rank:
@@ -569,7 +574,7 @@ def taxon(request, taxon_id):
                     SELECT tn.name, an.formatted_name as f_name, concat_WS(' ', an.formatted_name, an.name_author ) as sci_name, 
                     acn.name_c as common_name_c, at.accepted_taxon_name_id as name_id, at.rank_id,
                     atu.status, att.path, at.is_endemic, at.is_terrestrial, at.is_freshwater, at.is_brackish,
-                    at.is_marine, at.is_in_taiwan, at.alien_type,
+                    at.is_marine, at.is_fossil, at.is_in_taiwan, at.alien_type,
                     ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, ac.iucn_taxon_id, 
                     ac.red_category, ac.red_note, ac.protected_category, ac.protected_note,
                     tn.original_taxon_name_id, at.links, anc.namecode, bq.alternative_name_c, at.is_in_taiwan, at.is_cultured,
@@ -621,7 +626,7 @@ def taxon(request, taxon_id):
                             data['sci_name'] = n[0] 
                 data['status'] =  status_map_taxon_c[data['status']]['en-us'] if get_language() == 'en-us' else f"{status_map_taxon_c[data['status']]['zh-tw']} {status_map_taxon_c[data['status']]['en-us']}"
                 data['rank_d'] =  rank_map[data['rank_id']]if get_language() == 'en-us' else f"{rank_map_c[data['rank_id']]} {rank_map[data['rank_id']]}"
-                is_list = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine']
+                is_list = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
                 data['is_list'] = []
                 for i in is_list:
                     if data[i] == 1:
@@ -1153,6 +1158,7 @@ def taxon(request, taxon_id):
 
 # 根據當下的條件判斷
 def get_root_tree(request):
+    translation.activate(request.POST.get('lang'))
     lin_rank = request.POST.get('lin_rank')
     cultured = request.POST.get('cultured')
     if cultured != 'on': # 排除栽培豢養
@@ -1562,6 +1568,7 @@ def update_search_stat(request):
 
 
 def get_match_result(request):
+    translation.activate(request.POST.get('lang'))
     response = {}
     response['page'] = {}
     namecode_list = []
@@ -1622,7 +1629,7 @@ def get_match_result(request):
             #JOIN taxon
             if namecode_list:
                 query = f""" SELECT at.is_endemic, at.alien_type, at.is_terrestrial, 
-                             at.is_freshwater, at.is_brackish, at.is_marine,
+                             at.is_freshwater, at.is_brackish, at.is_marine, at.is_fossil,
                              at.taxon_id, ac.protected_category, ac.red_category, ac.iucn_category, ac.cites_listing,
                              at.rank_id, an.formatted_name, acn.name_c
                             FROM api_taxon at
@@ -1636,7 +1643,7 @@ def get_match_result(request):
                     cursor.execute(query,(namecode_list,))
                     info = cursor.fetchall()
                     conn.close()
-                    info = pd.DataFrame(info, columns=['is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine',
+                    info = pd.DataFrame(info, columns=['is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil',
                                                         'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c'])
                     # info = info.astype({'accepted_namecode': 'str'})
                     df = df[['search_term','namecode','family','kingdom','phylum','class','order','genus']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
@@ -1662,7 +1669,8 @@ def get_match_result(request):
                                 alt_list.append(at.get('alien_type').capitalize() if get_language() == 'en-us' else attr_map_c[at.get('alien_type')])
                         alt_list = list(dict.fromkeys(alt_list))
                         df.loc[i,'alien_type'] = ','.join(alt_list)
-                    is_list = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine']
+                    is_list = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
+                    
 
                     for ii in is_list:
                         if get_language() == 'en-us':
@@ -1726,7 +1734,7 @@ def download_match_results(request):
                 #JOIN taxon
                 if namecode_list:
                     query = f""" SELECT at.is_endemic, at.alien_type, at.is_terrestrial, 
-                                at.is_freshwater, at.is_brackish, at.is_marine,
+                                at.is_freshwater, at.is_brackish, at.is_marine, at.is_fossil,
                                 at.taxon_id, ac.protected_category, ac.red_category, ac.iucn_category, ac.cites_listing,
                                 at.rank_id, tn.name, acn.name_c
                                 FROM api_taxon at
@@ -1740,7 +1748,7 @@ def download_match_results(request):
                         cursor.execute(query, (namecode_list, ))
                         info = cursor.fetchall()
                         conn.close()
-                        info = pd.DataFrame(info, columns=['is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine',
+                        info = pd.DataFrame(info, columns=['is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil',
                                                             'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'name', 'common_name_c'])
                         df = df.merge(info,how='left',left_on='accepted_namecode', right_on='taxon_id')
                         df = df.replace({np.nan: '', None: ''})
@@ -1761,13 +1769,14 @@ def download_match_results(request):
                 final_df = final_df.append(df)
     # 移除不需要的欄位
     cols = ["search_term","name","common_name_c","kingdom","phylum","class","order","family","genus","rank","is_endemic","alien_type",
-            "is_terrestrial","is_freshwater","is_brackish","is_marine","protected_category","red_category","iucn_category","cites_listing","accepted_namecode"]
+            "is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","protected_category","red_category","iucn_category","cites_listing","accepted_namecode"]
     # [c for c in cols if c in final_df.keys()]
     final_df = final_df[[c for c in cols if c in final_df.keys()]]
     final_df = final_df.rename(columns={
         "search_term":"查詢字串","name":"比對結果","common_name_c":"中文名","kingdom":"界","phylum":"門","class":"綱","order":"目","family":"科",
         "genus":"屬","rank":"階層","is_endemic":"是否為特有",
         "alien_type":"原生/外來性","is_terrestrial":"是否為陸生生物","is_freshwater":"是否為淡水生物","is_brackish":"是否為半鹹水生物","is_marine":"是否為海洋生物",
+        "is_fossil": "是否為化石種",
         "protected_category":"臺灣保育類等級","red_category":"臺灣紅皮書評估",
         "iucn_category":"IUCN國際自然保育聯盟紅皮書評估","cites_listing":"CITES華盛頓公約附錄","accepted_namecode":"物種編碼"
     })
@@ -1775,7 +1784,7 @@ def download_match_results(request):
     final_df = final_df.drop_duplicates()
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
-    is_list = ['是否為特有',"是否為陸生生物","是否為淡水生物","是否為半鹹水生物","是否為海洋生物"]
+    is_list = ['是否為特有',"是否為陸生生物","是否為淡水生物","是否為半鹹水生物","是否為海洋生物","是否為化石種"]
     if file_format == 'json':
         # 改成True False                
         final_df[is_list] = final_df[is_list].replace({0: False, 1: True, '0': False, '1': True})

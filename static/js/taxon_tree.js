@@ -173,7 +173,8 @@ $(function (){
             url: "/get_root_tree",
             data:  {'csrfmiddlewaretoken' : $csrf_token,
                     'cultured': cultured,
-                    'lin_rank': lin_rank},
+                    'lin_rank': lin_rank,
+                    'lang': $lang},
             type: 'POST',
             dataType : 'json',
         })
@@ -285,7 +286,8 @@ $(function (){
                                 keyword: params.term,
                                 from_tree: 'true',
                                 cultured: cultured,
-                                lin_rank : lin_rank
+                                lin_rank : lin_rank,
+                                lang: $lang
                                 };
                         }
                     } else if (params.term.trim().length  > 2){
@@ -293,7 +295,8 @@ $(function (){
                             keyword: params.term,
                             from_tree: 'true',
                             cultured: cultured,
-                            lin_rank: lin_rank
+                            lin_rank: lin_rank,
+                            lang: $lang
                             };
 
                     } else {

@@ -111,10 +111,10 @@
                         </p>
                         <div class="menu_2">
                             <div class="w_bg">
-                            <form id="language-selected" action="{% url 'set_language' %}" method="post">{% csrf_token %}
-                                <input name="next" type="hidden" value="{{ redirect_to }}" />
-                                <input id="language" name="language" type="hidden"/>
-                            </form>
+                                <form id="language-selected" action="{% url 'set_language' %}" method="post">{% csrf_token %}
+                                    <input name="next" type="hidden" value="{{ redirect_to }}" />
+                                    <input id="language" name="language" type="hidden"/>
+                                </form>
                                 <a class="language-item" href="#" value="zh-hant">繁體中文</a>
                                 <a class="language-item" href="#" value="en-us">English</a>
                             </div>
