@@ -153,7 +153,7 @@
 								<div class="r-cir-box {{ data.self.rank_color }}">
 									{{ data.self.rank_c }}
 								</div>
-								<span class="r-name">{{ data.self.name_c }}<span>
+								<span class="r-name">{{ data.self.name_c|default_if_none:'' }}<span>
 							</div>
 						</li>
 					</ul>
