@@ -1772,19 +1772,21 @@ def download_match_results(request):
             "is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","protected_category","red_category","iucn_category","cites_listing","accepted_namecode"]
     # [c for c in cols if c in final_df.keys()]
     final_df = final_df[[c for c in cols if c in final_df.keys()]]
-    final_df = final_df.rename(columns={
-        "search_term":"查詢字串","name":"比對結果","common_name_c":"中文名","kingdom":"界","phylum":"門","class":"綱","order":"目","family":"科",
-        "genus":"屬","rank":"階層","is_endemic":"是否為特有",
-        "alien_type":"原生/外來性","is_terrestrial":"是否為陸生生物","is_freshwater":"是否為淡水生物","is_brackish":"是否為半鹹水生物","is_marine":"是否為海洋生物",
-        "is_fossil": "是否為化石種",
-        "protected_category":"臺灣保育類等級","red_category":"臺灣紅皮書評估",
-        "iucn_category":"IUCN國際自然保育聯盟紅皮書評估","cites_listing":"CITES華盛頓公約附錄","accepted_namecode":"物種編碼"
-    })
+    final_df = final_df.rename(columns={"protected_category": "protected", "red_category": "redlist", "iucn_category": "iucn",
+                                        "cites_listing": "cites", "accepted_namecode": "taxon_id"})
+    # final_df = final_df.rename(columns={
+    #     "search_term":"查詢字串","name":"比對結果","common_name_c":"中文名","kingdom":"界","phylum":"門","class":"綱","order":"目","family":"科",
+    #     "genus":"屬","rank":"階層","is_endemic":"是否為特有",
+    #     "alien_type":"原生/外來性","is_terrestrial":"是否為陸生生物","is_freshwater":"是否為淡水生物","is_brackish":"是否為半鹹水生物","is_marine":"是否為海洋生物",
+    #     "is_fossil": "是否為化石種",
+    #     "protected_category":"臺灣保育類等級","red_category":"臺灣紅皮書評估",
+    #     "iucn_category":"IUCN國際自然保育聯盟紅皮書評估","cites_listing":"CITES華盛頓公約附錄","accepted_namecode":"物種編碼"
+    # })
 
     final_df = final_df.drop_duplicates()
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
-    is_list = ['是否為特有',"是否為陸生生物","是否為淡水生物","是否為半鹹水生物","是否為海洋生物","是否為化石種"]
+    is_list = ["is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil"]
     if file_format == 'json':
         # 改成True False                
         final_df[is_list] = final_df[is_list].replace({0: False, 1: True, '0': False, '1': True})

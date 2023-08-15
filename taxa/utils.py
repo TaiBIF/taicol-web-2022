@@ -284,8 +284,8 @@ def get_download_file(taxon_list=[]):
                               FROM api_common_name WHERE is_primary = 0 AND taxon_id IN %s GROUP BY taxon_id)
           SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, 
                     t.rank_id, acn.name_c, bq.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), t.is_fossil, t.is_terrestrial, 
-                    t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, 
-                    ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, 
+                    t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.iucn_category,
+                    ac.red_category, ac.protected_category, ac.sensitive_suggest, 
                     t.created_at, t.updated_at, att.path 
                     FROM api_taxon t 
                     JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id 
@@ -302,8 +302,7 @@ def get_download_file(taxon_list=[]):
       df = cursor.fetchall()
       df = pd.DataFrame(df, columns=['taxon_id','name_id','simple_name','name_author','formatted_name','rank','common_name_c','alternative_name_c',  
                                       'is_hybrid','is_in_taiwan','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine',
-                                      'cites','cites_note','iucn','iucn_note','redlist','redlist_note','protected','protected_note','sensitive','sensitive_note',
-                                      'created_at','updated_at','path'])
+                                      'cites','iucn','redlist','protected','sensitive','created_at','updated_at','path'])
 
   df['alien_type'] = df['alien_type'].replace({None: '[]'})
   df['alien_type'] = df.alien_type.apply(lambda x: ','.join(list(dict.fromkeys(eval(x)))))
