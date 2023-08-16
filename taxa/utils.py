@@ -406,7 +406,7 @@ def get_download_file(taxon_list=[]):
 
 taxon_history_map = {
     0: 'Accepted name changed', 
-    1: 'New synonym: ',
+    1: 'New name: ',
     2: 'New reference',
     4: 'Classification updated',
     5: 'Taxon created',
@@ -424,18 +424,18 @@ taxon_history_map = {
 
 taxon_history_map_c = {
     0: '有效名變更', # v
-    1: '新增同物異名：', # v
+    1: '新增學名 ', # v
     2: '新增文獻', # v
     4: '分類階層更新 ',  # v
     5: '新增Taxon', # v
     6: '已刪除 ', # v
     7: '新增中文名：', # v
-    8: '新增屬性：',  # v
-    9: '移除屬性：', # v
+    8: '新增屬性 ',  # v
+    9: '移除屬性 ', # v
     # 10: '修改屬性', # deprecated
-    11: '新增保育資訊：', #v
-    12: '移除保育資訊：', #v
-    13: '修改保育資訊：', #v
+    11: '新增保育資訊 ', #v
+    12: '移除保育資訊 ', #v
+    13: '修改保育資訊 ', #v
     14: '物種合併 ', #v
     15: '物種拆分 ' #v
     }
