@@ -89,7 +89,7 @@ CREATE TABLE `apidoc_params` (
 DROP TABLE IF EXISTS `apidoc_eng_params`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `apidoc_params` (
+CREATE TABLE `apidoc_eng_params` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `keyword` varchar(256) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
