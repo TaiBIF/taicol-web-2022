@@ -123,7 +123,7 @@ CREATE TABLE `apidoc_responses` (
 DROP TABLE IF EXISTS `apidoc_eng_responses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `apidoc_responses` (
+CREATE TABLE `apidoc_eng_responses` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(256) NOT NULL,
   `content` text NOT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE `apidoc_return_params` (
 DROP TABLE IF EXISTS `apidoc_eng_return_params`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `apidoc_return_params` (
+CREATE TABLE `apidoc_eng_return_params` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `keyword` varchar(256) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
