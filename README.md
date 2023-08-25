@@ -33,6 +33,8 @@ npm run build
 cd /path/to/taicol-web-2022/react-backend
 docker-compose up -d
 ```
+> **Note** when rebuilding react-backend docker container, remember to backup mysql data first
+
 5. create symbolic link
 ```
 ln -t /path/to/tc-web-volumes/static -s /path/to/taicol-web-2022/react-backend/app/public/upload

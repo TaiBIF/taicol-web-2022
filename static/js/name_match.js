@@ -17,6 +17,7 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 					'best': $('input[name=best]').val(),
 					'name': $('textarea[name=name]').val(),
 					'page': page,
+					'lang': $lang
 				},
 					
 			type: 'POST',
@@ -54,7 +55,7 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 						}
 					}
 
-					is_array = ['is_terrestrial','is_freshwater','is_brackish','is_marine']
+					is_array = ['is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
 					let tag1 = '';
 					for (ii of is_array){
 						if (results.data[i][ii] !=''){

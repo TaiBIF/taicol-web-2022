@@ -131,7 +131,7 @@
 			</div>
 			<div class="selection-box">
 				<div class="main-box">
-					<form id="moreForm" action="{% url 'download_search_results' %}" method="POST">
+					<form id="moreForm" action="" method="POST">
 					{% csrf_token %}
 					<div class="option-box1">
 						<div class="item-box">
@@ -261,7 +261,6 @@
 									<line class="minus" id="Line_213" data-name="Line 213" x1="13.043" transform="translate(1561.021 535.5) rotate(90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
 								</g>
 							</svg>
-
 						</div>
 					</div>
 					<!--點擊更多後展開option-box2-->
@@ -285,6 +284,17 @@
 								</label>
 								<label class="check-item">{% trans "海洋" %}
 									<input type="checkbox" name="is_marine">
+									<span class="checkmark"></span>
+								</label>
+							</div>
+						</div>
+						<div class="item-box check-set">
+							<div class="left-title">
+								<p>{% trans "化石種" %}</p>
+							</div>
+							<div class="right-check">
+								<label class="check-item">{% trans "僅有化石紀錄" %}
+									<input type="checkbox" name="is_fossil">
 									<span class="checkmark"></span>
 								</label>
 							</div>

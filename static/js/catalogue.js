@@ -3,11 +3,11 @@
 
     // 要有其中之一存在才送出
 	let params = ['keyword','taxon_group','rank','is_endemic',
-				  'alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine',
+				  'alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil',
 				  'protected_category','red_category','iucn_category','cites','date']
 
 
-	let more_opts = ['is_terrestrial','is_freshwater','is_brackish','is_marine',
+	let more_opts = ['is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil',
 				  'protected_category','red_category','iucn_category','cites','date']
 
 
@@ -280,7 +280,6 @@
 	  
 
 	function downloadData(format){
-
 		var input1 = $("<input>").attr("name", "keyword").attr("type", "hidden").val($('input[name=keyword]').val());
 		var input2 = $("<input>").attr("name", "name-select").attr("type", "hidden").val($('select[name=name-select] option:selected').val());
 		var input3 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
@@ -367,7 +366,7 @@
 			}
 
 			// is 系列
-			let is = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine']
+			let is = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
 			is.forEach(function(i) {
 				if (urlParams.get(i)=='on') {
 					$(`input[name=${i}]`).prop('checked', true)
@@ -684,6 +683,7 @@
 		dateFormat: 'yyyy-MM-dd',   
 		timeFormat: 'HH:mm',
 		firstDay: 1}
+
 	if ($lang == 'en-us') {
 		date_locale = {   days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
 		daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -733,7 +733,6 @@
 					return $lang == 'en-us' ? "No result" : "查無結果";
 				},		 
 				searching: function(params) {
-					console.log(params)
 					if (params.term != undefined ){
 						if (params.term.match(/[\u3400-\u9FBF]/)){
 							if (params.term.length >1){
@@ -758,13 +757,15 @@
 							if (params.term.length >1){
 								return {
 									keyword: params.term,
-									from_tree: 'true'
+									from_tree: 'true',
+									lang: $lang
 									};
 							}
 						} else if (params.term.trim().length  > 2){
 							return {
 								keyword: params.term,
-								from_tree: 'false'
+								from_tree: 'false',
+								lang: $lang
 								};
 		
 						} else {
@@ -797,9 +798,12 @@
 		// 按 enter 直接查詢
 		window.enterPressed = false;
 
-		 $(document).on('keypress', function(e) {
+		
+		 $(document).on('keypress', function(e) {			
+	  
 			if (e.which === 13 && !window.enterPressed)
-			{
+			{	
+				e.preventDefault();
 				window.enterPressed = true;
 				getData();
 			}

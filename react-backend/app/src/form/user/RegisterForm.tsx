@@ -66,7 +66,7 @@ const RegisterForm: React.VFC = () => {
 		}).then((res) => {
 			const error = res?.error || '';
 			if (res?.ok && !res?.error) {
-				router.push('/dashboard');
+				router.push('/');
 			} else {
 				enqueueSnackbar(error, {
 					variant: 'error',

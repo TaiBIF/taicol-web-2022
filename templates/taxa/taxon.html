@@ -153,7 +153,7 @@
 								<div class="r-cir-box {{ data.self.rank_color }}">
 									{{ data.self.rank_c }}
 								</div>
-								<span class="r-name">{{ data.self.name_c }}<span>
+								<span class="r-name">{{ data.self.name_c|default_if_none:'' }}<span>
 							</div>
 						</li>
 					</ul>
@@ -613,7 +613,7 @@
 								<tr>
 									<td>{% trans "日期" %}</td>
 									<td>{% trans "有效名" %}</td>
-									<td width="50%">{% trans "文獻" %}</td>
+									<td>{% trans "文獻" %}</td>
 								</tr>
 								{% for t in name_history %}
 									<tr>
@@ -653,13 +653,13 @@
 								<tr>
 									<td>{% trans "日期" %}</td>
 									<td>{% trans "變更內容" %}</td>
-									<td width="50%">{% trans "文獻" %}</td>
+									<td>{% trans "文獻" %}</td>
 									<td>{% trans "編輯者" %}</td>
 								</tr>
 								{% for t in taxon_history %}
 									<tr>
-										<td>{{ t.datetime|safe }}</td>
-										<td>{{ t.type }} {{ t.content|default_if_none:''|safe }}</td>
+										<td>{{ t.updated_at|safe }}</td>
+										<td>{{ t.title }}{{ t.content|default_if_none:''|safe }}</td>
 										<td>{{ t.ref|default_if_none:''|safe }}</td>
 										<td>{{ t.editor|default_if_none:'' }}</td>
 									</tr>

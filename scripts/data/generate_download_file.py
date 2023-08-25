@@ -10,6 +10,9 @@ import json
 import numpy as np
 from taxa.utils import rank_map, rank_map_c, lin_map, lin_ranks
 
+
+# 下載檔案不給刪除的taxon
+
 db_settings = {
     "host": env('DB_HOST'),
     "port": int(env('DB_PORT')),
@@ -18,19 +21,26 @@ db_settings = {
     "db": env('DB_DBNAME'),
 }
 
-# 名錄檔案（物種）
 
-query = "SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, \
-        t.rank_id, t.common_name_c, t.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), t.is_fossil, t.is_terrestrial, \
-        t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, \
-        ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, \
-        t.created_at, t.updated_at, att.path \
-         FROM api_taxon t \
-        JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
-        JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id \
-        LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id \
-        LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id \
-        WHERE t.is_deleted = 0"
+
+# 名錄檔案（物種）
+# 已改成新的common_name寫法
+query = """
+        WITH base_query AS (SELECT taxon_id, GROUP_CONCAT(name_c SEPARATOR ', ') AS alternative_name_c
+        FROM api_common_name WHERE is_primary = 0 GROUP BY taxon_id)
+        SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, 
+        t.rank_id, acn.name_c, bq.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), t.is_fossil, t.is_terrestrial, 
+        t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, 
+        ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, 
+        t.created_at, t.updated_at, att.path 
+         FROM api_taxon t 
+        LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1 
+        LEFT JOIN base_query bq ON bq.taxon_id = t.taxon_id
+        JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id 
+        JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id 
+        LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id 
+        LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id 
+        WHERE t.is_deleted = 0"""
 
 conn = pymysql.connect(**db_settings)
 with conn.cursor() as cursor:
@@ -45,15 +55,18 @@ with conn.cursor() as cursor:
 df['alien_type'] = df['alien_type'].replace({None: '[]'})
 df['alien_type'] = df.alien_type.apply(lambda x: ','.join(list(dict.fromkeys(eval(x)))))
 
+last_updated = df['updated_at'].max().strftime('%Y%m%d')
+
 df['created_at'] = df.created_at.dt.strftime('%Y-%m-%d')
 df['updated_at'] = df.updated_at.dt.strftime('%Y-%m-%d')
+
 
 # synonyms
 query = f"SELECT tu.taxon_id, GROUP_CONCAT(DISTINCT(tn.name) SEPARATOR ','), GROUP_CONCAT(DISTINCT(an.formatted_name) SEPARATOR ',') \
             FROM api_taxon_usages tu \
             JOIN api_names an ON tu.taxon_name_id = an.taxon_name_id \
             JOIN taxon_names tn ON tu.taxon_name_id = tn.id \
-            WHERE tu.status = 'not-accepted' AND tu.is_deleted = 0 \
+            WHERE tu.status = 'not-accepted' AND tu.is_deleted != 1 \
             GROUP BY tu.taxon_id;"
 with conn.cursor() as cursor:
     cursor.execute(query)
@@ -61,7 +74,7 @@ with conn.cursor() as cursor:
     syns = pd.DataFrame(syns, columns=['taxon_id','synonyms','formatted_synonyms'])
 
 df = df.merge(syns, on='taxon_id', how='left')
-
+df = df.drop_duplicates().reset_index(drop=True)
 # higher taxa
 # 要補上地位未定
 for i in df.index:
@@ -103,6 +116,7 @@ df['rank'] = df['rank'].apply(lambda x: rank_map[x])
 is_list = ['is_hybrid','is_in_taiwan','is_endemic','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine']
 df[is_list] = df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
 
+
 df = df.replace({np.nan: '', None: ''})
 
 # 欄位順序
@@ -113,16 +127,20 @@ cols = ['taxon_id','name_id','simple_name','name_author','formatted_name','synon
 
 # cites要改成 I,II,III
 df['cites'] = df['cites'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III') if x else x)
+
+
 # df['protected'] = df['protected'].str.replace('none','無')
 
 
 taxon = df[cols]
 
-today = datetime.now() + timedelta(hours=8)
+
+# taxon[taxon.is_in_taiwan=='true'].drop(columns=['is_in_taiwan']).to_csv(f"TaiCOL_taxon_{today.strftime('%Y%m%d')}.csv",index=False)
+# taxon[taxon.is_in_taiwan=='true'].drop(columns=['is_in_taiwan']).to_csv(f"TaiCOL_taxon_20230728.csv",index=False)
 
 
-
-taxon[taxon.is_in_taiwan=='true'].drop(columns=['is_in_taiwan']).to_csv(f"TaiCOL_taxon_{today.strftime('%Y%m%d')}.csv",index=False)
+compression_options = dict(method='zip', archive_name=f"TaiCOL_taxon_{last_updated}.csv")
+taxon.to_csv(f'TaiCOL_taxon_{last_updated}.zip', compression=compression_options, index=False)
 
 
 # 名錄檔案（學名）
@@ -134,7 +152,10 @@ taxon_for_name = df[taxa_cols]
 
 
 # 要先補上所有的taxon
-query = """SELECT distinct taxon_id, taxon_name_id, `status` FROM api_taxon_usages """
+
+conn = pymysql.connect(**db_settings)
+
+query = """SELECT distinct taxon_id, taxon_name_id, `status` FROM api_taxon_usages WHERE is_deleted != 1; """
 conn = pymysql.connect(**db_settings)
 with conn.cursor() as cursor:
     cursor.execute(query)
@@ -143,6 +164,13 @@ with conn.cursor() as cursor:
 
 
 all_taxon = all_taxon.merge(taxon_for_name.drop(columns=['name_id']))
+
+
+y = all_taxon.groupby('name_id',as_index=False).taxon_id.nunique()
+y[y.taxon_id>1]
+
+
+only_one_taxon = all_taxon[all_taxon.name_id.isin(y[y.taxon_id==1].name_id.to_list())]
 
 # 先找出所有names
 query = """SELECT distinct(tn.id), n.name, tn.rank_id, tn.name, an.name_author, an.formatted_name,
@@ -162,19 +190,16 @@ with conn.cursor() as cursor:
     names = cursor.fetchall()
     names = pd.DataFrame(names, columns=['name_id','nomenclature_name','rank','simple_name','name_author','formatted_name',
                                          'latin_genus','latin_s1','species_layers','original_name_id','is_hybrid','protologue',
-                                         'type_name_id','created_at','namecode','updated_at'])
+                                         'type_name_id','namecode','created_at','updated_at'])
 
 # 先找出可以直接對到taxon的
-# x = names.merge(all_taxon,on='name_id',how='left').drop_duplicates()
-names = names.merge(all_taxon,on='name_id',how='left').drop_duplicates()
+# 有一對一的taxon就補灰底資訊
+names = names.merge(only_one_taxon,on='name_id',how='left').drop_duplicates()
 names = names.rename(columns={'status': 'usage_status'})
-# names.loc[names.taxon_id.notnull(),'usage_status'] = 'accepted'
-
 
 # date
 names['created_at'] = names.created_at.dt.strftime('%Y-%m-%d')
 names['updated_at'] = names.updated_at.dt.strftime('%Y-%m-%d')
-
 
 # 階層, common_name_c, alternative_name_c, is_fossil, is_terrestrial, is_freshwater, is_brackish, is_marine
 notaxon = names[names.taxon_id.isnull()]
@@ -184,46 +209,26 @@ notaxon = names[names.taxon_id.isnull()]
 # 若無對應或對應到多筆，則不提供灰底資料
 # 應該要考慮is_latest
 
-query = """SELECT taxon_name_id, taxon_id, `status`, is_latest FROM api_taxon_usages WHERE taxon_name_id IS NOT NULL"""
-conn = pymysql.connect(**db_settings)
-with conn.cursor() as cursor:
-    cursor.execute(query)
-    res = cursor.fetchall()
-    res = pd.DataFrame(res, columns=['name_id','taxon_id', 'usage_status', 'is_latest'])
-    res['name_id'] = res['name_id'].astype('int64')
 
-found_taxon = notaxon[['name_id']].merge(res[res['is_latest']==1], on='name_id')
+more_than_one = all_taxon[all_taxon.name_id.isin(y[y.taxon_id>1].name_id.to_list())]
 
-# found_taxon.groupby('name_id').count('taxon_id')
 
-x = found_taxon.groupby('name_id',as_index=False).taxon_id.nunique()
-x_list = x[x.taxon_id>1].name_id.to_list()
-
-for x in x_list:
+for x in more_than_one.name_id.to_list():
     tmp_taxon_ids = []
     tmp_status = []
-    rows = found_taxon[found_taxon['name_id']==x]
+    rows = more_than_one[more_than_one['name_id']==x]
     for r in rows.index:
         tmp_taxon_ids.append(rows.loc[r].taxon_id)
-        tmp_status.append(rows.loc[r].usage_status)
+        tmp_status.append(rows.loc[r]['status'])
     names.loc[names.name_id==x,'taxon_id'] = ','.join(tmp_taxon_ids)
     names.loc[names.name_id==x,'usage_status'] = ','.join(tmp_status)
 
-# 有一對一的taxon就補灰底資訊
-found_taxon = found_taxon[~found_taxon.name_id.isin(x_list)]
+
 
 t_cols = ['common_name_c','alternative_name_c','is_in_taiwan','is_endemic','alien_type',
 'is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','cites','iucn','redlist','protected','sensitive',
 'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
 
-for f in found_taxon.index:
-    if f % 1000 == 0:
-        print(f)
-    row = found_taxon.loc[f]
-    info_row = names[names.taxon_id==row.taxon_id]
-    for t in t_cols:
-        if info_row[t].values:
-            names.loc[names.name_id==row.name_id,t] = info_row[t].values[0]
 
 # id to int
 names.original_name_id = names.original_name_id.replace({np.nan: 0})
@@ -234,6 +239,11 @@ names.original_name_id = names.original_name_id.replace({0: None})
 # # 0 / 1 to true / false
 # is_list = ['is_hybrid','is_endemic','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine']
 # names[is_list] = names[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
+
+names = names.reset_index(drop=True)
+names = names.replace({np.nan: None, 'null': None})
+
+names[names.name_id.notnull()]
 
 # 種下 species_layers
 for i in names.index:
@@ -272,35 +282,48 @@ name_cols = ['name_id','nomenclature_name','rank','simple_name','name_author','f
 'is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','cites','iucn','redlist','protected','sensitive',
 'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
 
-# name_cols = ['name_id','nomenclature_name','rank','simple_name','name_author','formatted_name','latin_genus','latin_s1','s2_rank','latin_s2','s3_rank',
-#             'latin_s3','original_name_id','is_hybrid','hybrid_parent','protologue','type_name_id','created_at','updated_at','usage_status','taxon_id',
-#             'common_name_c','alternative_name_c','is_in_taiwan','is_endemic','alien_type',
-#             'is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','cites','iucn','redlist','protected','sensitive',
-#             'kindom','kindom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
-
 
 names = names[name_cols]
 
 names = names.replace({np.nan: '', None: ''})
 
 
-today = datetime.now() + timedelta(hours=8)
-
-names.to_csv(f"TaiCOL_name_{today.strftime('%Y%m%d')}.csv",index=False)
-
-
-df.to_csv(f"TaiCOL_name_20230325.csv",index=False)
+compression_options = dict(method='zip', archive_name=f"TaiCOL_name_{last_updated}.csv")
+names.to_csv(f'TaiCOL_name_{last_updated}.zip', compression=compression_options, index=False)
 
 
-# 學名 101410 筆，其中對應TaiCOL物種 144646 筆
+# 學名檔案 //就學名有幾筆
+# 共XXXX筆
+# 共 145635 筆
 
 
-# 101410
+# 物種檔案 //就Taxon有幾筆，但括號內只統計種rank34
+# 共xxxx筆（其中臺灣存在計??????種）
 
-
-# 144646
-
+# 共 101743 筆（其中臺灣存在計 62999 種）
 
 # taxon[taxon.is_in_taiwan=='true'].groupby('rank',as_index=False).taxon_id.nunique()
 
-# 物種 92983 筆，7 界 81 門 220 綱 816 目 3827 科 20944 屬
+
+## namecode檔案
+conn = pymysql.connect(**db_settings)
+
+query = """
+        WITH cte
+            AS
+            (
+                SELECT distinct anc.namecode, anc.taxon_name_id, atu.taxon_id, atu.status
+                FROM api_namecode anc
+                LEFT JOIN api_taxon_usages atu ON atu.taxon_name_id = anc.taxon_name_id
+                WHERE atu.is_deleted != 1
+            )
+        SELECT namecode, taxon_name_id, 
+        GROUP_CONCAT(taxon_id), GROUP_CONCAT(status)
+        FROM cte GROUP BY namecode, taxon_name_id;"""
+with conn.cursor() as cursor:
+    cursor.execute(query)
+    namecode = pd.DataFrame(cursor.fetchall(), columns=['name_code','name_id','taxon_id','status'])
+
+
+compression_options = dict(method='zip', archive_name=f"TaiCOL_namecode_{last_updated}.csv")
+namecode.to_csv(f'TaiCOL_namecode_{last_updated}.zip', compression=compression_options, index=False)
