@@ -280,7 +280,6 @@
 	  
 
 	function downloadData(format){
-
 		var input1 = $("<input>").attr("name", "keyword").attr("type", "hidden").val($('input[name=keyword]').val());
 		var input2 = $("<input>").attr("name", "name-select").attr("type", "hidden").val($('select[name=name-select] option:selected').val());
 		var input3 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
@@ -684,6 +683,7 @@
 		dateFormat: 'yyyy-MM-dd',   
 		timeFormat: 'HH:mm',
 		firstDay: 1}
+
 	if ($lang == 'en-us') {
 		date_locale = {   days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
 		daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -798,9 +798,12 @@
 		// 按 enter 直接查詢
 		window.enterPressed = false;
 
-		 $(document).on('keypress', function(e) {
+		
+		 $(document).on('keypress', function(e) {			
+	  
 			if (e.which === 13 && !window.enterPressed)
-			{
+			{	
+				e.preventDefault();
 				window.enterPressed = true;
 				getData();
 			}

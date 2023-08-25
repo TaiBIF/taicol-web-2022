@@ -1111,15 +1111,15 @@ def taxon(request, taxon_id):
             if data.get('rank_id') <= 46 and data.get('rank_id') >= 35:
                 query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
                         JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                        WHERE att.path LIKE %s AND at.rank_id > 34 AND at.is_in_taiwan = 1 AND att.taxon_id != %s
+                        WHERE att.path LIKE %s AND at.rank_id > 34 AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND att.taxon_id != %s
                         GROUP BY at.rank_id ORDER BY at.rank_id ASC;"""
-                cursor.execute(query, (f'%{taxon_id}%', taxon_id ))
+                cursor.execute(query, (f'%>{taxon_id}%', taxon_id ))
             else:
                 query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
                         JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                        WHERE att.path LIKE %s AND at.rank_id > %s AND at.is_in_taiwan = 1
+                        WHERE att.path LIKE %s AND at.rank_id > %s AND at.is_in_taiwan = 1 AND at.is_deleted != 1
                         GROUP BY at.rank_id ORDER BY at.rank_id ASC;"""
-                cursor.execute(query, (f'%{taxon_id}%', data.get('rank_id'), ))
+                cursor.execute(query, (f'%>{taxon_id}%', data.get('rank_id'), ))
             stats = cursor.fetchall()
             conn.close()
             stats = pd.DataFrame(stats, columns=['count','rank_id'])
