@@ -436,6 +436,7 @@ def update_catalogue_table(request):
         response['page']['total_page'] = int(req.get('total_page'))
 
     response['page']['current_page'] = page
+    # response['page']['page_list'] = get_page_list(response['page']['current_page'], int(total_count), limit)
     response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
 
     # 以下的query和起始的相同
@@ -457,7 +458,8 @@ def update_catalogue_table(request):
     response['prev'] = gettext('上一頁')
 
 
-    return HttpResponse(json.dumps(response), content_type='application/json')
+    # return HttpResponse(json.dumps(response), content_type='application/json')
+    return JsonResponse(response, safe=False)
 
 
 def catalogue(request):
@@ -521,6 +523,7 @@ def catalogue(request):
             response['page'] = {}
             response['page']['total_page'] = math.ceil((response['count']['total'][0]['count']) / limit)
             response['page']['current_page'] = offset / limit + 1
+            # response['page']['page_list'] = get_page_list(response['page']['current_page'], response['count']['total'][0]['count'], limit)
             response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
             response = get_query_data(base, offset, response, limit)
         else:
@@ -539,7 +542,9 @@ def catalogue(request):
         response['next'] = gettext('下一頁')
         response['prev'] = gettext('上一頁')
 
-        return HttpResponse(json.dumps(response), content_type='application/json')
+        # return HttpResponse(json.dumps(response), content_type='application/json')
+        return JsonResponse(response, safe=False)
+
     # 0 不開 1 開一層 2 全開
     filter = request.GET.get('filter', 1)
     return render(request, 'taxa/catalogue.html', {'filter': filter, 'ranks': rank_map_c, 'keyword': keyword})
