@@ -59,6 +59,57 @@ msgstr "Status"
 msgid "不存在於臺灣"
 msgstr "Not Exist in Taiwan"
 
+
+# templates/taxa/taxon.html: 
+msgid "入侵資訊"
+msgstr "Invasive Info"
+
+
+# templates/taxa/taxon.html: 
+msgid "物種描述"
+msgstr "Description"
+
+
+# templates/taxa/taxon.html: 
+msgid "分布資訊"
+msgstr "Distribution"
+
+
+# templates/taxa/taxon.html: 
+msgid "基因序列"
+msgstr "Genetic Info"
+
+
+# templates/taxa/taxon.html: 
+msgid "學名資訊"
+msgstr "Taxonomy"
+
+
+# templates/taxa/taxon.html: 
+msgid "物種名錄"
+msgstr "Checklist"
+
+
+# templates/taxa/taxon.html: 
+msgid "影像紀錄"
+msgstr "Photos"
+
+
+# templates/taxa/taxon.html: 
+msgid "模式資訊"
+msgstr "Type"
+
+
+# templates/taxa/taxon.html: 
+msgid "命名處理"
+msgstr "Nomenclature Act"
+
+
+# templates/taxa/taxon.html: 
+msgid "資料存放"
+msgstr "Data Deposit"
+
+
 # templates/taxa/taxon.html: 
 #: taxa/views.py:1173
 msgid "新增Taxon"
@@ -81,6 +132,7 @@ msgstr "TAXON"
 
 #: templates/base.html:70 templates/base.html:159
 #: templates/taxa/catalogue.html:75 templates/taxa/catalogue.html:85
+msgctxt "物種名錄-title"
 msgid "物種名錄"
 msgstr "CATALOGUE"
 

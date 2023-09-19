@@ -72,7 +72,7 @@
 <div class="page-top">
 	<div class="short-top">
 		<div class="path">
-			<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "物種名錄" %}</p>
+			<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% blocktrans context "物種名錄-title"%}物種名錄{% endblocktrans %}</p>
 		</div>
 		<div class="main-box">
 			<div class="float-dot-yel">
@@ -82,7 +82,7 @@
 				<img src="{% static 'image/cir_blue.png' %}">
 			</div>
 			<div class="title-box">
-				<h2>{% trans "物種名錄" %}</h2>
+				<h2>{% blocktrans context "物種名錄-title"%}物種名錄{% endblocktrans %}</h2>
 				<p>{% trans "CATALOGUE" %}</p>
 			</div>
 		</div>

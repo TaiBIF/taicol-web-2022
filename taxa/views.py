@@ -636,6 +636,8 @@ def taxon(request, taxon_id):
                 for i in is_list:
                     if data[i] == 1:
                         data['is_list'].append(attr_map_c[i])
+                        if i in ['is_marine','is_brackish']:
+                            links += [{'href': link_map['worms']['url_prefix'], 'title': link_map['worms']['title'], 'suffix': data['name'], 'category': link_map['worms']['category']}]
                 if not is_in_taiwan:
                     data['is_list'].append(gettext('不存在於臺灣'))
                 
@@ -1068,23 +1070,48 @@ def taxon(request, taxon_id):
                 # 相關連結
                 # ncbi如果超過一個就忽略
                 if data['links']:
-                    xx = json.loads(data['links'])
-                    tmp_links = []
-                    for tl in xx:
-                        if tl not in tmp_links:
-                            tmp_links.append(tl)
+                    tmp_links = json.loads(data['links'])
+                    # tmp_links = []
+                    # for tl in xx:
+                    #     if tl not in tmp_links:
+                    #         tmp_links.append(tl)
                     for t in tmp_links:
                         if t["source"] in ["antwiki","mycobank","worms","powo","tropicos","lpsn","adw","fishbase_order"]:
-                            links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': data['name'], 'hidden_name': True}]
+                            links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': data['name'], 'hidden_name': True, 'category': link_map[t["source"]]['category']}]
                         elif t["source"] == 'nc':
-                            links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('=')[1].split('&')[0]}]
+                            links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('=')[1].split('&')[0], 'category': link_map[t["source"]]['category']}]
                         elif t["source"] == 'amphibiansoftheworld':
-                            links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('/')[-1]}]
+                            links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('/')[-1], 'category': link_map[t["source"]]['category']}]
                         elif t["source"] != 'ncbi':
-                            links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix']}]
-                for s in ['wikispecies','discoverlife','taibif','inat','irmng','gisd','ncbi']:
-                    links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'], 'hidden_name': True}]
+                            links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'category': link_map[t["source"]]['category']}]
+                # LPSN 
+                if 't0000005' in data['path'] or 't0000004' in data['path']:
+                    suffix = f"{rank_map[data['rank_id']].lower()}/{data['name'].replace(' ','-').lower()}"
+                    links += [{'href': link_map['lpsn']['url_prefix'], 'title': link_map['lpsn']['title'], 'suffix': suffix, 'category': link_map['lpsn']['category']}]
+                # Antwiki
+                if 't0005989' in data['path']:
+                    links += [{'href': link_map['antwiki']['url_prefix'], 'title': link_map['antwiki']['title'], 'suffix': data['name'], 'category': link_map['antwiki']['category']}]
+                # mycobank
+                if 't0000008' in data['path']:
+                    links += [{'href': link_map['mycobank']['url_prefix'], 'title': link_map['mycobank']['title'], 'suffix': data['name'], 'category': link_map['mycobank']['category']}]
+                # Animal Diversity Web
+                if 't0000009' in data['path']:
+                    links += [{'href': link_map['adw']['url_prefix'], 'title': link_map['adw']['title'], 'suffix': data['name'], 'category': link_map['adw']['category']}]
+                # POWO, tropicos
+                if 't0000003' in data['path']:
+                    for pp in ['powo','tropicos','taiherbarium']:
+                        links += [{'href': link_map[pp]['url_prefix'], 'title': link_map[pp]['title'], 'suffix': data['name'], 'category': link_map[pp]['category']}]
+                if any([ccc in data['path'] for ccc in ['t0000007','t0000092','t0000096','t0000093','t0000243','t0000338']]):
+                    links += [{'href': link_map['algaebase']['url_prefix'], 'title': link_map['algaebase']['title'], 'suffix': data['name'], 'category': link_map['algaebase']['category']}]
                 # 全部都接 wikispecies,discoverlife,taibif,inat,irmng
+                for s in ['wikispecies','discoverlife','inat','irmng','gisd','ncbi']:
+                    links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'], 'hidden_name': True, 'category': link_map[s]['category']}]
+                # taibif接taxonID
+                links += [{'href': link_map['taibif']['url_prefix'], 'title': link_map['taibif']['title'] ,'suffix': taxon_id, 'hidden_name': True, 'category': link_map['taibif']['category']}]
+                links = pd.DataFrame(links).drop_duplicates()
+                links['category'] = links['category'].apply(lambda x: '; '.join([ gettext(xx) for xx in x.split(';')]))
+                
+                links = links.sort_values('category', ascending=False).to_dict('records')
                 # 變更歷史
                 if is_deleted:
                     conn = pymysql.connect(**db_settings)
@@ -1621,6 +1648,7 @@ def get_match_result(request):
             df = pd.DataFrame(result['data'])
             df['r'] = df[0].apply(lambda x: pd.json_normalize(x, 'results', ['search_term', 'matched_clean']))
             df_flat = pd.DataFrame()
+            # TODO concat
             for i in df.index:
                 yi = df.iloc[i].r
                 if len(yi):
@@ -1726,6 +1754,7 @@ def download_match_results(request):
                 df = pd.DataFrame(result['data'])
                 df['r'] = df[0].apply(lambda x: pd.json_normalize(x, 'results', ['search_term', 'matched_clean']))
                 df_flat = pd.DataFrame()
+                # TODO concat
                 for i in df.index:
                     yi = df.iloc[i].r
                     if len(yi):
@@ -1771,6 +1800,7 @@ def download_match_results(request):
                         df.loc[df.taxon_id!='','is_endemic'] = df.loc[df.taxon_id.notnull(),'is_endemic'].apply(lambda x: 1 if x == 1 else 0)
 
                 df = df.replace({np.nan: '', None: ''})
+                # TODO concat
                 final_df = final_df.append(df)
     # 移除不需要的欄位
     cols = ["search_term","name","common_name_c","kingdom","phylum","class","order","family","genus","rank","is_endemic","alien_type",

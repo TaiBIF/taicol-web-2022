@@ -49,12 +49,12 @@ db_settings = {
 
 link_map = {}
 conn = pymysql.connect(**db_settings)
-query = "SELECT source, title, url_prefix FROM api_links"
+query = "SELECT source, title, url_prefix, category FROM api_links"
 with conn.cursor() as cursor:
     cursor.execute(query)
     links = cursor.fetchall()
     for l in links:
-        link_map[l[0]] = {'title': l[1], 'url_prefix': l[2]}
+        link_map[l[0]] = {'title': l[1], 'url_prefix': l[2], 'category': l[3]}
 
 kingdom_map = {}
 conn = pymysql.connect(**db_settings)
@@ -449,7 +449,7 @@ taxon_history_map_c = {
     4: '分類階層更新 ',  # v
     5: '新增Taxon', # v
     6: '已刪除 ', # v
-    7: '新增中文名：', # v
+    7: '新增中文名 ', # v
     8: '新增屬性 ',  # v
     9: '移除屬性 ', # v
     # 10: '修改屬性', # deprecated
