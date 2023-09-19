@@ -562,13 +562,14 @@
 							<ul class="link-left">
 							{% for l in links %}
 							<li><p>
-									{% if l.title == "自然攝影中心" or l.title == "Amphibian Species of the World" %}
+									{{ l.title }}
+									{% comment %} {% if l.title == "自然攝影中心" %}
 										{{ l.title }}：{{ l.id }}
-									{% elif l.hidden_name %}
+									{% elif l.hidden_name == True %}
 										{{ l.title }}
 									{% else %}
 										{{ l.title }}：{{ l.suffix }}
-									{% endif %}
+									{% endif %} {% endcomment %}
 									<span class="link-tag">/ {% trans l.category %}</span>
 								</p>
 								<a href="{{ l.href }}{{ l.suffix }}" target="_blank">

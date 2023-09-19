@@ -14,7 +14,7 @@ const LatestNewsList: React.FC = () => {
 
   const GET_LATEST_NEWS_LIST_URL = `${process.env.REACT_API_URL}/api/news/latest?cid=${selectedCategory}&page=${page}`;
   const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/category?type=news`;
-  const { data:newsList } = useSWR<NewsListProps>(GET_LATEST_NEWS_LIST_URL,fetcher);
+  const { data: newsList } = useSWR<NewsListProps>(GET_LATEST_NEWS_LIST_URL,fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL,fetcher);
 
   React.useEffect(() => {

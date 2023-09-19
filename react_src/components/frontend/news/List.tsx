@@ -12,7 +12,7 @@ const NewsItem: React.FC = () => {
   const [total, setTotal] = React.useState<number>(0)
   const GET_NEWS_LIST_URL = `${process.env.REACT_API_URL}/api/news?page=${page}&cid=${selectedCategory}`;
   const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/admin/category?type=news`;
-  const { data:newsList } = useSWR<NewsListProps>(GET_NEWS_LIST_URL,fetcher);
+  const { data: newsList } = useSWR<NewsListProps>(GET_NEWS_LIST_URL,fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL,fetcher);
   const pageSize: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
 

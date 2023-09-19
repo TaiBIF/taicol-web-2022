@@ -14,7 +14,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (result) {
     news = await New.findOne({
       where: { slug: slug },
-		  include:[{model:Category,attributes:['name','color']}],
+		  include:[{model:Category, attributes:['name','color']}],
     });
 
     if (news) {
@@ -22,9 +22,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         attributes: ['slug'],
         where: {
           publishedDate: {
-            [Op.gt]: news.publishedDate
-          }
-        }
+            [Op.gte]: news.publishedDate
+          },
+          publish: true
+        },
+        order: [
+          ['publishedDate', 'DESC']
+        ]
       })
 
 
@@ -32,9 +36,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         attributes: ['slug'],
         where: {
           publishedDate: {
-            [Op.lt]: news.publishedDate
-          }
-        }
+            [Op.lte]: news.publishedDate
+          },
+          publish: true
+        },
+        order: [
+          ['publishedDate', 'DESC'], ['id', 'DESC']
+        ]
       });
     }
   }
