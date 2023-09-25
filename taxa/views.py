@@ -925,11 +925,14 @@ def taxon(request, taxon_id):
                                     name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('歧異')})", '', names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                             # 非誤用名
                             elif len(names[(names.taxon_name_id==n)&(names.taxon_status!='misapplied')]):
+                                # 有效學名使用的發布文獻
                                 if len(names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].ref):
                                     for r in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].index:
                                         if names.loc[r].ref:
                                             ref_list += [[names.loc[r].ref, names.loc[r].reference_id, names.loc[r].r_publish_year, names.loc[r].r_type]]
-                                for pu in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].per_usages:
+                                # for pu in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].per_usages:
+                                # 學名使用的相同引用文獻
+                                for pu in names[names.taxon_name_id==n].per_usages:
                                     for ppu in pu:
                                         if not ppu.get('is_from_published_ref', False):
                                             current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
