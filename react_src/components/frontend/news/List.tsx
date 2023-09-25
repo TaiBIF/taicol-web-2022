@@ -73,7 +73,7 @@ const NewsItem: React.FC = () => {
                   setPage(page - 1)
               }} className="back">
                 <img src="/static/image/pagear1.svg"/>
-                <Translation>{t =><p>{t("上一頁")}</p>}</Translation>)
+                <Translation>{t =><p>{t("上一頁")}</p>}</Translation>
               </a>
               {link}
             </>
@@ -84,8 +84,8 @@ const NewsItem: React.FC = () => {
                 if(page < total)
                   setPage(page + 1)
               }} className="next">
+                <Translation>{t =><p>{t("下一頁")}</p>}</Translation>
                 <img src="/static/image/pagear2.svg"/>
-                <Translation>{t =><p>{t("下一頁")}</p>}</Translation>)
                 </a>
               {link}
             </>

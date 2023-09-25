@@ -439,7 +439,9 @@ taxon_history_map = {
     12: 'Taxon information removed: ',
     13: 'Taxon information updated: ',
     14: 'Taxon merged ',
-    15: 'Taxon divided '}
+    15: 'Taxon divided ',
+    16: 'Common name deleted: ',
+    17: 'Name deleted: '}
 
 
 taxon_history_map_c = {
@@ -457,7 +459,9 @@ taxon_history_map_c = {
     12: '移除保育資訊 ', #v
     13: '修改保育資訊 ', #v
     14: '物種合併 ', #v
-    15: '物種拆分 ' #v
+    15: '物種拆分 ', #v
+    16: '刪除中文名 ', #v
+    17: '刪除學名 ' #v
     }
 
 
@@ -472,7 +476,7 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
                 LEFT JOIN users usr ON usr.id = iul.user_id
                 LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
                 LEFT JOIN `references` r ON ath.reference_id = r.id
-                WHERE ath.taxon_id = %s ORDER BY ath.updated_at DESC"""
+                WHERE ath.taxon_id = %s ORDER BY ath.updated_at ASC"""
   conn = pymysql.connect(**db_settings)
   with conn.cursor() as cursor:
       cursor.execute(query, (taxon_id, ))
@@ -489,11 +493,19 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
   taxon_history['title'] = taxon_history['history_type'].apply(lambda x: taxon_history_dict[x])
   # 整理內容
   # 新增同物異名
-  for i in taxon_history[taxon_history.history_type==1].index:
+  for i in taxon_history[taxon_history.history_type.isin([1,17])].index:
     row = taxon_history.iloc[i]
     c = json.loads(row.note)
-    taxon_history.loc[i,'content'] = names[names.taxon_name_id==c.get('taxon_name_id')]['sci_name_ori'].values[0]
-
+    if len(names[names.taxon_name_id==c.get('taxon_name_id')]):
+        taxon_history.loc[i,'content'] = names[names.taxon_name_id==c.get('taxon_name_id')]['sci_name_ori'].values[0]
+    else:
+        query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
+        conn = pymysql.connect(**db_settings)
+        with conn.cursor() as cursor:
+            cursor.execute(query, (c.get('taxon_name_id'),))
+            name_ = cursor.fetchone()
+            conn.close()
+            taxon_history.loc[i,'content'] = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(c.get('taxon_name_id'))}" target="_blank">{name_[0]}</a>'''
   # 已刪除
   for i in taxon_history[taxon_history.history_type==6].index:
     row = taxon_history.iloc[i]

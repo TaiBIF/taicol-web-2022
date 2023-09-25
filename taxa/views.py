@@ -782,6 +782,7 @@ def taxon(request, taxon_id):
                     is_ambiguous = [i[0] for i in is_ambiguous]
                     conn.close()
 
+                # TODO 這邊還要加上taxon_history裡面的name?
                 query = f"""SELECT atu.taxon_name_id, an.formatted_name, an.name_author, ac.short_author, atu.status,
                             ru.status, JSON_EXTRACT(ru.properties, '$.is_in_taiwan'), tn.nomenclature_id, 
                             tn.publish_year, ru.per_usages,
@@ -842,7 +843,6 @@ def taxon(request, taxon_id):
                         names['sci_name'] = names.apply(lambda x: f'{x.sci_name} {x.author}' if x.author else x.sci_name, axis=1)
                         # 加上學名連結
                         names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name}</a>', axis=1)
-                        
                         # 如果per_usages中有其他ref則補上
                         for pp in names['per_usages']:
                             for p in pp:
@@ -1034,6 +1034,8 @@ def taxon(request, taxon_id):
                 conn = pymysql.connect(**db_settings)
                 # 抓過去的
                 # 如果是backbone不給ref
+                # TODO 這邊可能過去的學名被拿掉了 ?
+                # 第一次建立的時候
                 with conn.cursor() as cursor:     
                     query = f'''SELECT ath.note, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), ru.reference_id, r.type FROM api_taxon_history ath
                                 LEFT JOIN reference_usages ru ON ath.reference_id = ru.reference_id and ath.accepted_taxon_name_id = ru.accepted_taxon_name_id and ath.taxon_name_id = ru.taxon_name_id
@@ -1043,13 +1045,24 @@ def taxon(request, taxon_id):
                     first = cursor.fetchone()
                     if first:
                         current_nid = json.loads(first[0]).get('taxon_name_id')
+                        if len(names[names.taxon_name_id==current_nid]):
+                            name_ = names[names.taxon_name_id==current_nid].sci_name_ori.values[0]
+                        else:
+                            query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
+                            conn = pymysql.connect(**db_settings)
+                            with conn.cursor() as cursor:
+                                cursor.execute(query, (current_nid,))
+                                name_ = cursor.fetchone()
+                                name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
+                                conn.close()
                         if first[2] and first[3] != 4: # 如果不是backbone
-                            name_history.append({'name_id': current_nid, 'name': names[names.taxon_name_id==current_nid].sci_name_ori.values[0],
+                            name_history.append({'name_id': current_nid, 'name': name_,
                                                  'ref': ref_df[ref_df.reference_id==first[2]].ref.values[0],
                                                  'reference_id': first[2], 'updated_at': first[1]})
                         else:
-                            name_history.append({'name_id': current_nid, 'name': names[names.taxon_name_id==current_nid].sci_name_ori.values[0],
+                            name_history.append({'name_id': current_nid, 'name': name_,
                                                  'ref': '', 'reference_id': None, 'updated_at': first[1]})
+                # TODO 這邊的寫法有問題 應該也要考慮old_taxon_name_id? -> 應該是之前產生taxon的bug
                 with conn.cursor() as cursor:     
                     query = f'''SELECT ath.note, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), ru.reference_id, r.type FROM api_taxon_history ath
                                 LEFT JOIN reference_usages ru ON ath.reference_id = ru.reference_id and ath.accepted_taxon_name_id = ru.accepted_taxon_name_id and ath.taxon_name_id = ru.taxon_name_id
@@ -1060,12 +1073,22 @@ def taxon(request, taxon_id):
                 if nids:
                     for n in nids:
                         current_nid = json.loads(n[0]).get('new_taxon_name_id')
+                        if len(names[names.taxon_name_id==current_nid]):
+                            name_ = names[names.taxon_name_id==current_nid].sci_name_ori.values[0]
+                        else:
+                            query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
+                            conn = pymysql.connect(**db_settings)
+                            with conn.cursor() as cursor:
+                                cursor.execute(query, (current_nid,))
+                                name_ = cursor.fetchone()
+                                name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
+                                conn.close()
                         if n[2] and n[3] != 4:
-                            name_history.append({'name_id': current_nid,'name': names[names.taxon_name_id==current_nid].sci_name.values[0],
+                            name_history.append({'name_id': current_nid,'name': name_,
                                                  'ref': ref_df[ref_df.reference_id==n[2]].ref.values[0],
                                                  'reference_id': n[2], 'updated_at': n[1]})
                         else:
-                            name_history.append({'name_id': current_nid,'name': names[names.taxon_name_id==current_nid].sci_name.values[0],  
+                            name_history.append({'name_id': current_nid,'name': name_,  
                                                  'ref':'', 'reference_id': None, 'updated_at': n[1]})
                 # 相關連結
                 # ncbi如果超過一個就忽略
@@ -1084,25 +1107,26 @@ def taxon(request, taxon_id):
                             links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('/')[-1], 'category': link_map[t["source"]]['category']}]
                         elif t["source"] != 'ncbi':
                             links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'category': link_map[t["source"]]['category']}]
-                # LPSN 
-                if 't0000005' in data['path'] or 't0000004' in data['path']:
-                    suffix = f"{rank_map[data['rank_id']].lower()}/{data['name'].replace(' ','-').lower()}"
-                    links += [{'href': link_map['lpsn']['url_prefix'], 'title': link_map['lpsn']['title'], 'suffix': suffix, 'category': link_map['lpsn']['category'], 'hidden_name': True}]
-                # Antwiki
-                if 't0005989' in data['path']:
-                    links += [{'href': link_map['antwiki']['url_prefix'], 'title': link_map['antwiki']['title'], 'suffix': data['name'], 'category': link_map['antwiki']['category'], 'hidden_name': True}]
-                # mycobank
-                if 't0000008' in data['path']:
-                    links += [{'href': link_map['mycobank']['url_prefix'], 'title': link_map['mycobank']['title'], 'suffix': data['name'], 'category': link_map['mycobank']['category'], 'hidden_name': True}]
-                # Animal Diversity Web
-                if 't0000009' in data['path']:
-                    links += [{'href': link_map['adw']['url_prefix'], 'title': link_map['adw']['title'], 'suffix': data['name'], 'category': link_map['adw']['category'], 'hidden_name': True}]
-                # POWO, tropicos
-                if 't0000003' in data['path']:
-                    for pp in ['powo','tropicos','taiherbarium']:
-                        links += [{'href': link_map[pp]['url_prefix'], 'title': link_map[pp]['title'], 'suffix': data['name'], 'category': link_map[pp]['category'], 'hidden_name': True}]
-                if any([ccc in data['path'] for ccc in ['t0000007','t0000092','t0000096','t0000093','t0000243','t0000338']]):
-                    links += [{'href': link_map['algaebase']['url_prefix'], 'title': link_map['algaebase']['title'], 'suffix': data['name'], 'category': link_map['algaebase']['category'], 'hidden_name': True}]
+                if data['path']:
+                    # LPSN 
+                    if 't0000005' in data['path'] or 't0000004' in data['path']:
+                        suffix = f"{rank_map[data['rank_id']].lower()}/{data['name'].replace(' ','-').lower()}"
+                        links += [{'href': link_map['lpsn']['url_prefix'], 'title': link_map['lpsn']['title'], 'suffix': suffix, 'category': link_map['lpsn']['category'], 'hidden_name': True}]
+                    # Antwiki
+                    if 't0005989' in data['path']:
+                        links += [{'href': link_map['antwiki']['url_prefix'], 'title': link_map['antwiki']['title'], 'suffix': data['name'], 'category': link_map['antwiki']['category'], 'hidden_name': True}]
+                    # mycobank
+                    if 't0000008' in data['path']:
+                        links += [{'href': link_map['mycobank']['url_prefix'], 'title': link_map['mycobank']['title'], 'suffix': data['name'], 'category': link_map['mycobank']['category'], 'hidden_name': True}]
+                    # Animal Diversity Web
+                    if 't0000009' in data['path']:
+                        links += [{'href': link_map['adw']['url_prefix'], 'title': link_map['adw']['title'], 'suffix': data['name'], 'category': link_map['adw']['category'], 'hidden_name': True}]
+                    # POWO, tropicos
+                    if 't0000003' in data['path']:
+                        for pp in ['powo','tropicos','taiherbarium']:
+                            links += [{'href': link_map[pp]['url_prefix'], 'title': link_map[pp]['title'], 'suffix': data['name'], 'category': link_map[pp]['category'], 'hidden_name': True}]
+                    if any([ccc in data['path'] for ccc in ['t0000007','t0000092','t0000096','t0000093','t0000243','t0000338']]):
+                        links += [{'href': link_map['algaebase']['url_prefix'], 'title': link_map['algaebase']['title'], 'suffix': data['name'], 'category': link_map['algaebase']['category'], 'hidden_name': True}]
                 # 全部都接 wikispecies,discoverlife,taibif,inat,irmng
                 for s in ['wikispecies','discoverlife','inat','irmng','gisd','ncbi']:
                     links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'], 'hidden_name': True, 'category': link_map[s]['category']}]
