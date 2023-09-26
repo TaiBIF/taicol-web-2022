@@ -66,7 +66,7 @@
                     </li>
                     <li>
                         <a href="{% url 'catalogue' %}?filter=1" class="big_title">
-                            {% trans "物種名錄" %}
+                            {% blocktrans context "物種名錄-title"%}物種名錄{% endblocktrans %}
                             <span></span>
                         </a>
                     </li>
@@ -159,7 +159,8 @@
                     </a>
                     <a href="{% url 'catalogue' %}?filter=1" class="bit-title">
                         <span></span>
-                        <p>{% trans "物種名錄" %}</p>
+                        <p>{% blocktrans context "物種名錄-title"%}物種名錄{% endblocktrans %}
+                        </p>
                     </a>
                 </li>
                 <li>

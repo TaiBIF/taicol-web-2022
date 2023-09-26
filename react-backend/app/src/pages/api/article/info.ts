@@ -24,7 +24,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         where: {
           publishedDate: {
             [Op.gt]: article.publishedDate
-          }
+          },
+          publish: true
         }
       })
 
@@ -34,7 +35,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         where: {
           publishedDate: {
             [Op.lt]: article.publishedDate
-          }
+          },
+          publish: true
         }
       });
     }

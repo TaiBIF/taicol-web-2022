@@ -28,9 +28,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     offset: offset,
 		limit: limit,
     order: [
-      ['updatedAt', 'DESC']
+      ['publishedDate', 'DESC']
     ]
 	});
-
 	res.status(200).json(news);
 };

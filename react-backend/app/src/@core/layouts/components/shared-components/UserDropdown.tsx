@@ -45,10 +45,19 @@ const UserDropdown = () => {
     setAnchorEl(event.currentTarget)
   }
 
+  // const handleSignOut = () => {
+  //   setAnchorEl(null)
+  //   // signOut({ callbackUrl: '/admin/login' })
+  //   signOut({ callbackUrl: '/admin/login' })
+  // }
+
   const handleSignOut = () => {
     setAnchorEl(null)
-    signOut({ callbackUrl: '/admin/login' })
-  }
+    signOut({redirect: false})
+    router.push(`${process.env.NEXT_PUBLIC_DOMAIN}/admin/login`);
+  };
+
+
 
   const handleDropdownClose = (url?:string) => {
     if (url) {

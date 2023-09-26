@@ -60,9 +60,9 @@ const News: React.FC = () => {
         {data && <div className='text-[#555]' dangerouslySetInnerHTML={{ __html: description }} />}
       </div>
       <div className="news-article-btn">
-		{data?.prev && <a href={`/news/${data.prev.slug}`}><Translation>{t=> t('上一則')}</Translation></a>}
+		{/* {data?.prev && <a href={`/news/${data.prev.slug}`}><Translation>{t=> t('上一則')}</Translation></a>} */}
 			<a href="/news"><Translation>{t=> t('回列表')}</Translation></a>
-		{data?.next && <a href={`/news/${data.next.slug}`}><Translation>{t=> t('下一則')}</Translation></a>}
+		{/* {data?.next && <a href={`/news/${data.next.slug}`}><Translation>{t=> t('下一則')}</Translation></a>} */}
 	  </div>
     </div>
 	</div>

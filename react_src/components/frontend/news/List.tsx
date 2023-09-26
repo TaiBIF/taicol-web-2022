@@ -12,7 +12,7 @@ const NewsItem: React.FC = () => {
   const [total, setTotal] = React.useState<number>(0)
   const GET_NEWS_LIST_URL = `${process.env.REACT_API_URL}/api/news?page=${page}&cid=${selectedCategory}`;
   const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/admin/category?type=news`;
-  const { data:newsList } = useSWR<NewsListProps>(GET_NEWS_LIST_URL,fetcher);
+  const { data: newsList } = useSWR<NewsListProps>(GET_NEWS_LIST_URL,fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL,fetcher);
   const pageSize: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
 
@@ -73,7 +73,7 @@ const NewsItem: React.FC = () => {
                   setPage(page - 1)
               }} className="back">
                 <img src="/static/image/pagear1.svg"/>
-                <Translation>{t =><p>{t("上一頁")}</p>}</Translation>)
+                <Translation>{t =><p>{t("上一頁")}</p>}</Translation>
               </a>
               {link}
             </>
@@ -84,8 +84,8 @@ const NewsItem: React.FC = () => {
                 if(page < total)
                   setPage(page + 1)
               }} className="next">
+                <Translation>{t =><p>{t("下一頁")}</p>}</Translation>
                 <img src="/static/image/pagear2.svg"/>
-                <Translation>{t =><p>{t("下一頁")}</p>}</Translation>)
                 </a>
               {link}
             </>

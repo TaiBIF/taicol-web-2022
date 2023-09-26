@@ -7411,15 +7411,25 @@ body {
     }
 }
 
-.download-box .classify-item {
-    margin-bottom: 30px
+/* .download-box .classify-item {
+    margin-top: 30px
+} */
+
+
+.download-box .mark-title {
+    /* display: flex;
+    align-items: center;
+    justify-content: flex-start; */
+    padding-top: 10px
 }
+
 
 .download-box .download-set {
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    flex-wrap: wrap
+    flex-wrap: wrap;
+    /* margin-bottom: 10px; */
 }
 
 .download-box .download-set li {

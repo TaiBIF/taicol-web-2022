@@ -96,7 +96,7 @@ export const authOptions: NextAuthOptions = {
 	// pages is not specified for that route.
 	// https://next-auth.js.org/configuration/pages
 	pages: {
-		 signIn: '/admin/login',  // Displays signin buttons
+		 signIn:  '/admin/login',  // Displays signin buttons
 		// signOut: '/auth/signout', // Displays form with sign out button
 		 error: '/401', // Error code passed in query string as ?error=
 		// verifyRequest: '/auth/verify-request', // Used for check email page
@@ -107,13 +107,13 @@ export const authOptions: NextAuthOptions = {
 	// when an action is performed.
 	// https://next-auth.js.org/configuration/callbacks
 	callbacks: {
-		 async signIn({ user, account, profile, email, credentials }) { return true },
-    async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
-      return baseUrl
-    },
-		 async session({ session, token, user }) { return session },
-		 async jwt({ token, user, account, profile, isNewUser }) { return token }
+		async signIn({ user, account, profile, email, credentials }) { return true },
+		async redirect({ url, baseUrl }) {
+		// Allows relative callback URLs
+		return baseUrl
+		},
+		async session({ session, token, user }) { return session },
+		async jwt({ token, user, account, profile, isNewUser }) { return token }
 	},
 
 	// Events are useful for logging

@@ -51,7 +51,10 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 					let tag = '';
 					for (ii of ['is_endemic','alien_type']){
 						if (results.data[i][ii] !=''){
-							tag += `<div class="item">${results.data[i][ii]}</div>`
+							split_arr = results.data[i][ii].split(',')
+							for (iii of split_arr){
+								tag += `<div class="item">${iii}</div>`
+							}
 						}
 					}
 
