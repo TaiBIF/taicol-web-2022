@@ -166,8 +166,8 @@ def get_autocomplete_taxon(request):
                         SELECT bq.taxon_id, tn.name, CONCAT_WS(' ', tnn.name,GROUP_CONCAT(acn.name_c order by acn.is_primary DESC separator ',' )), bq.status
                         FROM base_query bq
                         INNER JOIN api_taxon at ON at.taxon_id = bq.taxon_id
-                        INNER JOIN taxon_names tn ON bq.taxon_name_id = tn.id 
-                        INNER JOIN taxon_names tnn ON bq.accepted_taxon_name_id = tnn.id 
+                        INNER JOIN taxon_names tn ON bq.taxon_name_id = tn.id AND tn.id IN (bq.taxon_name_id)
+                        INNER JOIN taxon_names tnn ON bq.accepted_taxon_name_id = tnn.id AND tnn.id IN (bq.accepted_taxon_name_id)
                         LEFT JOIN api_common_name acn ON acn.taxon_id = bq.taxon_id
                         GROUP BY bq.taxon_id, tn.name, tnn.name, bq.status ;
                     """
