@@ -757,7 +757,7 @@
 							if (params.term.length >1){
 								return {
 									keyword: params.term,
-									from_tree: 'true',
+									from_tree: 'false',
 									lang: $lang
 									};
 							}

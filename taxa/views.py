@@ -115,46 +115,62 @@ def download_search_results(request):
 
 def get_autocomplete_taxon(request):
     translation.activate(request.GET.get('lang'))
+    
     names = '[]'
     if keyword_str := request.GET.get('keyword','').strip():
-        keyword_str = get_variants(keyword_str)
         cultured_condition = ''
         if request.GET.get('cultured') != 'on':
             cultured_condition = ' AND at.is_cultured != 1'
-        if get_language() == 'en-us':
+        from_tree =  request.GET.get('from_tree')
+        lin_rank = request.GET.get('lin_rank')
+
+        # 確認keyword是不是包含中文
+        if re.search(r'[\u4e00-\u9fff]+', keyword_str):
+            keyword_str = get_variants(keyword_str)
+            
+            # 改成用api_common_name查詢 只回傳有效名
             query = f"""
-                        SELECT distinct at.taxon_id, tn.name as tn_name, tnn.name as tnn_name, atu.status
-                        FROM taxon_names tn
-                        JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
-                        JOIN api_taxon at ON at.taxon_id = atu.taxon_id
-                        JOIN taxon_names tnn ON tnn.id = at.accepted_taxon_name_id
-                        LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id 
-                        {'JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id' if request.GET.get('from_tree') else ''}
-                        WHERE tn.deleted_at IS NULL AND at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} 
-                        {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if request.GET.get('lin_rank') == 'on' else ''}
-                        AND (tn.name REGEXP '{keyword_str}' OR acn.name_c REGEXP '{keyword_str}')
-                        LIMIT 10
+                        WITH base_query AS(
+                            SELECT distinct at.taxon_id, tn.name AS tn_name, tn.name AS tnn_name
+                            FROM api_taxon at 
+                            JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
+                            INNER JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND name_c REGEXP '{keyword_str}'
+                            {'INNER JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id' if from_tree else ''}
+                            WHERE at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} 
+                            {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
+                            ORDER BY tn.name
+                            LIMIT 10
+                        )
+                        SELECT bq.taxon_id, bq.tn_name, CONCAT_WS(' ', bq.tnn_name, GROUP_CONCAT(acn.name_c order by acn.is_primary DESC separator ',' )), 'accepted'
+                        FROM base_query bq
+                        JOIN api_taxon at ON at.taxon_id = bq.taxon_id
+                        LEFT JOIN api_common_name acn ON acn.taxon_id = bq.taxon_id
+                        GROUP BY bq.taxon_id, bq.tn_name, bq.tnn_name ;
                         """
         else:
+            # 改成用taxon_names查詢 
             query = f"""
-                WITH base_query AS(
-                SELECT distinct at.taxon_id, tn.name as tn_name, tnn.name as tnn_name, atu.status
-                FROM taxon_names tn
-                JOIN api_taxon_usages atu ON atu.taxon_name_id = tn.id
-                JOIN api_taxon at ON at.taxon_id = atu.taxon_id
-                JOIN taxon_names tnn ON tnn.id = at.accepted_taxon_name_id
-                LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id 
-                {'JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id' if request.GET.get('from_tree') else ''}
-                WHERE tn.deleted_at IS NULL AND at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} 
-                {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if request.GET.get('lin_rank') == 'on' else ''}
-                AND (tn.name REGEXP '{keyword_str}' OR acn.name_c REGEXP '{keyword_str}')
-                LIMIT 10) 
-                SELECT distinct bq.taxon_id, bq.tn_name, CONCAT_WS(' ', bq.tnn_name, GROUP_CONCAT(acn.name_c order by acn.is_primary DESC separator ',' )), bq.status
-                FROM base_query bq
-                JOIN api_taxon at ON at.taxon_id = bq.taxon_id
-                LEFT JOIN api_common_name acn ON acn.taxon_id = bq.taxon_id
-                GROUP BY bq.taxon_id, bq.tn_name, bq.tnn_name, bq.status ;
-                """
+                        WITH base_query AS(
+                            SELECT distinct atu.taxon_id, atu.taxon_name_id, atu.accepted_taxon_name_id, atu.status
+                            FROM api_taxon_usages atu
+                            JOIN api_taxon at ON atu.taxon_id = at.taxon_id 
+                                AND at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} 
+                                {' AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
+                            WHERE atu.is_deleted =0 AND atu.taxon_name_id in (
+                                SELECT id
+                                FROM taxon_names 
+                                WHERE deleted_at is null AND `name` REGEXP '{keyword_str}'
+                            )
+                            LIMIT 10
+                        )
+                        SELECT bq.taxon_id, tn.name, CONCAT_WS(' ', tnn.name,GROUP_CONCAT(acn.name_c order by acn.is_primary DESC separator ',' )), bq.status
+                        FROM base_query bq
+                        INNER JOIN api_taxon at ON at.taxon_id = bq.taxon_id
+                        INNER JOIN taxon_names tn ON bq.taxon_name_id = tn.id 
+                        INNER JOIN taxon_names tnn ON bq.accepted_taxon_name_id = tnn.id 
+                        LEFT JOIN api_common_name acn ON acn.taxon_id = bq.taxon_id
+                        GROUP BY bq.taxon_id, tn.name, tnn.name, bq.status ;
+                    """
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             cursor.execute(query)
@@ -176,12 +192,12 @@ def get_conditioned_query(req, from_url=False):
 
     condition = 'tn.deleted_at IS NULL AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND atu.is_deleted = 0'
 
+    # 如果有輸入keyword的話preselect 但是limit offset要加在preselect這邊
     if keyword := req.get('keyword','').strip():
         keyword = get_variants(keyword)
         keyword_type = req.get('name-select','contain')
         if keyword_type == "equal":
             keyword_str = f"= '{keyword}'"
-            # alt_str = f"find_in_set('{keyword}', at.alternative_name_c)"
         elif keyword_type == "startwith":
             keyword_str = f"REGEXP '^{keyword}'"
         else: # contain
@@ -287,7 +303,7 @@ def get_conditioned_query(req, from_url=False):
         if facet := req.get('facet'):
             value = req.get('value')
             if facet == 'rank':
-                condition += f" AND tn.rank_id = {int(value)}"
+                condition += f" AND at.rank_id = {int(value)}"
             elif facet == 'kingdom':
                 if '3' not in rank:
                     condition +=  f' AND att.path like "%>{value}%"'
@@ -312,6 +328,15 @@ def get_conditioned_query(req, from_url=False):
                 {conserv_join}
                 WHERE {condition}
             """
+    # base = f"""
+    #             FROM api_taxon_usages atu
+    #             JOIN taxon_names tn ON atu.taxon_name_id = tn.id
+    #             JOIN api_taxon at ON atu.taxon_id = at.taxon_id
+    #             LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
+    #             LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id
+    #             {conserv_join}
+    #             WHERE {condition}
+    #         """
     return base
 
 
@@ -320,6 +345,7 @@ def get_query_data(base, offset, response, limit):
     response['data'] = []
     conn = pymysql.connect(**db_settings)
     base = base.split('WHERE')
+    start = time.time()
     query = f"""
                 SELECT distinct(at.taxon_id), tn.name, tn.rank_id, an.formatted_name, acnn.name_c, atu.status,
                     at.is_endemic, at.alien_type, att.path   
@@ -329,12 +355,15 @@ def get_query_data(base, offset, response, limit):
                 WHERE {base[1]} 
                 ORDER BY tn.name LIMIT {limit} OFFSET {offset} 
             """
+    # print(query)
     # acnn 是為了join主要使用學名 
     with conn.cursor() as cursor:
         cursor.execute(query)
         results = cursor.fetchall()
         results = pd.DataFrame(results, columns=['taxon_id','simple_name','rank','name','common_name_c','status','is_endemic','alien_type','path'])
         conn.close()
+        print('data', time.time()-start)
+
         if len(results):
             results = results.drop(columns=['simple_name'])
             results = results.drop_duplicates()
@@ -355,6 +384,7 @@ def get_query_data(base, offset, response, limit):
                     else: # 取科
                         results.loc[i,'taxon_group'] = 26
             if p:
+                start = time.time()
                 if get_language() == 'en-us':
                      query = f"SELECT t.taxon_id, t.rank_id, tn.name \
                             FROM api_taxon t \
@@ -372,6 +402,7 @@ def get_query_data(base, offset, response, limit):
                     higher_taxa = cursor.fetchall()
                     higher_taxa = pd.DataFrame(higher_taxa, columns=['taxon_id','rank_id','name'])
                     conn.close()
+                print('higher', start-time.time())
             # 界
             kingdoms = higher_taxa[(higher_taxa.rank_id==3)].taxon_id.to_list()
             for i in results.index:
@@ -473,6 +504,8 @@ def catalogue(request):
     response['endemic_title'] = gettext('特有性')
     response['status_title'] = gettext('地位')
 
+    start = time.time()
+
     if request.method == 'POST':
         req = request.POST
         offset = limit * (int(req.get('page',1))-1)
@@ -485,6 +518,8 @@ def catalogue(request):
             cursor.execute(count_query)
             count = pd.DataFrame(cursor.fetchall(),columns=['taxon_name_id','t_id','status','rank','alien_type','is_endemic','kingdom'])
             conn.close()
+        print(time.time()-start)
+        start = time.time()
         if len(count):
             response['count'] = {}
             # 左側統計 界, 階層, 原生/外來/特有性, 地位
@@ -526,6 +561,7 @@ def catalogue(request):
             # response['page']['page_list'] = get_page_list(response['page']['current_page'], response['count']['total'][0]['count'], limit)
             response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
             response = get_query_data(base, offset, response, limit)
+            print('a', time.time()-start)
         else:
             response = {'count': {'total':[{'count':0}]},'page': {'total_page':0, 'page_list': []},'data':[]}
         response['header'] = f"""
