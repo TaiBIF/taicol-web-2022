@@ -155,20 +155,22 @@ def get_autocomplete_taxon(request):
                 conn.close()
 
         else:
-            # 改成用taxon_names查詢 
-            
             # 先單純用taxon_names的表搜尋 如果有結果再繼續往下搜
             first_query = f"SELECT id FROM taxon_names WHERE `name` REGEXP %s AND deleted_at IS NULL LIMIT 1"
             conn = pymysql.connect(**db_settings)
             with conn.cursor() as cursor:
                 cursor.execute(first_query, (keyword_str,))
                 first_results = cursor.fetchone()
-                # first_results = [f[0] for f in first_results]
 
             if first_results:
-
+                # 只join有查到相關字的base_name表
                 query = f"""
-                            WITH base_query AS(
+                            WITH base_name AS (
+                            SELECT *
+                            FROM taxon_names 
+                            WHERE deleted_at is null AND `name` REGEXP '{keyword_str}'
+                            ), 
+                            base_query AS(
                                 SELECT distinct atu.taxon_id, atu.taxon_name_id, atu.accepted_taxon_name_id, atu.status
                                 FROM api_taxon_usages atu
                                 JOIN api_taxon at ON atu.taxon_id = at.taxon_id 
@@ -176,16 +178,15 @@ def get_autocomplete_taxon(request):
                                     {' AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
                                 WHERE atu.is_deleted =0 AND atu.taxon_name_id in (
                                     SELECT id
-                                    FROM taxon_names 
-                                    WHERE deleted_at is null AND `name` REGEXP '{keyword_str}'
+                                    FROM base_name
                                 )
                                 LIMIT 10
                             )
                             SELECT bq.taxon_id, tn.name, CONCAT_WS(' ', tnn.name,GROUP_CONCAT(acn.name_c order by acn.is_primary DESC separator ',' )), bq.status
                             FROM base_query bq
                             INNER JOIN api_taxon at ON at.taxon_id = bq.taxon_id
-                            INNER JOIN taxon_names tn ON bq.taxon_name_id = tn.id AND tn.id IN (bq.taxon_name_id)
-                            INNER JOIN taxon_names tnn ON bq.accepted_taxon_name_id = tnn.id AND tnn.id IN (bq.accepted_taxon_name_id)
+                            INNER JOIN base_name tn ON bq.taxon_name_id = tn.id AND tn.id IN (bq.taxon_name_id)
+                            INNER JOIN base_name tnn ON bq.accepted_taxon_name_id = tnn.id AND tnn.id IN (bq.accepted_taxon_name_id)
                             LEFT JOIN api_common_name acn ON acn.taxon_id = bq.taxon_id
                             GROUP BY bq.taxon_id, tn.name, tnn.name, bq.status ;
                         """
@@ -195,7 +196,6 @@ def get_autocomplete_taxon(request):
                     results = cursor.fetchall()
                     conn.close()
             
-
         ds = pd.DataFrame(results, columns=['id','name','text','name_status'])
         if len(ds):
             if get_language() == 'en-us':
