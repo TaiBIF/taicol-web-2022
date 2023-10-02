@@ -1483,32 +1483,34 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank):
         cursor.execute(query, (taxon_id,))
         taxon_info = cursor.fetchone()
         formatted_name = taxon_info[0]
+
+        
+    start = time.time()
     # 如果自己的下階層是種下的話要調整
     if rank_id <= 46 and rank_id >= 34:
         query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id, 
                     SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) AS p_group
                     FROM api_taxon_tree att 
-                    JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                    WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s AND at.is_in_taiwan = 1 
-                    AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
-                    AND att.taxon_id != SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) 
+                    JOIN api_taxon at ON att.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 
+                        AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
+                        AND att.taxon_id != SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) 
+                    WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s 
                     GROUP BY at.rank_id, p_group;
                 """
         with conn.cursor() as cursor:
-            cursor.execute(query, (f'>{taxon_id}', f'%>{taxon_id}%', is_cultured, 34, f'>{taxon_id}'))
+            cursor.execute(query, (f'>{taxon_id}', is_cultured, 34, f'>{taxon_id}', f'%>{taxon_id}%'))
             sub_stat = cursor.fetchall()
             conn.close() 
     else:
         query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id, 
                     SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) AS p_group
                     FROM api_taxon_tree att 
-                    JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                    WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s AND at.is_in_taiwan = 1 
-                    AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
+                    JOIN api_taxon at ON att.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
+                    WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s 
                     GROUP BY at.rank_id, p_group;
                 """
         with conn.cursor() as cursor:
-            cursor.execute(query, (f'>{taxon_id}', f'%>{taxon_id}%', is_cultured, rank_id,))
+            cursor.execute(query, (f'>{taxon_id}', is_cultured, rank_id, f'%>{taxon_id}%',))
             sub_stat = cursor.fetchall()
             conn.close()    
     sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id'])
@@ -1516,31 +1518,55 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank):
     if lin_rank == 'on':
         sub_stat = sub_stat[sub_stat.rank_id.isin(lin_ranks+sub_lin_ranks)]
     
+    print('stat ', time.time()-start)
 
-    query = f"""SELECT at.taxon_id, at.rank_id, 
-                CONCAT_WS(' ', {'acn.name_c,' if lang != 'en-us' else ''} r.display ->> '$."en-us"', an.formatted_name), 
-                r.display ->> '$."zh-tw"'
-                FROM api_taxon_tree att 
-                JOIN api_taxon at ON att.taxon_id = at.taxon_id
+    start = time.time()
+
+    # 這邊應該可以先存好
+    # query = f"""
+    #             SELECT at.taxon_id, at.rank_id, 
+    #                    CONCAT_WS(' ', {'acn.name_c,' if lang != 'en-us' else ''} r.display ->> '$."en-us"', an.formatted_name), 
+    #                    r.display ->> '$."zh-tw"'
+    #             FROM api_taxon_tree att 
+    #             JOIN api_taxon at ON att.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 
+    #                     AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
+    #                     {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''} 
+    #             LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
+    #             JOIN ranks r ON at.rank_id = r.id
+    #             JOIN api_names an ON at.accepted_taxon_name_id= an.taxon_name_id 
+    #             WHERE att.{'lin_parent_taxon_id' if lin_rank == 'on' else 'parent_taxon_id'} = %s 
+    #             ORDER BY at.rank_id DESC, an.formatted_name;"""
+
+    query = f"""
+                WITH base_query AS (
+                    SELECT taxon_id FROM api_taxon_tree
+                    WHERE {'lin_parent_taxon_id' if lin_rank == 'on' else 'parent_taxon_id'} = %s
+                )
+                SELECT at.taxon_id, at.rank_id, 
+                       CONCAT_WS(' ', {'acn.name_c,' if lang != 'en-us' else ''} r.display ->> '$."en-us"', an.formatted_name), 
+                       r.display ->> '$."zh-tw"'
+                FROM api_taxon at
+                JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
+                JOIN base_query bq ON bq.taxon_id = at.taxon_id 
                 LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
-                JOIN taxon_names tn ON at.accepted_taxon_name_id = tn.id
                 JOIN ranks r ON at.rank_id = r.id
-                JOIN api_names an ON at.accepted_taxon_name_id= an.taxon_name_id 
-                WHERE att.{'lin_parent_taxon_id' if lin_rank == 'on' else 'parent_taxon_id'} = %s AND at.is_in_taiwan = 1 
-                AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
-                {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''} 
-                ORDER BY at.rank_id DESC, tn.name;"""
+                WHERE at.is_in_taiwan = 1 
+                        AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
+                        {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''} 
+                ORDER BY at.rank_id DESC, an.formatted_name;"""
+
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
         # 如果自己是種下的話要調整
         if rank_id <= 46 and rank_id >= 35:
-            cursor.execute(query, (taxon_id, is_cultured, 34, ))
+            cursor.execute(query, (taxon_id,is_cultured, 34, ))
         else:
             cursor.execute(query, (taxon_id, is_cultured, rank_id, ))
         sub_titles = cursor.fetchall()
         # 下一層的rank有可能不一樣
         conn.close() 
         
+    print('title ', time.time()-start)
     # 如果有跳過的部分，要顯示地位未定
     # 先找出下一個林奈階層應該要是什麼
     next_lin_h = None
@@ -1660,7 +1686,7 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank):
     for r in lack_r:
         final_sub_dict[rank_map_c[r]]['parent_rank_id'] = total_ranks[total_ranks.index(r) - 1]
 
-    # TODO 要把補了地位未定的階層拿掉
+    # 把補了地位未定的階層拿掉
     if lack_r:
         final_sub_dict['has_lack'] = True
         final_sub_dict[rank_map_c[total_ranks[total_ranks.index(max(lack_r)) + 1]]]['parent_rank_id'] = max(lack_r)
