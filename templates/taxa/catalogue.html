@@ -209,14 +209,14 @@
 							</div>
 							<div class="right-check">
 								<label class="check-item">{% trans "有效" %}
-									<input type="checkbox"  name="status" value="accepted" checked>
+									<input type="checkbox"  name="status" value="accepted" {% if not request.GET.status and request.GET.filter  != '0'  %} checked {% endif %}>
 									<span class="checkmark"></span>
 								</label>
 								<label class="check-item">{% trans "無效" %}
 									<input type="checkbox" name="status" value="not-accepted">
 									<span class="checkmark"></span>
 								</label>
-								<label class="check-item">{% trans "誤用" %}
+								<label class="check-item">{% trans "誤用"|title %}
 									<input type="checkbox" name="status" value="misapplied">
 									<span class="checkmark"></span>
 								</label>

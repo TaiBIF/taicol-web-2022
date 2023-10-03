@@ -1826,7 +1826,7 @@ def get_conditioned_query_search(req, from_url=False):
                         JOIN api_taxon at ON atu.taxon_id = at.taxon_id
                         LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
                         {conserv_join}
-                        WHERE atu.`status` = 'accepted' AND atu.is_latest = 1  AND {condition}"""
+                        WHERE {condition}"""
     
 
     return base, query

@@ -846,3 +846,15 @@ msgstr "Higher Taxon"
 #: templates/taxa/catalogue.html: 
 msgid "學名"
 msgstr "Scientific Name"
+
+
+#: templates/taxa/catalogue.html: 
+msgid "有效"
+msgstr "Accepted"
+
+
+#: templates/taxa/catalogue.html: 
+msgid "無效"
+msgstr "Not-accepted"
+
+
