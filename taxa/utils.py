@@ -68,7 +68,7 @@ with conn.cursor() as cursor:
     for k in kingdom:
         kingdom_map[k[1]] = {'name': k[0], 'common_name_c': k[2]}
 
-rank_map, rank_map_c = {}, {}
+rank_map, rank_map_c,rank_map_c_reverse = {}, {}, {}
 conn = pymysql.connect(**db_settings)
 query = "SELECT id, display from ranks"
 with conn.cursor() as cursor:
@@ -76,6 +76,7 @@ with conn.cursor() as cursor:
     ranks = cursor.fetchall()
     rank_map = dict(zip([r[0] for r in ranks], [eval(r[1])['en-us'] for r in ranks]))
     rank_map_c = dict(zip([r[0] for r in ranks], [eval(r[1])['zh-tw'] for r in ranks]))
+    rank_map_c_reverse = dict(zip([eval(r[1])['zh-tw'] for r in ranks],[r[0] for r in ranks]))
 
 
 # rank_map = {
@@ -107,7 +108,7 @@ name_status_map = {
 # attr_map_c = {'native': '原生','naturalized':'歸化','invasive':'入侵','cultured':'栽培豢養'}
 
 status_map_c = {'accepted': '有效', 'not-accepted': '無效', 'undetermined': '未決', 'misapplied': '誤用'}
-status_map_taxon_c = {'accepted': {'en-us': 'Accepted', 'zh-tw': '接受名'}, 'not-accepted': {'en-us': 'Not accepted', 'zh-tw': '無效'}, 
+status_map_taxon_c = {'accepted': {'en-us': 'Accepted', 'zh-tw': '接受名'}, 'not-accepted': {'en-us': 'Not-accepted', 'zh-tw': '無效'}, 
                       'undetermined': {'en-us': 'Undetermined', 'zh-tw': '未決'}, 'misapplied': {'en-us': 'Misapplied', 'zh-tw': '誤用'}}
 
 rank_color_map = { 3: 'rank-1-red', 12: 'rank-2-org', 18: 'rank-3-yell', 22: 'rank-4-green', 26: 'rank-5-blue', 
@@ -314,7 +315,7 @@ def get_download_file(taxon_list=[]):
                     LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id 
                     LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1
                     LEFT JOIN base_query bq ON bq.taxon_id = t.taxon_id
-                    WHERE t.taxon_id IN %s;
+                    WHERE t.taxon_id IN %s ORDER BY tn.name;
   """
   conn = pymysql.connect(**db_settings)
   with conn.cursor() as cursor:

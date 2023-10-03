@@ -3,7 +3,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('update_catalogue_table', views.update_catalogue_table, name='update_catalogue_table'),
+    # path('update_catalogue_table', views.update_catalogue_table, name='update_catalogue_table'),
+    path('update_catalogue_table', views.update_catalogue_table_search, name='update_catalogue_table'),
     path('get_autocomplete_taxon', views.get_autocomplete_taxon, name='get_autocomplete_taxon'),
     path('download_search_results', views.download_search_results, name='download_search_results'),
     path('send_download_request', views.send_download_request, name='send_download_request'),

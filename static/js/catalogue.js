@@ -4,7 +4,7 @@
     // 要有其中之一存在才送出
 	let params = ['keyword','taxon_group','rank','is_endemic',
 				  'alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil',
-				  'protected_category','red_category','iucn_category','cites','date']
+				  'protected_category','red_category','iucn_category','cites','date','status']
 
 
 	let more_opts = ['is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil',
@@ -200,19 +200,20 @@
 							tag += '<div class="item">' + alt_list[a] + '</div>'
 						}
 					}
+					// `<tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}">
 					$('.table-style1').append(
-						`<tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}">
-							<td>${results.data[i]['kingdom']}</td>
-							<td>${results.data[i]['taxon_group']}</td>
-							<td>${results.data[i]['rank']}</td>
-							<td>${results.data[i]['name']}</td>
+						`<tr>
+							<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['name']}</a></td>
 							<td>${results.data[i]['common_name_c']}</td>
 							<td>${results.data[i]['status']}</td>
 							<td>
 								<div class="tag-green">
 									${tag}
 								</div>
-							</td>
+							</td>							
+							<td>${results.data[i]['rank']}</td>
+							<td>${results.data[i]['taxon_group']}</td>
+							<td>${results.data[i]['kingdom']}</td>
 						</tr>`)
 				}
 					
@@ -319,7 +320,7 @@
 			page = urlParams.get('page');
 
 			// 多選系列
-			let mt = ['rank','alien_type','protected_category','red_category','iucn_category','cites']
+			let mt = ['rank','alien_type','protected_category','red_category','iucn_category','cites','status']
 			mt.forEach(function(m) {
 				if (urlParams.getAll(m)) {
 					if (m=='rank'){
@@ -425,6 +426,7 @@
 
 			$.ajax({
 				url: `/${$lang}/catalogue`,
+				// url: `/${$lang}/catalogue_search`,
 				data: query_str + '&csrfmiddlewaretoken=' +  $csrf_token,
 				type: 'POST',
 				dataType : 'json',
@@ -433,7 +435,7 @@
 				window.enterPressed = false;
 				// 清空頁碼 & facet
 				$('.page-num').remove()
-				$('.mb-cataselect').remove()
+				//$('.mb-cataselect').remove()
 				$('.table-style1').html('')
 				$('.button-two').addClass('d-none')
 				$('.result-flexbox').addClass('d-none')
@@ -464,6 +466,7 @@
 					$('.right-table').removeClass('d-none')
 
 
+					/*
 					$('.top-infbox').after(
 					`<!--手機版左側篩選改成下拉選單-->
 					<div class="mb-cataselect">
@@ -561,7 +564,7 @@
 						$('select[name=mb-select]').append(`<option value="status">${results.status_title}</option>`)
 					} else {
 						$('.status-box').parent('li').addClass('d-none')
-					}
+					}*/
 
 					$('.table-style1').html(results['header'])
 
@@ -577,19 +580,21 @@
 								tag += '<div class="item">' + alt_list[a] + '</div>'
 							}
 						}
+						// <tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}"></tr>
 						$('.table-style1').append(
-							`<tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}">
-								<td>${results.data[i]['kingdom']}</td>
-								<td>${results.data[i]['taxon_group']}</td>
-								<td>${results.data[i]['rank']}</td>
-								<td>${results.data[i]['name']}</td>
+							`
+							<tr>
+								<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['name']}</a></td>
 								<td>${results.data[i]['common_name_c']}</td>
 								<td>${results.data[i]['status']}</td>
 								<td>
 									<div class="tag-green">
 										${tag}
 									</div>
-								</td>
+								</td>								
+								<td>${results.data[i]['rank']}</td>
+								<td>${results.data[i]['taxon_group']}</td>
+								<td>${results.data[i]['kingdom']}</td>
 							</tr>`)
 
 					}
@@ -643,6 +648,7 @@
                     })
 
 					// nice select
+					/*
 					$('select[name=mb-select]').niceSelect();
 					$('select[name=mb-select-sub]').niceSelect();
 
@@ -658,8 +664,10 @@
                     })
             
 					$('.mb-cataselect').removeClass('d-none')
-				} else {
-					$('.mb-cataselect').addClass('d-none')
+					*/
+				//} else {
+					
+					//$('.mb-cataselect').addClass('d-none')
 				}
 			})
 			.fail(function( xhr, status, errorThrown ) {
@@ -757,7 +765,7 @@
 							if (params.term.length >1){
 								return {
 									keyword: params.term,
-									from_tree: 'true',
+									from_tree: 'false',
 									lang: $lang
 									};
 							}
