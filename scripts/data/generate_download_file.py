@@ -29,11 +29,12 @@ query = """
         WITH base_query AS (SELECT taxon_id, GROUP_CONCAT(name_c SEPARATOR ', ') AS alternative_name_c
         FROM api_common_name WHERE is_primary = 0 GROUP BY taxon_id)
         SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, 
-        t.rank_id, acn.name_c, bq.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), t.is_fossil, t.is_terrestrial, 
+        t.rank_id, acn.name_c, bq.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), 
+        t.is_fossil, t.is_terrestrial, 
         t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, 
         ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, 
         t.created_at, t.updated_at, att.path 
-         FROM api_taxon t 
+        FROM api_taxon t 
         LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1 
         LEFT JOIN base_query bq ON bq.taxon_id = t.taxon_id
         JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id 
@@ -74,6 +75,22 @@ with conn.cursor() as cursor:
     syns = pd.DataFrame(syns, columns=['taxon_id','synonyms','formatted_synonyms'])
 
 df = df.merge(syns, on='taxon_id', how='left')
+
+
+query = f"SELECT tu.taxon_id, GROUP_CONCAT(DISTINCT(tn.name) SEPARATOR ','), GROUP_CONCAT(DISTINCT(an.formatted_name) SEPARATOR ',') \
+            FROM api_taxon_usages tu \
+            JOIN api_names an ON tu.taxon_name_id = an.taxon_name_id \
+            JOIN taxon_names tn ON tu.taxon_name_id = tn.id \
+            WHERE tu.status = 'misapplied' AND tu.is_deleted != 1 \
+            GROUP BY tu.taxon_id;"
+with conn.cursor() as cursor:
+    cursor.execute(query)
+    misapplied = cursor.fetchall()
+    misapplied = pd.DataFrame(misapplied, columns=['taxon_id','misapplied','formatted_misapplied'])
+
+df = df.merge(misapplied, on='taxon_id', how='left')
+
+
 df = df.drop_duplicates().reset_index(drop=True)
 # higher taxa
 # 要補上地位未定
@@ -261,7 +278,7 @@ for i in names.index:
     if row['is_hybrid'] == 'true':
         query_hybrid_parent = f"SELECT GROUP_CONCAT( CONCAT(tn.name, ' ',tn.formatted_authors) SEPARATOR ' × ' ) FROM taxon_name_hybrid_parent AS tnhp \
                                 JOIN taxon_names AS tn ON tn.id = tnhp.parent_taxon_name_id \
-                                WHERE tnhp.taxon_name_id = {row['name_id']} \
+                                WHERE tnhp.taxon_name_id = {row['name_id']} AND tn.rank_id = 47  \
                                 GROUP BY tnhp.taxon_name_id"
         with conn.cursor() as cursor:
             cursor.execute(query_hybrid_parent)
@@ -292,15 +309,17 @@ compression_options = dict(method='zip', archive_name=f"TaiCOL_name_{last_update
 names.to_csv(f'TaiCOL_name_{last_updated}.zip', compression=compression_options, index=False)
 
 
-# 學名檔案 //就學名有幾筆
+# 學名檔案2023-08
+#  //就學名有幾筆
 # 共XXXX筆
-# 共 145635 筆
+# 共 145980 筆
 
 
-# 物種檔案 //就Taxon有幾筆，但括號內只統計種rank34
+# 物種檔案2023-08
+# //就Taxon有幾筆，但括號內只統計種rank34
 # 共xxxx筆（其中臺灣存在計??????種）
 
-# 共 101743 筆（其中臺灣存在計 62999 種）
+# 共 101705 筆（其中臺灣存在計 63034 種）
 
 # taxon[taxon.is_in_taiwan=='true'].groupby('rank',as_index=False).taxon_id.nunique()
 
@@ -322,8 +341,13 @@ query = """
         FROM cte GROUP BY namecode, taxon_name_id;"""
 with conn.cursor() as cursor:
     cursor.execute(query)
-    namecode = pd.DataFrame(cursor.fetchall(), columns=['name_code','name_id','taxon_id','status'])
+    namecode = pd.DataFrame(cursor.fetchall(), columns=['namecode','name_id','taxon_id','usage_status'])
 
 
 compression_options = dict(method='zip', archive_name=f"TaiCOL_namecode_{last_updated}.csv")
 namecode.to_csv(f'TaiCOL_namecode_{last_updated}.zip', compression=compression_options, index=False)
+
+
+
+# 新舊學名編碼對照2023-08
+# 舊版臺灣物種名錄學名編碼對照新版學名編碼

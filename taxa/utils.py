@@ -68,7 +68,7 @@ with conn.cursor() as cursor:
     for k in kingdom:
         kingdom_map[k[1]] = {'name': k[0], 'common_name_c': k[2]}
 
-rank_map, rank_map_c = {}, {}
+rank_map, rank_map_c,rank_map_c_reverse = {}, {}, {}
 conn = pymysql.connect(**db_settings)
 query = "SELECT id, display from ranks"
 with conn.cursor() as cursor:
@@ -76,6 +76,7 @@ with conn.cursor() as cursor:
     ranks = cursor.fetchall()
     rank_map = dict(zip([r[0] for r in ranks], [eval(r[1])['en-us'] for r in ranks]))
     rank_map_c = dict(zip([r[0] for r in ranks], [eval(r[1])['zh-tw'] for r in ranks]))
+    rank_map_c_reverse = dict(zip([eval(r[1])['zh-tw'] for r in ranks],[r[0] for r in ranks]))
 
 
 # rank_map = {
@@ -314,7 +315,7 @@ def get_download_file(taxon_list=[]):
                     LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id 
                     LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1
                     LEFT JOIN base_query bq ON bq.taxon_id = t.taxon_id
-                    WHERE t.taxon_id IN %s;
+                    WHERE t.taxon_id IN %s ORDER BY tn.name;
   """
   conn = pymysql.connect(**db_settings)
   with conn.cursor() as cursor:

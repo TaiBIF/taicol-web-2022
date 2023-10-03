@@ -98,7 +98,7 @@
 					</select>
 				</div>
 				<div class="cont-search-bar">
-					<input type="text" id="keyword" name="keyword" placeholder="{% trans "請輸入關鍵字" %}" value='{{ keyword|default_if_none:"" }}'>
+					<input type="text" id="keyword" name="keyword" placeholder='{% trans "請輸入關鍵字" %}' value='{{ keyword|default_if_none:"" }}'>
 					<button class="search getData">
 						<svg id="Group_6882" data-name="Group 6882" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="36.847" height="36.775" viewBox="0 0 36.847 36.775">
 							<defs>
@@ -201,6 +201,25 @@
 								</div>							
 								<div class="alread-select">
 								</div>
+							</div>
+						</div>
+						<div class="item-box check-set">
+							<div class="left-title">
+								<p>{% trans "地位" %}</p>
+							</div>
+							<div class="right-check">
+								<label class="check-item">{% trans "有效" %}
+									<input type="checkbox"  name="status" value="accepted" checked>
+									<span class="checkmark"></span>
+								</label>
+								<label class="check-item">{% trans "無效" %}
+									<input type="checkbox" name="status" value="not-accepted">
+									<span class="checkmark"></span>
+								</label>
+								<label class="check-item">{% trans "誤用" %}
+									<input type="checkbox" name="status" value="misapplied">
+									<span class="checkmark"></span>
+								</label>
 							</div>
 						</div>
 						<div class="item-box check-set">
@@ -505,6 +524,7 @@
 				</div>
 			</div>
 			<div class="result-flexbox d-none">
+				<!--
 				<div class="left-cataselect">
 					<ul class="ullist" >
 						<input type="hidden" name="hidden-facet" value="">
@@ -523,7 +543,6 @@
 								<div class="blue-line"></div>
 							</div>
 							<div class="item-box rank-box">
-								<!--目前選擇加上now-->
 							</div>
 						</li>
 						<li>
@@ -534,7 +553,6 @@
 							<div class="item-box endemic-box">
 							</div>
 						</li>
-						<!--
 						<li>
 							<div class="title-box">
 								<h3>存在於臺灣</h3>
@@ -542,7 +560,7 @@
 							</div>
 							<div class="item-box is_in_taiwan-box">
 							</div>
-						</li>-->
+						</li>
 						<li>
 							<div class="title-box">
 								<h3>{% trans "原生/外來性" %}</h3>
@@ -561,6 +579,7 @@
 						</li>
 					</ul>
 				</div>
+				-->
 				<div class="right-table d-none">
 					<div class="scro-m">
 						<table class="table-style1" border="0" cellpadding="0" cellspacing="0">
