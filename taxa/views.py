@@ -1694,6 +1694,8 @@ def get_conditioned_query_search(req, from_url=False):
                             WHERE deleted_at is null AND `name` {keyword_str}
                             )
                         """
+            else:
+                return None, None
 
     # is_ 系列
 
@@ -1982,7 +1984,11 @@ def catalogue_search(request):
         req = request.POST
         offset = limit * (int(req.get('page',1))-1)
         base, base_query = get_conditioned_query_search(req, from_url=True)
-        response = get_query_data_search(base, offset, response, limit, base_query)
+        if not base and not base_query:
+            pass
+        else:
+            # base, base_query = get_conditioned_query_search(req, from_url=True)
+            response = get_query_data_search(base, offset, response, limit, base_query)
         response['header'] = f"""
             <tr>
                 <td>{gettext('學名')}</td>
