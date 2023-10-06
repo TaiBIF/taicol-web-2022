@@ -610,7 +610,8 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
   taxon_history = taxon_history[~((taxon_history.reference_type==4)&(taxon_history.history_type==2))]
   taxon_history = taxon_history[['title','content','ref','updated_at','editor']]
   taxon_history.loc[taxon_history['title']==gettext('新增Taxon'),'content'] = ''
-  taxon_history = taxon_history.drop_duplicates(subset=['title','content','ref']).to_dict(orient='records')
+#   taxon_history = taxon_history.drop_duplicates(subset=['title','content','ref']).to_dict(orient='records')
+  taxon_history = taxon_history.drop_duplicates().to_dict(orient='records')
   return taxon_history
 
 
