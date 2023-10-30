@@ -566,7 +566,7 @@ def taxon(request, taxon_id):
                         # 如果有author資訊 加上去
                         names['sci_name'] = names.apply(lambda x: f'{x.sci_name} {x.author}' if x.author else x.sci_name, axis=1)
                         # 加上學名連結
-                        names['sci_name'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name}</a>', axis=1)
+                        names['sci_name'] = names.apply(lambda x: f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(x.taxon_name_id)}" {'class="accpname"' if x.taxon_name_id == data['name_id'] else ''} target="_blank">{x.sci_name}</a>''', axis=1)
                         # 如果per_usages中有其他ref則補上
                         for pp in names['per_usages']:
                             for p in pp:
