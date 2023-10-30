@@ -30,9 +30,10 @@ const NewsItem: React.FC<NewsDataProps> = (props) => {
           <h3 className="news-title">
             {title}
           </h3>
-          <p>
+          {/* <p>
             {shortDescription(description,100)}
-          </p>
+          </p> */}
+          <p dangerouslySetInnerHTML={{__html: shortDescription(description, 100)}}></p>
       </div>
       </a>
     </li>
