@@ -588,6 +588,8 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
     c = json.loads(row.note)
     source = c.get('source')
     value = c.get('value')
+    old_value = c.get('old_value')
+    old_str = ''
     content = gettext(conserv_map[source]) + ' '
     if source == 'sensitive_suggest':
         drop_conserv.append(i)
@@ -597,12 +599,26 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
         for cl in c_list:
             c_list_str.append(cites_map[cl] if lang == 'en-us' else cites_map_c[cl])
         content += '/'.join(c_list_str)
+        if old_value:
+            c_list = old_value.split('/')
+            c_list_str = []
+            for cl in c_list:
+                c_list_str.append(cites_map[cl] if lang == 'en-us' else cites_map_c[cl])
+            old_str = '/'.join(c_list_str)
     elif source == 'iucn_category':
         content += value if lang == 'en-us' else iucn_map_c[value] + ' ' + value
+        if old_value:
+           old_str = old_value if lang == 'en-us' else iucn_map_c[old_value] + ' ' + old_value
     elif source == 'red_category':
         content +=  value if lang == 'en-us' else redlist_map_c[value] + ' ' + value
+        if old_value:
+            old_str = old_value if lang == 'en-us' else redlist_map_c[old_value] + ' ' + old_value
     elif source == 'protected_category':
         content +=  protected_map[value] if get_language() == 'en-us' else f'第 {value} 級 {protected_map_c[value]}'
+        if old_value:
+            old_str = protected_map[old_value] if get_language() == 'en-us' else f'第 {old_value} 級 {protected_map_c[old_value]}'
+    if row.history_type == 13:
+       content += f' ({gettext("原類別：")}{old_str})'
     taxon_history.loc[i,'content'] = content
   taxon_history = taxon_history.drop(index=drop_conserv)
 
