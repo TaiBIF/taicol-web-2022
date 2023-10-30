@@ -4324,7 +4324,7 @@ body {
         color: #FF7E7E
     }
 
-    .tree-area .rank-1-red li>.item-box:hover>h2, .tree-area .rank-1-red li>.item-box:hover>p {
+    .tree-area .rank-1-red li>.item-box:hover>h2, .tree-area .rank-1-red li>.item-box:hover>h2>a, .tree-area .rank-1-red li>.item-box:hover>p {
         color: #FFF
     }
 
@@ -4377,7 +4377,7 @@ body {
     color: #FF7E7E
 }
 
-.tree-area .rank-1-red li>.item-box.now>h2, .tree-area .rank-1-red li>.item-box.now>p {
+.tree-area .rank-1-red li>.item-box.now>h2, .tree-area .rank-1-red li>.item-box.now>h2>a, .tree-area .rank-1-red li>.item-box.now>p {
     color: #FFF
 }
 
@@ -4439,7 +4439,7 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-2-org li>.item-box:hover>h2, .tree-area .rank-2-org li>.item-box:hover>p {
+    .tree-area .rank-2-org li>.item-box:hover>h2, .tree-area .rank-2-org li>.item-box:hover>h2>a, .tree-area .rank-2-org li>.item-box:hover>p {
         color: #FF9E57
     }
 
@@ -4492,7 +4492,7 @@ body {
     color: #FF9E57
 }
 
-.tree-area .rank-2-org li>.item-box.now>h2, .tree-area .rank-2-org li>.item-box.now>p {
+.tree-area .rank-2-org li>.item-box.now>h2,.tree-area .rank-2-org li>.item-box.now>h2>a, .tree-area .rank-2-org li>.item-box.now>p {
     color: #FFF
 }
 
@@ -4554,7 +4554,7 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-3-yell li>.item-box:hover>h2, .tree-area .rank-3-yell li>.item-box:hover>p {
+    .tree-area .rank-3-yell li>.item-box:hover>h2, .tree-area .rank-3-yell li>.item-box:hover>h2>a, .tree-area .rank-3-yell li>.item-box:hover>p {
         color: #F5CE4D
     }
 
@@ -4607,7 +4607,7 @@ body {
     color: #F5CE4D
 }
 
-.tree-area .rank-3-yell li>.item-box.now>h2, .tree-area .rank-3-yell li>.item-box.now>p {
+.tree-area .rank-3-yell li>.item-box.now>h2, .tree-area .rank-3-yell li>.item-box.now>h2>a, .tree-area .rank-3-yell li>.item-box.now>p {
     color: #FFF
 }
 
@@ -4669,7 +4669,7 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-4-green li>.item-box:hover>h2, .tree-area .rank-4-green li>.item-box:hover>p {
+    .tree-area .rank-4-green li>.item-box:hover>h2, .tree-area .rank-4-green li>.item-box:hover>h2>a, .tree-area .rank-4-green li>.item-box:hover>p {
         color: #A6D368
     }
 
@@ -4722,7 +4722,7 @@ body {
     color: #A6D368
 }
 
-.tree-area .rank-4-green li>.item-box.now>h2, .tree-area .rank-4-green li>.item-box.now>p {
+.tree-area .rank-4-green li>.item-box.now>h2, .tree-area .rank-4-green li>.item-box.now>h2>a, .tree-area .rank-4-green li>.item-box.now>p {
     color: #FFF
 }
 
@@ -4784,7 +4784,7 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-5-blue li>.item-box:hover>h2, .tree-area .rank-5-blue li>.item-box:hover>p {
+    .tree-area .rank-5-blue li>.item-box:hover>h2, .tree-area .rank-5-blue li>.item-box:hover>h2>a, .tree-area .rank-5-blue li>.item-box:hover>p {
         color: #77CBED
     }
 
@@ -4837,7 +4837,7 @@ body {
     color: #77CBED
 }
 
-.tree-area .rank-5-blue li>.item-box.now>h2, .tree-area .rank-5-blue li>.item-box.now>p {
+.tree-area .rank-5-blue li>.item-box.now>h2, .tree-area .rank-5-blue li>.item-box.now>h2>a, .tree-area .rank-5-blue li>.item-box.now>p {
     color: #FFF
 }
 
@@ -4899,7 +4899,7 @@ body {
         color: #FFF
     }
 
-    .tree-area .rank-6-deepblue li>.item-box:hover>h2, .tree-area .rank-6-deepblue li>.item-box:hover>p {
+    .tree-area .rank-6-deepblue li>.item-box:hover>h2, .tree-area .rank-6-deepblue li>.item-box:hover>h2>a, .tree-area .rank-6-deepblue li>.item-box:hover>p {
         color: #64A0D3
     }
 
@@ -4952,7 +4952,7 @@ body {
     color: #64A0D3
 }
 
-.tree-area .rank-6-deepblue li>.item-box.now>h2, .tree-area .rank-6-deepblue li>.item-box.now>p {
+.tree-area .rank-6-deepblue li>.item-box.now>h2, .tree-area .rank-6-deepblue li>.item-box.now>h2>a, .tree-area .rank-6-deepblue li>.item-box.now>p {
     color: #FFF
 }
 
@@ -5015,7 +5015,7 @@ body {
         color: #B991E2
     }
 
-    .tree-area .rank-7-purple li>.item-box:hover>h2, .tree-area .rank-7-purple li>.item-box:hover>p {
+    .tree-area .rank-7-purple li>.item-box:hover>h2, .tree-area .rank-7-purple li>.item-box:hover>h2>a, .tree-area .rank-7-purple li>.item-box:hover>p {
         color: #FFF
     }
 
@@ -5077,7 +5077,7 @@ body {
     color: #B991E2
 }
 
-.tree-area .rank-7-purple li>.item-box.now>h2, .tree-area .rank-7-purple li>.item-box.now>p {
+.tree-area .rank-7-purple li>.item-box.now>h2, .tree-area .rank-7-purple li>.item-box.now>h2>a, .tree-area .rank-7-purple li>.item-box.now>p {
     color: #FFF
 }
 
@@ -5135,7 +5135,7 @@ body {
         color: #555
     }
 
-    .tree-area .rank-second-gray>li>.item-box:hover>h2, .tree-area .rank-second-gray>li>.item-box:hover>p {
+    .tree-area .rank-second-gray>li>.item-box:hover>h2, .tree-area .rank-second-gray>li>.item-box:hover>h2>a, .tree-area .rank-second-gray>li>.item-box:hover>p {
         color: #FFF
     }
 
@@ -5188,7 +5188,7 @@ body {
     color: #555;
 }
 
-.tree-area .rank-second-gray>li>.item-box.now>h2, .tree-area .rank-second-gray>li>.item-box.now>p {
+.tree-area .rank-second-gray>li>.item-box.now>h2, .tree-area .rank-second-gray>li>.item-box.now>h2>a, .tree-area .rank-second-gray>li>.item-box.now>p {
     color: #FFF
 }
 

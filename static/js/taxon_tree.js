@@ -52,7 +52,7 @@ function getSubList(item){
                                     <div class="cir-box">
                                         ${j}
                                     </div>
-                                    <h2 class="redirectTaxonPage" data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</h2>
+                                    <h2><a href="/${$lang}/taxon/${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</a></h2>
                                     <p>${results[j]['data'][i]['stat']}</p>
                                     <div class="arr">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -94,17 +94,25 @@ function getSubList(item){
                 }
             }
             $(".getSubList").prop("onclick", null).off("click");
-            $(".redirectTaxonPage").prop("onclick", null).off("click");
+            // $(".redirectTaxonPage").prop("onclick", null).off("click");
 
             $('.getSubList').on('click', function(){
                 getSubList($(this))
             })   
-        
-            $('.redirectTaxonPage').on('click', function(event){
+
+            $('.tree-area .item-box h2 a').off('click')
+            $('.tree-area .item-box h2 a').on('click', function(event){
                 event.stopPropagation();
-                //window.open(`/taxon/${$(this).data('taxon_id')}`);
-                window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
-            })   
+                console.log('hello')
+            })
+        
+        
+        
+            // $('.redirectTaxonPage').on('click', function(event){
+            //     event.stopPropagation();
+            //     //window.open(`/taxon/${$(this).data('taxon_id')}`);
+            //     window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
+            // })   
  
         })
         .fail(function( xhr, status, errorThrown ) {
@@ -141,11 +149,17 @@ $(function (){
         searchClick($(this).data('taxon_id'),true)
     })
 
-    $('.redirectTaxonPage').on('click', function(event){
+    $('.tree-area .item-box h2 a').off('click')
+    $('.tree-area .item-box h2 a').on('click', function(event){
         event.stopPropagation();
-        //window.open(`/taxon/${$(this).data('taxon_id')}`);
-        window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
-    })    
+        console.log('hello')
+    })
+
+    // $('.redirectTaxonPage').on('click', function(event){
+    //     event.stopPropagation();
+    //     //window.open(`/taxon/${$(this).data('taxon_id')}`);
+    //     window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
+    // })    
 
     // 栽培豢養
     $('input[name="cultured"], input[name="lin_rank"]').change(function() {
@@ -190,7 +204,7 @@ $(function (){
                         <div class="cir-box">
                             界
                         </div>
-                        <h2 class="redirectTaxonPage" data-taxon_id="${ r.taxon_id }">${ r.name }</h2>
+                        <h2><a href="/${$lang}/taxon/${ r.taxon_id }">${ r.name }</a></h2>
                         <p>${ r.stat }</p>
                         <div class="arr">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -210,12 +224,18 @@ $(function (){
                 getSubList($(this))
             })
         
-            $('.redirectTaxonPage').off('click')
-            $('.redirectTaxonPage').on('click', function(event){
+            // $('.redirectTaxonPage').off('click')
+            // $('.redirectTaxonPage').on('click', function(event){
+            //     event.stopPropagation();
+            //     //window.open(`/taxon/${$(this).data('taxon_id')}`);
+            //     window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
+            // })    
+
+            $('.tree-area .item-box h2 a').off('click')
+            $('.tree-area .item-box h2 a').on('click', function(event){
                 event.stopPropagation();
-                //window.open(`/taxon/${$(this).data('taxon_id')}`);
-                window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
-            })    
+                console.log('hello')
+            })        
 
             if (current_taxon_id){
                 searchClick(current_taxon_id, false)
@@ -449,7 +469,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                                 <div class="cir-box">
                                     ${j}
                                 </div>
-                                <h2 class="redirectTaxonPage" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
+                                <h2><a href="/${$lang}/taxon/${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</a></h2>
                                 <p>${results[r][j]['data'][i]['stat']}</p>
                                 <div class="arr">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -503,7 +523,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                                         <div class="cir-box">
                                             ${j}
                                         </div>
-                                        <h2 class="redirectTaxonPage" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
+                                        <h2><a href="/${$lang}/taxon/${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</a></h2>
                                         <p>${results[r][j]['data'][i]['stat']}</p>
                                         <div class="arr">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -558,7 +578,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                                         <div class="cir-box">
                                             ${j}
                                         </div>
-                                        <h2 class="redirectTaxonPage" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
+                                        <h2><a href="/${$lang}/taxon/${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</a></h2>
                                         <p>${results[r][j]['data'][i]['stat']}</p>
                                         <div class="arr">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -580,16 +600,19 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
             }
             
             $(".getSubList").prop("onclick", null).off("click");
-            $(".redirectTaxonPage").prop("onclick", null).off("click");
+            // $(".redirectTaxonPage").prop("onclick", null).off("click");
 
             $('.getSubList').on('click', function(){
                 getSubList($(this))
-            })      
-            $('.redirectTaxonPage').on('click', function(event){
-                event.stopPropagation();
-                // window.open(`/taxon/${$(this).data('taxon_id')}`);
-                window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
-            })
+            })     
+
+            $('.tree-area .item-box h2 a').off('click')
+            $('.tree-area .item-box h2 a').on('click')
+            // $('.redirectTaxonPage').on('click', function(event){
+            //     event.stopPropagation();
+            //     // window.open(`/taxon/${$(this).data('taxon_id')}`);
+            //     window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
+            // })
             
         }
 
