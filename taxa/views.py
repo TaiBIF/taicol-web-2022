@@ -222,6 +222,7 @@ def get_autocomplete_taxon(request):
                 conn.close()
 
         else:
+            s = time.time()
             # 先單純用taxon_names的表搜尋 如果有結果再繼續往下搜
             first_query = f"SELECT id FROM taxon_names WHERE `name` REGEXP %s AND deleted_at IS NULL LIMIT 1"
             conn = pymysql.connect(**db_settings)
@@ -231,22 +232,25 @@ def get_autocomplete_taxon(request):
 
             if first_results:
                 # 只join有查到相關字的base_name表
+                                # AND atu.taxon_name_id in (
+                                #     SELECT id
+                                #     FROM base_name
+                                # )
+                
                 query = f"""
                             WITH base_name AS (
-                            SELECT *
+                            SELECT id, name
                             FROM taxon_names 
                             WHERE deleted_at is null AND `name` REGEXP '{keyword_str}' LIMIT 50
                             ), 
                             base_query AS(
                                 SELECT distinct atu.taxon_id, atu.taxon_name_id, atu.accepted_taxon_name_id, atu.status
                                 FROM api_taxon_usages atu
+                                JOIN base_name ON atu.taxon_name_id = base_name.id
                                 JOIN api_taxon at ON atu.taxon_id = at.taxon_id 
                                     AND at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} 
                                     {' AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
-                                WHERE atu.is_deleted =0 AND atu.taxon_name_id in (
-                                    SELECT id
-                                    FROM base_name
-                                )
+                                WHERE atu.is_deleted =0 
                             )
                             SELECT bq.taxon_id, tn.name, CONCAT_WS(' ', tnn.name,GROUP_CONCAT(acn.name_c order by acn.is_primary DESC separator ',' )), bq.status
                             FROM base_query bq
@@ -261,6 +265,7 @@ def get_autocomplete_taxon(request):
                     cursor.execute(query)
                     results = cursor.fetchall()
                     conn.close()
+            print(time.time()-s)
             
         ds = pd.DataFrame(results, columns=['id','name','text','name_status'])
         if len(ds):
