@@ -265,6 +265,7 @@ $(function (){
         }*/
     });
     
+    
 
     // 關鍵字 autocomplete
     $("#keyword").select2({
@@ -289,6 +290,7 @@ $(function (){
             },
         },		
         ajax: {
+            delay: 250,
             dataType: 'json',
             data: function (params) {
                 let cultured = 'off';
@@ -326,7 +328,7 @@ $(function (){
                     throw false;  
                 }
 
-            },			  
+            },
             jsonpCallback: 'jsonCallback',
             url: '/get_autocomplete_taxon',
             processResults: function (data) {
@@ -338,7 +340,7 @@ $(function (){
                         }
                     })
                 };
-            }
+            },
         }
     });
 
@@ -637,3 +639,6 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
         console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
     }) 
 }
+
+
+

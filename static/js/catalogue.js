@@ -758,6 +758,7 @@
 				}
 			},		
 			ajax: {
+				delay: 250,
 				dataType: 'json',
 				data: function (params) {
 					if (params.term != undefined ){
