@@ -235,7 +235,7 @@ def get_autocomplete_taxon(request):
                             WITH base_name AS (
                             SELECT *
                             FROM taxon_names 
-                            WHERE deleted_at is null AND `name` REGEXP '{keyword_str}'
+                            WHERE deleted_at is null AND `name` REGEXP '{keyword_str}' LIMIT 50
                             ), 
                             base_query AS(
                                 SELECT distinct atu.taxon_id, atu.taxon_name_id, atu.accepted_taxon_name_id, atu.status
@@ -254,7 +254,7 @@ def get_autocomplete_taxon(request):
                             INNER JOIN base_name tn ON bq.taxon_name_id = tn.id AND tn.id IN (bq.taxon_name_id)
                             INNER JOIN base_name tnn ON bq.accepted_taxon_name_id = tnn.id AND tnn.id IN (bq.accepted_taxon_name_id)
                             LEFT JOIN api_common_name acn ON acn.taxon_id = bq.taxon_id
-                            GROUP BY bq.taxon_id, tn.name, tnn.name, bq.status LIMIT 10;
+                            GROUP BY bq.taxon_id, tn.name, tnn.name, bq.status;
                         """
                 conn = pymysql.connect(**db_settings)
                 with conn.cursor() as cursor:
