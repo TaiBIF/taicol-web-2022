@@ -23,48 +23,50 @@ export type CategoryDataProps = {
 
 export type NewsDataProps = {
 	id: number;
-  title: string;
-  publishedDate: string;
-  description: string;
-  category: string;
-  Category: {
-    name: string;
-  }
+	title: string;
+	publishedDate: string;
+	description: string;
+	category: string;
+	Category: {
+		name: string;
+	}
 };
 
 export type ArticleDataProps = {
 	id: number;
 	title: string;
-  description: string;
-  publishedDate: string;
-  author: string;
-  category: string;
-  Category: {
-    name: string;
-  }
+	description: string;
+	publishedDate: string;
+	author: string;
+	category: string;
+	Category: {
+		name: string;
+	}
 };
 
 export type DownloadFileDataProps = {
-  url: string,
-  type: string,
+	url: string,
+	type: string,
 }
 
 export type DownloadDataProps = {
 	id: number;
 	title: string;
-  description: string;
-  files: string | React.ReactNode;
-  category: string;
-  Category: {
-    name: string;
-  },
-  DownloadFiles: DownloadFileDataProps[]
+	title_eng: string;
+	description: string;
+	description_eng: string;
+	files: string | React.ReactNode;
+	category: string;
+	Category: {
+		name: string;
+	},
+	DownloadFiles: DownloadFileDataProps[]
 };
 
 export type ApiResponseDataProps = {
 	id: number;
 	title: string;
-  content: string;
+	content: string;
 };
 
 export type NewsListProps = {

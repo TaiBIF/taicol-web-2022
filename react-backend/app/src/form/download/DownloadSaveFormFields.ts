@@ -6,9 +6,11 @@ import { DownloadFileTypeOptions } from '../options';
 export type DownloadSaveFields = {
 	id: number;
 	title: OptionProp;
-  file: string;
-  type: string;
+	title_eng: string;
+	file: string;
+	type: string;
 	description: string;
+	description_eng: string;
 	category: string;
 };
 
@@ -17,7 +19,9 @@ export const DownloadSaveFormFields: Array<InputTextFieldProps | InputSelectFiel
 	{ name: 'id', type: 'hidden', label: '' },
 	{ name: 'CategoryId', type: 'select', label: '目錄', options: getCategories('download'),async:true},
 	{ name: 'title', type: 'text', label: '標題'},
+	{ name: 'title_eng', type: 'text', label: '英文版標題' },
 	{ name: 'description', type: 'text', label: '描述' },
+	{ name: 'description_eng', type: 'text', label: '英文版描述' },
 ];
 
 export const DownloadFileSaveFormFields: Array<InputTextFieldProps | InputSelectFieldProps> = [

@@ -24,6 +24,14 @@ Download.init(
 			type: new DataTypes.TEXT,
 			allowNull: false,
 		},
+		title_eng: {
+			type: new DataTypes.STRING(1000),
+			allowNull: false,
+		},
+		description_eng: {
+			type: new DataTypes.TEXT,
+			allowNull: false,
+		},
 		publish: {
 			type: new DataTypes.BOOLEAN,
 			allowNull: false,

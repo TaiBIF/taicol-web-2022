@@ -37,7 +37,9 @@ export type DownloadDataProps = {
   category: string,
   Category: {id:string},
   title: string,
+  title_eng: string,
   DownloadFiles: DownloadFileDataProps[],
+  description_eng: string,
   description: string,
   updatedAt:string
 }
