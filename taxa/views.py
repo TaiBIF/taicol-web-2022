@@ -1666,7 +1666,10 @@ def get_conditioned_query_search(req, from_url=False):
     if keyword := req.get('keyword','').strip():
         keyword = get_variants(keyword)
         keyword_type = req.get('name-select','contain')
-        if keyword_type == "equal":
+        if keyword_type == "equal" and re.search(r'[\u4e00-\u9fff]+', keyword):
+            # 中文名可能有異體字 要修改成REGEXP
+            keyword_str = f"REGEXP '^{keyword}$'"
+        elif keyword_type == "equal":
             keyword_str = f"= '{keyword}'"
         elif keyword_type == "startwith":
             keyword_str = f"REGEXP '^{keyword}'"
@@ -1676,6 +1679,7 @@ def get_conditioned_query_search(req, from_url=False):
 
         if re.search(r'[\u4e00-\u9fff]+', keyword_str):
             # 改成用api_common_name查詢 只回傳有效名
+
             query = f"""
                         WITH base_query AS (
                             SELECT distinct taxon_id
