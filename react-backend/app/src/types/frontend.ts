@@ -17,6 +17,7 @@ export type NewsDataProps = {
   publishedDate: string;
   Category: {
     name: string,
+    name_eng: string,
     color: string,
   };
 }
@@ -29,6 +30,7 @@ export type ArticleDataProps = {
   publishedDate: string;
   Category: {
     name: string,
+    name_eng: string,
     color: string,
   };
 }

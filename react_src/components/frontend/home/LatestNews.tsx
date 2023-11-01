@@ -3,12 +3,14 @@ import type {NewsDataProps} from '../types'
 import * as moment from 'moment';
 import {shortDescription} from '../utils/helper'
 import validateColor from "validate-color";
-import { Translation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 
 const LatestNews: React.FC<NewsDataProps> = (props) => {
   const { title, Category, publishedDate, slug } = props
   const date = moment(new Date(publishedDate))
   const categoryBackgroundColor = Category.color  && validateColor(Category.color) ? Category.color : "black"
+
+  const { t, i18n } = useTranslation();
 
   return (
     <li>
@@ -18,10 +20,12 @@ const LatestNews: React.FC<NewsDataProps> = (props) => {
             <div className="day">{date.format('DD')}</div>
             <div className="mon-year">{date.format('MMM')}.{date.format('YYYY')}</div>
           </div>
-          <Translation>{t =>
+          {/* <Translation>{t => */}
           <div className={`tag`}  style={{backgroundColor: categoryBackgroundColor}}>
-            {t(Category.name)}
-          </div>}</Translation>
+            {/* {t(Category.name)} */}
+            {i18n.language == 'en-us' ? Category.name_eng : Category.name}
+          </div>
+          {/* }</Translation> */}
         </div>
         <h3 className="news-title">
           {shortDescription(title, 100)}

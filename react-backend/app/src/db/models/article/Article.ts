@@ -9,7 +9,7 @@ class Article extends Model {
 	declare title: string;
 	declare slug: string;
 	declare description: string;
-  declare publishedDate: Date;
+	declare publishedDate: Date;
 }
 
 Article.init(

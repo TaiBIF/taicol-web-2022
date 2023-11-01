@@ -18,6 +18,7 @@ export type CategoryDataProps = {
 	id: number;
 	type: CategoryTypes;
 	name: string;
+	name_eng: string;
 	sort: number;
 };
 
@@ -29,6 +30,7 @@ export type NewsDataProps = {
 	category: string;
 	Category: {
 		name: string;
+		name_eng: string;
 	}
 };
 
@@ -41,6 +43,7 @@ export type ArticleDataProps = {
 	category: string;
 	Category: {
 		name: string;
+		name_eng: string;
 	}
 };
 
@@ -59,6 +62,7 @@ export type DownloadDataProps = {
 	category: string;
 	Category: {
 		name: string;
+		name_eng: string;
 	},
 	DownloadFiles: DownloadFileDataProps[]
 };

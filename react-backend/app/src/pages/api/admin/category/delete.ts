@@ -9,7 +9,7 @@ type ResponseData = {
 };
 
 export default async (req: NextApiRequest, res: NextApiResponse<ResponseData>) => {
-  const schema = z.object({id:z.number().positive().min(1)});
+	const schema = z.object({id:z.number().positive().min(1)});
 	const validateResult = schema.safeParse(req.query);
 
 	let resStatus = false;

@@ -2,12 +2,14 @@ import * as React from 'react';
 import type { ArticleDataProps } from '../types'
 import * as moment from 'moment';
 import validateColor from "validate-color";
-import { Translation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 
 const ArticleItem: React.FC<ArticleDataProps> = (props) => {
   const {   title, author, Category, publishedDate,slug } = props
   const date = moment(new Date(publishedDate))
   const categoryBackgroundColor = Category.color  && validateColor(Category.color) ? Category.color : "black"
+
+  const { t, i18n } = useTranslation();
 
   return (
     <li>
@@ -19,7 +21,9 @@ const ArticleItem: React.FC<ArticleDataProps> = (props) => {
             <div className="mon-year">{date.format('MMM')}.{date.format('YYYY')}</div>
             </div>
           <div className={`tag`}  style={{backgroundColor: categoryBackgroundColor}}>
-          <Translation>{t=> t(Category.name)}</Translation>  
+          {/* <Translation>{t=> t(Category.name)}</Translation>   */}
+              {i18n.language == 'en-us' ? Category.name_eng : Category.name}
+
             </div>
           </div>
           <div className="right-name">

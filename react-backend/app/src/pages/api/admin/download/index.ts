@@ -23,7 +23,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const download = await Download.findAndCountAll({
     where: where,
-		include:[{model:Category,attributes:['id','name']},{model:DownloadFile}],
+		include:[{model:Category,attributes:['id','name','name_eng']},{model:DownloadFile}],
     order: [
       ['id', 'DESC']
     ],

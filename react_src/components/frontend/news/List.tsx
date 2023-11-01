@@ -4,7 +4,7 @@ import Item from './Item'
 import { NewsDataProps, NewsListProps, CategoryDataProps } from '../types'
 import useSWR from 'swr'
 import { fetcher } from '../utils/helper'
-import { Translation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 
 const NewsItem: React.FC = () => {
   const [selectedCategory, setSelectCategory] = React.useState<number | string>('all')
@@ -15,6 +15,8 @@ const NewsItem: React.FC = () => {
   const { data: newsList } = useSWR<NewsListProps>(GET_NEWS_LIST_URL,fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL,fetcher);
   const pageSize: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
+
+  const { t, i18n } = useTranslation();
 
   React.useEffect(() => {
     if (newsList) {
@@ -38,13 +40,16 @@ const NewsItem: React.FC = () => {
           </li>
           }</Translation>
           {categories?.map((category) => {
-            return (<Translation>{t =>
+            return (
+            // <Translation>{t =>
               <li
               onClick={() => handleCategoryClick(category.id)}
               className={selectedCategory === category.id ? 'now' : ''}>
-              {t(category.name)}
+              {/* {t(category.name)} */}
+              <p>{i18n.language == 'en-us' ? category.name_eng : category.name}</p>
             </li>
-            }</Translation>)
+            // }</Translation>
+            )
           })}
 				</ul>
 			</div>

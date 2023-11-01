@@ -24,6 +24,10 @@ Category.init(
 			type: new DataTypes.STRING(256),
 			allowNull: false,
 		},
+		name_eng: {
+			type: new DataTypes.STRING(1000),
+			allowNull: false,
+		},
 		color: {
 			type: new DataTypes.STRING(10),
 			allowNull: true,
