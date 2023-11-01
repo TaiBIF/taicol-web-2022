@@ -103,10 +103,7 @@ function getSubList(item){
             $('.tree-area .item-box h2 a').off('click')
             $('.tree-area .item-box h2 a').on('click', function(event){
                 event.stopPropagation();
-                console.log('hello')
             })
-        
-        
         
             // $('.redirectTaxonPage').on('click', function(event){
             //     event.stopPropagation();
@@ -152,7 +149,6 @@ $(function (){
     $('.tree-area .item-box h2 a').off('click')
     $('.tree-area .item-box h2 a').on('click', function(event){
         event.stopPropagation();
-        console.log('hello')
     })
 
     // $('.redirectTaxonPage').on('click', function(event){
@@ -234,7 +230,6 @@ $(function (){
             $('.tree-area .item-box h2 a').off('click')
             $('.tree-area .item-box h2 a').on('click', function(event){
                 event.stopPropagation();
-                console.log('hello')
             })        
 
             if (current_taxon_id){
