@@ -16,6 +16,7 @@
 {% get_current_language as LANGUAGE_CODE %}
 
 {% csrf_token %}
+<input type="hidden" id="name_id" value="{{ data.name_id }}">
 <div class="loadingbox d-none">
 	<img class="center-logo" src="{% static 'image/logo-img.svg' %}" alt="臺灣物種名錄">
 	<div id="loader-wrapper">
@@ -649,7 +650,7 @@
 								</svg>
 							</div>
 						</div>
-						<div class="w-content">
+						<div class="w-content taxon-history-edit">
 							<div class="scro-m">
 							{% if taxon_history|length > 0 %}
 							<table class="history-edit" cellspacing="0" cellpadding="0" border="0">
@@ -660,7 +661,7 @@
 									<td>{% trans "編輯者" %}</td>
 								</tr>
 								{% for t in taxon_history %}
-									<tr>
+									<tr class="history-rows">
 										<td>{{ t.updated_at|safe }}</td>
 										<td>{{ t.title }}{{ t.content|default_if_none:''|safe }}</td>
 										<td>{{ t.ref|default_if_none:''|safe }}</td>
@@ -669,7 +670,27 @@
 								{% endfor %}
 							</table>
 							{% endif %}
-						</div>
+							</div>
+							{% if page_list|length > 1 %}
+							<div class="page-num">
+								<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
+								<a href="javascript:;" data-page="0" class="back">
+									<img src="/static/image/pagear1.svg">
+									<p>{% trans '上一頁' %}</p>
+								</a>
+								<!-- 中間的page -->
+								{% for p in page_list %}
+									<a class="num {% if p == current_page %} now {% endif %} updateData" href="javascript:;" data-page="{{ p }}">{{ p }}</a> 
+								{% endfor %}
+								<!-- 中間的page -->
+								<a href="javascript:;" data-page="2" class="next updateData">
+									<p>{% trans '下一頁' %}</p>
+									<img src="/static/image/pagear2.svg">
+								</a>
+								<a href="javascript:;" data-page="{{ total_page }}" class="num updateData" id="page-end">{{ total_page }}</a>
+								<input type="hidden" name="total_page" value="{{ total_page }}">
+							</div>
+							{% endif %}
 						</div>
 					</div>
 				</div>

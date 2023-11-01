@@ -9,34 +9,33 @@ import numpy as np
 from  django.utils.translation import get_language, gettext
 
 
-# def get_page_list(current_page, total_page, window=3):
-#   list_index = math.ceil(current_page/window)
-#   if list_index*window > total_page:
-#     page_list = list(range(list_index*window-(window-1),total_page+1))
-#   else:
-#     page_list = list(range(list_index*window-(window-1),list_index*window+1))
-#   return page_list
-
+def get_page_list(current_page, total_page, window=5):
+  list_index = math.ceil(current_page/window)
+  if list_index*window > total_page:
+    page_list = list(range(list_index*window-(window-1),total_page+1))
+  else:
+    page_list = list(range(list_index*window-(window-1),list_index*window+1))
+  return page_list
 
 # from django.core.paginator import Paginator
 
-# 固定window = 3
-def get_page_list(current_page, total_page):
-#   window = 3
-  # TODO 這邊的window應該可以改成除了中間值以外左右各幾個頁碼？
-  page_range = range(1, total_page+1)
+# # 固定window = 3
+# def get_page_list(current_page, total_page):
+# #   window = 3
+#  這邊的window應該可以改成除了中間值以外左右各幾個頁碼？
+#   page_range = range(1, total_page+1)
 
-  # 在中間
-  if current_page + 1 <= total_page and current_page - 1 > 0:
-     page_list = [current_page - 1, current_page, current_page + 1]
-  # 在最後
-  elif current_page == total_page:
-     page_list = [pp for pp in page_range[-3:]]
-  # 在最前面
-  elif current_page == 1:
-     page_list = [pp for pp in page_range[:3]]
-    # page_list = [pp for pp in p.page_range[current_index:current_index+window]]
-  return page_list
+#   # 在中間
+#   if current_page + 1 <= total_page and current_page - 1 > 0:
+#      page_list = [current_page - 1, current_page, current_page + 1]
+#   # 在最後
+#   elif current_page == total_page:
+#      page_list = [pp for pp in page_range[-3:]]
+#   # 在最前面
+#   elif current_page == 1:
+#      page_list = [pp for pp in page_range[:3]]
+#     # page_list = [pp for pp in p.page_range[current_index:current_index+window]]
+#   return page_list
 
 
 db_settings = {
@@ -468,7 +467,7 @@ taxon_history_map_c = {
     }
 
 
-def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
+def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, current_page=1,limit=8):
   taxon_history_dict = taxon_history_map if lang == 'en-us' else taxon_history_map_c
   # taxon_history = []
   taxon_history = pd.DataFrame(columns=['history_type', 'content', 'short_author', 'updated_at', 'user_name', 'reference_id', 'note', 'reference_type'])
@@ -629,8 +628,12 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
   taxon_history = taxon_history[['title','content','ref','updated_at','editor']]
   taxon_history.loc[taxon_history['title']==gettext('新增Taxon'),'content'] = ''
 #   taxon_history = taxon_history.drop_duplicates(subset=['title','content','ref']).to_dict(orient='records')
+  taxon_history = taxon_history.replace({np.nan: '', None: ''})
   taxon_history = taxon_history.drop_duplicates().to_dict(orient='records')
-  return taxon_history
+  total_page = math.ceil(len(taxon_history) / limit)
+  page_list = get_page_list(current_page=current_page, total_page=total_page)
+  taxon_history = taxon_history[(current_page-1)*limit:current_page*limit]
+  return taxon_history, current_page, total_page, page_list
 
 
 

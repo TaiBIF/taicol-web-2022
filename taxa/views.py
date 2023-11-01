@@ -287,6 +287,7 @@ def taxon(request, taxon_id):
     stat_str, taxon_group_str = '', ''
     new_taxon_id, new_taxon_name = '', ''
     refs, new_refs, experts, links, name_changes, taxon_history, name_history,short_refs = [], [], [], [], [], [], [], []
+    total_page, current_page, page_list = 0, 1, [] # for taxon_history
     data = {}
     # 確認是否已刪除 & 如果是國外物種不顯示
     is_deleted = 0
@@ -882,7 +883,7 @@ def taxon(request, taxon_id):
                         if new_taxon_id:
                             new_taxon_name = new_taxon_id[0]
                             new_taxon_id = new_taxon_id[1]
-                taxon_history = create_history_display(taxon_id, get_language(), new_taxon_id, new_taxon_name, names)
+                taxon_history, current_page, total_page, page_list = create_history_display(taxon_id, get_language(), new_taxon_id, new_taxon_name, names, current_page=current_page)
                 data['self'] = ''
                 data['self'] = {'rank_color': rank_color_map[data['rank_id']] if data['rank_id'] in [3,12,18,22,26,30,34] else 'rank-second-gray',
                                 'rank_c': rank_map_c[data['rank_id']],
@@ -940,7 +941,103 @@ def taxon(request, taxon_id):
 
     return render(request, 'taxa/taxon.html', {'taxon_id': taxon_id, 'data': data, 'links': links,
                                                 'refs': refs, 'experts': experts, 'name_changes': name_changes,
-                                               'taxon_history': taxon_history, 'stat_str': stat_str, 'name_history': name_history })
+                                               'taxon_history': taxon_history, 'stat_str': stat_str, 'name_history': name_history,
+                                               'current_page': current_page, 'total_page': total_page, 'page_list': page_list })
+
+def get_taxon_history(request):
+    if request.method == 'GET':
+        response = {}
+        taxon_id = request.GET.get('taxon_id')
+        name_id = request.GET.get('name_id')
+        current_page = int(request.GET.get('page', 1))
+        new_taxon_id, new_taxon_name = '', ''
+        conn = pymysql.connect(**db_settings)
+        new_taxon_id, new_taxon_name = '', ''
+        names = []
+        total_page, page_list = 0, [] # for taxon_history
+        # new_taxon_id
+        # new_taxon_name
+        query = f"""SELECT tn.name, at.taxon_id FROM api_taxon at
+        JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
+        WHERE at.taxon_id = (SELECT new_taxon_id FROM api_taxon WHERE taxon_id = %s)
+        """
+        with conn.cursor() as cursor:
+            cursor.execute(query, taxon_id)
+            new_taxon_id = cursor.fetchone()
+            if new_taxon_id:
+                new_taxon_name = new_taxon_id[0]
+                new_taxon_id = new_taxon_id[1]
+        # names
+        query = f"""SELECT atu.taxon_name_id, an.formatted_name, an.name_author, ac.short_author, atu.status,
+                    ru.status, JSON_EXTRACT(ru.properties, '$.is_in_taiwan'), tn.nomenclature_id, 
+                    tn.publish_year, ru.per_usages,
+                    ru.reference_id, tn.reference_id, r.publish_year, tn.rank_id, r.type, tn.original_taxon_name_id, ru.id
+                    FROM api_taxon_usages atu 
+                    LEFT JOIN reference_usages ru ON atu.reference_id = ru.reference_id and atu.accepted_taxon_name_id = ru.accepted_taxon_name_id and atu.taxon_name_id = ru.taxon_name_id
+                    LEFT JOIN api_names an ON an.taxon_name_id = atu.taxon_name_id
+                    LEFT JOIN `references` r ON r.id = ru.reference_id
+                    LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
+                    LEFT JOIN taxon_names tn ON tn.id = atu.taxon_name_id
+                    WHERE atu.taxon_id = %s"""
+                    # WHERE atu.taxon_id = %s AND atu.is_deleted = 0
+        conn = pymysql.connect(**db_settings)
+        with conn.cursor() as cursor:
+            cursor.execute(query, (taxon_id, ))
+            names = cursor.fetchall()
+            conn.close()
+            names = pd.DataFrame(names, columns=['taxon_name_id','sci_name','author','ref','taxon_status','ru_status',
+                                                'is_taiwan','nomenclature_id','publish_year','per_usages','reference_id', 
+                                                'o_reference_id','r_publish_year','rank_id','r_type','original_taxon_name_id','ru_id'])
+            # author 學名作者
+            # ref 學名使用文獻
+            # publish_year 學名發表的文獻年份
+            # r_publish_year 學名使用的文獻年份
+            # reference_id 學名使用文獻id
+            # o_reference_id 學名發表文獻id
+            # r_publish_year 學名使用的文獻類別
+            # taxon_status 學名在分類群的地位
+            # ru_status 學名在學名使用的地位
+
+            if len(names):
+                names = names.sort_values('publish_year', ascending=False)
+                names = names.replace({None:'',np.nan:''})
+                # 如果是雜交組合 要根據parent補上作者資訊                        
+                for tnid in names[(names.taxon_name_id!=name_id)&(names.rank_id==47)].taxon_name_id:
+                    query = f"WITH view as (SELECT tnhp.taxon_name_id, CONCAT_WS(' ',an.formatted_name, an.name_author ) as sci_name FROM taxon_name_hybrid_parent tnhp \
+                        JOIN api_names an ON tnhp.parent_taxon_name_id = an.taxon_name_id \
+                        WHERE tnhp.taxon_name_id = %s \
+                        ORDER BY tnhp.order) \
+                        SELECT group_concat(sci_name SEPARATOR ' × ') FROM view \
+                        GROUP BY taxon_name_id "
+                    conn = pymysql.connect(**db_settings)
+                    with conn.cursor() as cursor:
+                        cursor.execute(query, (tnid,))
+                        n = cursor.fetchone()
+                        conn.close()
+                        if n:
+                            names.loc[names.taxon_name_id==tnid,'sci_name'] = n[0] 
+                names['per_usages'] = names['per_usages'].apply(lambda x: json.loads(x) if x else [])
+                # 給保育資訊note使用的學名連結
+                names['sci_name_ori'] = names['sci_name']
+                # names['sci_name_ori'] = names.apply(lambda x: f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(x.taxon_name_id)}" target="_blank">{x.sci_name_ori}</a>', axis=1)
+                # 為了學名排序
+                # names['sci_name_ori_1'] = names['sci_name'] 
+                # 植物要補上學名發表年份
+                names['author'] = names.apply(lambda x: f"{x.author}, {x.publish_year}" if x.nomenclature_id==2 and x.publish_year else x.author, axis=1)
+                # 如果有author資訊 加上去
+                names['sci_name'] = names.apply(lambda x: f'{x.sci_name} {x.author}' if x.author else x.sci_name, axis=1)
+                # # 加上學名連結
+                # names['sci_name'] = names.apply(lambda x: f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(x.taxon_name_id)}" {'class="accpname"' if x.taxon_name_id == data['name_id'] else ''} target="_blank">{x.sci_name}</a>''', axis=1)
+
+        taxon_history, current_page, total_page, page_list = create_history_display(taxon_id, get_language(), new_taxon_id, new_taxon_name, names, current_page=current_page)
+            
+        response['taxon_history'] = taxon_history
+        response['current_page'] = current_page
+        response['total_page'] = total_page
+        response['page_list'] = page_list
+        response['next'] = gettext('下一頁')
+        response['prev'] = gettext('上一頁')
+        return JsonResponse(response, safe=False)
 
 
 
