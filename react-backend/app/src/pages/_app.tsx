@@ -19,7 +19,7 @@ import themeConfig from 'src/configs/themeConfig';
 
 // ** Component Imports
 import UserLayout from 'src/layouts/UserLayout';
-import FrontendLayout from 'src/layouts/FrontendLayout';
+// import FrontendLayout from 'src/layouts/FrontendLayout';
 import ThemeComponent from 'src/@core/theme/ThemeComponent';
 
 // ** Contexts
@@ -120,7 +120,7 @@ const App = (props: ExtendedAppProps) => {
 							<meta name="viewport" content="initial-scale=1, width=device-width" />
             </Head>
             {mount &&
-              window.location.pathname.startsWith('/admin') ?
+            //   window.location.pathname.startsWith('/admin') ?
                 <SettingsProvider>
                   <SettingsConsumer>
                     {({ settings }) => {
@@ -128,7 +128,7 @@ const App = (props: ExtendedAppProps) => {
                     }}
                   </SettingsConsumer>
                 </SettingsProvider>
-                : <FrontendLayout><Component /></FrontendLayout>
+                // : <FrontendLayout><Component /></FrontendLayout>
           }
         </SWRConfig>
 				</CacheProvider>
