@@ -222,7 +222,7 @@ def get_autocomplete_taxon(request):
                 conn.close()
 
         else:
-            s = time.time()
+            # s = time.time()
             # 先單純用taxon_names的表搜尋 如果有結果再繼續往下搜
             first_query = f"SELECT id FROM taxon_names WHERE `name` REGEXP %s AND deleted_at IS NULL LIMIT 1"
             conn = pymysql.connect(**db_settings)
@@ -265,7 +265,7 @@ def get_autocomplete_taxon(request):
                     cursor.execute(query)
                     results = cursor.fetchall()
                     conn.close()
-            print(time.time()-s)
+            # print(time.time()-s)
             
         ds = pd.DataFrame(results, columns=['id','name','text','name_status'])
         if len(ds):
