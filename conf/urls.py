@@ -18,6 +18,7 @@ from django.urls import path, include, re_path
 from conf import settings
 from django.views.static import serve
 from django.conf.urls.i18n import i18n_patterns
+from django.views.generic.base import TemplateView
 
 handler404 = 'pages.views.custom_page_not_found_view'
 handler500 = 'pages.views.custom_error_view'
@@ -33,6 +34,7 @@ urlpatterns = [
     }),
     path('', include('pages.urls')),
     path('', include('taxa.urls_pages')),
+    path("robots.txt",TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),),
 ]
 
 
