@@ -1,7 +1,7 @@
 import React from 'react';
 
 export type ActionTypes = 'info' | 'update' | 'delete';
-export type TableRows = UserData[] | CategoryDataProps[] | NewsDataProps[] | ArticleDataProps[] | ApiResponseDataProps[] | DownloadDataProps[];
+export type TableRows = UserData[] | CategoryDataProps[] | NewsDataProps[] | ArticleDataProps[] | ApiResponseDataProps[] | DownloadDataProps[] | FeedbackDataProps[];
 import {CategoryTypes} from 'src/types'
 
 export type UserData = {
@@ -73,6 +73,22 @@ export type ApiResponseDataProps = {
 	content: string;
 };
 
+export type FeedbackDataProps = {
+	id: number;
+	type: string;
+	title: string;
+	description: string;
+	reference: string;
+	notify: number;
+    name: string;
+    email:  string;
+    response: string;
+    is_solved: number;
+	updatedAt: string;
+	createdAt: string;
+};
+
+
 export type NewsListProps = {
 	rows: NewsDataProps[];
 	count: number;
@@ -92,3 +108,8 @@ export type ApiResponseListProps = {
 	rows: ApiResponseDataProps[];
 	count: number;
 };
+
+export type FeedbackListProps = {
+	rows: FeedbackDataProps[];
+	count: number;
+}
