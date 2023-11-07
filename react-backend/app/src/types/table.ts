@@ -1,7 +1,7 @@
 import React from 'react';
 
 export type ActionTypes = 'info' | 'update' | 'delete';
-export type TableRows = UserData[] | CategoryDataProps[] | NewsDataProps[] | ArticleDataProps[] | ApiResponseDataProps[] | DownloadDataProps[];
+export type TableRows = UserData[] | CategoryDataProps[] | NewsDataProps[] | ArticleDataProps[] | ApiResponseDataProps[] | DownloadDataProps[] | FeedbackDataProps[];
 import {CategoryTypes} from 'src/types'
 
 export type UserData = {
@@ -18,54 +18,76 @@ export type CategoryDataProps = {
 	id: number;
 	type: CategoryTypes;
 	name: string;
+	name_eng: string;
 	sort: number;
 };
 
 export type NewsDataProps = {
 	id: number;
-  title: string;
-  publishedDate: string;
-  description: string;
-  category: string;
-  Category: {
-    name: string;
-  }
+	title: string;
+	publishedDate: string;
+	description: string;
+	category: string;
+	Category: {
+		name: string;
+		name_eng: string;
+	}
 };
 
 export type ArticleDataProps = {
 	id: number;
 	title: string;
-  description: string;
-  publishedDate: string;
-  author: string;
-  category: string;
-  Category: {
-    name: string;
-  }
+	description: string;
+	publishedDate: string;
+	author: string;
+	category: string;
+	Category: {
+		name: string;
+		name_eng: string;
+	}
 };
 
 export type DownloadFileDataProps = {
-  url: string,
-  type: string,
+	url: string,
+	type: string,
 }
 
 export type DownloadDataProps = {
 	id: number;
 	title: string;
-  description: string;
-  files: string | React.ReactNode;
-  category: string;
-  Category: {
-    name: string;
-  },
-  DownloadFiles: DownloadFileDataProps[]
+	title_eng: string;
+	description: string;
+	description_eng: string;
+	files: string | React.ReactNode;
+	category: string;
+	Category: {
+		name: string;
+		name_eng: string;
+	},
+	DownloadFiles: DownloadFileDataProps[]
 };
 
 export type ApiResponseDataProps = {
 	id: number;
 	title: string;
-  content: string;
+	content: string;
 };
+
+export type FeedbackDataProps = {
+	id: number;
+	type: string;
+	title: string;
+	description: string;
+	reference: string;
+	notify: number;
+    name: string;
+    email:  string;
+    response: string;
+    is_solved: number;
+	updatedAt: string;
+	createdAt: string;
+};
+
 
 export type NewsListProps = {
 	rows: NewsDataProps[];
@@ -86,3 +108,8 @@ export type ApiResponseListProps = {
 	rows: ApiResponseDataProps[];
 	count: number;
 };
+
+export type FeedbackListProps = {
+	rows: FeedbackDataProps[];
+	count: number;
+}

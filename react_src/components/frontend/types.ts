@@ -16,6 +16,7 @@ export type NewsDataProps = {
   updatedAt: string;
   Category: {
     name: string,
+    name_eng: string,
     color: string,
   };
 }
@@ -31,6 +32,7 @@ export type ArticleDataProps = {
   publishedDate: string,
   Category: {
     name: string,
+    name_eng: string,
     color: string,
   };
 }
@@ -39,8 +41,10 @@ export type DownloadDataProps = {
   category: string,
   Category: {id:string},
   title: string,
+  title_eng: string,
   DownloadFiles: DownloadFileDataProps[],
   description: string,
+  description_eng: string,
   updatedAt:string
 }
 
@@ -126,6 +130,7 @@ export type CategoryDataProps = {
 	id: number;
 	type: CategoryTypes;
 	name: string;
+	name_eng: string;
 	sort: number;
 };
 

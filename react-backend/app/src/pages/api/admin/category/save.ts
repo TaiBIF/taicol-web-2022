@@ -11,11 +11,11 @@ type ResponseData = {
 export default async (req: NextApiRequest, res: NextApiResponse<ResponseData>) => {
 
 
-  const mode = req.body.id ? 'update' : 'create';
-  const schema = mode == 'update' ? updateCategoryFormSchema : createCategoryFormSchema;
+	const mode = req.body.id ? 'update' : 'create';
+	const schema = mode == 'update' ? updateCategoryFormSchema : createCategoryFormSchema;
 	const result = schema.safeParse(req.body);
 
-  console.log('schema result',result)
+	console.log('schema result',result)
 	let resStatus = false;
 	let errorMessage = errors.POST_UNEXPECT;
 

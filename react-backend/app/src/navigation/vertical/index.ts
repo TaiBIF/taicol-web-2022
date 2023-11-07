@@ -68,6 +68,14 @@ const navigation = (): VerticalNavItemsType => {
 			path: '/admin/category?type=download',
 		},
 		{
+			sectionTitle: 'Feedback List',
+		},
+		{
+			title: 'Feedback List',
+			icon: CardOutline,
+			path: '/admin/feedback',
+		},
+		{
 			sectionTitle: 'API Doc',
 		},
 		{

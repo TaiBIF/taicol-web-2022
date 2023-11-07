@@ -21,7 +21,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const news = await New.findAndCountAll({
     where: where,
-		include:[{model:Category,attributes:['name']}],
+		include:[{model:Category,attributes:['name','name_eng']}],
     offset: offset,
 		limit: limit,
     order: [

@@ -7,9 +7,9 @@ class New extends Model {
 	declare category: string;
 	declare title: string;
 	declare slug: string;
-  declare description: string;
-  declare publish: boolean;
-  declare publishedDate: Date;
+	declare description: string;
+	declare publish: boolean;
+	declare publishedDate: Date;
 }
 
 New.init(

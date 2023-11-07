@@ -137,7 +137,7 @@ df[is_list] = df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'tr
 df = df.replace({np.nan: '', None: ''})
 
 # 欄位順序
-cols = ['taxon_id','name_id','simple_name','name_author','formatted_name','synonyms','formatted_synonyms','rank',
+cols = ['taxon_id','name_id','simple_name','name_author','formatted_name','synonyms','formatted_synonyms','misapplied','formatted_misapplied','rank',
         'common_name_c','alternative_name_c','is_hybrid','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater',
         'is_brackish','is_marine','cites','iucn','redlist','protected','sensitive','created_at','updated_at',
         'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c','is_in_taiwan']
@@ -278,7 +278,7 @@ for i in names.index:
     if row['is_hybrid'] == 'true':
         query_hybrid_parent = f"SELECT GROUP_CONCAT( CONCAT(tn.name, ' ',tn.formatted_authors) SEPARATOR ' × ' ) FROM taxon_name_hybrid_parent AS tnhp \
                                 JOIN taxon_names AS tn ON tn.id = tnhp.parent_taxon_name_id \
-                                WHERE tnhp.taxon_name_id = {row['name_id']} AND tn.rank_id = 47  \
+                                WHERE tnhp.taxon_name_id = {row['name_id']} \
                                 GROUP BY tnhp.taxon_name_id"
         with conn.cursor() as cursor:
             cursor.execute(query_hybrid_parent)
@@ -309,19 +309,19 @@ compression_options = dict(method='zip', archive_name=f"TaiCOL_name_{last_update
 names.to_csv(f'TaiCOL_name_{last_updated}.zip', compression=compression_options, index=False)
 
 
-# 學名檔案2023-08
+# 學名檔案2023-10
 #  //就學名有幾筆
 # 共XXXX筆
-# 共 145980 筆
+# 共 161828 筆
 
 
-# 物種檔案2023-08
+# 物種檔案2023-10
 # //就Taxon有幾筆，但括號內只統計種rank34
 # 共xxxx筆（其中臺灣存在計??????種）
-
-# 共 101705 筆（其中臺灣存在計 63034 種）
-
 # taxon[taxon.is_in_taiwan=='true'].groupby('rank',as_index=False).taxon_id.nunique()
+
+# 共 102344 筆（其中臺灣存在計 63299 種）
+
 
 
 ## namecode檔案
@@ -349,5 +349,5 @@ namecode.to_csv(f'TaiCOL_namecode_{last_updated}.zip', compression=compression_o
 
 
 
-# 新舊學名編碼對照2023-08
+# 新舊學名編碼對照2023-10
 # 舊版臺灣物種名錄學名編碼對照新版學名編碼

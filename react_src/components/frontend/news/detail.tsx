@@ -5,7 +5,7 @@ import * as moment from 'moment';
 import { NewsDataProps } from '../types'
 import { fetcher,replaceDomain,replaceIp } from '../utils/helper'
 import Banner from '../common/Banner'
-import { Translation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 
 type Props = {
 	current: NewsDataProps,
@@ -13,6 +13,8 @@ type Props = {
 	next: NewsDataProps,
 }
 const News: React.FC = () => {
+
+  const { t, i18n } = useTranslation();
 
   const slug = typeof window !== "undefined" ? window.location.pathname.replace(/\/$/g,'').split("/").pop() : '';
   const encoded = decodeURI(slug as string);
@@ -34,7 +36,7 @@ const News: React.FC = () => {
     description = data?.current?.description.replace(process.env.REACT_API_URL, '/static');
   }
 
-  const tag_name = data?.current?.Category?.name || ''
+  // const tag_name = data?.current?.Category?.name || ''
 
   return (
   <div className="page-top">
@@ -47,7 +49,8 @@ const News: React.FC = () => {
         <div className="news-cont-title">
 				<div className="cont-date-flex">
 					<div className="tag"  style={{ backgroundColor: categoryBackgroundColor}}>
-            <Translation>{t=> t(tag_name)}</Translation>  
+            {i18n.language == 'en-us' ? data?.current?.Category?.name_eng : data?.current?.Category?.name }
+            {/* <Translation>{t=> t(tag_name)}</Translation>   */}
           </div>
 					<div className="date">{date}</div>
 				</div>

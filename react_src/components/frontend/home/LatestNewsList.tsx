@@ -4,7 +4,7 @@ import { NewsDataProps, NewsListProps, CategoryDataProps } from '../types'
 import useSWR from 'swr'
 import MoreButton from '../common/MoreButton'
 import { fetcher } from '../utils/helper'
-import { Translation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 
 const LatestNewsList: React.FC = () => {
   const [selectedCategory, setSelectCategory] = React.useState<number | string>('all')
@@ -16,6 +16,8 @@ const LatestNewsList: React.FC = () => {
   const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/category?type=news`;
   const { data: newsList } = useSWR<NewsListProps>(GET_LATEST_NEWS_LIST_URL,fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL,fetcher);
+  
+  const { t, i18n } = useTranslation();
 
   React.useEffect(() => {
     if (newsList) {
@@ -58,13 +60,18 @@ const LatestNewsList: React.FC = () => {
             <div className={selectedCategory === 'all' ? "liney w-full" : 'liney'}></div>
           </li>}</Translation>
           {categories?.map((category:CategoryDataProps,index:number) => {
-            return (<Translation>{t => <li
+            return (
+            // <Translation>{t => 
+            <li
               key={`category-${index}`}
               onClick={() => handleCategoryClick(category.id)}
               className={selectedCategory === category.id ? 'now' : ''}>
-              {t(category.name)}
+              {/* {t(category.name)} */}
+              {i18n.language == 'en-us' ? category.name_eng : category.name}
               <div className={selectedCategory === category.id ? "liney w-full" : 'liney'}></div>
-            </li>}</Translation>)
+            </li>
+            //} </Translation>
+            )
           })}
         </ul>
       </div>

@@ -9,34 +9,33 @@ import numpy as np
 from  django.utils.translation import get_language, gettext
 
 
-# def get_page_list(current_page, total_page, window=3):
-#   list_index = math.ceil(current_page/window)
-#   if list_index*window > total_page:
-#     page_list = list(range(list_index*window-(window-1),total_page+1))
-#   else:
-#     page_list = list(range(list_index*window-(window-1),list_index*window+1))
-#   return page_list
-
+def get_page_list(current_page, total_page, window=5):
+  list_index = math.ceil(current_page/window)
+  if list_index*window > total_page:
+    page_list = list(range(list_index*window-(window-1),total_page+1))
+  else:
+    page_list = list(range(list_index*window-(window-1),list_index*window+1))
+  return page_list
 
 # from django.core.paginator import Paginator
 
-# 固定window = 3
-def get_page_list(current_page, total_page):
-#   window = 3
-  # TODO 這邊的window應該可以改成除了中間值以外左右各幾個頁碼？
-  page_range = range(1, total_page+1)
+# # 固定window = 3
+# def get_page_list(current_page, total_page):
+# #   window = 3
+#  這邊的window應該可以改成除了中間值以外左右各幾個頁碼？
+#   page_range = range(1, total_page+1)
 
-  # 在中間
-  if current_page + 1 <= total_page and current_page - 1 > 0:
-     page_list = [current_page - 1, current_page, current_page + 1]
-  # 在最後
-  elif current_page == total_page:
-     page_list = [pp for pp in page_range[-3:]]
-  # 在最前面
-  elif current_page == 1:
-     page_list = [pp for pp in page_range[:3]]
-    # page_list = [pp for pp in p.page_range[current_index:current_index+window]]
-  return page_list
+#   # 在中間
+#   if current_page + 1 <= total_page and current_page - 1 > 0:
+#      page_list = [current_page - 1, current_page, current_page + 1]
+#   # 在最後
+#   elif current_page == total_page:
+#      page_list = [pp for pp in page_range[-3:]]
+#   # 在最前面
+#   elif current_page == 1:
+#      page_list = [pp for pp in page_range[:3]]
+#     # page_list = [pp for pp in p.page_range[current_index:current_index+window]]
+#   return page_list
 
 
 db_settings = {
@@ -162,6 +161,8 @@ lin_ranks = [3,12,18,22,26,30,34]
 sub_lin_ranks = [35,36,37,38,39,40,41,42,43,44,45,46]
 
 var_df = pd.DataFrame([
+('鲃','[鲃䰾]'),
+('䰾','[鲃䰾]'),
 ('刺','[刺刺]'),
 ('刺','[刺刺]'),
 ('葉','[葉葉]'),
@@ -466,7 +467,7 @@ taxon_history_map_c = {
     }
 
 
-def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
+def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, current_page=1,limit=8):
   taxon_history_dict = taxon_history_map if lang == 'en-us' else taxon_history_map_c
   # taxon_history = []
   taxon_history = pd.DataFrame(columns=['history_type', 'content', 'short_author', 'updated_at', 'user_name', 'reference_id', 'note', 'reference_type'])
@@ -588,6 +589,8 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
     c = json.loads(row.note)
     source = c.get('source')
     value = c.get('value')
+    old_value = c.get('old_value')
+    old_str = ''
     content = gettext(conserv_map[source]) + ' '
     if source == 'sensitive_suggest':
         drop_conserv.append(i)
@@ -597,12 +600,26 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
         for cl in c_list:
             c_list_str.append(cites_map[cl] if lang == 'en-us' else cites_map_c[cl])
         content += '/'.join(c_list_str)
+        if old_value:
+            c_list = old_value.split('/')
+            c_list_str = []
+            for cl in c_list:
+                c_list_str.append(cites_map[cl] if lang == 'en-us' else cites_map_c[cl])
+            old_str = '/'.join(c_list_str)
     elif source == 'iucn_category':
         content += value if lang == 'en-us' else iucn_map_c[value] + ' ' + value
+        if old_value:
+           old_str = old_value if lang == 'en-us' else iucn_map_c[old_value] + ' ' + old_value
     elif source == 'red_category':
         content +=  value if lang == 'en-us' else redlist_map_c[value] + ' ' + value
+        if old_value:
+            old_str = old_value if lang == 'en-us' else redlist_map_c[old_value] + ' ' + old_value
     elif source == 'protected_category':
         content +=  protected_map[value] if get_language() == 'en-us' else f'第 {value} 級 {protected_map_c[value]}'
+        if old_value:
+            old_str = protected_map[old_value] if get_language() == 'en-us' else f'第 {old_value} 級 {protected_map_c[old_value]}'
+    if row.history_type == 13:
+       content += f' ({gettext("原類別：")}{old_str})'
     taxon_history.loc[i,'content'] = content
   taxon_history = taxon_history.drop(index=drop_conserv)
 
@@ -611,8 +628,12 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names):
   taxon_history = taxon_history[['title','content','ref','updated_at','editor']]
   taxon_history.loc[taxon_history['title']==gettext('新增Taxon'),'content'] = ''
 #   taxon_history = taxon_history.drop_duplicates(subset=['title','content','ref']).to_dict(orient='records')
+  taxon_history = taxon_history.replace({np.nan: '', None: ''})
   taxon_history = taxon_history.drop_duplicates().to_dict(orient='records')
-  return taxon_history
+  total_page = math.ceil(len(taxon_history) / limit)
+  page_list = get_page_list(current_page=current_page, total_page=total_page)
+  taxon_history = taxon_history[(current_page-1)*limit:current_page*limit]
+  return taxon_history, current_page, total_page, page_list
 
 
 

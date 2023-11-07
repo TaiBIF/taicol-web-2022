@@ -19,7 +19,7 @@ import themeConfig from 'src/configs/themeConfig';
 
 // ** Component Imports
 import UserLayout from 'src/layouts/UserLayout';
-import FrontendLayout from 'src/layouts/FrontendLayout';
+// import FrontendLayout from 'src/layouts/FrontendLayout';
 import ThemeComponent from 'src/@core/theme/ThemeComponent';
 
 // ** Contexts
@@ -37,11 +37,11 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 // ** Global css styles
 import 'nprogress/nprogress.css';
 import '../../styles/globals.css';
-import '../../styles/theme.css';
+// import '../../styles/theme.css';
 import '../../styles/select2.css';
 import '../../styles/tailwind.css';
 import 'styles/nice-select.css'
-import '../../styles/markdown.css';
+// import '../../styles/markdown.css';
 
 
 import { SessionProvider, SessionProviderProps } from 'next-auth/react';
@@ -111,16 +111,17 @@ const App = (props: ExtendedAppProps) => {
 						}}
 					>
 						<Head>
-							<title>{`${themeConfig.templateName} - Material Design React Admin Template`}</title>
-							<meta
+							{/* <title>{`${themeConfig.templateName} - Material Design React Admin Template`}</title> */}
+							<title>{`TaiCOL admin`}</title>
+							{/* <meta
 								name="description"
 								content={`${themeConfig.templateName} – Material Design React Admin Dashboard Template – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
-							/>
-							<meta name="keywords" content="Material Design, MUI, Admin Template, React Admin Template" />
+							/> */}
+							{/* <meta name="keywords" content="Material Design, MUI, Admin Template, React Admin Template" /> */}
 							<meta name="viewport" content="initial-scale=1, width=device-width" />
             </Head>
             {mount &&
-              window.location.pathname.startsWith('/admin') ?
+            //   window.location.pathname.startsWith('/admin') ?
                 <SettingsProvider>
                   <SettingsConsumer>
                     {({ settings }) => {
@@ -128,7 +129,7 @@ const App = (props: ExtendedAppProps) => {
                     }}
                   </SettingsConsumer>
                 </SettingsProvider>
-                : <FrontendLayout><Component /></FrontendLayout>
+                // : <FrontendLayout><Component /></FrontendLayout>
           }
         </SWRConfig>
 				</CacheProvider>

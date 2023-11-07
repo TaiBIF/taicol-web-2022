@@ -3,7 +3,7 @@ import type { NewsDataProps } from '../types'
 import * as moment from 'moment';
 import validateColor from "validate-color";
 import { shortDescription } from '../utils/helper'
-import { Translation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 
 const NewsItem: React.FC<NewsDataProps> = (props) => {
   const { title,description, Category, publishedDate, slug } = props
@@ -14,6 +14,8 @@ const NewsItem: React.FC<NewsDataProps> = (props) => {
   }
   const categoryBackgroundColor = Category.color && validateColor(Category.color) ? Category.color : "black"
   
+  const { t, i18n } = useTranslation();
+
   return (
     <li>
       <a href={`/news/${slug}`}>
@@ -23,16 +25,18 @@ const NewsItem: React.FC<NewsDataProps> = (props) => {
             <div className="mon-year">{date.format('MMM')}.{date.format('YYYY')}</div>
           </div>
           <div className={`tag`}  style={{backgroundColor: categoryBackgroundColor}}>
-          <Translation>{t=> t(Category.name)}</Translation>  
+          {/* <Translation>{t=> t(Category.name)}</Translation>   */}
+          {i18n.language == 'en-us' ? Category.name_eng : Category.name}
           </div>
         </div>
         <div className="txt">
           <h3 className="news-title">
             {title}
           </h3>
-          <p>
+          {/* <p>
             {shortDescription(description,100)}
-          </p>
+          </p> */}
+          <p dangerouslySetInnerHTML={{__html: shortDescription(description, 100)}}></p>
       </div>
       </a>
     </li>

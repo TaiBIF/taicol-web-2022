@@ -19,7 +19,6 @@ const TaxonCount: React.FC<TaxonCountProps> = (props) => {
         <div className="txtbox">
           <div className="title">
          <h3 className={i18n.language == 'en-us' ? 'w-min-content' : ''}><Trans i18nKey={title} components={[<br />]} /></h3>
-
             {tooltip && <div className="markq">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
                 <g id="qs_mark" transform="translate(-1536.736 -1209.631)">

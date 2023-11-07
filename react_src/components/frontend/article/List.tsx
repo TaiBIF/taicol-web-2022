@@ -4,7 +4,7 @@ import type { ArticleDataProps, ArticleListProps,CategoryDataProps } from '../ty
 import Item from './Item'
 import useSWR from 'swr';
 import { fetcher } from '../utils/helper'
-import { Translation } from 'react-i18next';
+import { Translation, useTranslation } from 'react-i18next';
 
 const ArticleItem: React.FC = () => {
   const [selectedCategory, setSelectCategory] = React.useState<number | string>('all')
@@ -15,6 +15,8 @@ const ArticleItem: React.FC = () => {
   const { data: articleList } = useSWR<ArticleListProps>(GET_ARTICLE_LIST_URL,fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL,fetcher);
   const pageSize: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
+
+  const { t, i18n } = useTranslation();
 
   React.useEffect(() => {
     if (articleList) {
@@ -39,13 +41,15 @@ const ArticleItem: React.FC = () => {
           }</Translation>
           {categories?.map((category) => {
             return (
-              <Translation>{t =>
+              // <Translation>{t =>
                 <li
               onClick={() => handleCategoryClick(category.id)}
               className={selectedCategory === category.id ? 'now' : ''}>
-              {t(category.name)}
+              {/* {t(category.name)} */}
+              {i18n.language == 'en-us' ? category.name_eng : category.name}
             </li>          
-            }</Translation>)
+            // }</Translation>
+            )
           })}
 				</ul>
 			</div>

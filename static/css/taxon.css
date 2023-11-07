@@ -517,3 +517,16 @@ a.anchor {
 ul.link-left li p {
     align-items: ;
 } */
+
+.namebox p a:first-child {
+    color: #4C8DA7;
+}
+
+.accpname {
+    font-weight: bold;
+}
+
+
+.page-num {
+    margin-top: 20px;
+}
