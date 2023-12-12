@@ -484,7 +484,7 @@ def taxon(request, taxon_id):
                                 if current_h_row.taxon_id:
                                     taxon_href = f'/{"en-us" if get_language() == "en-us" else "zh-hant"}/taxon/' + current_h_row.taxon_id
                                     current_h_dict['a_href'] = taxon_href
-                                    current_h_dict['search_href'] = f'/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?taxon_group={current_h_row.taxon_id}&taxon_group_str={current_h_row.taxon_group_str}'
+                                    current_h_dict['search_href'] = f'/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&taxon_group={current_h_row.taxon_id}&taxon_group_str={current_h_row.taxon_group_str}'
                                 else:
                                     current_h_dict['a_href'] = None
                                     current_h_dict['search_href'] = None
@@ -921,14 +921,14 @@ def taxon(request, taxon_id):
                 elif sr == 47:
                     if spp > 0:
                         infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-                        stat_str += f"""<a href='{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str} </a>"""
-                    stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"""
+                        stat_str += f"""<a href='{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str} </a>"""
+                    stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"""
                 else:
-                    stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"""
+                    stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"""
             if spp > 0 and infra_str not in stat_str:
                 # 如果沒有47 最後要把種下加回去
                 infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-                stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str}</a>"""
+                stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str}</a>"""
     
         if is_deleted:
             data['rank_d'] = 'Deleted' if get_language() == 'en-us' else '已刪除 Deleted'
