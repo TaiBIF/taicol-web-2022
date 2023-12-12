@@ -3,14 +3,14 @@
 {% load static %}
 
 {% block head %}
-<link href="{% static 'css/select2.min.css' %}" rel="stylesheet">
-<script src="{% static 'js/select2.min.js' %}"></script>
+<link href="{% static 'css/select2.min.css' %}?v1" rel="stylesheet">
+<script src="{% static 'js/select2.min.js' %}?v1"></script>
 
 {% endblock head %}
 
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon_tree.css' %}">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon_tree.css' %}?v1">
 {% endblock style %}
 
 {% block body %}
@@ -152,5 +152,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon_tree.js' %}"></script>
+<script src="{% static 'js/taxon_tree.js' %}?v1"></script>
 {% endblock script %}

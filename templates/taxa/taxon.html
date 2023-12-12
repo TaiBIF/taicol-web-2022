@@ -3,13 +3,13 @@
 {% load i18n %}
 
 {% block head %}
-<script src="{% static 'js/jquery.nice-select.js' %}"></script>
-<link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}">
+<script src="{% static 'js/jquery.nice-select.js' %}?v1"></script>
+<link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}?v1">
 
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v1">
 {% endblock style %}
 
 {% block body %}
@@ -702,5 +702,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon.js' %}"></script>
+<script src="{% static 'js/taxon.js' %}?v1"></script>
 {% endblock script %}

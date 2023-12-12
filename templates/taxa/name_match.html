@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/name_match.css' %}">
+<link rel=stylesheet type="text/css" href="{% static 'css/name_match.css' %}?v1">
 {% endblock style %}
 
 {% block body %}
@@ -109,5 +109,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/name_match.js' %}"></script>
+<script src="{% static 'js/name_match.js' %}?v1"></script>
 {% endblock script %}

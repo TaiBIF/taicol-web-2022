@@ -3,17 +3,17 @@
 {% load static %}
 
 {% block head %}
-<script src="{% static 'js/jquery.nice-select.js' %}"></script>
-<link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}">
-<link href="{% static 'css/select2.min.css' %}" rel="stylesheet">
-<script src="{% static 'js/select2.min.js' %}"></script>
-<link href="/static/air-datepicker/dist/air-datepicker.css" rel="stylesheet" />
-<script src="/static/air-datepicker/dist/air-datepicker.js" ></script>
+<script src="{% static 'js/jquery.nice-select.js' %}?v1"></script>
+<link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}?v1">
+<link href="{% static 'css/select2.min.css' %}?v1" rel="stylesheet">
+<script src="{% static 'js/select2.min.js' %}?v1"></script>
+<link href="/static/air-datepicker/dist/air-datepicker.css?v1" rel="stylesheet" />
+<script src="/static/air-datepicker/dist/air-datepicker.js?v1" ></script>
 
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/catalogue.css' %}">
+<link rel=stylesheet type="text/css" href="{% static 'css/catalogue.css' %}?v1">
 {% endblock style %}
 
 {% block body %}
@@ -593,5 +593,5 @@
 </div>
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/catalogue.js' %}"></script>
+<script src="{% static 'js/catalogue.js' %}?v1"></script>
 {% endblock script %}
