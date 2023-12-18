@@ -9,7 +9,7 @@
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v1">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v2">
 {% endblock style %}
 
 {% block body %}
@@ -394,6 +394,9 @@
 										{% for i in data.is_list  %}
 											<div class="item">{% trans i %}</div>
 										{% endfor %}
+										{% if data.not_official %}
+											<div class="item grey-tag-item">{% trans data.not_official %}</div>
+										{% endif %}
 									</div>
 									<div class="inf-short">
 										{% if data.protected_category  %}

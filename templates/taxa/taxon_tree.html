@@ -82,6 +82,7 @@
 						</label>
 					</div>
 				</div>
+
 				<div class="item-box check-set">
 					<div class="right-check">
 						<label class="check-item">{% trans "僅顯示林奈階層" %}
@@ -90,6 +91,14 @@
 						</label>
 					</div>
 				</div>
+				<div class="item-box check-set">
+					<div class="right-check">
+						<label class="check-item">{% trans "包含未經正式紀錄" %}
+							<input type="checkbox" name="not_official" class="d-none">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+				</div>			
 			</div>
 		</div>
 		<div class="tree-area">
@@ -152,5 +161,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon_tree.js' %}?v1"></script>
+<script src="{% static 'js/taxon_tree.js' %}?v2"></script>
 {% endblock script %}

@@ -530,3 +530,8 @@ ul.link-left li p {
 .page-num {
     margin-top: 20px;
 }
+
+
+.green-tag-box .grey-tag-item {
+    background: lightgray !important;
+}
