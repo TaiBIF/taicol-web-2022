@@ -478,7 +478,7 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, 
                 LEFT JOIN users usr ON usr.id = iul.user_id
                 LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
                 LEFT JOIN `references` r ON ath.reference_id = r.id
-                WHERE ath.taxon_id = %s ORDER BY ath.updated_at ASC"""
+                WHERE ath.taxon_id = %s ORDER BY ath.updated_at DESC"""
   conn = pymysql.connect(**db_settings)
   with conn.cursor() as cursor:
       cursor.execute(query, (taxon_id, ))
@@ -630,10 +630,10 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, 
 #   taxon_history = taxon_history.drop_duplicates(subset=['title','content','ref']).to_dict(orient='records')
   taxon_history = taxon_history.replace({np.nan: '', None: ''})
   taxon_history = taxon_history.drop_duplicates().to_dict(orient='records')
-  total_page = math.ceil(len(taxon_history) / limit)
-  page_list = get_page_list(current_page=current_page, total_page=total_page)
-  taxon_history = taxon_history[(current_page-1)*limit:current_page*limit]
-  return taxon_history, current_page, total_page, page_list
+#   total_page = math.ceil(len(taxon_history) / limit)
+#   page_list = get_page_list(current_page=current_page, total_page=total_page)
+#   taxon_history = taxon_history[(current_page-1)*limit:current_page*limit]
+  return taxon_history #, current_page, total_page, page_list
 
 
 

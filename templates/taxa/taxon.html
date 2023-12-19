@@ -9,7 +9,7 @@
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v2">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v3">
 {% endblock style %}
 
 {% block body %}
@@ -654,6 +654,17 @@
 							</div>
 						</div>
 						<div class="w-content taxon-history-edit">
+							{% if taxon_history|length > 3 %}
+							<div class="more-option-button more-history">
+								<p>顯示全部</p>
+								<svg xmlns="http://www.w3.org/2000/svg" width="15.043" height="15.043" viewBox="0 0 15.043 15.043">
+									<g id="plussvg" transform="translate(-1553.5 -534.5)">
+										<line id="Line_211" data-name="Line 211" x1="13.043" transform="translate(1554.5 542.021)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+										<line class="minus" id="Line_213" data-name="Line 213" x1="13.043" transform="translate(1561.021 535.5) rotate(90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+									</g>
+								</svg>
+							</div>	
+							{% endif %}							
 							<div class="scro-m">
 							{% if taxon_history|length > 0 %}
 							<table class="history-edit" cellspacing="0" cellpadding="0" border="0">
@@ -663,7 +674,7 @@
 									<td>{% trans "文獻" %}</td>
 									<td>{% trans "編輯者" %}</td>
 								</tr>
-								{% for t in taxon_history %}
+								{% for t in taxon_history|slice:"0:3" %}
 									<tr class="history-rows">
 										<td>{{ t.updated_at|safe }}</td>
 										<td>{{ t.title }}{{ t.content|default_if_none:''|safe }}</td>
@@ -671,10 +682,18 @@
 										<td>{{ t.editor|default_if_none:'' }}</td>
 									</tr>
 								{% endfor %}
+								{% for t in taxon_history|slice:"3:" %}
+								<tr class="history-rows-after d-none">
+									<td>{{ t.updated_at|safe }}</td>
+									<td>{{ t.title }}{{ t.content|default_if_none:''|safe }}</td>
+									<td>{{ t.ref|default_if_none:''|safe }}</td>
+									<td>{{ t.editor|default_if_none:'' }}</td>
+								</tr>
+								{% endfor %}
 							</table>
 							{% endif %}
 							</div>
-							{% if page_list|length > 1 %}
+							{% comment %} {% if page_list|length > 1 %}
 							<div class="page-num">
 								<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
 								<a href="javascript:;" data-page="0" class="back">
@@ -693,7 +712,7 @@
 								<a href="javascript:;" data-page="{{ total_page }}" class="num updateData" id="page-end">{{ total_page }}</a>
 								<input type="hidden" name="total_page" value="{{ total_page }}">
 							</div>
-							{% endif %}
+							{% endif %} {% endcomment %}
 						</div>
 					</div>
 				</div>
@@ -705,5 +724,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon.js' %}?v1"></script>
+<script src="{% static 'js/taxon.js' %}?v2"></script>
 {% endblock script %}

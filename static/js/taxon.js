@@ -78,6 +78,17 @@ function controlAll(){
 
 $(function(){
 
+	$('.more-history').on('click', function(){
+		if ($(this).hasClass('now')){
+			$(this).removeClass('now')
+			$('.history-rows-after').addClass('d-none')
+		} else {
+			$(this).addClass('now')
+			$('.history-rows-after').removeClass('d-none')
+		}
+	})
+
+
 	$('#errorForm select[name=type]').niceSelect();
 
 	$('.rank-area .item').on('mouseenter',(function(){
@@ -213,16 +224,17 @@ $(function(){
 
 	// get_taxon_history?taxon_id=t0097239&name_id=137324&current_page=2
 
+	/*
 
 	$(".taxon-history-edit .updateData").prop("onclick", null).off("click");
 	$('.taxon-history-edit .updateData').on('click', function(){
 		updateData(parseInt($(this).data('page')))
-	})
+	})*/
 	
 })
 
 
-
+/*
 function updateData(page){
 	$.ajax({
 		url: `/get_taxon_history?taxon_id=${$('input[name=taxon_id]').val()}&name_id=${$('#name_id').val()}&page=${page}`,
@@ -300,4 +312,4 @@ function updateData(page){
 	
 	
 
-}
+}*/
