@@ -22,6 +22,7 @@ export const DownloadSaveFormFields: Array<InputTextFieldProps | InputSelectFiel
 	{ name: 'title_eng', type: 'text', label: '英文版標題' },
 	{ name: 'description', type: 'text', label: '描述' },
 	{ name: 'description_eng', type: 'text', label: '英文版描述' },
+	{ name: 'publishedDate', type: 'datepicker', label: '日期' },
 ];
 
 export const DownloadFileSaveFormFields: Array<InputTextFieldProps | InputSelectFieldProps> = [

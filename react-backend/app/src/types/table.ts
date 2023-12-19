@@ -58,6 +58,7 @@ export type DownloadDataProps = {
 	title_eng: string;
 	description: string;
 	description_eng: string;
+	publishedDate: string;
 	files: string | React.ReactNode;
 	category: string;
 	Category: {

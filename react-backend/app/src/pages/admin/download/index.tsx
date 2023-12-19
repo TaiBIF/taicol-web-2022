@@ -43,6 +43,14 @@ const getHeadCells = (url: string) => {
       flex: 1,
     },
     {
+      field: 'publishedDate',
+      headerName: 'Date',
+      type: 'string',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
       field: 'description',
       headerName: 'Description',
       type: 'string',
@@ -149,6 +157,7 @@ const DownloadListPage: React.FC = () => {
         files: files,
         description: shortDescription(row.description, 100),
         category: category,
+        publishedDate: new Date(row.publishedDate).toISOString().split('T')[0],
 			};
 		});
   }

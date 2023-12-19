@@ -42,10 +42,11 @@ export type DownloadDataProps = {
   Category: {id:string},
   title: string,
   title_eng: string,
+  publishedDate: string;
   DownloadFiles: DownloadFileDataProps[],
   description: string,
   description_eng: string,
-  updatedAt:string
+  createdAt:string
 }
 
 export type DownloadFileDataProps = {

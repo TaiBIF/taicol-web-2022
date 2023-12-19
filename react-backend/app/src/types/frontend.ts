@@ -40,10 +40,11 @@ export type DownloadDataProps = {
   Category: {id:string},
   title: string,
   title_eng: string,
+  publishedDate: string;
   DownloadFiles: DownloadFileDataProps[],
   description_eng: string,
   description: string,
-  updatedAt:string
+  createdAt:string
 }
 
 export type BreadCrumbProps = {

@@ -27,7 +27,7 @@ const SaveDownloadForm: React.VFC<Props> = (props) => {
   const { mutate } = useSWRConfig()
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 	const methods = useForm<CreateFormValues | UpdateFormValues>({
-		defaultValues: props.defaultValues ? props.defaultValues : {},
+		defaultValues: props.defaultValues ? props.defaultValues : {publishedDate: new Date()},
 		resolver: zodResolver(props?.defaultValues?.id ? updateDownloadFormSchema : createDownloadFormSchema),
   });
 
