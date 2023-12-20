@@ -538,7 +538,7 @@
 								<ul class="expert-li">
 									<li>{{ e.name|default_if_none:'' }}</li>
 									<li>{{ e.name_e|default_if_none:'' }}</li>
-									<li>{{ e.taxon_group_agg|default_if_none:'' }}</li>
+									<li>{{ e.taxon_group|default_if_none:'' }}</li>
 									<li>{{ e.email|default:'' }}</li>
 								</ul>
 								{% endfor %}

@@ -288,7 +288,7 @@ def taxon(request, taxon_id):
     stat_str, taxon_group_str = '', ''
     new_taxon_id, new_taxon_name = '', ''
     refs, new_refs, experts, links, name_changes, taxon_history, name_history,short_refs = [], [], [], [], [], [], [], []
-    total_page, current_page, page_list = 0, 1, [] # for taxon_history
+    # total_page, current_page, page_list = 0, 1, [] # for taxon_history
     data = {}
     # 確認是否已刪除 & 如果是國外物種不顯示
     is_deleted = 0
@@ -442,7 +442,7 @@ def taxon(request, taxon_id):
                     path = data['path'].split('>')
                     # 專家列表
                     # 如果同一個專家有多個taxon_group要concat
-                    experts = Expert.objects.filter(taxon_id__in=path).values('name','name_e','email').annotate(taxon_group_agg=StringAgg('taxon_group', delimiter=', '))
+                    # experts = Expert.objects.filter(taxon_id__in=path).values('name','name_e','email').annotate(taxon_group_agg=StringAgg('taxon_group', delimiter=', '))
                     path = [p for p in path if p != taxon_id]
                     if path:
                         query = f"""
@@ -499,8 +499,8 @@ def taxon(request, taxon_id):
                                 else:
                                     current_h_dict['rank_color'] = 'rank-second-gray'
                                 data['higher'].append(current_h_dict)
-                else:
-                    experts = Expert.objects.filter(taxon_id=taxon_id)
+                # else:
+                #     experts = Expert.objects.filter(taxon_id=taxon_id)
 
                 # 學名變遷
                 # 確認是否為歧異
@@ -741,6 +741,25 @@ def taxon(request, taxon_id):
                     conn.close()
                 
                 ref_df = pd.DataFrame(short_refs, columns=['reference_id', 'ref'])
+
+                # 取得expert
+                query = "SELECT person_id FROM person_reference WHERE reference_id in %s"
+                conn = pymysql.connect(**db_settings)
+                person_ids = []
+                with conn.cursor() as cursor:
+                    cursor.execute(query, (ref_df.reference_id.to_list(),))
+                    person_ids = cursor.fetchall()
+                    person_ids = [str(p[0]) for p in person_ids]
+                    if len(person_ids):
+                        # print(person_ids)
+                        url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/expert/?person_id={(',').join(person_ids)}"
+                        # print(url)
+                        person_resp = requests.get(url)
+                        person_resp = person_resp.json()
+                        experts = person_resp.get('rows')
+                        # print(person_resp)
+                # http://127.0.0.1:3000/api/admin/expert/?page=1
+
 
                 alt_list = []
                 data['alien_types'] = []
