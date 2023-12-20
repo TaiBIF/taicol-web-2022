@@ -655,7 +655,7 @@
 						</div>
 						<div class="w-content taxon-history-edit">
 				
-							<div class="scro-m pb-50px">
+							<div class="scro-m {% if taxon_history|length > 3 %}pb-50px{% endif %}">
 							{% if taxon_history|length > 0 %}
 							<table class="history-edit" cellspacing="0" cellpadding="0" border="0">
 								<tr>
