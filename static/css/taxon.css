@@ -530,3 +530,85 @@ ul.link-left li p {
 .page-num {
     margin-top: 20px;
 }
+
+
+.green-tag-box .grey-tag-item {
+    background: lightgray !important;
+}
+
+/* 
+.history-show-more td {
+    background-color: white;
+} */
+
+
+
+
+ .more-option-button {
+    cursor: pointer;
+    position: relative;
+    width: 125px;
+    height: 40px;
+    border-radius: 10px;
+    background-color: #B8B8B8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    /* right: 0;
+    bottom: 10px */
+    float: inline-end;
+}
+
+.pb-50px {
+    padding-bottom: 50px;
+ }
+
+
+
+@media only screen and (max-width: 767px) {
+     .more-option-button {
+        float: inline-start;
+        /* width: 100%;
+        border-radius: 8px;
+        background-color: #74BDB6 */
+    }
+
+    .pb-50px {
+        padding-bottom: 5px;
+     }
+}
+
+@media only screen and (min-width: 1000px) {
+     .more-option-button:hover {
+        background-color: #74BDB6;
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s
+    }
+
+     .more-option-button:hover .minus {
+        display: none
+    }
+}
+
+ .more-option-button.now .minus {
+    display: none
+}
+
+ .more-option-button p {
+    font-size: 16px;
+    color: #FFF
+
+}
+
+/* .history-rows-after {
+    display: none;
+}
+ */
+
+/* table tr {
+    border-radius: 5px;
+} */

@@ -7,6 +7,7 @@ class Download extends Model {
 	declare title: string;
 	declare description: string;
 	declare publish: boolean;
+	declare publishedDate: Date;
 }
 
 Download.init(
@@ -34,6 +35,10 @@ Download.init(
 		},
 		publish: {
 			type: new DataTypes.BOOLEAN,
+			allowNull: false,
+		},
+		publishedDate: {
+			type: new DataTypes.DATE, // 2023-12-18 新增
 			allowNull: false,
 		},
 	},

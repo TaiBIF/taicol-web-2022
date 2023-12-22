@@ -1,7 +1,7 @@
 import React from 'react';
 
 export type ActionTypes = 'info' | 'update' | 'delete';
-export type TableRows = UserData[] | CategoryDataProps[] | NewsDataProps[] | ArticleDataProps[] | ApiResponseDataProps[] | DownloadDataProps[] | FeedbackDataProps[];
+export type TableRows = UserData[] | CategoryDataProps[] | NewsDataProps[] | ArticleDataProps[] | ApiResponseDataProps[] | DownloadDataProps[] | FeedbackDataProps[] | ExpertDataProps[];
 import {CategoryTypes} from 'src/types'
 
 export type UserData = {
@@ -58,6 +58,7 @@ export type DownloadDataProps = {
 	title_eng: string;
 	description: string;
 	description_eng: string;
+	publishedDate: string;
 	files: string | React.ReactNode;
 	category: string;
 	Category: {
@@ -88,6 +89,20 @@ export type FeedbackDataProps = {
 	createdAt: string;
 };
 
+export type ExpertDataProps = {
+	id: number;
+    name: string;
+    name_e:  string;
+    email: string;
+    taxon_group: number;
+	updatedAt: string;
+	createdAt: string;
+};
+
+export type ExpertListProps = {
+	rows: ExpertDataProps[];
+	count: number;
+};
 
 export type NewsListProps = {
 	rows: NewsDataProps[];

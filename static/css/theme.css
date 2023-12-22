@@ -6965,6 +6965,7 @@ body {
 .editor-box table td {
     font-family: 'Roboto', 'Noto Sans TC', sans-serif;
     padding: 15px 15px;
+    white-space: nowrap;
 }
 
 .editor-box table tr:nth-child(odd) td {

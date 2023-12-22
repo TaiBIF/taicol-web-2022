@@ -5,6 +5,7 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import IconButton from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
+import InfoIcon from '@mui/icons-material/Info';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Table from 'src/table';
@@ -13,10 +14,9 @@ import type { GridApi,GridColDef } from '@mui/x-data-grid';
 import Router from 'next/router';
 import { ActionTypes } from 'src/types';
 import SearchBar from 'src/table/components/SearchBar';
-import { shortDescription } from 'src/utils/helper';
-import { DownloadFileDataProps } from 'src/types';
+// import { shortDescription } from 'src/utils/helper';
 
-import type { DownloadDataProps,DownloadListProps } from 'src/types';
+import type { ExpertDataProps, ExpertListProps } from 'src/types';
 
 // get head cells function with swr url
 const getHeadCells = (url: string) => {
@@ -27,60 +27,28 @@ const getHeadCells = (url: string) => {
       hide: true,
     },
     {
-      field: 'category',
-      headerName: 'Category',
+      field: 'name',
+      headerName: 'Name',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
       flex: 1,
     },
     {
-      field: 'title',
-      headerName: 'Title',
+      field: 'person_id',
+      headerName: 'Person ID',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
       flex: 1,
     },
     {
-      field: 'publishedDate',
-      headerName: 'Date',
+      field: 'email',
+      headerName: 'Email',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
       flex: 1,
-    },
-    {
-      field: 'description',
-      headerName: 'Description',
-      type: 'string',
-      align: 'center',
-      headerAlign: 'center',
-      flex: 1,
-    },
-    {
-      field: 'files',
-      headerName: 'File',
-      type: 'string',
-      align: 'center',
-      headerAlign: 'center',
-      flex: 1,
-      renderCell: (params) => {
-        console.log(params.row.files);
-        if (params.row.files) {
-          return <div className='flex flex-col items-left' style={{wordBreak:'break-all'}} >
-            {params?.row?.files.map((file: string) => {
-              return (
-                <a className='my-2' href={file} target="_blank" rel="noreferrer">
-                 {file}
-                </a>
-              )
-            })}
-          </div>
-        }
-
-        return "";
-      }
     },
     {
       field: 'actions',
@@ -89,22 +57,25 @@ const getHeadCells = (url: string) => {
       align: 'right',
       headerAlign: 'center',
       flex: 1,
-      renderCell: (params) => {
+      renderCell: (params:any) => {
         const onClick = (event: React.MouseEvent<HTMLElement>, action: ActionTypes) => {
           event.stopPropagation(); // don't select this row after clicking
 
           switch (action) {
+            case 'info':
+              window.open (`/expert/${params.row.slug}`, '_ blank');
+              break;
             case 'update':
-              Router.push(`/admin/download/update?id=${params.row.id}`);
+              Router.push(`//admin/expert/update?id=${params.row.id}`);
               break;
             case 'delete':
-                if (confirm('Are you sure you want to delete this file?')) {
+                if (confirm('Are you sure you want to delete this expert?')) {
                   const api: GridApi = params.api;
 
                   const col = api.getColumn('id')
                   const id = params.getValue(params.id,col.field)
 
-                  fetch(`/api/admin/download/delete?id=${id}`,
+                  fetch(`/api/admin/expert/delete?id=${id}`,
                     { method: 'DELETE', headers: { 'Content-Type': 'application/json' } })
                     .then((res) => res.json())
                     .then((result) => {
@@ -120,6 +91,9 @@ const getHeadCells = (url: string) => {
 
         return (
           <>
+            <IconButton onClick={(e) => onClick(e, 'info')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
+              <InfoIcon />
+            </IconButton>
             <IconButton onClick={(e) => onClick(e, 'update')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <EditIcon />
             </IconButton>
@@ -134,12 +108,12 @@ const getHeadCells = (url: string) => {
 
   return headCells;
 }
-const DownloadListPage: React.FC = () => {
+const ExpertListPage: React.FC = () => {
 	const [page, setPage] = useState<number>(1);
-  let rows: DownloadDataProps[] = [];
+  let rows: ExpertDataProps[] = [];
   const [keyword, setKeyword] = useState<string>('');
-  const GET_DOWNLOAD_LIST_URL = `/api/admin/download?page=${page}&keyword=${keyword}`;
-  const { data } = useSWR<DownloadListProps>(GET_DOWNLOAD_LIST_URL);
+  const GET_EXPERT_LIST_URL = `/api/admin/expert?page=${page}&keyword=${keyword}`;
+  const { data } = useSWR<ExpertListProps>(GET_EXPERT_LIST_URL);
 
   // change page
   const handleChangePage = (newPage: number) => {
@@ -148,16 +122,13 @@ const DownloadListPage: React.FC = () => {
 
 	if (data) {
     rows = data.rows.map((row) => {
-      const category = row?.Category?.name  || '';
+      // const category = row?.Category?.name  || '';
 
-      const files = row?.DownloadFiles?.map((file:DownloadFileDataProps) => file.url) || [];
-
-      return {
+			return {
         ...row,
-        files: files,
-        description: shortDescription(row.description, 100),
-        category: category,
-        publishedDate: new Date(row.publishedDate).toISOString().split('T')[0],
+        // publishedDate: new Date(row.publishedDate).toISOString().split('T')[0],
+        // description: shortDescription(row.description, 100),
+        // category: category,
 			};
 		});
   }
@@ -165,11 +136,11 @@ const DownloadListPage: React.FC = () => {
 	return (
 		<Grid item xs={12}>
 			<Card>
-        <CardHeader title="Download List" titleTypographyProps={{ variant: 'h6' }} action={
+        <CardHeader title="Expert List" titleTypographyProps={{ variant: 'h6' }} action={
           <>
             <SearchBar handleSearch={(keyword) => setKeyword(keyword)} />
             <IconButton
-              onClick={(e: React.MouseEvent) => Router.push('/admin/download/create')}
+              onClick={(e: React.MouseEvent) => Router.push('//admin/expert/create')}
               sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <AddIcon />
             </IconButton>
@@ -177,7 +148,7 @@ const DownloadListPage: React.FC = () => {
         } />
 
         <Table
-          headCells={getHeadCells(GET_DOWNLOAD_LIST_URL)}
+          headCells={getHeadCells(GET_EXPERT_LIST_URL)}
           rows={rows || []}
           count={data?.count || 0}
           page={page}
@@ -188,4 +159,4 @@ const DownloadListPage: React.FC = () => {
 	);
 };
 
-export default DownloadListPage;
+export default ExpertListPage;

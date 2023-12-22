@@ -21,7 +21,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     where: where,
 		include:[{model:Category,attributes:['id']},{model:DownloadFile}],
     order: [
-      ['id', 'DESC']
+      ['publishedDate', 'DESC']
     ]
 	});
 

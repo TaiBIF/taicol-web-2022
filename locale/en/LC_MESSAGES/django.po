@@ -862,3 +862,8 @@ msgid "無效"
 msgstr "Not-accepted"
 
 
+#:  
+msgid "未經正式記錄"
+msgstr "Not Officially Recorded"
+
+

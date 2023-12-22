@@ -306,7 +306,7 @@ def get_download_file(taxon_list=[]):
                               FROM api_common_name WHERE is_primary = 0 AND taxon_id IN %s GROUP BY taxon_id)
           SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, 
                     t.rank_id, acn.name_c, bq.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), t.is_fossil, t.is_terrestrial, 
-                    t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.iucn_category,
+                    t.is_freshwater, t.is_brackish, t.is_marine, t.not_official, ac.cites_listing, ac.iucn_category,
                     ac.red_category, ac.protected_category, ac.sensitive_suggest, 
                     t.created_at, t.updated_at, att.path 
                     FROM api_taxon t 
@@ -324,7 +324,7 @@ def get_download_file(taxon_list=[]):
       df = cursor.fetchall()
       df = pd.DataFrame(df, columns=['taxon_id','name_id','simple_name','name_author','formatted_name','rank','common_name_c','alternative_name_c',  
                                       'is_hybrid','is_in_taiwan','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine',
-                                      'cites','iucn','redlist','protected','sensitive','created_at','updated_at','path'])
+                                      'not_official', 'cites','iucn','redlist','protected','sensitive','created_at','updated_at','path'])
 
   df['alien_type'] = df['alien_type'].replace({None: '[]'})
   df['alien_type'] = df.alien_type.apply(lambda x: ','.join(list(dict.fromkeys(eval(x)))))
@@ -400,7 +400,7 @@ def get_download_file(taxon_list=[]):
   df['rank'] = df['rank'].apply(lambda x: rank_map[x])
 
   # 0 / 1 要改成 true / false
-  is_list = ['is_hybrid','is_in_taiwan','is_endemic','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine']
+  is_list = ['is_hybrid','is_in_taiwan','is_endemic','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','not_official']
   df[is_list] = df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
 
   df = df.replace({np.nan: '', None: ''})
@@ -408,7 +408,7 @@ def get_download_file(taxon_list=[]):
   # 欄位順序
   cols = ['taxon_id','name_id','simple_name','name_author','formatted_name','synonyms','formatted_synonyms','rank',
           'common_name_c','alternative_name_c','is_hybrid','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater',
-          'is_brackish','is_marine','cites','iucn','redlist','protected','sensitive','created_at','updated_at',
+          'is_brackish','is_marine','not_official','cites','iucn','redlist','protected','sensitive','created_at','updated_at',
           'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
   
   for c in cols:
@@ -478,7 +478,7 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, 
                 LEFT JOIN users usr ON usr.id = iul.user_id
                 LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
                 LEFT JOIN `references` r ON ath.reference_id = r.id
-                WHERE ath.taxon_id = %s ORDER BY ath.updated_at ASC"""
+                WHERE ath.taxon_id = %s ORDER BY ath.updated_at DESC"""
   conn = pymysql.connect(**db_settings)
   with conn.cursor() as cursor:
       cursor.execute(query, (taxon_id, ))
@@ -630,10 +630,10 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, 
 #   taxon_history = taxon_history.drop_duplicates(subset=['title','content','ref']).to_dict(orient='records')
   taxon_history = taxon_history.replace({np.nan: '', None: ''})
   taxon_history = taxon_history.drop_duplicates().to_dict(orient='records')
-  total_page = math.ceil(len(taxon_history) / limit)
-  page_list = get_page_list(current_page=current_page, total_page=total_page)
-  taxon_history = taxon_history[(current_page-1)*limit:current_page*limit]
-  return taxon_history, current_page, total_page, page_list
+#   total_page = math.ceil(len(taxon_history) / limit)
+#   page_list = get_page_list(current_page=current_page, total_page=total_page)
+#   taxon_history = taxon_history[(current_page-1)*limit:current_page*limit]
+  return taxon_history #, current_page, total_page, page_list
 
 
 

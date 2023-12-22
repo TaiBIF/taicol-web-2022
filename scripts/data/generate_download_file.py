@@ -33,7 +33,7 @@ query = """
         t.is_fossil, t.is_terrestrial, 
         t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, 
         ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, 
-        t.created_at, t.updated_at, att.path 
+        t.created_at, t.updated_at, att.path, t.not_official
         FROM api_taxon t 
         LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1 
         LEFT JOIN base_query bq ON bq.taxon_id = t.taxon_id
@@ -50,7 +50,7 @@ with conn.cursor() as cursor:
     df = pd.DataFrame(df, columns=['taxon_id','name_id','simple_name','name_author','formatted_name','rank','common_name_c','alternative_name_c',  
                                     'is_hybrid','is_in_taiwan','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine',
                                     'cites','cites_note','iucn','iucn_note','redlist','redlist_note','protected','protected_note','sensitive','sensitive_note',
-                                    'created_at','updated_at','path'])
+                                    'created_at','updated_at','path','not_official'])
 
 
 df['alien_type'] = df['alien_type'].replace({None: '[]'})
@@ -130,7 +130,7 @@ df['rank'] = df['rank'].apply(lambda x: rank_map[x])
 # 0 / 1 要改成 true / false
 
 
-is_list = ['is_hybrid','is_in_taiwan','is_endemic','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine']
+is_list = ['is_hybrid','is_in_taiwan','is_endemic','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','not_official']
 df[is_list] = df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
 
 
@@ -140,7 +140,7 @@ df = df.replace({np.nan: '', None: ''})
 cols = ['taxon_id','name_id','simple_name','name_author','formatted_name','synonyms','formatted_synonyms','misapplied','formatted_misapplied','rank',
         'common_name_c','alternative_name_c','is_hybrid','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater',
         'is_brackish','is_marine','cites','iucn','redlist','protected','sensitive','created_at','updated_at',
-        'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c','is_in_taiwan']
+        'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c','is_in_taiwan','not_official']
 
 # cites要改成 I,II,III
 df['cites'] = df['cites'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III') if x else x)

@@ -43,6 +43,7 @@ services:
     volumes:
       - ./db:/var/lib/mysql:rw
       - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:rw
+      - ../../tc-web-volumes/bucket:/bucket
     command:
       [
         "mysqld",

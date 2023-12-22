@@ -8,6 +8,9 @@ const share = {
 	title_eng: z.string().nonempty( { message: errors.NON_EMPTY }),
 	description_eng: z.string().nonempty( { message: errors.NON_EMPTY }),
 	publish: z.boolean().default(true),
+	publishedDate:  z.preprocess((arg) => {
+		if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
+	  }, z.date()),	  
 	DownloadFiles: z.array(
 	z.object({
 		type: z.string().nonempty( { message: errors.NON_EMPTY }),

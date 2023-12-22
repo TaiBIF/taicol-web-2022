@@ -16,5 +16,5 @@ urlpatterns = [
     path('download_match_results', views.download_match_results, name='download_match_results'),
     path('send_feedback', views.send_feedback, name='send_feedback'),
     path('get_root_tree', views.get_root_tree, name='get_root_tree'),
-    path('get_taxon_history', views.get_taxon_history, name='get_taxon_history'),
+    # path('get_taxon_history', views.get_taxon_history, name='get_taxon_history'),
 ]

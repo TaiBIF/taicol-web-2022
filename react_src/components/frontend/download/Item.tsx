@@ -7,8 +7,8 @@ import { Trans, useTranslation } from 'react-i18next';
 const exts = ['pdf','txt','csv']
 
 const DownloadItem: React.FC<DownloadDataProps> = (props) => {
-  const { title, DownloadFiles, updatedAt, description, title_eng, description_eng } = props
-  const date = moment(new Date(updatedAt))
+  const { title, DownloadFiles, publishedDate, description, title_eng, description_eng } = props
+  const date = moment(new Date(publishedDate))
   // isLoggedIn ? () : ()
   const { t, i18n } = useTranslation();
 

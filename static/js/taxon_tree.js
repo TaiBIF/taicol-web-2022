@@ -17,6 +17,11 @@ function getSubList(item){
         lin_rank = 'on';
     }
 
+    let not_official = 'off';
+    if ($('input[name="not_official"]').is(':checked')){
+        not_official = 'on';
+    }
+
     if ($(item).data('taxon')){
         taxon_id = $(item).data('taxon')
     } else {
@@ -32,6 +37,7 @@ function getSubList(item){
                     'rank_id': $(item).data('rank'),
                     'cultured': cultured,
                     'lin_rank': lin_rank,
+                    'not_official': not_official,
                     'lang': $lang },
             type: 'POST',
             dataType : 'json',
@@ -158,7 +164,7 @@ $(function (){
     // })    
 
     // 栽培豢養
-    $('input[name="cultured"], input[name="lin_rank"]').change(function() {
+    $('input[name="cultured"], input[name="lin_rank"], input[name="not_official"]').change(function() {
         let current_taxon_id;
         if ($('.main-box .item-box.now').length >0){
             // 只選擇最後一個
@@ -178,12 +184,18 @@ $(function (){
             lin_rank = 'on';
         }
 
+        let not_official = 'off';
+        if ($('input[name="not_official"]').is(':checked')){
+            not_official = 'on';
+        }
+
 
         $.ajax({
             url: "/get_root_tree",
             data:  {'csrfmiddlewaretoken' : $csrf_token,
                     'cultured': cultured,
                     'lin_rank': lin_rank,
+                    'not_official': not_official,
                     'lang': $lang},
             type: 'POST',
             dataType : 'json',
@@ -296,6 +308,12 @@ $(function (){
                 if ($('input[name="lin_rank"]').is(':checked')){
                     lin_rank = 'on';
                 }
+
+                let not_official = 'off';
+                if ($('input[name="not_official"]').is(':checked')){
+                    not_official = 'on';
+                }
+
                 if (params.term != undefined ){
                     if (params.term.match(/[\u3400-\u9FBF]/)){
                         if (params.term.length >1){
@@ -304,6 +322,7 @@ $(function (){
                                 from_tree: 'true',
                                 cultured: cultured,
                                 lin_rank : lin_rank,
+                                not_official: not_official,
                                 lang: $lang
                                 };
                         }
@@ -313,6 +332,7 @@ $(function (){
                             from_tree: 'true',
                             cultured: cultured,
                             lin_rank: lin_rank,
+                            not_official: not_official,
                             lang: $lang
                             };
 
@@ -359,6 +379,10 @@ function searchClick(keyword_taxon_id, add_stat){
     if ($('input[name="lin_rank"]').is(':checked')){
         lin_rank = 'on';
     }
+    let not_official = 'off';
+    if ($('input[name="not_official"]').is(':checked')){
+        not_official = 'on';
+    }
     // 關閉所有的樹
     $('.main-box .item-box').removeClass('now');
     $(`.main-box ul`).not('.rank-1-red').addClass('d-none').removeClass('d-block');
@@ -378,7 +402,8 @@ function searchClick(keyword_taxon_id, add_stat){
             data:  {'csrfmiddlewaretoken' : $csrf_token,
                     'taxon_id': keyword_taxon_id,
                     'cultured': cultured,
-                    'lin_rank': lin_rank},
+                    'lin_rank': lin_rank,
+                    'not_official': not_official},
             type: 'POST',
             dataType : 'json',
         })
@@ -433,6 +458,11 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
         lin_rank = 'on';
     }
 
+    let not_official = 'off';
+    if ($('input[name="not_official"]').is(':checked')){
+        not_official = 'on';
+    }
+
     $.ajax({
         url: "/get_sub_tree_list",
         data:  {'csrfmiddlewaretoken' : $csrf_token,
@@ -440,6 +470,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                 'rank_id': fetch_rank_id,
                 'cultured': cultured,
                 'lin_rank': lin_rank,
+                'not_official': not_official,
                 'lang': $lang
             },
         type: 'POST',
