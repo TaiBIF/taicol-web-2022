@@ -743,22 +743,23 @@ def taxon(request, taxon_id):
                 ref_df = pd.DataFrame(short_refs, columns=['reference_id', 'ref'])
 
                 # 取得expert
-                query = "SELECT person_id FROM person_reference WHERE reference_id in %s"
-                conn = pymysql.connect(**db_settings)
-                person_ids = []
-                with conn.cursor() as cursor:
-                    cursor.execute(query, (ref_df.reference_id.to_list(),))
-                    person_ids = cursor.fetchall()
-                    person_ids = [str(p[0]) for p in person_ids]
-                    if len(person_ids):
-                        # print(person_ids)
-                        url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/expert/?person_id={(',').join(person_ids)}"
-                        # print(url)
-                        person_resp = requests.get(url)
-                        person_resp = person_resp.json()
-                        experts = person_resp.get('rows')
-                        # print(person_resp)
-                # http://127.0.0.1:3000/api/admin/expert/?page=1
+                if len(ref_df):
+                    query = "SELECT person_id FROM person_reference WHERE reference_id in %s"
+                    conn = pymysql.connect(**db_settings)
+                    person_ids = []
+                    with conn.cursor() as cursor:
+                        cursor.execute(query, (ref_df.reference_id.to_list(),))
+                        person_ids = cursor.fetchall()
+                        person_ids = [str(p[0]) for p in person_ids]
+                        if len(person_ids):
+                            # print(person_ids)
+                            url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/expert/?person_id={(',').join(person_ids)}"
+                            # print(url)
+                            person_resp = requests.get(url)
+                            person_resp = person_resp.json()
+                            experts = person_resp.get('rows')
+                            # print(person_resp)
+                    # http://127.0.0.1:3000/api/admin/expert/?page=1
 
 
                 alt_list = []
