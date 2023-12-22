@@ -867,3 +867,6 @@ msgid "未經正式記錄"
 msgstr "Not Officially Recorded"
 
 
+#:  
+msgid "包含未經正式紀錄"
+msgstr "Including Not Officially Recorded"
