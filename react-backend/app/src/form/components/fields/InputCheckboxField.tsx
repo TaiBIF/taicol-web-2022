@@ -17,7 +17,7 @@ export const InputCheckboxField: React.VFC<Props> = ({ label, name, endAdornment
 
 
   return (
-    <Grid item xs={12} sm={gridSize} >
+    <Grid item xs={12} sm={gridSize} className='checkbox-css'>
       <FormControlLabel
 
         control={

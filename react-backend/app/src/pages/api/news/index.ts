@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import type { whereConditionProp } from 'src/types/frontend';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { cid,page } = req.query;
+  const { cid,page,show_in_en,show_in_zh } = req.query;
 
   const pageNumber: number = page ? parseInt(page as string) : 1;
   const limit: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
@@ -20,6 +20,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
   else {
     where = {...where,CategoryId:{[Op.ne]:null}}
+  }
+
+  if (show_in_en) {
+    where = {...where, 'show_in_en': show_in_en}
+  }
+
+  if (show_in_zh) {
+    where = {...where, 'show_in_zh': show_in_zh}
   }
 
   const news = await New.findAndCountAll({

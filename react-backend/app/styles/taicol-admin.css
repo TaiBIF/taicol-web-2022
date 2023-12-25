@@ -1,3 +1,15 @@
 .feedback-description textarea {
     min-height: 300px;
 }
+
+.checkbox-css {
+    padding-top: 0 !important
+}
+
+.switch-css .MuiFormControl-root{
+   flex-direction: row !important;
+}
+
+.switch-css .MuiFormControl-root label {
+   margin-left: 0  !important;
+}

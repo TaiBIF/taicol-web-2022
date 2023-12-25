@@ -10,7 +10,9 @@ const share = {
   if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
 }, z.date()),
   description: z.string().nonempty( { message: errors.NON_EMPTY }),
-  publish:z.boolean().default(true)
+  publish:z.boolean().default(true),
+  show_in_zh:z.boolean().default(true),
+  show_in_en:z.boolean().default(false)
 };
 
 export const createNewsFormSchema = z.object({

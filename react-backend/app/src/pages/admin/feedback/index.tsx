@@ -54,7 +54,7 @@ const getHeadCells = (url: string) => {
     {
       field: 'is_solved',
       headerName: '已解決',
-      type: 'string',
+      type: 'boolean',
       align: 'center',
       headerAlign: 'center',
       flex: 1,

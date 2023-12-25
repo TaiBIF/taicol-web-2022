@@ -47,6 +47,16 @@ Article.init(
 			type: new DataTypes.BOOLEAN,
 			allowNull: false,
 		},
+		show_in_zh: {
+			type: new DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: true,
+		},
+		show_in_en: {
+			type: new DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false,
+		},
 	},
 	{
 		tableName: 'articles',

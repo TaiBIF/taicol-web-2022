@@ -59,6 +59,22 @@ const getHeadCells = (url: string) => {
       flex: 1,
     },
     {
+      field: 'show_in_en',
+      headerName: '顯示於英文版',
+      type: 'boolean',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
+      field: 'show_in_zh',
+      headerName: '顯示於中文版',
+      type: 'boolean',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
       field: 'actions',
       headerName: 'Action',
       type: 'string',

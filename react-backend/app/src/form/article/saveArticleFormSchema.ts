@@ -9,9 +9,11 @@ const share = {
 	title: z.string().nonempty( { message: errors.NON_EMPTY }),
 	description: z.string().nonempty( { message: errors.NON_EMPTY }),
   publishedDate:  z.preprocess((arg) => {
-  if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
-}, z.date()),
-  publish:z.boolean().default(true)
+    if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
+  }, z.date()),
+  publish:z.boolean().default(true),
+  show_in_zh:z.boolean().default(true),
+  show_in_en:z.boolean().default(false)
 };
 
 export const createArticleFormSchema = z.object({
