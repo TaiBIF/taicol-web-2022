@@ -2,7 +2,7 @@ from django.db import models
 from django import forms
 from ckeditor_uploader.fields import RichTextUploadingField
 
-
+# 移至react後台
 class Expert(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
     name_e = models.CharField(max_length=100, blank=True, null=True) # 英文名

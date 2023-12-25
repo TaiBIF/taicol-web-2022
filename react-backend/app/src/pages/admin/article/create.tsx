@@ -11,7 +11,7 @@ import ArticleSaveForm from 'src/form/article/ArticleSaveForm';
 const SaveNewsPage = () => {
 	return (
 		<Card>
-			<CardHeader title="Article Create" />
+			<CardHeader title="主題文章新增" />
 			<CardContent sx={{ py: 2 }}></CardContent>
 			<ArticleSaveForm />
 		</Card>

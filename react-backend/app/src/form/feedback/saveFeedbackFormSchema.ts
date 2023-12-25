@@ -2,18 +2,17 @@ import { z } from 'zod';
 import errors from 'src/constants/errors';
 
 const share = {
-	type: z.string().nonempty({ message: errors.NON_EMPTY }),
-	title: z.string().nonempty({ message: errors.NON_EMPTY }),
-	description: z.string().nonempty({ message: errors.NON_EMPTY }),
-	reference: z.string().nonempty({ message: errors.NON_EMPTY }),
-	notify: z.boolean().default(true),
-  name:  z.string().nonempty({ message: errors.NON_EMPTY }),
-  email:   z.string().nonempty({ message: errors.NON_EMPTY }),
-  response:  z.string().nonempty({ message: errors.NON_EMPTY }),
-  is_solved: z.boolean().default(false),
-	updatedAt: z.date(),
-	createdAt: z.date()
-
+	feedback_type: z.string().transform((val) => parseInt(val, 10)).or(z.number()),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  reference: z.string().optional(),
+  notify: z.boolean().optional(),
+  name: z.string().optional(),
+  email: z.string().optional(),
+  response: z.string().optional(),
+  taxon_id: z.string().optional(),
+  is_solved: z.boolean().optional(),
+  is_sent: z.boolean().optional(),
 };
 
 export const createFeedbackFormSchema = z.object({
@@ -22,5 +21,13 @@ export const createFeedbackFormSchema = z.object({
 
 export const updateFeedbackFormSchema = z.object({
 	id: z.number().min(1, { message: errors.NON_EMPTY }),
+  updatedAt: z.preprocess((arg) => {
+      console.log('arg',arg);
+    if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
+    }, z.date()),
+  createdAt: z.preprocess((arg) => {
+      console.log('arg',arg);
+    if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
+    }, z.date()),
 	...share
 });

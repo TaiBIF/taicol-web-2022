@@ -98,6 +98,7 @@ const GenerateDynamicFields: React.VFC<Props> = (props) => {
                       case 'file':
                         return <InputFileField {...(input as InputFileFieldProps)}  error={error} errorMessage={errorMessage} key={input.name} />;
                         break;
+                      // todo 這邊還少date的判斷
                       case 'datepicker':
                         return <InputDatepickerField {...(input as InputTextFieldProps)} key={`input_${index}_${input.name}`} error={error} errorMessage={errorMessage}  />;
                         break;

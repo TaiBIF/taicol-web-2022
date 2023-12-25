@@ -23,7 +23,7 @@ const headCells: GridColDef[] = [
 	},
 	{
 		field: 'name',
-		headerName: 'name',
+		headerName: '類別名稱',
 		type: 'string',
 		align: 'center',
 		headerAlign: 'center',
@@ -31,7 +31,7 @@ const headCells: GridColDef[] = [
 	},
 	{
 		field: 'sort',
-		headerName: 'Sort',
+		headerName: '排序',
 		type: 'string',
 		align: 'center',
 		headerAlign: 'center',
@@ -50,7 +50,7 @@ const headCells: GridColDef[] = [
 
 				switch (action) {
 					case 'update':
-						Router.push(`//admin/category/update?id=${params.row.id}`);
+						Router.push(`/admin/category/update?id=${params.row.id}`);
 						break;
           case 'delete':
               if (confirm('Are you sure you want to delete this category?')) {
@@ -92,12 +92,24 @@ const headCells: GridColDef[] = [
 ];
 
 const CategoryListPage: React.FC = () => {
-  let rows: CategoryDataProps[] = [];
-  const router = useRouter();
-  const {type} = router.query;
+	let rows: CategoryDataProps[] = [];
+	const router = useRouter();
+	const { type } = router.query;
 	const { data } = useSWR<CategoryDataProps[]>( type ? `/api/admin/category?type=${type}` : []);
 
-  const title = capitalize(type as string) + ' Category List';
+	let title;
+	if (type as string == 'news') {
+		title = '最新消息'
+	} else if (type as string == 'article') {
+		title = '主題文章'
+	} else if (type as string == 'download') {
+		title = '下載'
+	}
+
+	title += '類別列表';
+
+
+//   const title = capitalize(type as string) + ' 類別列表';
 
 	if (data) {
 		rows = data?.map((row) => {
@@ -110,7 +122,7 @@ const CategoryListPage: React.FC = () => {
 		<Grid item xs={12}>
 			<Card>
         <CardHeader title={title} titleTypographyProps={{ variant: 'h6' }} action={
-          <IconButton onClick={(e:React.MouseEvent) => Router.push(`//admin/category/create?type=${type}`)} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}><AddIcon/></IconButton>
+          <IconButton onClick={(e:React.MouseEvent) => Router.push(`/admin/category/create?type=${type}`)} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}><AddIcon/></IconButton>
         } />
 				<Table headCells={headCells} rows={rows || []} />
 			</Card>

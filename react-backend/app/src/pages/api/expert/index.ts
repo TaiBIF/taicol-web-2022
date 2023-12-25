@@ -1,4 +1,4 @@
-import { Expert } from 'src/db/models/expert';
+import { Feedback } from 'src/db/models/feedback';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
 import { Op } from 'sequelize';
 import type { whereConditionProp } from 'src/types/frontend';
@@ -22,14 +22,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   //   where = {...where,CategoryId:{[Op.ne]:null}}
   // }
 
-  const expert = await Expert.findAndCountAll({
+  const feedback = await Feedback.findAndCountAll({
     // where: where,
 		// include:[{attributes:['name','name_e','person_id','taxon_group']}],
     // offset: offset,
 		// limit: limit,
     order: [
-      ['name_e', 'DESC']
+      ['createdAt', 'DESC']
     ]
 	});
-	res.status(200).json(expert);
+	res.status(200).json(feedback);
 };

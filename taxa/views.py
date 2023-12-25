@@ -1761,22 +1761,56 @@ def send_feedback(request):
     req = request.POST
     date_str = timezone.now()+datetime.timedelta(hours=8)
     date_str = date_str.strftime('%Y/%m/%d')
-    Feedback.objects.create(
-        taxon_id = req.get('taxon_id'),
-        type = int(req.get('type',1)),
-        title = req.get('title'),
-        description = req.get('description'),
-        reference = req.get('reference'),
-        notify = True if req.get('notify') == 'yes' else False,
-        name = req.get('name'),
-        email = req.get('email'),
-        response = f"<p>{req.get('name')} 先生/小姐您好，</p><p>收到您{date_str}於TaiCOL的留言：</p><p>『{req.get('description')}』</p><p>回覆如下：</p>",
-    )
-    email_body = f'您好\n  \n 網站有新的錯誤回報\n  \n 請至管理後台查看： {request.scheme}://{request.META["HTTP_HOST"]}/admin/taxa/feedback/'
+    name = req.get('name')
+    description = req.get('description')
+    taxon_id = req.get('taxon_id')
 
-    trigger_send_mail(email_body)
+    req = dict(req)
 
-    return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
+    # Feedback.objects.create(
+    #     taxon_id = req.get('taxon_id'),
+    #     type = int(req.get('type',1)),
+    #     title = req.get('title'),
+    #     description = req.get('description'),
+    #     reference = req.get('reference'),
+    #     notify = True if req.get('notify') == 'yes' else False,
+    #     name = req.get('name'),
+    #     email = req.get('email'),
+    #     response = f"<p>{req.get('name')} 先生/小姐您好，</p><p>收到您{date_str}於TaiCOL的留言：</p><p>『{req.get('description')}』</p><p>回覆如下：</p>",
+    # )
+
+    url = f"{env('REACT_API_URL')}/api/admin/feedback/save/"
+    req['response'] = f"""
+    
+        <p>{name} 先生/小姐您好，</p>
+        <br>
+        <p>收到您 {date_str} 於TaiCOL針對物種編號 <a href="{request.scheme}://{request.META["HTTP_HOST"]}/taxon/{taxon_id}">{taxon_id}</a> 的留言：</p>
+        <p>『{description}』</p>
+        <br>
+        <p>回覆如下：</p>
+        <br>
+        
+        <br>
+        敬祝   順心<br>
+        <br>
+        臺灣物種名錄<br>
+        臺灣生物多樣性資訊機構<br>
+        中央研究院生物多樣性研究中心<br>
+        <br>
+        TaiCOL<br>
+        Taiwan Biodiversity Information Facility | TaiBIF<br>
+        Biodiversity Research Centre, Academia Sinica<br>
+    """
+    resp = requests.post(url, data=req)
+    if resp.status_code == 200:
+
+
+        email_body = f'您好\n  \n 網站有新的錯誤回報\n  \n 請至管理後台查看： {env("REACT_WEB_INTERNAL_API_URL")}/admin/feedback/'
+        trigger_send_mail(email_body)
+
+        return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
+    else:
+        return HttpResponse(json.dumps({'status': 'fail'}), content_type='application/json') 
 
 
 
@@ -1788,11 +1822,7 @@ def trigger_send_mail(email_body):
 
 
 def bk_send_mail(email_body):
-    # send_mail('[TaiCOL]網站錯誤回報', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
     send_mail('[TaiCOL] 網站錯誤回報', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
-
-
-
 
 
 def get_conditioned_query_search(req, from_url=False):

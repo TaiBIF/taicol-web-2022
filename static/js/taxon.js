@@ -89,7 +89,7 @@ $(function(){
 	})
 
 
-	$('#errorForm select[name=type]').niceSelect();
+	$('#errorForm select[name=feedback_type]').niceSelect();
 
 	$('.rank-area .item').on('mouseenter',(function(){
 		$(this).find('.search-rank').removeClass('d-none')
@@ -133,19 +133,23 @@ $(function(){
 		if (checked){
 			//$('.loadingbox').removeClass('d-none');
 			$.ajax({
+				// url: "http://127.0.0.1:3000/api/admin/feedback/save/",
 				url: "/send_feedback",
-				data:  $('#errorForm').serialize() + '&csrfmiddlewaretoken=' + $csrf_token,
+				data:  $('#errorForm').serialize() + '&is_solved=0&csrfmiddlewaretoken=' + $csrf_token,
 				type: 'POST',
 				dataType : 'json',
 			})
 			.done(function(results) {
-				//$('.loadingbox').addClass('d-none');
-				$('.mistakepop').fadeOut("slow");
-				//alert('回報已送出，謝謝您！');
-				$lang == 'en-us' ? alert("Your feedback has been sent. Thank you!") : alert("回報已送出，謝謝您！");
+				if (results['status'] == 'done'){
+					//$('.loadingbox').addClass('d-none');
+					$('.mistakepop').fadeOut("slow");
+					//alert('回報已送出，謝謝您！');
+					$lang == 'en-us' ? alert("Your feedback has been sent. Thank you!") : alert("回報已送出，謝謝您！");
+				} else {
+					$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
+				}
 			})
 			.fail(function( xhr, status, errorThrown ) {
-				$('.loadingbox').addClass('d-none');
 				$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
 				console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
 			}) 

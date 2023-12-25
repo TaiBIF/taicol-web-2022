@@ -75,7 +75,7 @@ const getHeadCells = (url: string) => {
 
           switch (action) {
             case 'update':
-              Router.push(`//admin/user/update?id=${params.row.id}`);
+              Router.push(`/admin/user/update?id=${params.row.id}`);
               break;
             case 'delete':
                 if (confirm('Are you sure you want to delete this user?')) {
@@ -145,7 +145,7 @@ const UserListPage: React.FC = () => {
         <CardHeader title="User List" titleTypographyProps={{ variant: 'h6' }} action={
           <>
             <IconButton
-              onClick={(e: React.MouseEvent) => Router.push('//admin/user/create')}
+              onClick={(e: React.MouseEvent) => Router.push('/admin/user/create')}
               sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <AddIcon />
             </IconButton>

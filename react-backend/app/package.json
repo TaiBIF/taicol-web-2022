@@ -21,6 +21,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.478.0",
     "@ckeditor/ckeditor5-block-quote": "^35.1.0",
     "@ckeditor/ckeditor5-build-balloon": "^35.1.0",
     "@ckeditor/ckeditor5-build-classic": "^35.1.0",
@@ -44,12 +45,14 @@
     "@mui/x-date-pickers": "^5.0.6",
     "@next-auth/typeorm-legacy-adapter": "^2.0.0",
     "@popperjs/core": "^2.11.2",
+    "@react-email/render": "^0.0.10",
     "@types/bcrypt": "^5.0.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/formidable": "^2.0.5",
     "@types/uuid": "^8.3.4",
     "apexcharts": "^3.36.0",
     "apexcharts-clevision": "3.28.5",
+    "aws-sdk": "^2.1524.0",
     "bcryptjs": "^2.4.3",
     "chart.js": "^3.9.1",
     "chartjs-plugin-datalabels": "^2.1.0",

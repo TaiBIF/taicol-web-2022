@@ -1,5 +1,5 @@
-import { createFeedbackFormSchema,updateFeedbackFormSchema } from 'src/form/feedback/saveFeedbackFormSchema';
-import {Feedback} from 'src/db/models/Feedback';
+import { createFeedbackFormSchema, updateFeedbackFormSchema } from 'src/form/feedback/saveFeedbackFormSchema';
+import { Feedback } from 'src/db/models/feedback';
 import errors from 'src/constants/errors';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
 

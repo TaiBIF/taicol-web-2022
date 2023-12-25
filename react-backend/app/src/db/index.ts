@@ -6,7 +6,7 @@ sequelize
 	.authenticate()
 	.then(() => {
 		console.log('Database connected');
-    sequelize.sync({ alter: true });
+		sequelize.sync({ alter: true });
 	})
 	.catch((e) => console.log('Error:' + e));
 

@@ -28,7 +28,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'category',
-      headerName: 'Category',
+      headerName: '類別',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -36,7 +36,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'title',
-      headerName: 'Title',
+      headerName: '標題',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -44,7 +44,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'description',
-      headerName: 'Description',
+      headerName: '內文',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -52,7 +52,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'author',
-      headerName: 'Author',
+      headerName: '作者',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -60,7 +60,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'publishedDate',
-      headerName: 'Date',
+      headerName: '發布日期',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -82,7 +82,7 @@ const getHeadCells = (url: string) => {
               window.open (`/article/${params.row.slug}`, '_ blank');
               break;
             case 'update':
-              Router.push(`//admin/article/update?id=${params.row.id}`);
+              Router.push(`/admin/article/update?id=${params.row.id}`);
               break;
             case 'delete':
                 if (confirm('Are you sure you want to delete this article?')) {
@@ -152,11 +152,11 @@ const ArticleListPage: React.FC = () => {
 	return (
 		<Grid item xs={12}>
 			<Card>
-        <CardHeader title="Article List" titleTypographyProps={{ variant: 'h6' }} action={
+        <CardHeader title="主題文章列表" titleTypographyProps={{ variant: 'h6' }} action={
           <>
             <SearchBar handleSearch={(keyword) => setKeyword(keyword)} />
             <IconButton
-              onClick={(e: React.MouseEvent) => Router.push('//admin/article/create')}
+              onClick={(e: React.MouseEvent) => Router.push('/admin/article/create')}
               sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <AddIcon />
             </IconButton>

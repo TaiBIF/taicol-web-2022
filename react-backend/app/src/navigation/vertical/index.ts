@@ -32,12 +32,12 @@ const navigation = (): VerticalNavItemsType => {
 			sectionTitle: 'News',
 		},
 		{
-			title: 'News List',
+			title: '最新消息列表',
 			icon: NewspaperVariantOutline,
 			path: '/admin/news',
 		},
 		{
-			title: 'News Categories',
+			title: '最新消息類別',
 			icon: CardOutline,
 			path: '/admin/category?type=news',
 		},
@@ -45,12 +45,12 @@ const navigation = (): VerticalNavItemsType => {
 			sectionTitle: 'Article',
 		},
 		{
-			title: 'Article List',
+			title: '主題文章列表',
 			icon: BookOpenOutline,
 			path: '/admin/article',
 		},
 		{
-			title: 'Article Categories',
+			title: '主題文章類別',
 			icon: CardOutline,
 			path: '/admin/category?type=article',
 		},
@@ -58,28 +58,28 @@ const navigation = (): VerticalNavItemsType => {
 			sectionTitle: 'Download',
 		},
 		{
-			title: 'Download List',
+			title: '下載列表',
 			icon: DownloadBoxOutline,
 			path: '/admin/download',
 		},
 		{
-			title: 'Download Categories',
+			title: '下載類別',
 			icon: CardOutline,
 			path: '/admin/category?type=download',
 		},
 		{
-			sectionTitle: 'Expert List',
+			sectionTitle: '專家列表',
 		},
 		{
-			title: 'Expert List',
+			title: '專家列表',
 			icon: CardOutline,
 			path: '/admin/expert',
 		},
 		{
-			sectionTitle: 'Feedback List',
+			sectionTitle: '意見回饋列表',
 		},
 		{
-			title: 'Feedback List',
+			title: '意見回饋列表',
 			icon: CardOutline,
 			path: '/admin/feedback',
 		},
