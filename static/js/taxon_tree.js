@@ -6,6 +6,15 @@ function redirectTaxonPage(taxon_id){
         window.open(`/taxon/${taxon_id}`);
 }*/
 
+var $getSubListArr = `<div class="arr">
+<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+    <g id="tree-arr" transform="translate(-1545.086 -550.086)">
+        <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+        <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+    </g>
+</svg>
+</div>`
+
 function getSubList(item){
     let cultured = 'off';
     if ($('input[name="cultured"]').is(':checked')){
@@ -50,24 +59,20 @@ function getSubList(item){
                 if (j != 'has_lack'){
                     html_str = "";
                     for (var i = 0; i < results[j]['data'].length; i++) {
+
+                        let still_has_sub = results[j]['data'][i]['stat'] ? true : false;
+
                         if (results[j]['data'][i]['taxon_id']){
                             html_str += `
                             <li>
                                 <span class="anchor" id="${results[j]['data'][i]['taxon_id']}" ></span>
-                                <div class="item-box getSubList" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[j]['data'][i]['taxon_id']}" data-rank="${results[j]['data'][i]['rank_id']}">
+                                <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[j]['data'][i]['taxon_id']}" data-rank="${results[j]['data'][i]['rank_id']}">
                                     <div class="cir-box">
                                         ${j}
                                     </div>
                                     <h2><a href="/${$lang}/taxon/${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</a></h2>
                                     <p>${results[j]['data'][i]['stat']}</p>
-                                    <div class="arr">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                            <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                                <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                                <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                            </g>
-                                        </svg>
-                                    </div>
+                                    ${still_has_sub ? $getSubListArr : ''}
                                 </div>
                             </li>
                             `
@@ -75,20 +80,13 @@ function getSubList(item){
                             html_str += `
                             <li>
                                 <span class="anchor" id="" ></span>
-                                <div class="item-box getSubList" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${taxon_id}" data-rank="${results[j]['data'][i]['rank_id']}">
+                                <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${taxon_id}" data-rank="${results[j]['data'][i]['rank_id']}">
                                     <div class="cir-box">
                                         ${j}
                                     </div>
                                     <h2 class="" data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</h2>
                                     <p>${results[j]['data'][i]['stat']}</p>
-                                    <div class="arr">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                            <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                                <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                                <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                            </g>
-                                        </svg>
-                                    </div>
+                                    ${still_has_sub ? $getSubListArr : ''}
                                 </div>
                             </li>
                             `
@@ -205,23 +203,20 @@ $(function (){
             $('.tree-area .main-box ul.kingdom').html('')
 
             for (r of results){
+
+
+                let still_has_sub = r.stat ? true : false;
+
                 $('.tree-area .main-box ul.kingdom').append(
                     `<li>
                     <span class="anchor" id="${ r.taxon_id }" ></span>
-                    <div class="item-box getSubList" data-cultured="${ cultured }" data-lin_rank="${ lin_rank }" data-fetched="0" data-taxon="${ r.taxon_id }" data-rank="3">
+                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${ cultured }" data-lin_rank="${ lin_rank }" data-fetched="0" data-taxon="${ r.taxon_id }" data-rank="3">
                         <div class="cir-box">
                             界
                         </div>
                         <h2><a href="/${$lang}/taxon/${ r.taxon_id }">${ r.name }</a></h2>
                         <p>${ r.stat }</p>
-                        <div class="arr">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                    <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                    <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                </g>
-                            </svg>
-                        </div>
+                        ${still_has_sub ? $getSubListArr : ''}
                     </div>
                     </li>`
                 )
@@ -489,24 +484,20 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                 $(item).data('fetched','1');
                 html_str = "";
                 for (var i = 0; i < results[r][j]['data'].length; i++) {
+
+                    let still_has_sub = results[r][j]['data'][i]['stat'] ? true : false;
+
                     if (results[r][j]['data'][i]['taxon_id']){
                         html_str += `
                         <li>
                             <span class="anchor" id="${results[r][j]['data'][i]['taxon_id']}" ></span>
-                            <div class="item-box getSubList" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                            <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
                                 <div class="cir-box">
                                     ${j}
                                 </div>
                                 <h2><a href="/${$lang}/taxon/${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</a></h2>
                                 <p>${results[r][j]['data'][i]['stat']}</p>
-                                <div class="arr">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                        <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                            <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                            <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                        </g>
-                                    </svg>
-                                </div>
+                                ${still_has_sub ? $getSubListArr : ''}
                             </div>
                         </li>
                         `
@@ -514,20 +505,13 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                         html_str += `
                         <li>
                             <span class="anchor" id="" ></span>
-                            <div class="item-box getSubList" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${results[r][j]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                            <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${results[r][j]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
                                 <div class="cir-box">
                                     ${j}
                                 </div>
                                 <h2 class="" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
                                 <p>${results[r][j]['data'][i]['stat']}</p>
-                                <div class="arr">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                        <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                            <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                            <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                        </g>
-                                    </svg>
-                                </div>
+                                ${still_has_sub ? $getSubListArr : ''}
                             </div>
                         </li>
                         `
@@ -543,24 +527,20 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                         $(item).data('fetched','1');
                         html_str = "";
                         for (var i = 0; i < results[r][j]['data'].length; i++) {
+
+                            let still_has_sub = results[r][j]['data'][i]['stat'] ? true : false;
+
                             if (results[r][j]['data'][i]['taxon_id']){
                                 html_str += `
                                 <li>
                                     <span class="anchor" id="${results[r][j]['data'][i]['taxon_id']}" ></span>
-                                    <div class="item-box getSubList" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
                                         <div class="cir-box">
                                             ${j}
                                         </div>
                                         <h2><a href="/${$lang}/taxon/${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</a></h2>
                                         <p>${results[r][j]['data'][i]['stat']}</p>
-                                        <div class="arr">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                                <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                                    <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                                    <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                                </g>
-                                            </svg>
-                                        </div>
+                                        ${still_has_sub ? $getSubListArr : ''}
                                     </div>
                                 </li>
                                 `
@@ -568,20 +548,13 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                                 html_str += `
                                 <li>
                                     <span class="anchor" id="" ></span>
-                                    <div class="item-box getSubList" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${results[r][j]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${results[r][j]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
                                         <div class="cir-box">
                                             ${j}
                                         </div>
                                         <h2 class="" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
                                         <p>${results[r][j]['data'][i]['stat']}</p>
-                                        <div class="arr">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                                <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                                    <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                                    <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                                </g>
-                                            </svg>
-                                        </div>
+                                        ${still_has_sub ? $getSubListArr : ''}
                                     </div>
                                 </li>
                                 `
@@ -598,24 +571,20 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                         $(item).data('fetched','1');
                         html_str = "";
                         for (var i = 0; i < results[r][j]['data'].length; i++) {
+
+                            let still_has_sub = results[r][j]['data'][i]['stat'] ? true : false;
+
                             if (results[r][j]['data'][i]['taxon_id']){
                                 html_str += `
                                 <li>
                                     <span class="anchor" id="${results[r][j]['data'][i]['taxon_id']}" ></span>
-                                    <div class="item-box getSubList" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
                                         <div class="cir-box">
                                             ${j}
                                         </div>
                                         <h2><a href="/${$lang}/taxon/${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</a></h2>
                                         <p>${results[r][j]['data'][i]['stat']}</p>
-                                        <div class="arr">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-                                                <g id="tree-arr" transform="translate(-1545.086 -550.086)">
-                                                    <line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                                    <line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-                                                </g>
-                                            </svg>
-                                        </div>
+                                        ${still_has_sub ? $getSubListArr : ''}
                                     </div>
                                 </li>
                                 `
