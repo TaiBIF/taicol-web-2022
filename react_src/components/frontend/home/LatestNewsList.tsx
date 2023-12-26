@@ -11,13 +11,20 @@ const LatestNewsList: React.FC = () => {
   const [page, setPage] = React.useState<number>(1)
   const [total, setTotal] = React.useState<number>(0)
   const pageSize = 3
+  
+  const { t, i18n } = useTranslation();
 
-  const GET_LATEST_NEWS_LIST_URL = `${process.env.REACT_API_URL}/api/news/latest?cid=${selectedCategory}&page=${page}`;
+  let lang_filter = '';
+  if (i18n.language == 'en-us'){
+    lang_filter = '&show_in_en=1'
+  } else {
+    lang_filter = '&show_in_zh=1'
+  }
+
+  const GET_LATEST_NEWS_LIST_URL = `${process.env.REACT_API_URL}/api/news/latest?cid=${selectedCategory}&page=${page}${lang_filter}`;
   const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/category?type=news`;
   const { data: newsList } = useSWR<NewsListProps>(GET_LATEST_NEWS_LIST_URL,fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL,fetcher);
-  
-  const { t, i18n } = useTranslation();
 
   React.useEffect(() => {
     if (newsList) {
