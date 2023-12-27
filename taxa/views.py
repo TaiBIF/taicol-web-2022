@@ -44,6 +44,42 @@ db_settings = {
     "db": env('DB_DBNAME'),
 }
 
+# 舊網站redirect
+def redirect_taicol(request):
+    if request.method == 'GET':
+        namecode = request.GET.get('namecode')
+        original_name = request.GET.get('original_name')
+        conn = pymysql.connect(**db_settings)
+        query = '''
+            select distinct(atu.taxon_id) from api_namecode anc 
+            JOIN api_taxon_usages atu ON atu.taxon_name_id = anc.taxon_name_id
+            where anc.namecode = %s and atu.is_deleted != 1;
+            '''
+        with conn.cursor() as cursor:
+            cursor.execute(query, (namecode,))
+            taxon_id = cursor.fetchall()
+            taxon_id = [t[0] for t in taxon_id]
+            if len(taxon_id) == 1:
+                taxon_id = taxon_id[0]
+                return redirect('taxon', taxon_id=taxon_id) 
+            else:
+                query = '''
+                    select distinct(tn.name) from api_namecode anc 
+                    JOIN taxon_names tn ON tn.id = anc.taxon_name_id
+                    where anc.namecode = %s and tn.deleted_at is null;
+                '''
+                with conn.cursor() as cursor:
+                    cursor.execute(query, (namecode,))
+                    names = cursor.fetchall()
+                    names = [t[0] for t in names]
+                    # 如果有回傳 則用這個學名查 若沒有回傳則用TaiCOL原始的name去查
+                    if len(names) == 1:
+                        names = names[0]
+                        return redirect('/catalogue?status=accepted&keyword={}'.format(names)) 
+                    else:
+                        return redirect('/catalogue?status=accepted&keyword={}'.format(original_name)) 
+
+
 
 def send_download_request(request):
     task = threading.Thread(target=download_search_results_offline, args=(request,))
