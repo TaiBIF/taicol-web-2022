@@ -60,6 +60,22 @@ const getHeadCells = (url: string) => {
       flex: 1,
     },
     {
+      field: 'notify',
+      headerName: '需通知',
+      type: 'boolean',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
+      field: 'is_sent',
+      headerName: '信件已寄送',
+      type: 'boolean',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
       field: 'createdAt',
       headerName: '建立日期',
       type: 'string',

@@ -48,7 +48,7 @@ const SaveFeedbackPage = () => {
 			<CardContent>
 				<p>建立日期：{data && moment(data.createdAt).format('yyyy/MM/DD HH:mm:ss') }</p>
 				<p>更新日期：{data && moment(data.updatedAt).format('yyyy/MM/DD HH:mm:ss') }</p>
-				<p>更新通知與否：{data && (data.notify == true) ? '是' : '否' }</p>
+				<p>需通知：{data && (data.notify == true) ? '是' : '否' }</p>
 				<p>姓名：<span id="feedback-name">{data && data.name }</span></p>
 				<p>email：<span id="feedback-email">{data && data.email }</span></p>				
 				<p>回饋物種編號：<a target="_blank" href={data && process.env.NEXT_PUBLIC_WEB_PUBLIC_DOMAIN + "/taxon/" + data.taxon_id}>{data && data.taxon_id }</a></p>

@@ -69,7 +69,7 @@ Feedback.init(
 		is_sent: {
 			type: new DataTypes.BOOLEAN,
 			allowNull: false,
-			defaultValue: 1,
+			defaultValue: 0,
 		},
 		updatedAt: {
 			type: new DataTypes.DATE,
