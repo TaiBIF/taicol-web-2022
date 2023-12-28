@@ -75,9 +75,9 @@ def redirect_taicol(request):
                     # 如果有回傳 則用這個學名查 若沒有回傳則用TaiCOL原始的name去查
                     if len(names) == 1:
                         names = names[0]
-                        return redirect('/catalogue?status=accepted&keyword={}'.format(names)) 
+                        return redirect('/catalogue?status=accepted&status=not-accepted&status=misapplied&keyword={}'.format(names)) 
                     else:
-                        return redirect('/catalogue?status=accepted&keyword={}'.format(original_name)) 
+                        return redirect('/catalogue?status=accepted&status=not-accepted&status=misapplied&keyword={}'.format(original_name)) 
 
 
 
@@ -1815,7 +1815,7 @@ def send_feedback(request):
     #     response = f"<p>{req.get('name')} 先生/小姐您好，</p><p>收到您{date_str}於TaiCOL的留言：</p><p>『{req.get('description')}』</p><p>回覆如下：</p>",
     # )
 
-    url = f"{env('REACT_API_URL')}/api/admin/feedback/save/"
+    url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/feedback/save/"
     req['response'] = f"""
     
         <p>{name} 先生/小姐您好，</p>
