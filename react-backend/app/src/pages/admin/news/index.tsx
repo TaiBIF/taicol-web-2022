@@ -86,9 +86,9 @@ const getHeadCells = (url: string) => {
           event.stopPropagation(); // don't select this row after clicking
 
           switch (action) {
-            case 'info':
-              window.open (`/news/${params.row.slug}`, '_ blank');
-              break;
+            // case 'info':
+            //   window.open (`/news/${params.row.slug}`, '_ blank');
+            //   break;
             case 'update':
               Router.push(`/admin/news/update?id=${params.row.id}`);
               break;
@@ -115,9 +115,9 @@ const getHeadCells = (url: string) => {
 
         return (
           <>
-            <IconButton onClick={(e) => onClick(e, 'info')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
+            {/* <IconButton onClick={(e) => onClick(e, 'info')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <InfoIcon />
-            </IconButton>
+            </IconButton> */}
             <IconButton onClick={(e) => onClick(e, 'update')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <EditIcon />
             </IconButton>
