@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="qvqNFLc3zq0aH7Q1x-UW-68Pe8owLafRLowGUDF4YqQ" />
 	<title>臺灣物種名錄 Catalogue of Life in Taiwan</title>
-	<link rel=stylesheet type="text/css" href="{% static 'css/theme.css' %}?v1">
+	<link rel=stylesheet type="text/css" href="{% static 'css/theme.css' %}?v2">
     <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
 	<script src="{% static 'js/gsap.min.js' %}?v1" ></script>
 	<script src="{% static 'js/ScrollTrigger.min.js' %}?v1" ></script>
@@ -64,7 +64,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{% url 'catalogue' %}?filter=1" class="big_title">
+                        <a href="{% url 'catalogue' %}?filter=1&status=accepted" class="big_title">
                             {% blocktrans context "物種名錄-title"%}物種名錄{% endblocktrans %}
                             <span></span>
                         </a>
@@ -114,8 +114,8 @@
                                     <input name="next" type="hidden" value="{{ redirect_to }}" />
                                     <input id="language" name="language" type="hidden"/>
                                 </form>
-                                <a class="language-item" href="#" value="zh-hant">繁體中文</a>
-                                <a class="language-item" href="#" value="en-us">English</a>
+                                <a class="language-item" value="zh-hant">繁體中文</a>
+                                <a class="language-item" value="en-us">English</a>
                             </div>
                         </div>
                     </li>
@@ -156,14 +156,14 @@
                         <span></span>
                         <p>{% trans "物種樹" %}</p>
                     </a>
-                    <a href="{% url 'catalogue' %}?filter=1" class="bit-title">
+                    <a href="{% url 'catalogue' %}?filter=1&status=accepted" class="bit-title">
                         <span></span>
                         <p>{% blocktrans context "物種名錄-title"%}物種名錄{% endblocktrans %}
                         </p>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="bit-title disabled-a-link">
+                    <a class="bit-title disabled-a-link">
                         <span></span>
                         <p>{% trans "資料工具" %}</p>
                     </a>
@@ -181,7 +181,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="bit-title disabled-a-link">
+                    <a class="bit-title disabled-a-link">
                         <span></span>
                         <p>{% trans "更多資訊" %}</p>
                     </a>
@@ -220,7 +220,7 @@
 	</div>
 
 </body>
-<script src="{% static 'react_component/bundle.js' %}?v2"></script>
+<script src="{% static 'react_component/bundle.js' %}?v3"></script>
 <script src="{% static 'js/base.js' %}?v1"></script>
 {% block script %}{% endblock script %}
 </html>

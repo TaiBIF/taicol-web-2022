@@ -40,6 +40,7 @@ import '../../styles/globals.css';
 // import '../../styles/theme.css';
 import '../../styles/select2.css';
 import '../../styles/tailwind.css';
+import '../../styles/taicol-admin.css';
 import 'styles/nice-select.css'
 // import '../../styles/markdown.css';
 

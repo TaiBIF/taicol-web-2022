@@ -32,7 +32,7 @@ services:
     volumes:
       - ../tc-web-volumes/pgdata:/var/lib/postgresql/data/pgdata
       - ../tc-web-volumes/bucket:/bucket
-      - ../tc-web-volumes/media/archive:/archive
+      # - ../tc-web-volumes/media/archive:/archive
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
     env_file:

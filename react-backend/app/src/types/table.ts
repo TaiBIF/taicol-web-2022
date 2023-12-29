@@ -1,7 +1,7 @@
 import React from 'react';
 
 export type ActionTypes = 'info' | 'update' | 'delete';
-export type TableRows = UserData[] | CategoryDataProps[] | NewsDataProps[] | ArticleDataProps[] | ApiResponseDataProps[] | DownloadDataProps[] | FeedbackDataProps[] | ExpertDataProps[];
+export type TableRows = UserData[] | CategoryDataProps[] | NewsDataProps[] | ArticleDataProps[] | ApiResponseDataProps[] | DownloadDataProps[] | ExpertDataProps[] | FeedbackDataProps[];
 import {CategoryTypes} from 'src/types'
 
 export type UserData = {
@@ -74,21 +74,6 @@ export type ApiResponseDataProps = {
 	content: string;
 };
 
-export type FeedbackDataProps = {
-	id: number;
-	type: string;
-	title: string;
-	description: string;
-	reference: string;
-	notify: number;
-    name: string;
-    email:  string;
-    response: string;
-    is_solved: number;
-	updatedAt: string;
-	createdAt: string;
-};
-
 export type ExpertDataProps = {
 	id: number;
     name: string;
@@ -99,8 +84,30 @@ export type ExpertDataProps = {
 	createdAt: string;
 };
 
+export type FeedbackDataProps = {
+	id: number;
+	feedback_type: number;
+	title: string;
+	description: string; 
+	reference: string; 
+	notify: boolean; 
+	name: string;
+	email: string;
+	response: string;
+	taxon_id: string;
+	is_solved: string;
+	is_sent: string;
+	createdAt: string;
+	updatedAt: string;
+};
+
 export type ExpertListProps = {
 	rows: ExpertDataProps[];
+	count: number;
+};
+
+export type FeedbackListProps = {
+	rows: FeedbackDataProps[];
 	count: number;
 };
 
@@ -123,8 +130,3 @@ export type ApiResponseListProps = {
 	rows: ApiResponseDataProps[];
 	count: number;
 };
-
-export type FeedbackListProps = {
-	rows: FeedbackDataProps[];
-	count: number;
-}

@@ -7,16 +7,24 @@ import { fetcher } from '../utils/helper'
 import { Translation, useTranslation } from 'react-i18next';
 
 const NewsItem: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [selectedCategory, setSelectCategory] = React.useState<number | string>('all')
   const [page, setPage] = React.useState<number>(1)
   const [total, setTotal] = React.useState<number>(0)
-  const GET_NEWS_LIST_URL = `${process.env.REACT_API_URL}/api/news?page=${page}&cid=${selectedCategory}`;
+
+  let lang_filter = '';
+  if (i18n.language == 'en-us'){
+    lang_filter = '&show_in_en=1'
+  } else {
+    lang_filter = '&show_in_zh=1'
+  }
+
+  const GET_NEWS_LIST_URL = `${process.env.REACT_API_URL}/api/news?page=${page}&cid=${selectedCategory}${lang_filter}`;
   const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/admin/category?type=news`;
   const { data: newsList } = useSWR<NewsListProps>(GET_NEWS_LIST_URL,fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL,fetcher);
   const pageSize: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
 
-  const { t, i18n } = useTranslation();
 
   React.useEffect(() => {
     if (newsList) {

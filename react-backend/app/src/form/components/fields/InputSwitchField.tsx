@@ -17,7 +17,7 @@ export const InputSwitchField: React.VFC<Props> = ({ name, endAdornment, gridSiz
 	} = useFormContext();
 
 	return (
-    <Grid item xs={12} sm={gridSize} >
+    <Grid item xs={12} sm={gridSize} className='switch-css'>
 			<FormControl fullWidth error={!!errors[name]}>
         <Controller
           control={control}

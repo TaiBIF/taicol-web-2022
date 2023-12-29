@@ -1,5 +1,5 @@
 import {z} from 'zod'
-import { Feedback } from 'src/db/models/Feedback';
+import { Feedback } from 'src/db/models/feedback';
 import errors from 'src/constants/errors';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
 

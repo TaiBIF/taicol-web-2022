@@ -1,4 +1,4 @@
-import {Feedback} from 'src/db/models/Feedback';
+import { Feedback } from 'src/db/models/feedback';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
 import { updateFeedbackFormSchema } from 'src/form/feedback/saveFeedbackFormSchema';
 

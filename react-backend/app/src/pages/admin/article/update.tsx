@@ -27,7 +27,7 @@ const SaveArticlePage = () => {
 
 	return (
 		<Card>
-			<CardHeader title="Article Update" />
+			<CardHeader title="主題文章更新" />
 
 			<CardContent sx={{ py: 2 }}></CardContent>
 			{data && <ArticleSaveForm defaultValues={data} />}

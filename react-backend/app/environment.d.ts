@@ -7,6 +7,7 @@ declare global {
 			SMTP_PORT?: string;
 			SMTP_FROM?: string;
 			NEXT_PUBLIC_DOMAIN: string;
+			NEXT_PUBLIC_WEB_PUBLIC_DOMAIN: string;
 			SECRET: string;
 			NEXTAUTH_SECRET : string;
 			DB_NAME: string;
@@ -17,8 +18,14 @@ declare global {
 			DB_PASSWORD: string;
 			DATABASE_URL: string;
 			NEXT_PUBLIC_PAGINATE_LIMIT: string;
-      NEXT_PUBLIC_API_URL: string;
-      NEXT_PUBLIC_IFRAME_URL: string;
+			NEXT_PUBLIC_API_URL: string;
+			NEXT_PUBLIC_IFRAME_URL: string;
+			NEXT_PUBLIC_AWS_ACCESS_KEY_ID: string;
+			NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY: string;
+			AWS_ACCESS_KEY_ID: string;
+			AWS_SECRET_ACCESS: string;
+			NEXT_PUBLIC_AWS_SES_REGION_NAME: string;
+			NEXT_PUBLIC_AWS_SES_REGION_ENDPOINT: string;
 		}
 	}
 }

@@ -20,22 +20,23 @@ type CreateFormValues = z.infer<typeof createArticleFormSchema>;
 type Props = {
 	defaultValues?: UpdateFormValues | null;
 };
+
 const SaveArticleForm: React.VFC<Props> = (props) => {
 	// ** State
 	const router = useRouter();
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const { mutate } = useSWRConfig()
+	const { mutate } = useSWRConfig()
 	const methods = useForm<CreateFormValues | UpdateFormValues>({
 		defaultValues: props.defaultValues ? props.defaultValues : {publishedDate: new Date()},
 		resolver: zodResolver(props?.defaultValues?.id ? updateArticleFormSchema : createArticleFormSchema),
-  });
+	});
 
 	const {
 		handleSubmit,
 		formState: { errors },
 	} = methods;
 
-  const onSubmit: SubmitHandler<CreateFormValues | UpdateFormValues> = async (values) => {
+	const onSubmit: SubmitHandler<CreateFormValues | UpdateFormValues> = async (values) => {
 		const res = await fetch('/api/admin/article/save', {
 			method: 'POST',
 			headers: {
@@ -45,20 +46,20 @@ const SaveArticleForm: React.VFC<Props> = (props) => {
 			body: JSON.stringify(values),
 		});
 
-    const result = await res.json();
+		const result = await res.json();
 
-    if(result.status){
-      enqueueSnackbar('Success', { variant: 'success' });
+		if(result.status){
+		enqueueSnackbar('Success', { variant: 'success' });
 
-      if (props?.defaultValues?.id) {
-        mutate(`/api/admin/article/info?id=${props?.defaultValues?.id}`)
-      }
+		if (props?.defaultValues?.id) {
+			mutate(`/api/admin/article/info?id=${props?.defaultValues?.id}`)
+		}
 
-      router.push('/admin/article');
-    }
+		router.push('/admin/article');
+		}
 	};
 
-  console.log('errors', errors);
+  	console.log('errors', errors);
 	return (
 		<CardContent>
 			<FormProvider {...methods}>

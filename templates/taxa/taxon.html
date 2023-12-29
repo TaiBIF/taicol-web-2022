@@ -70,7 +70,7 @@
 					</div>
 					<div class="input-item2">
 						<div class="input-item">
-							<select class="subject wide" name="type" id="">
+							<select class="subject wide" name="feedback_type" id="">
 								<option value="1">{% trans "學名和中文名" %}</option>
 								<option value="2">{% trans "照片" %}</option>
 								<option value="3">{% trans "分類資訊" %}</option>
@@ -102,13 +102,13 @@
 						<h3>{% trans "更新通知與否" %}</h3>
 						<div class="radiobox">
 							<div class="flex">
-								<input type="radio" name="notify" value="yes" checked>
+								<input type="radio" name="notify" value="1" checked>
 								<p>{% trans "是" %}</p>
 							</div>
 						</div>
 						<div class="radiobox">
 							<div class="flex">
-								<input type="radio" name="notify" value="no">
+								<input type="radio" name="notify" value="0">
 								<p>{% trans "否" %}</p>
 							</div>
 						</div>
@@ -177,7 +177,7 @@
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
-						<p>{% trans '照片提供' %}：<a target="_blank" id="image_permalink" href="#">{% trans '臺灣生命大百科' %}</a></p>
+						<p>{% trans '照片提供' %}：<a target="_blank" id="image_permalink">{% trans '臺灣生命大百科' %}</a></p>
 					</div>
 				</div>
 			</div>
@@ -726,5 +726,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon.js' %}?v2"></script>
+<script src="{% static 'js/taxon.js' %}?v4"></script>
 {% endblock script %}

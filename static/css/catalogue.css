@@ -223,3 +223,8 @@ button.download_check:disabled {
 .fs-14 {
     font-size: 14px
 }
+
+
+.right-table .table-style1 td:first-child,  .right-table .table-style1 td:nth-child(2) {
+    text-align: left;
+}

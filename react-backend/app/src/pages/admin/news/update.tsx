@@ -28,7 +28,7 @@ const SaveNewsPage = () => {
 
 	return (
 		<Card>
-			<CardHeader title="News Update" />
+			<CardHeader title="最新消息更新" />
 
 			<CardContent sx={{ py: 2 }}></CardContent>
 			{data && <NewsSaveForm defaultValues={data} />}

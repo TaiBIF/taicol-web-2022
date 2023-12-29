@@ -28,7 +28,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'category',
-      headerName: 'Category',
+      headerName: '類別',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -36,7 +36,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'title',
-      headerName: 'Title',
+      headerName: '標題',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -44,7 +44,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'publishedDate',
-      headerName: 'Date',
+      headerName: '發布日期',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -52,7 +52,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'description',
-      headerName: 'Description',
+      headerName: '描述',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -60,7 +60,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'files',
-      headerName: 'File',
+      headerName: '檔案',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -165,7 +165,7 @@ const DownloadListPage: React.FC = () => {
 	return (
 		<Grid item xs={12}>
 			<Card>
-        <CardHeader title="Download List" titleTypographyProps={{ variant: 'h6' }} action={
+        <CardHeader title="下載列表" titleTypographyProps={{ variant: 'h6' }} action={
           <>
             <SearchBar handleSearch={(keyword) => setKeyword(keyword)} />
             <IconButton

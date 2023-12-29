@@ -14,9 +14,10 @@ import type { GridApi,GridColDef } from '@mui/x-data-grid';
 import Router from 'next/router';
 import { ActionTypes } from 'src/types';
 import SearchBar from 'src/table/components/SearchBar';
-import { shortDescription } from 'src/utils/helper';
+// import { shortDescription } from 'src/utils/helper';
 
-import type { FeedbackDataProps,FeedbackListProps } from 'src/types';
+import type { FeedbackDataProps, FeedbackListProps } from 'src/types';
+import moment from 'moment';
 
 // get head cells function with swr url
 const getHeadCells = (url: string) => {
@@ -26,46 +27,70 @@ const getHeadCells = (url: string) => {
       headerName: 'id',
       hide: true,
     },
-    // {
-    //   field: 'category',
-    //   headerName: 'Category',
-    //   type: 'string',
-    //   align: 'center',
-    //   headerAlign: 'center',
-    //   flex: 1,
-    // },
     {
-      field: 'title',
-      headerName: 'Title',
+      field: 'taxon_id',
+      headerName: '物種編號',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
       flex: 1,
     },
-    // {
-    //   field: 'description',
-    //   headerName: 'Description',
-    //   type: 'string',
-    //   align: 'center',
-    //   headerAlign: 'center',
-    //   flex: 1,
-    // },
-    // {
-    //   field: 'author',
-    //   headerName: 'Author',
-    //   type: 'string',
-    //   align: 'center',
-    //   headerAlign: 'center',
-    //   flex: 1,
-    // },
-    // {
-    //   field: 'publishedDate',
-    //   headerName: 'Date',
-    //   type: 'string',
-    //   align: 'center',
-    //   headerAlign: 'center',
-    //   flex: 1,
-    // },
+    {
+      field: 'name',
+      headerName: '回饋者姓名',
+      type: 'string',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
+      field: 'title',
+      headerName: '主旨',
+      type: 'string',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
+      field: 'is_solved',
+      headerName: '已解決',
+      type: 'boolean',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
+      field: 'notify',
+      headerName: '需通知',
+      type: 'boolean',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
+      field: 'is_sent',
+      headerName: '信件已寄送',
+      type: 'boolean',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
+      field: 'createdAt',
+      headerName: '建立日期',
+      type: 'string',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
+      field: 'updatedAt',
+      headerName: '更新日期',
+      type: 'string',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
     {
       field: 'actions',
       headerName: 'Action',
@@ -78,11 +103,11 @@ const getHeadCells = (url: string) => {
           event.stopPropagation(); // don't select this row after clicking
 
           switch (action) {
-            case 'info':
-              window.open (`/feedback/${params.row.slug}`, '_ blank');
-              break;
+            // case 'info':
+            //   window.open (`/feedback/${params.row.slug}`, '_ blank');
+            //   break;
             case 'update':
-              Router.push(`//admin/feedback/update?id=${params.row.id}`);
+              Router.push(`/admin/feedback/update?id=${params.row.id}`);
               break;
             case 'delete':
                 if (confirm('Are you sure you want to delete this feedback?')) {
@@ -107,9 +132,9 @@ const getHeadCells = (url: string) => {
 
         return (
           <>
-            <IconButton onClick={(e) => onClick(e, 'info')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
+            {/* <IconButton onClick={(e) => onClick(e, 'info')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <InfoIcon />
-            </IconButton>
+            </IconButton> */}
             <IconButton onClick={(e) => onClick(e, 'update')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <EditIcon />
             </IconButton>
@@ -128,8 +153,7 @@ const FeedbackListPage: React.FC = () => {
 	const [page, setPage] = useState<number>(1);
   let rows: FeedbackDataProps[] = [];
   const [keyword, setKeyword] = useState<string>('');
-  // const GET_FEEDBACK_LIST_URL = `/api/admin/feedback?page=${page}&keyword=${keyword}`;
-  const GET_FEEDBACK_LIST_URL = `/api/admin/feedback`;
+  const GET_FEEDBACK_LIST_URL = `/api/admin/feedback?page=${page}&keyword=${keyword}`;
   const { data } = useSWR<FeedbackListProps>(GET_FEEDBACK_LIST_URL);
 
   // change page
@@ -139,11 +163,14 @@ const FeedbackListPage: React.FC = () => {
 
 	if (data) {
     rows = data.rows.map((row) => {
+
       // const category = row?.Category?.name  || '';
 
 			return {
         ...row,
-        // publishedDate: new Date(row.publishedDate).toISOString().split('T')[0],
+        createdAt: moment(row.createdAt).format('yyyy/MM/DD HH:mm:ss'),
+        updatedAt: moment(row.updatedAt).format('yyyy/MM/DD HH:mm:ss'),
+        // is_solved: (row.is_solved == true) ? '是' : '否',
         // description: shortDescription(row.description, 100),
         // category: category,
 			};
@@ -153,14 +180,14 @@ const FeedbackListPage: React.FC = () => {
 	return (
 		<Grid item xs={12}>
 			<Card>
-        <CardHeader title="Feedback List" titleTypographyProps={{ variant: 'h6' }} action={
+        <CardHeader title="意見回饋列表" titleTypographyProps={{ variant: 'h6' }} action={
           <>
             <SearchBar handleSearch={(keyword) => setKeyword(keyword)} />
-            <IconButton
-              onClick={(e: React.MouseEvent) => Router.push('//admin/feedback/create')}
+            {/* <IconButton
+              onClick={(e: React.MouseEvent) => Router.push('/admin/feedback/create')}
               sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <AddIcon />
-            </IconButton>
+            </IconButton> */}
           </>
         } />
 

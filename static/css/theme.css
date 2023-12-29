@@ -890,9 +890,12 @@ body {
     opacity: 0;
     -moz-opacity: 0;
     filter: alpha(opacity=100);
-    -moz-animation: alpha01 0.5s 2.5s linear forwards;
+    /* -moz-animation: alpha01 0.5s 2.5s linear forwards;
     -webkit-animation: alpha01 0.5s 2.5s linear forwards;
-    animation: alpha01 0.5s 2.5s linear forwards
+    animation: alpha01 0.5s 2.5s linear forwards */
+    -moz-animation: alpha01 0.5s 1s linear forwards;
+    -webkit-animation: alpha01 0.5s 1s linear forwards;
+    animation: alpha01 0.5s 1s linear forwards
 }
 
 .section-1-kv .cir-yel img {
@@ -913,9 +916,12 @@ body {
     opacity: 0;
     -moz-opacity: 0;
     filter: alpha(opacity=100);
-    -moz-animation: alpha01 0.5s 2.5s linear forwards;
+    /* -moz-animation: alpha01 0.5s 2.5s linear forwards;
     -webkit-animation: alpha01 0.5s 2.5s linear forwards;
-    animation: alpha01 0.5s 2.5s linear forwards
+    animation: alpha01 0.5s 2.5s linear forwards */
+    -moz-animation: alpha01 0.5s 1s linear forwards;
+    -webkit-animation: alpha01 0.5s 1s linear forwards;
+    animation: alpha01 0.5s 1s linear forwards
 }
 
 @media only screen and (max-width: 767px) {
@@ -945,9 +951,9 @@ body {
     opacity: 0;
     -moz-opacity: 0;
     filter: alpha(opacity=100);
-    -moz-animation: bg-top-let 0.5s 2s linear forwards;
-    -webkit-animation: bg-top-let 0.5s 2s linear forwards;
-    animation: bg-top-let 0.5s 2s linear forwards
+    -moz-animation: bg-top-let 0.3s 1.2s linear forwards;
+    -webkit-animation: bg-top-let 0.3s 1.2s linear forwards;
+    animation: bg-top-let 0.3s 1.2s linear forwards
 }
 
 .section-1-kv .float-ite01 img {
@@ -971,9 +977,9 @@ body {
     opacity: 0;
     -moz-opacity: 0;
     filter: alpha(opacity=100);
-    -moz-animation: bg-top-right 0.5s 2.5s linear forwards;
-    -webkit-animation: bg-top-right 0.5s 2.5s linear forwards;
-    animation: bg-top-right 0.5s 2.5s linear forwards
+    -moz-animation: bg-top-right 0.3s 1.2s linear forwards;
+    -webkit-animation: bg-top-right 0.3s 1.2s linear forwards;
+    animation: bg-top-right 0.3s 1.2s linear forwards
 }
 
 @media only screen and (max-width: 767px) {
@@ -1046,9 +1052,12 @@ body {
     opacity: 0;
     -moz-opacity: 0;
     filter: alpha(opacity=100);
-    -moz-animation: base1 0.5s 1.2s linear forwards;
+    /* -moz-animation: base1 0.5s 1.2s linear forwards;
     -webkit-animation: base1 0.5s 1.2s linear forwards;
-    animation: base1 0.5s 1.2s linear forwards
+    animation: base1 0.5s 1.2s linear forwards */
+    -moz-animation: base1 0.2s 0.8s linear forwards;
+    -webkit-animation: base1 0.2s 0.8s linear forwards;
+    animation: base1 0.2s 0.8s linear forwards
 }
 
 @media only screen and (max-width: 767px) {
@@ -1066,18 +1075,24 @@ body {
     position: absolute;
     bottom: 2px;
     left: 0;
-    -moz-animation: line01 0.5s 1.4s linear forwards;
+    /* -moz-animation: line01 0.5s 1.4s linear forwards;
     -webkit-animation: line01 0.5s 1.4s linear forwards;
-    animation: line01 0.5s 1.4s linear forwards
+    animation: line01 0.5s 1.4s linear forwards */
+    -moz-animation: line01 0.2s 0.8s linear forwards;
+    -webkit-animation: line01 0.2s 0.8s linear forwards;
+    animation: line01 0.2s 0.8s linear forwards
 }
 
 @media only screen and (max-width: 767px) {
     .section-1-kv .left-box .slogan .line {
         height: 10px;
         bottom: 0;
-        -moz-animation: line01mb 0.5s 1.4s linear forwards;
+        /* -moz-animation: line01mb 0.5s 1.4s linear forwards;
         -webkit-animation: line01mb 0.5s 1.4s linear forwards;
-        animation: line01mb 0.5s 1.4s linear forwards;
+        animation: line01mb 0.5s 1.4s linear forwards; */
+        -moz-animation: line01mb 0.2s 0.8s linear forwards;
+        -webkit-animation: line01mb 0.2s 0.8s linear forwards;
+        animation: line01mb 0.2s 0.8s linear forwards;
         left: 33.5vw
     }
 }
@@ -1133,9 +1148,12 @@ body {
     border-radius: 35px;
     display: flex;
     overflow: hidden;
-    -moz-animation: bar_line 0.8s 1.6s linear forwards;
+    /* -moz-animation: bar_line 0.8s 1.6s linear forwards;
     -webkit-animation: bar_line 0.8s 1.6s linear forwards;
-    animation: bar_line 0.8s 1.6s linear forwards
+    animation: bar_line 0.8s 1.6s linear forwards */
+    -moz-animation: bar_line 0.2s 0.8s linear forwards;
+    -webkit-animation: bar_line 0.2s 0.8s linear forwards;
+    animation: bar_line 0.2s 0.8s linear forwards
 }
 
 @media only screen and (max-width: 1279px) {
@@ -1172,9 +1190,12 @@ body {
     opacity: 0;
     -moz-opacity: 0;
     filter: alpha(opacity=100);
-    -moz-animation: alpha01 0.3s 2s linear forwards;
+    /* -moz-animation: alpha01 0.3s 2s linear forwards;
     -webkit-animation: alpha01 0.3s 2s linear forwards;
-    animation: alpha01 0.3s 2s linear forwards
+    animation: alpha01 0.3s 2s linear forwards */
+    -moz-animation: alpha01 0.2s 0.8s linear forwards;
+    -webkit-animation: alpha01 0.2s 0.8s linear forwards;
+    animation: alpha01 0.2s 0.8s linear forwards
 }
 
 @media only screen and (max-width: 1279px) {
@@ -1218,9 +1239,12 @@ body {
     opacity: 0;
     -moz-opacity: 0;
     filter: alpha(opacity=100);
-    -moz-animation: alpha01 0.3s 2s linear forwards;
+    /* -moz-animation: alpha01 0.3s 2s linear forwards;
     -webkit-animation: alpha01 0.3s 2s linear forwards;
-    animation: alpha01 0.3s 2s linear forwards
+    animation: alpha01 0.3s 2s linear forwards */
+    -moz-animation: alpha01 0s 1s linear forwards;
+    -webkit-animation: alpha01 0s 1s linear forwards;
+    animation: alpha01 0s 1s linear forwards
 }
 
 @media only screen and (max-width: 1279px) {

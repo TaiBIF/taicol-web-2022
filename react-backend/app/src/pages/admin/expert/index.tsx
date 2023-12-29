@@ -28,7 +28,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'name',
-      headerName: 'Name',
+      headerName: '專家名',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -36,7 +36,7 @@ const getHeadCells = (url: string) => {
     },
     {
       field: 'person_id',
-      headerName: 'Person ID',
+      headerName: '學名管理工具對應人名ID',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -62,11 +62,11 @@ const getHeadCells = (url: string) => {
           event.stopPropagation(); // don't select this row after clicking
 
           switch (action) {
-            case 'info':
-              window.open (`/expert/${params.row.slug}`, '_ blank');
-              break;
+            // case 'info':
+            //   window.open (`/expert/${params.row.slug}`, '_ blank');
+            //   break;
             case 'update':
-              Router.push(`//admin/expert/update?id=${params.row.id}`);
+              Router.push(`/admin/expert/update?id=${params.row.id}`);
               break;
             case 'delete':
                 if (confirm('Are you sure you want to delete this expert?')) {
@@ -91,9 +91,9 @@ const getHeadCells = (url: string) => {
 
         return (
           <>
-            <IconButton onClick={(e) => onClick(e, 'info')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
+            {/* <IconButton onClick={(e) => onClick(e, 'info')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <InfoIcon />
-            </IconButton>
+            </IconButton> */}
             <IconButton onClick={(e) => onClick(e, 'update')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <EditIcon />
             </IconButton>
@@ -136,11 +136,11 @@ const ExpertListPage: React.FC = () => {
 	return (
 		<Grid item xs={12}>
 			<Card>
-        <CardHeader title="Expert List" titleTypographyProps={{ variant: 'h6' }} action={
+        <CardHeader title="專家列表" titleTypographyProps={{ variant: 'h6' }} action={
           <>
             <SearchBar handleSearch={(keyword) => setKeyword(keyword)} />
             <IconButton
-              onClick={(e: React.MouseEvent) => Router.push('//admin/expert/create')}
+              onClick={(e: React.MouseEvent) => Router.push('/admin/expert/create')}
               sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <AddIcon />
             </IconButton>

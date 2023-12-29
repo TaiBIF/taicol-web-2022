@@ -11,8 +11,8 @@ import { updateFeedbackFormSchema, createFeedbackFormSchema } from './saveFeedba
 import GenerateFields from '../components/GenerateFields'
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
+import FeedBackSubmitPanel from 'src/form/components/FeedBackSubmitPanel';
 import { useSWRConfig } from 'swr'
-import SubmitPanel from 'src/form/components/SubmitPanel';
 
 type UpdateFormValues = z.infer<typeof updateFeedbackFormSchema>;
 type CreateFormValues = z.infer<typeof createFeedbackFormSchema>;
@@ -22,20 +22,20 @@ type Props = {
 };
 const SaveFeedbackForm: React.VFC<Props> = (props) => {
 	// ** State
-  const router = useRouter();
-  const { mutate } = useSWRConfig()
+	const router = useRouter();
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+	const { mutate } = useSWRConfig()
 	const methods = useForm<CreateFormValues | UpdateFormValues>({
-		// defaultValues: props.defaultValues ? props.defaultValues : {publishedDate: new Date()},
+		defaultValues: props.defaultValues ? props.defaultValues : {},
 		resolver: zodResolver(props?.defaultValues?.id ? updateFeedbackFormSchema : createFeedbackFormSchema),
-  });
+	});
 
 	const {
 		handleSubmit,
 		formState: { errors },
 	} = methods;
 
-  const onSubmit: SubmitHandler<CreateFormValues | UpdateFormValues> = async (values) => {
+	const onSubmit: SubmitHandler<CreateFormValues | UpdateFormValues> = async (values) => {
 		const res = await fetch('/api/admin/feedback/save', {
 			method: 'POST',
 			headers: {
@@ -45,28 +45,27 @@ const SaveFeedbackForm: React.VFC<Props> = (props) => {
 			body: JSON.stringify(values),
 		});
 
-    const result = await res.json();
+		const result = await res.json();
 
-    if (result) {
-      enqueueSnackbar('Feedback saved successfully', {
-        variant: 'success',
-      });
+		if(result.status){
+			enqueueSnackbar('Success', { variant: 'success' });
 
-      if (props?.defaultValues?.id) {
-        mutate(`/api/admin/feedback/info?id=${props?.defaultValues?.id}`)
-      }
+			if (props?.defaultValues?.id) {
+				mutate(`/api/admin/feedback/info?id=${props?.defaultValues?.id}`)
+			}
 
-      router.push('/admin/feedback');
-    }
+			router.push('/admin/feedback');
+		}
 	};
 
-  console.log('errors', errors);
+	console.log('errors', errors);
+
 	return (
 		<CardContent>
 			<FormProvider {...methods}>
-				<form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-          <GenerateFields fields={FeedbackSaveFormFields} />
-          <SubmitPanel />
+				<form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)} id="reactFeedbackForm">
+					<GenerateFields fields={FeedbackSaveFormFields} />
+			<FeedBackSubmitPanel />
 				</form>
 			</FormProvider>
 		</CardContent>
