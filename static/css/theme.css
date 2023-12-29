@@ -6957,7 +6957,7 @@ body {
 } */
 
 .editor-box table a {
-    text-decoration: none;
+    text-decoration: none  !important;
 }
 
 .editor-box table a:link, .editor-box table a:visited {
@@ -6989,7 +6989,8 @@ body {
 .editor-box table td {
     font-family: 'Roboto', 'Noto Sans TC', sans-serif;
     padding: 15px 15px;
-    white-space: nowrap;
+    /* white-space: nowrap; */
+    /* word-break: break-word; */
 }
 
 .editor-box table tr:nth-child(odd) td {
