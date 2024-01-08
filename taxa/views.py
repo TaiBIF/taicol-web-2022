@@ -92,61 +92,21 @@ def download_search_results_offline(request):
     req = request.POST
     file_format = req.get('file_format','csv')
     # subset by taxon_id
-    base, base_query  = get_conditioned_query_search(req, from_url=True) # 不考慮facet選項
+    base, base_query  = get_conditioned_query_search(req, from_url=True, need_conserv_join=True) # 不考慮facet選項
     base = base.split('WHERE')
-    if base_query:
-        query = base_query + f"""
-                    , cte as (
-                        SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.alien_type, att.path, tn.name
-                        {base[0]}
-                        LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
-                        INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                        LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
-                        WHERE {base[1]} 
-                    )
-                    select distinct taxon_id FROM cte
-                """
-    else:
-        query = f"""
-                    WITH cte as (
-                        SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.alien_type, att.path, tn.name
-                        {base[0]}
-                        LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
-                        INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                        LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
-                        WHERE {base[1]} 
-                    )
-                    select distinct taxon_id FROM cte
-                """
 
-    # query = f"""SELECT distinct(at.taxon_id) {base}"""
-    conn = pymysql.connect(**db_settings)
-    tids = []
-    with conn.cursor() as cursor:
-        cursor.execute(query)
-        tids = cursor.fetchall()
-        tids = [t[0] for t in tids]
-        conn.close()
+    df = return_download_file(base, base_query)
 
-    df = get_download_file(tids)
-    # df_file_name = 
+
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
     if file_format == 'json':
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
-        # response = HttpResponse(content_type="application/json")
-        # response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.json'
-        # df.to_json(f'/tc-web-volumes/media/download/{df_file_name}', orient='records')
         compression_options = dict(method='zip', archive_name=df_file_name)
         zip_file_name = df_file_name.replace("json","zip")
         df.to_json(f'/tc-web-volumes/media/download/{zip_file_name}', orient='records', compression=compression_options)
 
     else:
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
-        # response = HttpResponse(content_type='text/csv')
-        # response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.csv'
-        # df.to_csv(f'/tc-web-volumes/media/download/{df_file_name}', index=False)
         compression_options = dict(method='zip', archive_name=df_file_name)
         zip_file_name = df_file_name.replace("csv","zip")
         df.to_csv(f'/tc-web-volumes/media/download/{zip_file_name}', compression=compression_options, index=False)
@@ -163,45 +123,10 @@ def download_search_results(request):
     req = request.POST
     file_format = req.get('file_format','csv')
     # subset by taxon_id
-    base, base_query = get_conditioned_query_search(req, from_url=True) # 不考慮facet選項
+    base, base_query = get_conditioned_query_search(req, from_url=True, need_conserv_join=True) # 不考慮facet選項
     base = base.split('WHERE')
-    if base_query:
-        query = base_query + f"""
-                    , cte as (
-                        SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.alien_type, att.path, tn.name
-                        {base[0]}
-                        LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
-                        INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                        LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
-                        WHERE {base[1]} 
-                    )
-                    select distinct taxon_id FROM cte
-                """
-    else:
-        query = f"""
-                    WITH cte as (
-                        SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.alien_type, att.path, tn.name
-                        {base[0]}
-                        LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
-                        INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                        LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
-                        WHERE {base[1]} 
-                    )
-                    select distinct taxon_id FROM cte
-                """
 
-    # query = f"""SELECT distinct(at.taxon_id) {base}"""
-    conn = pymysql.connect(**db_settings)
-    tids = []
-    with conn.cursor() as cursor:
-        cursor.execute(query)
-        tids = cursor.fetchall()
-        tids = [t[0] for t in tids]
-        conn.close()
-
-    df = get_download_file(tids)
+    df = return_download_file(base, base_query)
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
     if file_format == 'json':
@@ -1894,7 +1819,7 @@ def bk_send_mail(email_body):
     send_mail('[TaiCOL] 網站錯誤回報', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
 
 
-def get_conditioned_query_search(req, from_url=False):
+def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): # need_conserv_join -> 下載檔案需要的
 
     condition = ' at.is_in_taiwan = 1 AND at.is_deleted != 1 AND atu.is_deleted = 0'
 
@@ -2034,7 +1959,7 @@ def get_conditioned_query_search(req, from_url=False):
             condition += c_str
 
     conserv_join = ''
-    if has_conserv:
+    if has_conserv or need_conserv_join:
         conserv_join = "LEFT JOIN api_conservation ac ON ac.taxon_id = at.taxon_id"
 
     # 較高分類群
