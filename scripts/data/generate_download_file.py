@@ -5,7 +5,7 @@ import re
 from conf.settings import env
 import pymysql
 import pandas as pd
-from datetime import datetime, timedelta, strftime
+# from datetime import datetime, timedelta, strftime
 import json
 import numpy as np
 from taxa.utils import rank_map, rank_map_c, lin_map, lin_ranks
@@ -25,18 +25,32 @@ db_settings = {
 
 # 名錄檔案（物種）
 # 已改成新的common_name寫法
+# query = """
+#         WITH base_query AS (SELECT taxon_id, GROUP_CONCAT(name_c SEPARATOR ', ') AS alternative_name_c
+#         FROM api_common_name WHERE is_primary = 0 GROUP BY taxon_id)
+#         SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, 
+#         t.rank_id, acn.name_c, bq.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), 
+#         t.is_fossil, t.is_terrestrial, 
+#         t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, 
+#         ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, 
+#         t.created_at, t.updated_at, att.path, t.not_official
+#         FROM api_taxon t 
+#         LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1 
+#         LEFT JOIN base_query bq ON bq.taxon_id = t.taxon_id
+#         JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id 
+#         JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id 
+#         LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id 
+#         LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id 
+#         WHERE t.is_deleted = 0"""
 query = """
-        WITH base_query AS (SELECT taxon_id, GROUP_CONCAT(name_c SEPARATOR ', ') AS alternative_name_c
-        FROM api_common_name WHERE is_primary = 0 GROUP BY taxon_id)
         SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, 
-        t.rank_id, acn.name_c, bq.alternative_name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), 
+        t.rank_id, acn.name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), 
         t.is_fossil, t.is_terrestrial, 
         t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, 
         ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, 
         t.created_at, t.updated_at, att.path, t.not_official
         FROM api_taxon t 
         LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1 
-        LEFT JOIN base_query bq ON bq.taxon_id = t.taxon_id
         JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id 
         JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id 
         LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id 
@@ -47,10 +61,16 @@ conn = pymysql.connect(**db_settings)
 with conn.cursor() as cursor:
     cursor.execute(query)
     df = cursor.fetchall()
-    df = pd.DataFrame(df, columns=['taxon_id','name_id','simple_name','name_author','formatted_name','rank','common_name_c','alternative_name_c',  
+    df = pd.DataFrame(df, columns=['taxon_id','name_id','simple_name','name_author','formatted_name','rank','common_name_c',
                                     'is_hybrid','is_in_taiwan','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine',
                                     'cites','cites_note','iucn','iucn_note','redlist','redlist_note','protected','protected_note','sensitive','sensitive_note',
                                     'created_at','updated_at','path','not_official'])
+    # 取回alternative_name
+    cursor.execute("select taxon_id, name_c from api_common_name where is_primary = 0;")
+    name_c_df = cursor.fetchall()
+    name_c_df = pd.DataFrame(name_c_df, columns=['taxon_id', 'alternative_name_c'])
+    name_c_df = name_c_df.groupby(['taxon_id'], as_index = False).agg({'alternative_name_c': ','.join})
+    df = df.merge(name_c_df, how='left')
 
 
 df['alien_type'] = df['alien_type'].replace({None: '[]'})
@@ -63,30 +83,56 @@ df['updated_at'] = df.updated_at.dt.strftime('%Y-%m-%d')
 
 
 # synonyms
-query = f"SELECT tu.taxon_id, GROUP_CONCAT(DISTINCT(tn.name) SEPARATOR ','), GROUP_CONCAT(DISTINCT(an.formatted_name) SEPARATOR ',') \
+# query = f"SELECT tu.taxon_id, GROUP_CONCAT(DISTINCT(tn.name) SEPARATOR ','), GROUP_CONCAT(DISTINCT(an.formatted_name) SEPARATOR ',') \
+#             FROM api_taxon_usages tu \
+#             JOIN api_names an ON tu.taxon_name_id = an.taxon_name_id \
+#             JOIN taxon_names tn ON tu.taxon_name_id = tn.id \
+#             WHERE tu.status = 'not-accepted' AND tu.is_deleted != 1 \
+#             GROUP BY tu.taxon_id;"
+# with conn.cursor() as cursor:
+#     cursor.execute(query)
+#     syns = cursor.fetchall()
+#     syns = pd.DataFrame(syns, columns=['taxon_id','synonyms','formatted_synonyms'])
+
+query = f"SELECT DISTINCT tu.taxon_id, an.formatted_name, tn.name \
             FROM api_taxon_usages tu \
             JOIN api_names an ON tu.taxon_name_id = an.taxon_name_id \
             JOIN taxon_names tn ON tu.taxon_name_id = tn.id \
-            WHERE tu.status = 'not-accepted' AND tu.is_deleted != 1 \
-            GROUP BY tu.taxon_id;"
+            WHERE tu.status = 'not-accepted' AND tu.is_deleted != 1;"
 with conn.cursor() as cursor:
     cursor.execute(query)
     syns = cursor.fetchall()
-    syns = pd.DataFrame(syns, columns=['taxon_id','synonyms','formatted_synonyms'])
+    syns = pd.DataFrame(syns, columns=['taxon_id','formatted_synonyms','synonyms'])
+    syns = syns.groupby(['taxon_id'], as_index = False).agg({'formatted_synonyms': ','.join, 'synonyms': ','.join})
+# other_names = other_names.to_dict('records')
+
 
 df = df.merge(syns, on='taxon_id', how='left')
 
 
-query = f"SELECT tu.taxon_id, GROUP_CONCAT(DISTINCT(tn.name) SEPARATOR ','), GROUP_CONCAT(DISTINCT(an.formatted_name) SEPARATOR ',') \
+# query = f"SELECT tu.taxon_id, GROUP_CONCAT(DISTINCT(tn.name) SEPARATOR ','), GROUP_CONCAT(DISTINCT(an.formatted_name) SEPARATOR ',') \
+#             FROM api_taxon_usages tu \
+#             JOIN api_names an ON tu.taxon_name_id = an.taxon_name_id \
+#             JOIN taxon_names tn ON tu.taxon_name_id = tn.id \
+#             WHERE tu.status = 'misapplied' AND tu.is_deleted != 1 \
+#             GROUP BY tu.taxon_id;"
+# with conn.cursor() as cursor:
+#     cursor.execute(query)
+#     misapplied = cursor.fetchall()
+#     misapplied = pd.DataFrame(misapplied, columns=['taxon_id','misapplied','formatted_misapplied'])
+
+query = f"SELECT DISTINCT tu.taxon_id, an.formatted_name, tn.name \
             FROM api_taxon_usages tu \
             JOIN api_names an ON tu.taxon_name_id = an.taxon_name_id \
             JOIN taxon_names tn ON tu.taxon_name_id = tn.id \
-            WHERE tu.status = 'misapplied' AND tu.is_deleted != 1 \
-            GROUP BY tu.taxon_id;"
+            WHERE tu.status = 'misapplied' AND tu.is_deleted != 1;"
 with conn.cursor() as cursor:
     cursor.execute(query)
     misapplied = cursor.fetchall()
-    misapplied = pd.DataFrame(misapplied, columns=['taxon_id','misapplied','formatted_misapplied'])
+    misapplied = pd.DataFrame(misapplied, columns=['taxon_id','formatted_misapplied','misapplied'])
+    misapplied = misapplied.groupby(['taxon_id'], as_index = False).agg({'formatted_misapplied': ','.join, 'misapplied': ','.join})
+
+
 
 df = df.merge(misapplied, on='taxon_id', how='left')
 
@@ -132,6 +178,9 @@ df['rank'] = df['rank'].apply(lambda x: rank_map[x])
 
 is_list = ['is_hybrid','is_in_taiwan','is_endemic','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','not_official']
 df[is_list] = df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
+
+# is_in_taiwan null要改成false
+df['is_in_taiwan'] = df['is_in_taiwan'].replace({2: 'false', None: 'false'})
 
 
 df = df.replace({np.nan: '', None: ''})
@@ -190,16 +239,17 @@ y[y.taxon_id>1]
 only_one_taxon = all_taxon[all_taxon.name_id.isin(y[y.taxon_id==1].name_id.to_list())]
 
 # 先找出所有names
+# group concat 不會超過上限 維持原本寫法
 query = """SELECT distinct(tn.id), n.name, tn.rank_id, tn.name, an.name_author, an.formatted_name,
                   tn.properties ->> '$.latin_genus', tn.properties ->> '$.latin_s1', tn.properties ->> '$.species_layers',
                   tn.original_taxon_name_id, tn.properties ->> '$.is_hybrid', CONCAT_WS(' ', c.author,  c.content),
-                  tn.properties ->> '$.type_name', anc.namecode, tn.created_at, tn.updated_at
+                  tn.properties ->> '$.type_name', GROUP_CONCAT(anc.namecode), tn.created_at, tn.updated_at
            FROM taxon_names tn 
            JOIN nomenclatures n ON n.id = tn.nomenclature_id
            LEFT JOIN api_names an ON an.taxon_name_id = tn.id
            LEFT JOIN api_namecode anc ON anc.taxon_name_id = tn.id
            LEFT JOIN api_citations c ON tn.reference_id = c.reference_id
-           WHERE tn.deleted_at IS NULL
+           WHERE tn.deleted_at IS NULL GROUP BY tn.id 
         """
 conn = pymysql.connect(**db_settings)
 with conn.cursor() as cursor:
@@ -230,21 +280,27 @@ notaxon = names[names.taxon_id.isnull()]
 more_than_one = all_taxon[all_taxon.name_id.isin(y[y.taxon_id>1].name_id.to_list())]
 
 
+# TODO 這邊2023-12實作的時候要確認有沒有問題
 for x in more_than_one.name_id.to_list():
     tmp_taxon_ids = []
     tmp_status = []
     rows = more_than_one[more_than_one['name_id']==x]
-    for r in rows.index:
-        tmp_taxon_ids.append(rows.loc[r].taxon_id)
-        tmp_status.append(rows.loc[r]['status'])
-    names.loc[names.name_id==x,'taxon_id'] = ','.join(tmp_taxon_ids)
-    names.loc[names.name_id==x,'usage_status'] = ','.join(tmp_status)
+    taxon_tmp = rows[['status','is_in_taiwan','taxon_id']]
+    custom_dict = {'accepted': 0, 'not-accepted': 1, 'misapplied': 2}
+    taxon_tmp = taxon_tmp.sort_values(by=['status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False)
+    names.loc[names.name_id==x,'taxon_id'] = ','.join(taxon_tmp.taxon_id.to_list())
+    names.loc[names.name_id==x,'usage_status'] = ','.join(taxon_tmp.status.to_list())
+    names.loc[names.name_id==x,'is_in_taiwan'] = ','.join(taxon_tmp.is_in_taiwan.to_list())
+    # for r in rows.index:
+    #     tmp_taxon_ids.append(rows.loc[r].taxon_id)
+    #     tmp_status.append(rows.loc[r]['status'])
+    # names.loc[names.name_id==x,'taxon_id'] = ','.join(tmp_taxon_ids)
+    # names.loc[names.name_id==x,'usage_status'] = ','.join(tmp_status)
 
 
-
-t_cols = ['common_name_c','alternative_name_c','is_in_taiwan','is_endemic','alien_type',
-'is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','cites','iucn','redlist','protected','sensitive',
-'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
+# t_cols = ['common_name_c','alternative_name_c','is_in_taiwan','is_endemic','alien_type',
+# 'is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','cites','iucn','redlist','protected','sensitive',
+# 'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
 
 
 # id to int
@@ -276,6 +332,7 @@ for i in names.index:
             names.loc[i,'latin_s3'] = spe_l[1]['latin_name']
     # hybrid_parent
     if row['is_hybrid'] == 'true':
+        # group concat 不會超過上限 維持原本寫法
         query_hybrid_parent = f"SELECT GROUP_CONCAT( CONCAT(tn.name, ' ',tn.formatted_authors) SEPARATOR ' × ' ) FROM taxon_name_hybrid_parent AS tnhp \
                                 JOIN taxon_names AS tn ON tn.id = tnhp.parent_taxon_name_id \
                                 WHERE tnhp.taxon_name_id = {row['name_id']} \
@@ -284,7 +341,7 @@ for i in names.index:
             cursor.execute(query_hybrid_parent)
             hybrid_name_result = cursor.fetchall()
         if hybrid_name_result:
-            names.loc[names.name_id == row['name_id'], 'hybrid_parent'] = hybrid_name_result[0]
+            names.loc[names.name_id == row['name_id'], 'hybrid_parent'] = hybrid_name_result[0][0]
 
 
 # 'null' to None
@@ -295,7 +352,7 @@ names = names.replace({np.nan: None, 'null': None})
 
 name_cols = ['name_id','nomenclature_name','rank','simple_name','name_author','formatted_name','latin_genus','latin_s1','s2_rank','latin_s2',
 's3_rank','latin_s3','original_name_id','is_hybrid','hybrid_parent','protologue','type_name_id','namecode','created_at','updated_at',
-'usage_status','taxon_id','common_name_c','alternative_name_c','is_in_taiwan','is_endemic','alien_type',
+'taxon_id','usage_status','is_in_taiwan','common_name_c','alternative_name_c','is_endemic','alien_type',
 'is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','cites','iucn','redlist','protected','sensitive',
 'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
 
@@ -309,10 +366,10 @@ compression_options = dict(method='zip', archive_name=f"TaiCOL_name_{last_update
 names.to_csv(f'TaiCOL_name_{last_updated}.zip', compression=compression_options, index=False)
 
 
-# 學名檔案2023-10
+# 學名檔案2023-12
 #  //就學名有幾筆
 # 共XXXX筆
-# 共 161828 筆
+# 共 164674 筆
 
 
 # 物種檔案2023-10
@@ -320,13 +377,14 @@ names.to_csv(f'TaiCOL_name_{last_updated}.zip', compression=compression_options,
 # 共xxxx筆（其中臺灣存在計??????種）
 # taxon[taxon.is_in_taiwan=='true'].groupby('rank',as_index=False).taxon_id.nunique()
 
-# 共 102344 筆（其中臺灣存在計 63299 種）
+# 共 102595 筆（其中臺灣存在計 63252 種）
 
 
 
 ## namecode檔案
 conn = pymysql.connect(**db_settings)
 
+# group concat 不會超過上限 維持原本寫法
 query = """
         WITH cte
             AS
@@ -349,5 +407,5 @@ namecode.to_csv(f'TaiCOL_namecode_{last_updated}.zip', compression=compression_o
 
 
 
-# 新舊學名編碼對照2023-10
+# 新舊學名編碼對照2023-12
 # 舊版臺灣物種名錄學名編碼對照新版學名編碼

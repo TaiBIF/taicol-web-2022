@@ -11,7 +11,7 @@ import re
 import glob
 import os
 import datetime
-from taxa.models import Expert, Feedback, SearchStat
+from taxa.models import Feedback, SearchStat
 from django.contrib.postgres.aggregates import StringAgg
 import time
 import requests
@@ -92,61 +92,21 @@ def download_search_results_offline(request):
     req = request.POST
     file_format = req.get('file_format','csv')
     # subset by taxon_id
-    base, base_query  = get_conditioned_query_search(req, from_url=True) # 不考慮facet選項
+    base, base_query  = get_conditioned_query_search(req, from_url=True, need_conserv_join=True) # 不考慮facet選項
     base = base.split('WHERE')
-    if base_query:
-        query = base_query + f"""
-                    , cte as (
-                        SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.alien_type, att.path, tn.name
-                        {base[0]}
-                        LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
-                        INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                        LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
-                        WHERE {base[1]} 
-                    )
-                    select distinct taxon_id FROM cte
-                """
-    else:
-        query = f"""
-                    WITH cte as (
-                        SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.alien_type, att.path, tn.name
-                        {base[0]}
-                        LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
-                        INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                        LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
-                        WHERE {base[1]} 
-                    )
-                    select distinct taxon_id FROM cte
-                """
 
-    # query = f"""SELECT distinct(at.taxon_id) {base}"""
-    conn = pymysql.connect(**db_settings)
-    tids = []
-    with conn.cursor() as cursor:
-        cursor.execute(query)
-        tids = cursor.fetchall()
-        tids = [t[0] for t in tids]
-        conn.close()
+    df = return_download_file(base, base_query)
 
-    df = get_download_file(tids)
-    # df_file_name = 
+
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
     if file_format == 'json':
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
-        # response = HttpResponse(content_type="application/json")
-        # response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.json'
-        # df.to_json(f'/tc-web-volumes/media/download/{df_file_name}', orient='records')
         compression_options = dict(method='zip', archive_name=df_file_name)
         zip_file_name = df_file_name.replace("json","zip")
         df.to_json(f'/tc-web-volumes/media/download/{zip_file_name}', orient='records', compression=compression_options)
 
     else:
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
-        # response = HttpResponse(content_type='text/csv')
-        # response['Content-Disposition'] =  f'attachment; filename=taicol_download_{datetime.datetime.now().strftime("%Y%m%d%H%M%s")}.csv'
-        # df.to_csv(f'/tc-web-volumes/media/download/{df_file_name}', index=False)
         compression_options = dict(method='zip', archive_name=df_file_name)
         zip_file_name = df_file_name.replace("csv","zip")
         df.to_csv(f'/tc-web-volumes/media/download/{zip_file_name}', compression=compression_options, index=False)
@@ -163,45 +123,10 @@ def download_search_results(request):
     req = request.POST
     file_format = req.get('file_format','csv')
     # subset by taxon_id
-    base, base_query = get_conditioned_query_search(req, from_url=True) # 不考慮facet選項
+    base, base_query = get_conditioned_query_search(req, from_url=True, need_conserv_join=True) # 不考慮facet選項
     base = base.split('WHERE')
-    if base_query:
-        query = base_query + f"""
-                    , cte as (
-                        SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.alien_type, att.path, tn.name
-                        {base[0]}
-                        LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
-                        INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                        LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
-                        WHERE {base[1]} 
-                    )
-                    select distinct taxon_id FROM cte
-                """
-    else:
-        query = f"""
-                    WITH cte as (
-                        SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.alien_type, att.path, tn.name
-                        {base[0]}
-                        LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
-                        INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                        LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
-                        WHERE {base[1]} 
-                    )
-                    select distinct taxon_id FROM cte
-                """
 
-    # query = f"""SELECT distinct(at.taxon_id) {base}"""
-    conn = pymysql.connect(**db_settings)
-    tids = []
-    with conn.cursor() as cursor:
-        cursor.execute(query)
-        tids = cursor.fetchall()
-        tids = [t[0] for t in tids]
-        conn.close()
-
-    df = get_download_file(tids)
+    df = return_download_file(base, base_query)
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
     if file_format == 'json':
@@ -234,6 +159,7 @@ def get_autocomplete_taxon(request):
             keyword_str = get_variants(keyword_str)
             
             # 改成用api_common_name查詢 只回傳有效名
+            # 下拉選單用的 group concat維持現狀
             query = f"""
                         WITH base_query AS(
                             SELECT distinct at.taxon_id, tn.name AS tn_name, tn.name AS tnn_name
@@ -273,7 +199,7 @@ def get_autocomplete_taxon(request):
                                 #     SELECT id
                                 #     FROM base_name
                                 # )
-                
+                # 下拉選單用的 group concat維持現狀
                 query = f"""
                             WITH base_name AS (
                             SELECT id, name
@@ -353,7 +279,7 @@ def taxon(request, taxon_id):
                     at.is_marine, at.is_fossil, at.is_in_taiwan, at.alien_type,
                     ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, ac.iucn_taxon_id, 
                     ac.red_category, ac.red_note, ac.protected_category, ac.protected_note,
-                    tn.original_taxon_name_id, at.links, anc.namecode, bq.alternative_name_c, at.is_in_taiwan, at.is_cultured,
+                    tn.original_taxon_name_id, at.links, anc.namecode, at.is_in_taiwan, at.is_cultured,
                     CONCAT_WS (' ',tn.name, CONCAT_WS(',', acn.name_c, bq.alternative_name_c)) as taxon_group_str
                     FROM api_taxon at 
                     LEFT JOIN base_query bq ON bq.taxon_id = at.taxon_id
@@ -366,15 +292,46 @@ def taxon(request, taxon_id):
                     JOIN taxon_names tn ON at.accepted_taxon_name_id = tn.id
                     WHERE at.taxon_id = %s AND atu.is_latest = 1 AND atu.status = 'accepted'
                 """
+        # query = f"""
+        #             WITH base_query AS (SELECT taxon_id, GROUP_CONCAT(name_c SEPARATOR ', ') AS alternative_name_c
+        #                       FROM api_common_name WHERE is_primary = 0 AND taxon_id = %s GROUP BY taxon_id)
+        #             SELECT tn.name, an.formatted_name as f_name, concat_WS(' ', an.formatted_name, an.name_author ) as sci_name, 
+        #             acn.name_c as common_name_c, at.accepted_taxon_name_id as name_id, at.rank_id,
+        #             atu.status, att.path, at.is_endemic, at.is_terrestrial, at.is_freshwater, at.is_brackish,
+        #             at.is_marine, at.is_fossil, at.is_in_taiwan, at.alien_type,
+        #             ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, ac.iucn_taxon_id, 
+        #             ac.red_category, ac.red_note, ac.protected_category, ac.protected_note,
+        #             tn.original_taxon_name_id, at.links, anc.namecode, bq.alternative_name_c, at.is_in_taiwan, at.is_cultured,
+        #             CONCAT_WS (' ',tn.name, CONCAT_WS(',', acn.name_c, bq.alternative_name_c)) as taxon_group_str
+        #             FROM api_taxon at 
+        #             LEFT JOIN base_query bq ON bq.taxon_id = at.taxon_id
+        #             LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
+        #             LEFT JOIN api_names an ON at.accepted_taxon_name_id =  an.taxon_name_id 
+        #             LEFT JOIN api_namecode anc ON at.accepted_taxon_name_id =  anc.taxon_name_id 
+        #             JOIN api_taxon_usages atu ON at.taxon_id = atu.taxon_id
+        #             LEFT JOIN api_taxon_tree att ON at.taxon_id = att.taxon_id
+        #             LEFT JOIN api_conservation ac ON at.taxon_id = ac.taxon_id 
+        #             JOIN taxon_names tn ON at.accepted_taxon_name_id = tn.id
+        #             WHERE at.taxon_id = %s AND atu.is_latest = 1 AND atu.status = 'accepted'
+        #         """
                 # WHERE at.taxon_id = %s AND atu.is_deleted = 0 AND atu.is_latest = 1 AND atu.status = 'accepted'
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             cursor.execute(query, (taxon_id, taxon_id))
             results = cursor.fetchone()
-            conn.close()
             if results:
                 for i in range(len(cursor.description)):
                     data[cursor.description[i][0]] = results[i]
+
+                # 抓回alternative name c
+                cursor.execute("select taxon_id, name_c from api_common_name where taxon_id = %s and is_primary = 0;", (taxon_id, ))
+                name_c_df = cursor.fetchall()
+                name_c_df = pd.DataFrame(name_c_df, columns=['taxon_id', 'alternative_name_c'])
+                if len(name_c_df):
+                    name_c_df = name_c_df.groupby(['taxon_id'], as_index = False).agg({'alternative_name_c': ','.join})
+                    data['alternative_name_c'] = name_c_df.alternative_name_c.values[0]
+                conn.close()        
+
                 # 照片
                 data['images'] = []
                 if data['namecode']:
@@ -387,6 +344,7 @@ def taxon(request, taxon_id):
                         
                 # 學名
                 if data['rank_id'] == 47:
+                    # 不會超過上限 group concat維持
                     query = f"WITH view as (SELECT tnhp.taxon_name_id, CONCAT_WS(' ',an.formatted_name, an.name_author ) as sci_name FROM taxon_name_hybrid_parent tnhp \
                             JOIN api_names an ON tnhp.parent_taxon_name_id = an.taxon_name_id \
                             WHERE tnhp.taxon_name_id = %s \
@@ -587,7 +545,8 @@ def taxon(request, taxon_id):
                     if len(names):
                         names = names.sort_values('publish_year', ascending=False)
                         names = names.replace({None:'',np.nan:''})
-                        # 如果是雜交組合 要根據parent補上作者資訊                        
+                        # 如果是雜交組合 要根據parent補上作者資訊    
+                        # group concat 不會超過上限 維持原本寫法
                         for tnid in names[(names.taxon_name_id!=data['name_id'])&(names.rank_id==47)].taxon_name_id:
                             query = f"WITH view as (SELECT tnhp.taxon_name_id, CONCAT_WS(' ',an.formatted_name, an.name_author ) as sci_name FROM taxon_name_hybrid_parent tnhp \
                                 JOIN api_names an ON tnhp.parent_taxon_name_id = an.taxon_name_id \
@@ -1860,7 +1819,7 @@ def bk_send_mail(email_body):
     send_mail('[TaiCOL] 網站錯誤回報', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
 
 
-def get_conditioned_query_search(req, from_url=False):
+def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): # need_conserv_join -> 下載檔案需要的
 
     condition = ' at.is_in_taiwan = 1 AND at.is_deleted != 1 AND atu.is_deleted = 0'
 
@@ -2000,7 +1959,7 @@ def get_conditioned_query_search(req, from_url=False):
             condition += c_str
 
     conserv_join = ''
-    if has_conserv:
+    if has_conserv or need_conserv_join:
         conserv_join = "LEFT JOIN api_conservation ac ON ac.taxon_id = at.taxon_id"
 
     # 較高分類群
