@@ -432,242 +432,246 @@
 				dataType : 'json',
 			})
 			.done(function(results) {
-				window.enterPressed = false;
-				// 清空頁碼 & facet
-				$('.page-num').remove()
-				//$('.mb-cataselect').remove()
-				$('.table-style1').html('')
-				$('.button-two').addClass('d-none')
-				$('.result-flexbox').addClass('d-none')
-				$('.kingdom-box, .rank-box, .endemic-box, .status-box, .alien_type-box').html('')
+				if (results.is_taxon_id==true){
+					window.location = `/${$lang}/taxon/${results.taxon_id}`
+				} else {
+					window.enterPressed = false;
+					// 清空頁碼 & facet
+					$('.page-num').remove()
+					//$('.mb-cataselect').remove()
+					$('.table-style1').html('')
+					$('.button-two').addClass('d-none')
+					$('.result-flexbox').addClass('d-none')
+					$('.kingdom-box, .rank-box, .endemic-box, .status-box, .alien_type-box').html('')
 
-				$('#total-count').parent('p').removeClass('d-none');
-				$('.loadingbox').addClass('d-none');
-				$('#total-count').html(results['count']['total'][0]['count']);
-				if (results['count']['total'][0]['count']>0){
+					$('#total-count').parent('p').removeClass('d-none');
+					$('.loadingbox').addClass('d-none');
+					$('#total-count').html(results['count']['total'][0]['count']);
+					if (results['count']['total'][0]['count']>0){
 
-					if (results['count']['total'][0]['count'] > 1000){
-						$('.downloadData').off('click')
-						$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
-						$('.offlineDownloadData').on('click', function(){
-							offlineDownloadData()
-							$('button.download_check').data('type', $(this).data('type'))
-						})
-					} else {
-						$('.offlineDownloadData').off('click')
-						$('.offlineDownloadData').removeClass('offlineDownloadData').addClass('downloadData')
-						$('.downloadData').on('click', function(){
-							downloadData($(this).data('type'))
-						})
-					}
-	
-					$('.button-two').removeClass('d-none')
-					$('.result-flexbox').removeClass('d-none')
-					$('.right-table').removeClass('d-none')
-
-
-					/*
-					$('.top-infbox').after(
-					`<!--手機版左側篩選改成下拉選單-->
-					<div class="mb-cataselect">
-						<select name="mb-select" class="mb-select">
-							<option value=""></option>
-						</select>
-						<select name="mb-select-sub" class="mb-select" id="">
-						</select>
-					</div>`)
-
-					$('select[name=mb-select]').on('change', function() {
-						if ($('select[name=mb-select] option:selected').text() != ''){
-							let opt_str = $(`.${this.value}-box`).html();
-							opt_str = opt_str.replaceAll('button','option')
-							$('select[name=mb-select-sub]').html('<option value=""></option>')
-							$('select[name=mb-select-sub]').append(opt_str)
-							$('select[name=mb-select-sub]').niceSelect('update');
+						if (results['count']['total'][0]['count'] > 1000){
+							$('.downloadData').off('click')
+							$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
+							$('.offlineDownloadData').on('click', function(){
+								offlineDownloadData()
+								$('button.download_check').data('type', $(this).data('type'))
+							})
 						} else {
-							if ($(".facet-btn").hasClass('now')){
-								$(".facet-btn").removeClass('now');
-								$('input[name=hidden-value]').val('');
-								$('input[name=hidden-facet]').val('');
-								getData(false);
-							}
+							$('.offlineDownloadData').off('click')
+							$('.offlineDownloadData').removeClass('offlineDownloadData').addClass('downloadData')
+							$('.downloadData').on('click', function(){
+								downloadData($(this).data('type'))
+							})
 						}
-					});
+		
+						$('.button-two').removeClass('d-none')
+						$('.result-flexbox').removeClass('d-none')
+						$('.right-table').removeClass('d-none')
 
-					$('select[name=mb-select-sub]').on('change', function(){
-						if ($('select[name=mb-select-sub] option:selected').text() != ''){
-							// changeFacet
-							let f_str = $('select[name=mb-select-sub] option:selected').attr('class');
-							changeFacet(f_str.split(' ')[2].split('-')[1],f_str.split(' ')[2].split('-')[2],false,1,true)
+
+						/*
+						$('.top-infbox').after(
+						`<!--手機版左側篩選改成下拉選單-->
+						<div class="mb-cataselect">
+							<select name="mb-select" class="mb-select">
+								<option value=""></option>
+							</select>
+							<select name="mb-select-sub" class="mb-select" id="">
+							</select>
+						</div>`)
+
+						$('select[name=mb-select]').on('change', function() {
+							if ($('select[name=mb-select] option:selected').text() != ''){
+								let opt_str = $(`.${this.value}-box`).html();
+								opt_str = opt_str.replaceAll('button','option')
+								$('select[name=mb-select-sub]').html('<option value=""></option>')
+								$('select[name=mb-select-sub]').append(opt_str)
+								$('select[name=mb-select-sub]').niceSelect('update');
+							} else {
+								if ($(".facet-btn").hasClass('now')){
+									$(".facet-btn").removeClass('now');
+									$('input[name=hidden-value]').val('');
+									$('input[name=hidden-facet]').val('');
+									getData(false);
+								}
+							}
+						});
+
+						$('select[name=mb-select-sub]').on('change', function(){
+							if ($('select[name=mb-select-sub] option:selected').text() != ''){
+								// changeFacet
+								let f_str = $('select[name=mb-select-sub] option:selected').attr('class');
+								changeFacet(f_str.split(' ')[2].split('-')[1],f_str.split(' ')[2].split('-')[2],false,1,true)
+							} else {
+							// 如果選擇空的則清空
+								if ($(".facet-btn").hasClass('now')){
+									$(".facet-btn").removeClass('now');
+									$('input[name=hidden-value]').val('');
+									$('input[name=hidden-facet]').val('');
+									getData(false);
+								}
+							}
+						})
+
+						if (results.count.kingdom.length > 0) {
+							$('.kingdom-box').parent('li').removeClass('d-none')
+							for (let i = 0; i < results.count.kingdom.length; i++) {
+								$('.kingdom-box').append(`<button class="changeFacet facet-btn facet-kingdom-${results.count.kingdom[i]['category']}" data-facet="kingdom" data-value="${results.count.kingdom[i]['category']}">
+														${results.count.kingdom[i]['category_c']}(${results.count.kingdom[i]['count']})</button>`)
+							}
+							// 手機選單
+							$('select[name=mb-select]').append(`<option value="kingdom">${results.kingdom_title}</option>`)
 						} else {
-						// 如果選擇空的則清空
-							if ($(".facet-btn").hasClass('now')){
-								$(".facet-btn").removeClass('now');
-								$('input[name=hidden-value]').val('');
-								$('input[name=hidden-facet]').val('');
-								getData(false);
+							$('.kingdom-box').parent('li').addClass('d-none')
+						}
+
+						if (results.count.rank.length>0){
+							$('.rank-box').parent('li').removeClass('d-none')
+							for (let i = 0; i < results.count.rank.length; i++) {
+								$('.rank-box').append(`<button class="changeFacet facet-btn  facet-rank-${results.count.rank[i]['category']}" data-facet="rank" data-value="${results.count.rank[i]['category']}">
+														${results.count.rank[i]['category_c']}(${results.count.rank[i]['count']})</button>`)
+							}
+							$('select[name=mb-select]').append(`<option value="rank">${results.rank_title}</option>`)
+						} else {
+							$('.rank-box').parent('li').addClass('d-none')
+						}
+
+						if (results.count.is_endemic.length>0){
+							$('.endemic-box').parent('li').removeClass('d-none')
+							for (let i = 0; i < results.count.is_endemic.length; i++) {
+								$('.endemic-box').append(`<button class="changeFacet facet-btn facet-endemic-${results.count.is_endemic[i]['category']}" data-facet="endemic" data-value="${results.count.is_endemic[i]['category']}">
+														${results.count.is_endemic[i]['category_c']}(${results.count.is_endemic[i]['count']})</button>`)
+							}
+							$('select[name=mb-select]').append(`<option value="endemic">${results.endemic_title}</option>`)
+						} else {
+							$('.endemic-box').parent('li').addClass('d-none')
+						}
+
+						if (results.count.alien_type.length>0){
+							$('.alien_type-box').parent('li').removeClass('d-none')
+							for (let i = 0; i < results.count.alien_type.length; i++) {
+								$('.alien_type-box').append(`<button class="changeFacet facet-btn facet-alien_type-${results.count.alien_type[i]['category']}" data-facet="alien_type" data-value="${results.count.alien_type[i]['category']}">
+														${results.count.alien_type[i]['category_c']}(${results.count.alien_type[i]['count']})</button>`)
+							}
+							$('select[name=mb-select]').append(`<option value="alien_type">${results.native_title}</option>`)
+						} else {
+							$('.alien_type-box').parent('li').addClass('d-none')
+						}
+
+						if (results.count.status.length>0){
+							$('.status-box').parent('li').removeClass('d-none')
+							for (let i = 0; i < results.count.status.length; i++) {
+								$('.status-box').append(`<button class="changeFacet facet-btn facet-status-${results.count.status[i]['category']}" data-facet="status" data-value="${results.count.status[i]['category']}">
+														${results.count.status[i]['category_c']}(${results.count.status[i]['count']})</button>`)
+							}
+							$('select[name=mb-select]').append(`<option value="status">${results.status_title}</option>`)
+						} else {
+							$('.status-box').parent('li').addClass('d-none')
+						}*/
+
+						$('.table-style1').html(results['header'])
+
+						for (let i = 0; i < results.data.length; i++) {
+							let tag = '';
+							if (results.data[i]['is_endemic'] != ''){
+								tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
+							}
+							if (results.data[i]['alien_type'] != ''){
+								let alt_list = results.data[i]['alien_type'].split(',')
+								alt_list = [...new Set(alt_list)];
+								for (let a = 0; a < alt_list.length; a++) {
+									tag += '<div class="item">' + alt_list[a] + '</div>'
+								}
+							}
+							// <tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}"></tr>
+							$('.table-style1').append(
+								`
+								<tr>
+									<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['name']}</a></td>
+									<td>${results.data[i]['common_name_c']}</td>
+									<td>${results.data[i]['status']}</td>
+									<td>
+										<div class="tag-green">
+											${tag}
+										</div>
+									</td>								
+									<td>${results.data[i]['rank']}</td>
+									<td>${results.data[i]['taxon_group']}</td>
+									<td>${results.data[i]['kingdom']}</td>
+								</tr>`)
+
+						}
+						$('.open_taxon').on('click', function(){
+							window.open($(this).data('href'),"_self");
+						})
+						// 頁碼
+						if (results.page.total_page > 1){  // 判斷超過一頁，有才加分頁按鈕
+							$('.scro-m').after(
+							`<div class="page-num">
+								<!--現在位置加now-->
+								<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
+								<a href="javascript:;" data-page="${results.page.current_page - 1}" class="back updateData">
+									<img src="/static/image/pagear1.svg">
+									<p>${results.prev}</p>
+								</a>
+								<a href="javascript:;" data-page="${results.page.current_page + 1}" class="next updateData">
+									<p>${results.next}</p>
+									<img src="/static/image/pagear2.svg">
+								</a>
+								<a href="javascript:;" data-page="${results.page.total_page}" class="num updateData" id="page-end">${results.page.total_page}</a>
+							</div>
+							`)
+							$('.page-num').append(`
+								<input type="hidden" name="total_page" value="${results.page.total_page}">
+							`)
+						}
+
+						if (results.page.current_page==1){
+							$('.back').removeClass('updateData')
+							//$('.back').attr("onclick","");
+						} else if (results.page.current_page==results.page.total_page){
+							$('.next').removeClass('updateData')
+							//$('.next').attr("onclick","");
+						}
+							
+						let html = ''
+						for (let i = 0; i < results.page.page_list.length; i++) {
+							if (results.page.page_list[i] == results.page.current_page){
+							html += `<a class="num now updateData" href="javascript:;" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a> `;
+							} else {
+							html += `<a class="num updateData" href="javascript:;" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a>  `
 							}
 						}
-					})
+						$('.back').after(html)
+				
+						$(".updateData").prop("onclick", null).off("click");
 
-					if (results.count.kingdom.length > 0) {
-						$('.kingdom-box').parent('li').removeClass('d-none')
-						for (let i = 0; i < results.count.kingdom.length; i++) {
-							$('.kingdom-box').append(`<button class="changeFacet facet-btn facet-kingdom-${results.count.kingdom[i]['category']}" data-facet="kingdom" data-value="${results.count.kingdom[i]['category']}">
-													  ${results.count.kingdom[i]['category_c']}(${results.count.kingdom[i]['count']})</button>`)
+						$('.updateData').on('click', function(){
+							updateData(parseInt($(this).data('page')))
+						})
+
+						// nice select
+						/*
+						$('select[name=mb-select]').niceSelect();
+						$('select[name=mb-select-sub]').niceSelect();
+
+						// 從網址進入如果有facet
+						if((facet != '') & (value != '') & (facet != null) & (value != null)){
+							changeFacet(facet, value, true, page, false)
 						}
-						// 手機選單
-						$('select[name=mb-select]').append(`<option value="kingdom">${results.kingdom_title}</option>`)
-					} else {
-						$('.kingdom-box').parent('li').addClass('d-none')
-					}
 
-					if (results.count.rank.length>0){
-						$('.rank-box').parent('li').removeClass('d-none')
-						for (let i = 0; i < results.count.rank.length; i++) {
-							$('.rank-box').append(`<button class="changeFacet facet-btn  facet-rank-${results.count.rank[i]['category']}" data-facet="rank" data-value="${results.count.rank[i]['category']}">
-													${results.count.rank[i]['category_c']}(${results.count.rank[i]['count']})</button>`)
-						}
-						$('select[name=mb-select]').append(`<option value="rank">${results.rank_title}</option>`)
-					} else {
-						$('.rank-box').parent('li').addClass('d-none')
-					}
+						$(".changeFacet").prop("onclick", null).off("click");
 
-					if (results.count.is_endemic.length>0){
-						$('.endemic-box').parent('li').removeClass('d-none')
-						for (let i = 0; i < results.count.is_endemic.length; i++) {
-							$('.endemic-box').append(`<button class="changeFacet facet-btn facet-endemic-${results.count.is_endemic[i]['category']}" data-facet="endemic" data-value="${results.count.is_endemic[i]['category']}">
-													  ${results.count.is_endemic[i]['category_c']}(${results.count.is_endemic[i]['count']})</button>`)
-						}
-						$('select[name=mb-select]').append(`<option value="endemic">${results.endemic_title}</option>`)
-					} else {
-						$('.endemic-box').parent('li').addClass('d-none')
-					}
-
-					if (results.count.alien_type.length>0){
-						$('.alien_type-box').parent('li').removeClass('d-none')
-						for (let i = 0; i < results.count.alien_type.length; i++) {
-							$('.alien_type-box').append(`<button class="changeFacet facet-btn facet-alien_type-${results.count.alien_type[i]['category']}" data-facet="alien_type" data-value="${results.count.alien_type[i]['category']}">
-													${results.count.alien_type[i]['category_c']}(${results.count.alien_type[i]['count']})</button>`)
-						}
-						$('select[name=mb-select]').append(`<option value="alien_type">${results.native_title}</option>`)
-					} else {
-						$('.alien_type-box').parent('li').addClass('d-none')
-					}
-
-					if (results.count.status.length>0){
-						$('.status-box').parent('li').removeClass('d-none')
-						for (let i = 0; i < results.count.status.length; i++) {
-							$('.status-box').append(`<button class="changeFacet facet-btn facet-status-${results.count.status[i]['category']}" data-facet="status" data-value="${results.count.status[i]['category']}">
-													${results.count.status[i]['category_c']}(${results.count.status[i]['count']})</button>`)
-						}
-						$('select[name=mb-select]').append(`<option value="status">${results.status_title}</option>`)
-					} else {
-						$('.status-box').parent('li').addClass('d-none')
-					}*/
-
-					$('.table-style1').html(results['header'])
-
-					for (let i = 0; i < results.data.length; i++) {
-						let tag = '';
-						if (results.data[i]['is_endemic'] != ''){
-							tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
-						}
-						if (results.data[i]['alien_type'] != ''){
-							let alt_list = results.data[i]['alien_type'].split(',')
-							alt_list = [...new Set(alt_list)];
-							for (let a = 0; a < alt_list.length; a++) {
-								tag += '<div class="item">' + alt_list[a] + '</div>'
-							}
-						}
-						// <tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}"></tr>
-						$('.table-style1').append(
-							`
-							<tr>
-								<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['name']}</a></td>
-								<td>${results.data[i]['common_name_c']}</td>
-								<td>${results.data[i]['status']}</td>
-								<td>
-									<div class="tag-green">
-										${tag}
-									</div>
-								</td>								
-								<td>${results.data[i]['rank']}</td>
-								<td>${results.data[i]['taxon_group']}</td>
-								<td>${results.data[i]['kingdom']}</td>
-							</tr>`)
-
-					}
-					$('.open_taxon').on('click', function(){
-						window.open($(this).data('href'),"_self");
-					})
-					// 頁碼
-					if (results.page.total_page > 1){  // 判斷超過一頁，有才加分頁按鈕
-						$('.scro-m').after(
-						`<div class="page-num">
-							<!--現在位置加now-->
-							<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
-							<a href="javascript:;" data-page="${results.page.current_page - 1}" class="back updateData">
-								<img src="/static/image/pagear1.svg">
-								<p>${results.prev}</p>
-							</a>
-							<a href="javascript:;" data-page="${results.page.current_page + 1}" class="next updateData">
-								<p>${results.next}</p>
-								<img src="/static/image/pagear2.svg">
-							</a>
-							<a href="javascript:;" data-page="${results.page.total_page}" class="num updateData" id="page-end">${results.page.total_page}</a>
-						</div>
-						`)
-						$('.page-num').append(`
-							<input type="hidden" name="total_page" value="${results.page.total_page}">
-						`)
-					}
-
-					if (results.page.current_page==1){
-						$('.back').removeClass('updateData')
-						//$('.back').attr("onclick","");
-					} else if (results.page.current_page==results.page.total_page){
-						$('.next').removeClass('updateData')
-						//$('.next').attr("onclick","");
-					}
+						$('.changeFacet').on('click',function(){
+							changeFacet($(this).data('facet'), $(this).data('value'))
+						})
+				
+						$('.mb-cataselect').removeClass('d-none')
+						*/
+					//} else {
 						
-					let html = ''
-					for (let i = 0; i < results.page.page_list.length; i++) {
-						if (results.page.page_list[i] == results.page.current_page){
-						html += `<a class="num now updateData" href="javascript:;" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a> `;
-						} else {
-						html += `<a class="num updateData" href="javascript:;" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a>  `
-						}
+						//$('.mb-cataselect').addClass('d-none')
 					}
-					$('.back').after(html)
-			
-					$(".updateData").prop("onclick", null).off("click");
-
-                    $('.updateData').on('click', function(){
-                        updateData(parseInt($(this).data('page')))
-                    })
-
-					// nice select
-					/*
-					$('select[name=mb-select]').niceSelect();
-					$('select[name=mb-select-sub]').niceSelect();
-
-					// 從網址進入如果有facet
-					if((facet != '') & (value != '') & (facet != null) & (value != null)){
-						changeFacet(facet, value, true, page, false)
-					}
-
-					$(".changeFacet").prop("onclick", null).off("click");
-
-                    $('.changeFacet').on('click',function(){
-                        changeFacet($(this).data('facet'), $(this).data('value'))
-                    })
-            
-					$('.mb-cataselect').removeClass('d-none')
-					*/
-				//} else {
-					
-					//$('.mb-cataselect').addClass('d-none')
 				}
 			})
 			.fail(function( xhr, status, errorThrown ) {

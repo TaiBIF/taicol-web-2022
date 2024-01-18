@@ -2155,6 +2155,17 @@ def catalogue_search(request):
 
     if request.method == 'POST':
         req = request.POST
+        
+        # 先確認是不是taxonID 若是的話直接跳轉至物種頁
+        if req.get('keyword'):
+            query = "SELECT id FROM api_taxon WHERE `taxon_id` = %s"
+            conn = pymysql.connect(**db_settings)
+            with conn.cursor() as cursor:
+                cursor.execute(query, (req.get('keyword'),))
+                res = cursor.fetchone()
+                if res:
+                    return HttpResponse(json.dumps({'is_taxon_id': True, 'taxon_id': req.get('keyword')},cls=NpEncoder))
+
         offset = limit * (int(req.get('page',1))-1)
         base, base_query = get_conditioned_query_search(req, from_url=True)
         if not base and not base_query:
