@@ -58,7 +58,7 @@ const LoginForm: React.VFC = () => {
 	};
 
 	const onSubmit: SubmitHandler<LoginInput> = (values) => {
-		console.log(values);
+		// console.log(values);
 		signIn('credentials', {
 			email: values.email,
 			password: values.password,

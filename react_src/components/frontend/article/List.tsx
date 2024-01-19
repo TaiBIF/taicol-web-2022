@@ -74,8 +74,8 @@ const ArticleItem: React.FC = () => {
 
           let link = <a href="javascript: void(0)" onClick={() => setPage(pageNumber)} className={`num ${page == index + 1 ? 'now' : ''}`}>{pageNumber}</a>
 
-          console.log('pageNumber', pageNumber)
-          console.log('total', total)
+          // console.log('pageNumber', pageNumber)
+          // console.log('total', total)
           if (pageNumber == 2 && total > 2)
             link = <>
               <a href="javascript: void(0)" onClick={() => {

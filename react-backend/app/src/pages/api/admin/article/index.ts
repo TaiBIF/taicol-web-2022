@@ -3,11 +3,17 @@ import type { NextApiRequest, NextApiResponse } from 'next/types';
 import { Op } from 'sequelize';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { page, keyword } = req.query;
+  const { page, keyword, sort, field } = req.query;
 
   const pageNumber: number = page ? parseInt(page as string) : 1;
   const limit: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
   const offset = pageNumber > 1 ? (pageNumber - 1) * limit : 0;
+  const sortVar = sort != undefined ? sort as string : 'DESC'
+  let fieldVar = field != undefined ? field as string : 'updatedAt'
+
+  if (fieldVar == 'category'){
+    fieldVar = 'CategoryId'
+  }
 
   let where = {}
   if (keyword) {
@@ -25,7 +31,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     offset: offset,
 		limit: limit,
     order: [
-      ['updatedAt', 'DESC']
+      [fieldVar, sortVar]
     ]
 	});
 

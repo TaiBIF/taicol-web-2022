@@ -32,7 +32,7 @@ export const timeout = (delay:number) => {
 
 export const replaceIp = (str: string, replaceStr: string) => {
   const regex = /[a-zA-Z]{3,5}\:\/{2}[a-zA-Z0-9_.:-]+/g
-  console.log('replaceIp',str.replace(regex,replaceStr))
+  // console.log('replaceIp',str.replace(regex,replaceStr))
   return str.replace(regex,replaceStr)
 }
 

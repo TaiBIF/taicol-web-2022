@@ -4,14 +4,14 @@ import { Op } from 'sequelize';
 import { string } from 'zod';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { page, person_id, keyword } = req.query;
-
-
+  const { page, person_id, keyword, sort, field } = req.query;
 
   const pageNumber: number = page ? parseInt(page as string) : 1;
   const limit: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
   const offset = pageNumber > 1 ? (pageNumber - 1) * limit : 0;
 
+  const sortVar = sort != undefined ? sort as string : 'DESC'
+  let fieldVar = field != undefined ? field as string : 'updatedAt'
 
   let where = {}
   
@@ -41,9 +41,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 		// include:[{attributes:['name','name_e','person_id','taxon_group']}],
     offset: offset,
 		limit: limit,
-    // order: [
-    //   ['updatedAt', 'DESC']
-    // ]
+    order: [
+      [fieldVar, sortVar]
+    ]
 	});
 
 	res.status(200).json(expert);

@@ -100,7 +100,7 @@ const StatisticsPage: React.FC = () => {
         const name = item[0] as string
         const count = item[1] as number
         const total = item[2] as number
-        console.log('item',item)
+        // console.log('item',item)
         return {
           name: name,
           image: image,

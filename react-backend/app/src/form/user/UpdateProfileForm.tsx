@@ -32,7 +32,7 @@ const SaveProfileForm: React.VFC<Props> = (props) => {
 
 	const router = useRouter();
 	const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  console.log('props data', props.defaultValues);
+//   console.log('props data', props.defaultValues);
 	const methods = useForm<UpdateFormValues>({
 		defaultValues: props.defaultValues ? props.defaultValues : {},
 		resolver: zodResolver(updateProfileFormSchema),
@@ -45,7 +45,7 @@ const SaveProfileForm: React.VFC<Props> = (props) => {
 	} = methods;
 
   const onSubmit: SubmitHandler<UpdateFormValues> = async (values) => {
-    console.log('values',values)
+    // console.log('values',values)
 		const res = await fetch('/api/admin/profile/save', {
 			method: 'POST',
 			headers: {

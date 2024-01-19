@@ -42,7 +42,7 @@ const SaveUserForm: React.VFC<Props> = (props) => {
 	} = methods;
 
   const onSubmit: SubmitHandler<CreateFormValues | UpdateFormValues> = async (values) => {
-    console.log('values',values)
+    // console.log('values',values)
 		const res = await fetch('/api/admin/user/save', {
 			method: 'POST',
 			headers: {

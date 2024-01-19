@@ -3,11 +3,17 @@ import {Download,DownloadFile,Category} from 'src/db/models/download';
 import type { NextApiRequest, NextApiResponse } from 'next/types';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { page, cid } = req.query;
+  const { page, cid, sort, field } = req.query;
 
   const pageNumber: number = page ? parseInt(page as string) : 1;
   const limit: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
   const offset = pageNumber > 1 ? (pageNumber - 1) * limit : 0;
+  const sortVar = sort != undefined ? sort as string : 'DESC'
+  let fieldVar = field != undefined ? field as string : 'updatedAt'
+
+  if (fieldVar == 'category'){
+    fieldVar = 'CategoryId'
+  }
 
   let where = {}
 
@@ -25,7 +31,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     where: where,
 		include:[{model:Category,attributes:['id','name','name_eng']},{model:DownloadFile}],
     order: [
-      ['id', 'DESC']
+      [fieldVar, sortVar]
     ],
     offset: offset,
 		limit: limit,
