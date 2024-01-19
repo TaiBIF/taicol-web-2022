@@ -1,9 +1,9 @@
 import {Download,DownloadFile,Category} from 'src/db/models/download';
-
 import type { NextApiRequest, NextApiResponse } from 'next/types';
+import { Op } from 'sequelize';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { page, cid, sort, field } = req.query;
+  const { page, keyword, sort, field } = req.query;
 
   const pageNumber: number = page ? parseInt(page as string) : 1;
   const limit: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
@@ -15,21 +15,42 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     fieldVar = 'CategoryId'
   }
 
+  let include = [{
+    model: Category,
+    attributes: ['id','name','name_eng'],
+    required: true 
+  }, 
+  {
+    model: DownloadFile, 
+    // required: false 
+  }]
+
   let where = {}
 
-  if (cid && cid != 'all') {
+  if (keyword) {
     where = {
-      publish:true,
-      CategoryId:cid
+      [Op.or]: [
+        { title: { [Op.like]: `%${keyword}%` } },
+        { description: { [Op.like]: `%${keyword}%` } },
+        { "$Category.name$": { [Op.like]: `%${keyword}%` } },
+      ]
     }
   }
-  else {
-    where = {publish:true}
-  }
+
+  // if (cid && cid != 'all') {
+  //   where = {
+  //     publish:true,
+  //     CategoryId:cid
+  //   }
+  // }
+  // else {
+  //   where = {publish:true}
+  // }
 
   const download = await Download.findAndCountAll({
     where: where,
-		include:[{model:Category,attributes:['id','name','name_eng']},{model:DownloadFile}],
+    include: include,
+		// include: [{model:Category,attributes:['id','name','name_eng']},{model:DownloadFile}],
     order: [
       [fieldVar, sortVar]
     ],

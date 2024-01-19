@@ -22,10 +22,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (keyword) {
     where = {
       [Op.or]: [
-        { title: { [Op.like]: `%${keyword}%` } },
-        { description: { [Op.like]: `%${keyword}%` } },
         { taxon_id: { [Op.like]: `%${keyword}%` } },
         { name: { [Op.like]: `%${keyword}%` } },
+        { title: { [Op.like]: `%${keyword}%` } },
+        // { description: { [Op.like]: `%${keyword}%` } },
       ]
     }
   }

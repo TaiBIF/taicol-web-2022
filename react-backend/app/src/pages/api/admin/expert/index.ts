@@ -20,8 +20,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       [Op.or]: [
         { name: { [Op.like]: `%${keyword}%` } },
         { name_e: { [Op.like]: `%${keyword}%` } },
-        { email: { [Op.like]: `%${keyword}%` } },
         { person_id: { [Op.like]: `%${keyword}%` } },
+        { email: { [Op.like]: `%${keyword}%` } },
       ]
     }
   }

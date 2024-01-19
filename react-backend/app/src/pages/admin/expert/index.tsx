@@ -35,6 +35,14 @@ const getHeadCells = (url: string) => {
       flex: 1,
     },
     {
+      field: 'name_e',
+      headerName: '專家英文名',
+      type: 'string',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
       field: 'person_id',
       headerName: '學名管理工具對應人名ID',
       type: 'string',

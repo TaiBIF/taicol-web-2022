@@ -15,19 +15,28 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     fieldVar = 'CategoryId'
   }
 
+  let include = {
+    model: Category,
+    attributes: ['name','name_eng'],
+    required: false 
+  }
+
   let where = {}
+  
   if (keyword) {
     where = {
       [Op.or]: [
         { title: { [Op.like]: `%${keyword}%` } },
         { description: { [Op.like]: `%${keyword}%` } },
+        { "$Category.name$": { [Op.like]: `%${keyword}%` } },
       ]
     }
   }
 
+
   const article = await Article.findAndCountAll({
     where: where,
-		include:[{model:Category,attributes:['name','name_eng']}],
+		include: include,
     offset: offset,
 		limit: limit,
     order: [
