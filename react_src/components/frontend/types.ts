@@ -69,6 +69,11 @@ export type ArticleListProps = {
 	count: number;
 };
 
+export type DownloadListProps = {
+	rows: DownloadDataProps[];
+	count: number;
+};
+
 export type Link = {
   label: string;
   href: string;

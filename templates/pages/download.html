@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block head %}
+<link href="{% static 'css/download.css' %}?v1" rel="stylesheet">
+{% endblock head %}
+
 {% block body %}
 <div id="download-list-container"></div>
 {% endblock %}
