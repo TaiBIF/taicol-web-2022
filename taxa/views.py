@@ -339,7 +339,10 @@ def taxon(request, taxon_id):
                     r = requests.get(url)
                     img = r.json()
                     for ii in img:
-                        foto = {'author':ii['author'], 'src':ii['image_big'], 'provider':ii['provider'],'permalink': ii['permalink']}
+                        license_str = ii['license']
+                        if license_str:
+                            license_str = 'CC-' + license_str.upper()
+                        foto = {'author':ii['author'], 'src':ii['image_big'], 'provider':ii['provider'],'permalink': ii['permalink'], 'license': license_str }
                         data['images'].append(foto)
                         
                 # 學名
@@ -1545,7 +1548,6 @@ def get_match_result(request):
         response['page']['current_page'] = page
         response['page']['total_page'] = math.ceil(len(names) / 10)
         response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
-
         names = ('|').join(names[(page-1)*10:page*10])
         url = env('NOMENMATCH_ROOT')
         result = requests.post(url, data = {
@@ -1559,7 +1561,7 @@ def get_match_result(request):
             df = pd.DataFrame(result['data'])
             df['r'] = df[0].apply(lambda x: pd.json_normalize(x, 'results', ['search_term', 'matched_clean']))
             df_flat = pd.DataFrame()
-            # TODO concat
+            # TODO 改成concat
             for i in df.index:
                 yi = df.iloc[i].r
                 if len(yi):
@@ -1570,6 +1572,20 @@ def get_match_result(request):
                 else:
                     df_flat = df_flat.append({'search_term': df.iloc[i,0]['search_term']},ignore_index=True)
             df = df_flat
+            # # TODO 整理match_type
+            # # 如果包含 Undecidable -> ambiguous
+            # # 只有 Full match -> 依據學名地位給Accepted, not-accepted, misapplied
+            # # No match -> no match
+            # # Fuzzy match ?
+            # for f in df_flat.index:
+            #     flat_row = df_flat.iloc[f] 
+            #     if  'Undecidable' in flat_row.match_type:
+            #         df_flat.loc[f, 'Scenario'] = 'Ambiguous'
+            #     elif 'No match' == flat_row.match_type:
+            #         df_flat.loc[f, 'Scenario'] = 'No match'
+
+                
+
             #JOIN taxon
             if namecode_list:
                 query = f""" SELECT at.is_endemic, at.alien_type, at.is_terrestrial, 
@@ -1631,6 +1647,7 @@ def get_match_result(request):
             df = df.replace({np.nan: '', None: ''})
             df = df.drop_duplicates()
             response['data'] = json.loads(df.to_json(orient='records'))
+            # print(df.to_json(orient='records'))
             response['next'] = gettext('下一頁')
             response['prev'] = gettext('上一頁')
             

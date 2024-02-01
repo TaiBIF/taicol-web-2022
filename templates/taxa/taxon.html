@@ -173,6 +173,10 @@
 					</div>
 					<div class="mark-title">
 						<img src="{% static 'image/title-mark.svg' %}">
+						<p>{% trans '授權方式' %}：<span id="image_license"></span></p>
+					</div>
+					<div class="mark-title">
+						<img src="{% static 'image/title-mark.svg' %}">
 						<p>{% trans '典藏者' %}：<span id="image_provider"></span></p>
 					</div>
 					<div class="mark-title">
@@ -293,6 +297,7 @@
 												<div class="posa">
 													<img src="{{ img.src|safe }}">
 													<div class="text image_author" >{{ img.author|safe }}</div>
+													<div class="image_license d-none" >{{ img.license|safe }}</div>
 													<div class="image_provider d-none">{{ img.provider|safe }}</div>
 													<div class="image_permalink d-none">{{ img.permalink|safe }}</div>
 												</div>
@@ -726,5 +731,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon.js' %}?v4"></script>
+<script src="{% static 'js/taxon.js' %}?v5"></script>
 {% endblock script %}
