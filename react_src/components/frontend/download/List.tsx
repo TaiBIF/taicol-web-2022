@@ -86,7 +86,7 @@ const DownloadItem: React.FC = () => {
             {(selectedCategory != 'all') && downloadList?.rows?.filter((item: DownloadDataProps) => parseInt(item.Category.id) == category.id).map((download: DownloadDataProps, index: number) => <Item {...download} key={`news-${index}`} />)}
           </ul>
           {/* 在 all 分頁時才有更多的按鈕 */}
-          {(selectedCategory == 'all' && downloadList?.rows && downloadList?.rows?.filter((item: DownloadDataProps) => parseInt(item.Category.id) == category.id).length > 4) && <a className="btn-more" onClick={() => handleCategoryClick(category.id)}>
+          {(selectedCategory == 'all' && downloadList?.rows && downloadList?.rows?.filter((item: DownloadDataProps) => parseInt(item.Category.id) == category.id).length > 4) && <a className="btn-more-download" onClick={() => handleCategoryClick(category.id)}>
             <p>MORE</p>
             <div className="arr">
               <div className="arline"></div>
