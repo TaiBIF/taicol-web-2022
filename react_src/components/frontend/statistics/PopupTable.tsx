@@ -49,7 +49,10 @@ const PopupTable: React.FC<Props> = (props) => {
               <Translation>{ t => <td>{t('臺灣現有種數')}</td>}</Translation>
               <Translation>{ t => <td width="22%">{t('臺灣名錄主要提供者')}</td>}</Translation>
               </tr>
-              {data.map((item:CompareTableDataProps, index:number) => (
+              {
+              
+              data.map((item:CompareTableDataProps, index:number) => (
+                item.kingdomName != '全球物種數更新時間' ?
                 <tr key={`species-compare-table-tr-${index}`}>
                   <td>{t(item.kingdomName)}</td>
                   <td>{t(item.phylumName)}</td>
@@ -57,7 +60,8 @@ const PopupTable: React.FC<Props> = (props) => {
                   <td>{item.globalCount}</td>
                   <td>{item.taiwanCount}</td>
                   <td>{item.twProvider}</td>
-                </tr>
+                </tr> : ''
+                
               ))}
 
             </tbody></table>
