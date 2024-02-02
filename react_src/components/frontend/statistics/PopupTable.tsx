@@ -6,11 +6,12 @@ type Props = {
   data: CompareTableDataProps[];
   show: boolean,
   handleShowCompareTableClick: (status:boolean) => void,
+  globalUpdated: string,
 }
 const PopupTable: React.FC<Props> = (props) => {
   const { t, i18n } = useTranslation();
 
-  const { data, show,handleShowCompareTableClick } = props;
+  const { data, show,handleShowCompareTableClick, globalUpdated } = props;
 
   return (show ? <div className="popbox-table">
       <div className="rel">
@@ -32,6 +33,7 @@ const PopupTable: React.FC<Props> = (props) => {
           <div className="title-area">
           <Translation>{ t => <h2>{t('臺灣與全球物種數比較')}<span></span></h2>}</Translation>
           </div>
+          <p className='global-table-updated'>{t('全球物種數更新時間')}: {globalUpdated}</p>
           <Translation>{ t =>
             <p className="pad-note">
               {t('請往右滑動')}&gt;&gt;&gt;

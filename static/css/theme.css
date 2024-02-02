@@ -1760,7 +1760,7 @@ body {
 
 .statis-3 li .txtbox .title .markq svg {
     display: block;
-    width: 1.458333vw
+    width: 1.4vw
 }
 
 @media only screen and (max-width: 999px) {
@@ -9544,7 +9544,8 @@ body {
 
 .statis-3-cont .statis-3 li .markq svg {
     display: block;
-    width: 1.458333vw
+    width: 1.4vw
+    /* width: 28px */
 }
 
 @media only screen and (max-width: 999px) {
