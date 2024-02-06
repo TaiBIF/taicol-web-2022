@@ -29,7 +29,7 @@ const SaveCategoryPage = () => {
 
 	const { data } = useSWR<UpdateFormValues>(id ? `/api/admin/category/info?id=${id}` : []);
 
-  console.log('data', data);
+//   console.log('data', data);
 	return (
 		<Card>
 			<CardHeader title="Category Create" />

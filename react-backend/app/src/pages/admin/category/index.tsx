@@ -27,6 +27,7 @@ const headCells: GridColDef[] = [
 		type: 'string',
 		align: 'center',
 		headerAlign: 'center',
+		sortable: false,
 		flex: 1,
 	},
 	{
@@ -35,6 +36,7 @@ const headCells: GridColDef[] = [
 		type: 'string',
 		align: 'center',
 		headerAlign: 'center',
+		sortable: false,
 		flex: 1,
 	},
 	{
@@ -43,6 +45,7 @@ const headCells: GridColDef[] = [
 		type: 'string',
 		align: 'right',
 		headerAlign: 'center',
+		sortable: false,
 		flex: 1,
 		renderCell: (params) => {
 			const onClick = (event: React.MouseEvent<HTMLElement>, action: ActionTypes) => {

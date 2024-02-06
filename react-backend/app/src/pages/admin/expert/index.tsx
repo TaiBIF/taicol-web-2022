@@ -10,7 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Table from 'src/table';
 import useSWR, { mutate } from 'swr';
-import type { GridApi,GridColDef } from '@mui/x-data-grid';
+import type { GridApi,GridColDef,GridSortModel } from '@mui/x-data-grid';
 import Router from 'next/router';
 import { ActionTypes } from 'src/types';
 import SearchBar from 'src/table/components/SearchBar';
@@ -29,6 +29,14 @@ const getHeadCells = (url: string) => {
     {
       field: 'name',
       headerName: '專家名',
+      type: 'string',
+      align: 'center',
+      headerAlign: 'center',
+      flex: 1,
+    },
+    {
+      field: 'name_e',
+      headerName: '專家英文名',
       type: 'string',
       align: 'center',
       headerAlign: 'center',
@@ -56,6 +64,7 @@ const getHeadCells = (url: string) => {
       type: 'string',
       align: 'right',
       headerAlign: 'center',
+      sortable: false,
       flex: 1,
       renderCell: (params:any) => {
         const onClick = (event: React.MouseEvent<HTMLElement>, action: ActionTypes) => {
@@ -110,15 +119,26 @@ const getHeadCells = (url: string) => {
 }
 const ExpertListPage: React.FC = () => {
 	const [page, setPage] = useState<number>(1);
+
+  const [sort, setSort] = useState<string>('desc');
+  const [field, setField] = useState<string>('name');
+
   let rows: ExpertDataProps[] = [];
   const [keyword, setKeyword] = useState<string>('');
-  const GET_EXPERT_LIST_URL = `/api/admin/expert?page=${page}&keyword=${keyword}`;
+  const GET_EXPERT_LIST_URL = `/api/admin/expert?page=${page}&keyword=${keyword}&sort=${sort}&field=${field}`;
   const { data } = useSWR<ExpertListProps>(GET_EXPERT_LIST_URL);
 
   // change page
   const handleChangePage = (newPage: number) => {
     setPage(newPage+1);
   }
+
+  const handleSortChange = (model: GridSortModel) => {
+    if (model.length > 0){
+      if (model[0]['sort']) {setSort(model[0]['sort'])}
+        setField(model[0]['field'])        
+    }
+  };
 
 	if (data) {
     rows = data.rows.map((row) => {
@@ -153,6 +173,7 @@ const ExpertListPage: React.FC = () => {
           count={data?.count || 0}
           page={page}
           handleChangePage={handleChangePage}
+          handleSortChange={handleSortChange}
         />
 			</Card>
 		</Grid>

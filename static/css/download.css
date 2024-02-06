@@ -1,0 +1,109 @@
+.page-num {
+    margin-top: 50px
+}
+
+
+
+.btn-more-download {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 125px;
+    height: 40px;
+    border-radius: 20px;
+    background: #B8B8B8;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    margin-left: auto;
+    /* float: inline-end; */
+}
+
+/* @media only screen and (max-width: 1279px) {
+    .btn-more-download {
+        width: 170px;
+        height: 40px;
+        border-radius: 20px
+    }
+} */
+
+.btn-more-download:hover {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    background: #85BBD0
+}
+
+.btn-more-download:hover .arr .arline {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    width: 1.875vw
+}
+
+.btn-more-download p {
+    text-transform: uppercase;
+    color: #FFF;
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+/* @media only screen and (max-width: 767px) {
+    .btn-more-download p {
+        font-size: calc(8px + 0.9375vw);
+    }
+} */
+
+
+.btn-more-download .arr {
+    display: flex;
+    align-items: flex-end;
+    position: relative
+}
+
+.btn-more-download .arr .arline {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    width: 15px;
+    height: 1px;
+    background: #FFF;
+    position: relative;
+    top: 50%;
+    margin-top: 2px
+}
+
+@media only screen and (max-width: 767px) {
+    .btn-more-download .arr .arline {
+        width: 10px
+    }
+}
+
+.btn-more-download .arr .arrrot {
+    position: relative;
+    display: block;
+    width: 8px;
+    right: 7px;
+}
+
+@media only screen and (max-width: 767px) {
+    .btn-more-download .arr .arrrot {
+        width: 6px;
+        right: 5px
+    }
+}
+
+.btn-more-download .arr .arrrot img {
+    width: 100%;
+    display: block
+}
+

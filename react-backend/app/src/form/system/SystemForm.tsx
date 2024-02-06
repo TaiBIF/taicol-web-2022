@@ -61,7 +61,7 @@ const SystemForm: React.VFC = () => {
 	} = methods;
 
 	const onSubmit: SubmitHandler<SystemInput> = (values) => {
-		console.log(values);
+		// console.log(values);
 	};
 
 	const onChange = (file: ChangeEvent) => {

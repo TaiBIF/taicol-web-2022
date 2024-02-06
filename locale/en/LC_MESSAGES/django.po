@@ -870,3 +870,18 @@ msgstr "Not Officially Recorded"
 #:  
 msgid "包含未經正式紀錄"
 msgstr "Including Not Officially Recorded"
+
+
+#:  
+msgid "分數"
+msgstr "Score"
+
+
+#:  
+msgid "查詢字串有多個比對結果"
+msgstr "Mutiple matching results exist"
+
+
+#:  
+msgid "無結果"
+msgstr "No result"

@@ -6,12 +6,12 @@ const share = {
   slug: z.string().nonempty( { message: errors.NON_EMPTY }),
   title: z.string().nonempty({ message: errors.NON_EMPTY }),
   publishedDate: z.preprocess((arg) => {
-    console.log('arg',arg);
+    // console.log('arg',arg);
   if (typeof arg == "string" || arg instanceof Date) return new Date(arg);
 }, z.date()),
   description: z.string().nonempty( { message: errors.NON_EMPTY }),
   publish:z.boolean().default(true),
-  show_in_zh:z.boolean().default(true),
+  show_in_zh:z.boolean().default(false),
   show_in_en:z.boolean().default(false)
 };
 

@@ -10,11 +10,12 @@ type Props = {
   handleCompareTypeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void,
   handleShowCompareTableClick: (status: boolean) => void,
   kingdomInfo: KingdomInfoProps[],
-  compareType: string
+  compareType: string,
+  globalUpdated?: string
 }
 
 const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) => {
-  const { data, handleCompareTypeChange,handleShowCompareTableClick,kingdomInfo,compareType } = props
+  const { data, handleCompareTypeChange, handleShowCompareTableClick, kingdomInfo, compareType, globalUpdated } = props
   const [kingdomSelected, setKingdomSelect] = React.useState<string[]>(kingdomInfo.map((item: KingdomInfoProps, index: number) => {
     return item.chineseName
   } ))
@@ -68,6 +69,7 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
           </select>
         </div>
       </div>
+      <p className='global-stat-updated'>{t('全球物種數更新時間')}: {globalUpdated}</p>
       <div className="for-canvas ">
         <CompareSpeciesBarChart data={filterData} />
         {compareType == 'kingdom_compare' && <div className='more-selection-area'>

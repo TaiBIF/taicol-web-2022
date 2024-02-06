@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block head %}
+<link href="{% static 'css/statistics.css' %}?v1" rel="stylesheet">
+{% endblock head %}
+
 {% block body %}
 <div id="statistics-container"></div>
 {% endblock %}

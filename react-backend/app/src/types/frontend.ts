@@ -47,6 +47,11 @@ export type DownloadDataProps = {
   createdAt:string
 }
 
+export type DownloadListProps = {
+	rows: DownloadDataProps[];
+	count: number;
+};
+
 export type BreadCrumbProps = {
   title: string;
   href?: string;

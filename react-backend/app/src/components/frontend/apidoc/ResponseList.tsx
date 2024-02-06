@@ -11,7 +11,7 @@ type Props = {
 
 const ResponseList: React.VFC<Props> = (props) => {
   const { data } = props;
-  console.log('data',data)
+  // console.log('data',data)
   return (
     <>{
       data && data.map((item: ApidocResponseProps, index: number) => {

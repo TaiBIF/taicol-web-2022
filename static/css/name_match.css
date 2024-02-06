@@ -25,3 +25,61 @@
 .d-flex {
     display: flex;
 }
+
+
+/* Tooltip container */
+ .alien-tooltip {
+    position: relative !important;
+    display: inline-block !important;
+    margin: auto 0 auto 5px;
+    /* padding-bottom: 10px */
+}
+/* 
+@media only screen and (max-width: 767px) {
+    .alien-tooltip {
+        padding-bottom: 5px
+    }
+}  */
+
+/* Tooltip text */
+.alien-tooltip .alien-tooltiptext {
+    font-size: 13px;
+    visibility: hidden;
+    width: 200px;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 10px;
+    color: #555;
+    border-radius: 5px;
+    padding: 10px;
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 100;
+    word-break: break-word;
+    top: 105%;
+    left: 50%;
+    margin-left: -10px;
+}
+
+/*
+.alien-tooltip .alien-tooltiptext::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;
+    left: 5%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #EFF5F7 transparent;
+}*/
+
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.alien-tooltip:hover .alien-tooltiptext {
+    visibility: visible;
+}
+
+
+.right-table {
+    overflow-y: hidden;
+    overflow-x: auto;
+}

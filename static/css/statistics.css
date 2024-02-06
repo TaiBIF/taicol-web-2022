@@ -1,0 +1,14 @@
+.global-stat-updated {
+    font-size: 12px;
+    margin-bottom: 10px;
+    color: grey;
+    float: right;
+}
+
+.global-table-updated {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: grey;
+    float: right;
+}
+

@@ -44,7 +44,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<ResponseData>) =
 
     const result = await User.update(insertData, { where: { email: email } });
 
-    console.log('insertData',insertData);
+    // console.log('insertData',insertData);
     if (result)
       resStatus = true;
   }

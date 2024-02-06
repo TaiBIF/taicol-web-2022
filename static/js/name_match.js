@@ -34,6 +34,9 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 					$('.table-style1').append(
 						`<tr>
 							<td>${results.data[i]['search_term']}</td>
+							<td>${results.data[i]['formatted_name']}</td>
+							<td></td>
+							<td></td>
 							<td></td>
 							<td></td>
 							<td></td>
@@ -66,12 +69,28 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 						}
 					}
 
-					console.log(results.data[i])
+					let alert_str = '';
+
+					// console.log(results)
+
+					if (results.matched_count[results.data[i]['search_term']] > 1){
+						alert_str = 
+						`<div class="alien-tooltip">
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle cl-blue" viewBox="0 0 16 16">
+							<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+							<path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+						</svg>
+						<span class="alien-tooltiptext">${results['more_than_one_str']}</span>  
+					</div>`
+
+					}
 
 					$('.table-style1').append(
 						`<tr>
-							<td>${results.data[i]['search_term']}</td>
+							<td>${results.data[i]['search_term']}${alert_str}</td>
 							<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}" target="_blank">${results.data[i]['formatted_name']}</a></td>
+							<td>${results.data[i]['score']}</td>
+							<td>${results.data[i]['name_status']}</td>
 							<td>${results.data[i]['common_name_c']}</a></td>
 							<td>${results.data[i]['kingdom']}</td>
 							<td>${results.data[i]['taxon_group']}</td>
@@ -142,6 +161,11 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
             $('.getData').on('click',function(){
                 getData(parseInt($(this).data('page')))
             })
+
+			$([document.documentElement, document.body]).animate({
+				scrollTop: $(".check-result-box").offset().top - 80
+			}, 200);
+
 				
 		})
 		.fail(function( xhr, status, errorThrown ) {
