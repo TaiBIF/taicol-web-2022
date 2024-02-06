@@ -31,7 +31,6 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 			//console.log(results.data)
 			for (let i = 0; i < results.data.length; i++) {
 				if ((results.data[i]['taxon_id'] == '')|results.data[i]['taxon_id'] == undefined){
-					console.log(results.data[i])
 					$('.table-style1').append(
 						`<tr>
 							<td>${results.data[i]['search_term']}</td>
@@ -162,6 +161,11 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
             $('.getData').on('click',function(){
                 getData(parseInt($(this).data('page')))
             })
+
+			$([document.documentElement, document.body]).animate({
+				scrollTop: $(".check-result-box").offset().top - 80
+			}, 200);
+
 				
 		})
 		.fail(function( xhr, status, errorThrown ) {

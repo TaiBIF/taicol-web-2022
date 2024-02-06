@@ -140,6 +140,11 @@
 			// 從facet或頁碼點選
 			// 只修改表格內容，不修改facet
 			$('.loadingbox').removeClass('d-none');
+
+			$([document.documentElement, document.body]).animate({
+				scrollTop: $(".result-area").offset().top - 80
+			}, 200);
+
 			
 			let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
 					'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() +
@@ -165,6 +170,11 @@
 			.done(function(results) {
 
 				$('.loadingbox').addClass('d-none');
+
+				$([document.documentElement, document.body]).animate({
+					scrollTop: $(".result-area").offset().top - 80
+				}, 200);
+
 				// 修改共幾筆
 				$('#total-count').html(results['total_count']);
 
@@ -420,6 +430,11 @@
 
 			$('.loadingbox').removeClass('d-none');
 
+			$([document.documentElement, document.body]).animate({
+				scrollTop: $(".result-area").offset().top - 80
+			}, 200);
+
+
 			if (query_str.startsWith('?')){
 				query_str = query_str.substring(1)
 			}
@@ -446,6 +461,11 @@
 
 					$('#total-count').parent('p').removeClass('d-none');
 					$('.loadingbox').addClass('d-none');
+
+					$([document.documentElement, document.body]).animate({
+						scrollTop: $(".result-area").offset().top - 80
+					}, 200);
+	
 					$('#total-count').html(results['count']['total'][0]['count']);
 					if (results['count']['total'][0]['count']>0){
 

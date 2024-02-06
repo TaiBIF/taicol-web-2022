@@ -1579,7 +1579,7 @@ def download_match_results(request):
             if result.status_code == 200:
                 result = result.json()
                 df = pd.DataFrame(result['data'])
-                df['r'] = df[0].apply(lambda x: pd.json_normalize(x, 'results', ['search_term', 'matched_clean','score']))
+                df['r'] = df[0].apply(lambda x: pd.json_normalize(x, 'results', ['search_term', 'matched_clean', 'score']))
                 df_flat = pd.DataFrame()
                 for i in df.index:
                     yi = df.iloc[i].r
@@ -1609,7 +1609,7 @@ def download_match_results(request):
                         info = cursor.fetchall()
                         conn.close()
                         info = pd.DataFrame(info, columns=['is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil',
-                                                            'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'name', 'common_name_c',
+                                                            'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'accepted_name', 'common_name_c',
                                                             'is_in_taiwan', 'not_official'])
                         df = df.merge(info,how='left',left_on='accepted_namecode', right_on='taxon_id')
                         df = df.replace({np.nan: '', None: ''})
@@ -1630,13 +1630,13 @@ def download_match_results(request):
                 # TODO concat
                 final_df = final_df.append(df)
     # 移除不需要的欄位
-    cols = ["search_term","match_name","score","name_status","common_name_c","kingdom","phylum","class","order","family","genus","rank","is_endemic","alien_type",
-            "is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","protected_category","red_category","iucn_category","cites_listing","accepted_namecode",
+    cols = ["search_term","simple_name","score","name_status","accepted_namecode","accepted_name","common_name_c","kingdom","phylum","class","order","family","genus","rank","is_endemic","alien_type",
+            "is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","protected_category","red_category","iucn_category","cites_listing",
             "is_in_taiwan","not_official", "match_type"]
     # [c for c in cols if c in final_df.keys()]
     final_df = final_df[[c for c in cols if c in final_df.keys()]]
     final_df = final_df.rename(columns={"protected_category": "protected", "red_category": "redlist", "iucn_category": "iucn",
-                                        "cites_listing": "cites", "accepted_namecode": "taxon_id", "name_status": "usage_status"})
+                                        "cites_listing": "cites", "accepted_namecode": "taxon_id", "name_status": "usage_status", "simple_name": "match_name"})
     # final_df = final_df.rename(columns={
     #     "search_term":"查詢字串","name":"比對結果","common_name_c":"中文名","kingdom":"界","phylum":"門","class":"綱","order":"目","family":"科",
     #     "genus":"屬","rank":"階層","is_endemic":"是否為特有",
