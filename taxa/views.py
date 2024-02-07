@@ -1434,14 +1434,14 @@ def get_match_result(request):
 				<td>{gettext("界")}</td>
 				<td>{gettext("所屬類群")}</td>
 				<td>{gettext("階層")}</td>
-				<td>{gettext("原生/外來/特有性")}</td>
-				<td>{gettext("棲地環境")}</td>
+				<td>{gettext("物種資訊")}</td>
 				<td>{gettext("保育類")}</td>
 				<td>{gettext("臺灣紅皮書")}</td>
 				<td>{gettext("IUCN評估")}</td>
-				<td>{gettext("CITES附錄")}</td>
 			</tr>'''
-    
+    				# <td>{gettext("棲地環境")}</td>
+				# <td>{gettext("CITES附錄")}</td>
+
     # 用loop取得name match結果 每頁10筆
     if name:
         name = name.splitlines()
@@ -1463,45 +1463,88 @@ def get_match_result(request):
         })
         if result.status_code == 200:
             result = result.json()
-            df = pd.DataFrame(result['data'])
-            df['r'] = df[0].apply(lambda x: pd.json_normalize(x, 'results', ['search_term', 'matched_clean', 'score']))
+            data = result['data']
             df_flat = pd.DataFrame()
-            # TODO 改成concat
-            for i in df.index:
-                yi = df.iloc[i].r
-                if len(yi):
-                    for yii in range(len(yi)):
-                        if yi.accepted_namecode[yii]:
-                            namecode_list.append(yi.accepted_namecode[yii])
-                        df_flat = df_flat.append(yi.loc[yii])
-                else:
-                    df_flat = df_flat.append({'search_term': df.iloc[i,0]['search_term'], 'formatted_name': gettext('無結果')},ignore_index=True)
+            namecode_list = []
+            for ddd in data:
+                for dd in ddd:
+                    tmp_dict = {
+                        'search_term': dd['search_term'],
+                        'matched_clean': dd['matched_clean'], 
+                        'score': dd['score']
+                    }
+                    for d in dd['results']:
+                        tmp_dict.update(d)
+                        namecode_list.append(d['namecode'])
+                        df_flat = pd.concat([df_flat, pd.DataFrame([tmp_dict])], ignore_index=True)
+                    if not dd['results']:
+                        df_flat = pd.concat([df_flat, pd.DataFrame([{'search_term': dd['search_term'], 'namecode': 'no match'}])], ignore_index=True)
             df = df_flat
+
+            # 確認是否有對到多個學名的情況
+            matched_count = df[['search_term','namecode']].groupby('search_term', as_index=False).count()
+            matched_count = matched_count.rename(columns={'namecode': 'taxon_id'})
 
             #JOIN taxon
             if namecode_list:
-                query = f""" SELECT at.is_endemic, at.alien_type, at.is_terrestrial, 
-                             at.is_freshwater, at.is_brackish, at.is_marine, at.is_fossil,
-                             at.taxon_id, ac.protected_category, ac.red_category, ac.iucn_category, ac.cites_listing,
+                query = f""" SELECT  at.is_in_taiwan, at.is_endemic, at.alien_type,
+                             at.taxon_id, ac.protected_category, ac.red_category, ac.iucn_category,
                              at.rank_id, an.formatted_name, acn.name_c
                             FROM api_taxon at
                             LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
                             LEFT JOIN api_conservation ac ON ac.taxon_id = at.taxon_id
                             LEFT JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
                             WHERE at.taxon_id IN %s AND at.is_deleted != 1
-                        """
+                        """ 
+                # at.is_terrestrial, at.is_freshwater, at.is_brackish, at.is_marine, at.is_fossil, ac.cites_listing,
                 conn = pymysql.connect(**db_settings)
                 with conn.cursor() as cursor:
                     cursor.execute(query,(namecode_list,))
                     info = cursor.fetchall()
                     conn.close()
-                    info = pd.DataFrame(info, columns=['is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil',
-                                                        'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c'])
+                    info = pd.DataFrame(info, columns=['is_in_taiwan', 'is_endemic', 'alien_type', 'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'rank_id', 'formatted_name', 'common_name_c'])
+                    #  'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'cites_listing',
                     # info = info.astype({'accepted_namecode': 'str'})
+                    # info = info.replace({np.nan: None})
                     df = df[['search_term','score','name_status','namecode','family','kingdom','phylum','class','order','genus']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
+                    
+                    # 如果有多個結果 
+                    
+                    custom_dict = {'accepted': 0, 'not-accepted': 1, 'misapplied': 2}
+
+                    final_df = []
+
+                    for dd in df.search_term.unique():
+                        if matched_count[matched_count.search_term==dd].taxon_id.values[0] > 1:
+                            if best == 'yes':
+                                taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False)
+                                taxon_tmp = taxon_tmp.replace({np.nan: '', None: ''})
+                                now_record = taxon_tmp.to_dict('records')[0]
+                                if len(taxon_tmp[(taxon_tmp.name_status==now_record.get('name_status'))&(taxon_tmp.is_in_taiwan==now_record.get('is_in_taiwan'))]) == 1:
+                                    # 地位不同 -> 依照優先序給
+                                    # 要標注有多個結果
+                                    final_df.append(now_record)
+                                else:
+                                    # 全部地位相同 -> 不回傳 但提示有多個結果
+                                    final_df.append({'search_term': now_record.get('search_term')})
+                            else:
+                                # 排序 但全給
+                                taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False).sort_values(by='score',ascending=False)
+                                taxon_tmp = taxon_tmp.replace({np.nan: '', None: ''})
+                                now_records = taxon_tmp.to_dict('records')
+                                for now_record in now_records:
+                                    final_df.append(now_record)
+                        else:
+                            final_df.append(df[df.search_term==dd].to_dict('records')[0])
+
+                    df = pd.DataFrame(final_df, columns=['search_term', 'score', 'name_status', 'namecode', 'family', 'kingdom',
+                                                        'phylum', 'class', 'order', 'genus', 'is_in_taiwan', 'is_endemic',
+                                                        'alien_type', 'taxon_id', 'protected_category', 'red_category',
+                                                        'iucn_category', 'rank_id', 'formatted_name', 'common_name_c'])
                     df['name_status'] = df['name_status'].replace({'accepted': gettext('有效'), 'not-accepted': gettext('無效'), 'misapplied': gettext('誤用')})
                     df = df.replace({np.nan: '', None: ''})
-                    df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
+                    df.loc[(df.namecode=='no match'),'formatted_name']= gettext('無結果')
+                    # df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
                     # taxon group
                     for i in df.index:
                         current_rank = df.iloc[i].rank_id
@@ -1522,24 +1565,22 @@ def get_match_result(request):
                                 alt_list.append(at.get('alien_type').capitalize() if get_language() == 'en-us' else attr_map_c[at.get('alien_type')])
                         alt_list = list(dict.fromkeys(alt_list))
                         df.loc[i,'alien_type'] = ','.join(alt_list)
-                    is_list = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
-                    
-
+                    # is_list = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
+                    is_list = ['is_endemic','is_in_taiwan']
                     for ii in is_list:
                         if get_language() == 'en-us':
                             df[ii] = df[ii].apply(lambda x: attr_map[ii] if x == 1 else '')
                         else:
                             df[ii] = df[ii].apply(lambda x: attr_map_c[ii] if x == 1 else '')
-
                     # data['is_list'] = []
                     # for i in is_list:
                     #     if data[i] == 1:
                     #         data['is_list'].append(attr_map_c[i])
                     df['rank'] = df['rank_id'].apply(lambda x: gettext(rank_map_c[x]) if x else '')
                     # df['is_endemic'] = df['is_endemic'].apply(lambda x: '臺灣特有' if x == 1 else '')
-                    # 確認是否有對到多個學名的情況
-                    matched_count = df[['search_term','taxon_id']].groupby('search_term', as_index=False).count()
-                    response['matched_count'] = dict(matched_count.values.tolist())
+
+            response['matched_count'] = dict(matched_count.values.tolist())
+                    
             df = df.replace({np.nan: '', None: ''})
             df = df.drop_duplicates()
 
@@ -1555,6 +1596,12 @@ def get_match_result(request):
 
 
 def download_match_results(request):
+
+    # 下載的欄位
+    cols = ["search_term","score","simple_name","name_status","accepted_namecode","accepted_name","common_name_c","kingdom","phylum","class","order","family","genus","rank","is_endemic","alien_type",
+            "is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","protected_category","red_category","iucn_category","cites_listing",
+            "is_in_taiwan","not_official", "match_type"]
+
     best = request.POST.get('best','yes')
     name = request.POST.get('name')
     file_format = request.POST.get('file_format','csv')
@@ -1578,19 +1625,23 @@ def download_match_results(request):
             })
             if result.status_code == 200:
                 result = result.json()
-                df = pd.DataFrame(result['data'])
-                df['r'] = df[0].apply(lambda x: pd.json_normalize(x, 'results', ['search_term', 'matched_clean', 'score']))
+                data = result['data']
                 df_flat = pd.DataFrame()
-                for i in df.index:
-                    yi = df.iloc[i].r
-                    if len(yi):
-                        for yii in range(len(yi)):
-                            if yi.accepted_namecode[yii]:
-                                namecode_list.append(yi.accepted_namecode[yii])
-                            df_flat = df_flat.append(yi.loc[yii])
-                    else:
-                        df_flat = df_flat.append({'search_term': df.iloc[i,0]['search_term']},ignore_index=True)
+                for ddd in data:
+                    for dd in ddd:
+                        tmp_dict = {
+                            'search_term': dd['search_term'],
+                            'matched_clean': dd['matched_clean'], 
+                            'score': dd['score']
+                        }
+                        for d in dd['results']:
+                            tmp_dict.update(d)
+                            df_flat = pd.concat([df_flat, pd.DataFrame([tmp_dict])], ignore_index=True)
+                        if not dd['results']:
+                            df_flat = pd.concat([df_flat, pd.DataFrame([{'search_term': dd['search_term'], 'namecode': 'no match'}])], ignore_index=True)
                 df = df_flat
+                namecode_list = list(df[df.namecode.notnull()].namecode.unique())
+
                 #JOIN taxon
                 if namecode_list:
                     query = f""" SELECT at.is_endemic, at.alien_type, at.is_terrestrial, 
@@ -1612,8 +1663,50 @@ def download_match_results(request):
                                                             'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'accepted_name', 'common_name_c',
                                                             'is_in_taiwan', 'not_official'])
                         df = df.merge(info,how='left',left_on='accepted_namecode', right_on='taxon_id')
-                        df = df.replace({np.nan: '', None: ''})
                 
+                        # 確認是否有對到多個學名的情況
+                        matched_count = df[['search_term','taxon_id']].groupby('search_term', as_index=False).count()
+
+                        # 如果有多個結果 
+                        
+                        custom_dict = {'accepted': 0, 'not-accepted': 1, 'misapplied': 2}
+
+                        tmp_df = []
+
+                        for dd in df.search_term.unique():
+                            if matched_count[matched_count.search_term==dd].taxon_id.values[0] > 1:
+                                if best == 'yes':
+                                    taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False)
+                                    taxon_tmp = taxon_tmp.replace({np.nan: '', None: ''})
+                                    now_record = taxon_tmp.to_dict('records')[0]
+                                    if len(taxon_tmp[(taxon_tmp.name_status==now_record.get('name_status'))&(taxon_tmp.is_in_taiwan==now_record.get('is_in_taiwan'))]) == 1:
+                                        # 地位不同 -> 依照優先序給
+                                        # 要標注有多個結果
+                                        tmp_df.append(now_record)
+                                    else:
+                                        # 全部地位相同 -> 不回傳 但提示有多個結果
+                                        tmp_df.append({'search_term': now_record.get('search_term'), 'match_type': now_record.get('match_type')})
+                                else:
+                                    # 排序 但全給
+                                    taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False).sort_values(by='score',ascending=False)
+                                    taxon_tmp = taxon_tmp.replace({np.nan: '', None: ''})
+                                    now_records = taxon_tmp.to_dict('records')
+                                    for now_record in now_records:
+                                        tmp_df.append(now_record)
+                            else:
+                                tmp_df.append(df[df.search_term==dd].to_dict('records')[0])
+
+                        df = pd.DataFrame(tmp_df, columns =['matched', 'simple_name', 'common_name', 'accepted_namecode',
+                            'namecode', 'name_status', 'source', 'kingdom', 'phylum', 'class',
+                            'order', 'family', 'genus', 'taxon_rank', 'match_type', 'search_term',
+                            'matched_clean', 'score', 'is_endemic', 'alien_type', 'is_terrestrial',
+                            'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'taxon_id',
+                            'protected_category', 'red_category', 'iucn_category', 'cites_listing',
+                            'rank_id', 'accepted_name', 'common_name_c', 'is_in_taiwan',
+                            'not_official'])
+                        df = df.replace({np.nan: '', None: ''})
+                        df.loc[(df.namecode=='no match'),'match_type']= 'No match'
+
                         for i in df.index:
                             alt_list = []
                             if df.iloc[i].alien_type:
@@ -1629,14 +1722,16 @@ def download_match_results(request):
                 df = df.replace({np.nan: '', None: ''})
                 # TODO concat
                 final_df = final_df.append(df)
-    # 移除不需要的欄位
-    cols = ["search_term","simple_name","score","name_status","accepted_namecode","accepted_name","common_name_c","kingdom","phylum","class","order","family","genus","rank","is_endemic","alien_type",
-            "is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","protected_category","red_category","iucn_category","cites_listing",
-            "is_in_taiwan","not_official", "match_type"]
+    
     # [c for c in cols if c in final_df.keys()]
+    for c in cols:
+        if c not in final_df.keys():
+            final_df[c] = ''
     final_df = final_df[[c for c in cols if c in final_df.keys()]]
+
     final_df = final_df.rename(columns={"protected_category": "protected", "red_category": "redlist", "iucn_category": "iucn",
                                         "cites_listing": "cites", "accepted_namecode": "taxon_id", "name_status": "usage_status", "simple_name": "match_name"})
+   
     # final_df = final_df.rename(columns={
     #     "search_term":"查詢字串","name":"比對結果","common_name_c":"中文名","kingdom":"界","phylum":"門","class":"綱","order":"目","family":"科",
     #     "genus":"屬","rank":"階層","is_endemic":"是否為特有",

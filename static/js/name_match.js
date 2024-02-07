@@ -8,13 +8,12 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 		$('form').submit()	
 	}
 
-
 	function getData(page){
 		$('.loadingbox').removeClass('d-none');
 		$.ajax({
 			url: "/get_match_result",
 			data:  {'csrfmiddlewaretoken' : $csrf_token,
-					'best': $('input[name=best]').val(),
+					'best': $('input[name=best]:checked').val(),
 					'name': $('textarea[name=name]').val(),
 					'page': page,
 					'lang': $lang
@@ -30,10 +29,27 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 			$('.table-style1').html(results.header)
 			//console.log(results.data)
 			for (let i = 0; i < results.data.length; i++) {
+
+				console.log(results.data)
+
+				let alert_str = '';
+
+				if (results.matched_count[results.data[i]['search_term']] > 1){
+					alert_str = 
+					`<div class="alien-tooltip">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle cl-blue" viewBox="0 0 16 16">
+						<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+						<path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+					</svg>
+					<span class="alien-tooltiptext">${results['more_than_one_str']}</span>  
+				</div>`
+
+				}
+
 				if ((results.data[i]['taxon_id'] == '')|results.data[i]['taxon_id'] == undefined){
 					$('.table-style1').append(
 						`<tr>
-							<td>${results.data[i]['search_term']}</td>
+							<td>${results.data[i]['search_term']}${alert_str}</td>
 							<td>${results.data[i]['formatted_name']}</td>
 							<td></td>
 							<td></td>
@@ -52,7 +68,7 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 				} else {
 					
 					let tag = '';
-					for (ii of ['is_endemic','alien_type']){
+					for (ii of ['is_endemic','is_in_taiwan','alien_type']){
 						if (results.data[i][ii] !=''){
 							split_arr = results.data[i][ii].split(',')
 							for (iii of split_arr){
@@ -61,29 +77,14 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 						}
 					}
 
-					is_array = ['is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
-					let tag1 = '';
-					for (ii of is_array){
-						if (results.data[i][ii] !=''){
-							tag1 += `<div class="item">${results.data[i][ii]}</div>`
-						}
-					}
-
-					let alert_str = '';
-
-					// console.log(results)
-
-					if (results.matched_count[results.data[i]['search_term']] > 1){
-						alert_str = 
-						`<div class="alien-tooltip">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle cl-blue" viewBox="0 0 16 16">
-							<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-							<path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-						</svg>
-						<span class="alien-tooltiptext">${results['more_than_one_str']}</span>  
-					</div>`
-
-					}
+					// // is_array = ['is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
+					// is_array = ['is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
+					// let tag1 = '';
+					// for (ii of is_array){
+					// 	if (results.data[i][ii] !=''){
+					// 		tag1 += `<div class="item">${results.data[i][ii]}</div>`
+					// 	}
+					// }
 
 					$('.table-style1').append(
 						`<tr>
@@ -100,15 +101,9 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 									${tag}
 								</div>
 							</td>
-							<td>
-								<div class="tag-green">
-									${tag1}
-								</div>
-							</td>
 							<td>${results.data[i]['protected_category']}</td>
 							<td>${results.data[i]['red_category']}</td>
 							<td>${results.data[i]['iucn_category']}</td>
-							<td>${results.data[i]['cites_listing']}</td>
 						</tr>`)
 				}
 			}
