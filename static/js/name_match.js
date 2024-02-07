@@ -13,7 +13,7 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 		$.ajax({
 			url: "/get_match_result",
 			data:  {'csrfmiddlewaretoken' : $csrf_token,
-					'best': $('input[name=best]').val(),
+					'best': $('input[name=best]:checked').val(),
 					'name': $('textarea[name=name]').val(),
 					'page': page,
 					'lang': $lang

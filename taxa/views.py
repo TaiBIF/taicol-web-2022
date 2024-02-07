@@ -1463,19 +1463,22 @@ def get_match_result(request):
         })
         if result.status_code == 200:
             result = result.json()
-            df = pd.DataFrame(result['data'])
-            df['r'] = df[0].apply(lambda x: pd.json_normalize(x, 'results', ['search_term', 'matched_clean', 'score']))
+            data = result['data']
             df_flat = pd.DataFrame()
-            # TODO 改成concat
-            for i in df.index:
-                yi = df.iloc[i].r
-                if len(yi):
-                    for yii in range(len(yi)):
-                        if yi.accepted_namecode[yii]:
-                            namecode_list.append(yi.accepted_namecode[yii])
-                        df_flat = df_flat.append(yi.loc[yii],ignore_index=True)
-                else:
-                    df_flat = df_flat.append({'search_term': df.iloc[i,0]['search_term'], 'formatted_name': gettext('無結果'), 'namecode': 'no match'},ignore_index=True)
+            namecode_list = []
+            for ddd in data:
+                for dd in ddd:
+                    tmp_dict = {
+                        'search_term': dd['search_term'],
+                        'matched_clean': dd['matched_clean'], 
+                        'score': dd['score']
+                    }
+                    for d in dd['results']:
+                        tmp_dict.update(d)
+                        namecode_list.append(d['namecode'])
+                        df_flat = pd.concat([df_flat, pd.DataFrame([tmp_dict])], ignore_index=True)
+                    if not dd['results']:
+                        df_flat = pd.concat([df_flat, pd.DataFrame([{'search_term': dd['search_term'], 'namecode': 'no match'}])], ignore_index=True)
             df = df_flat
 
             # 確認是否有對到多個學名的情況
@@ -1513,20 +1516,26 @@ def get_match_result(request):
 
                     for dd in df.search_term.unique():
                         if matched_count[matched_count.search_term==dd].taxon_id.values[0] > 1:
-
-                            taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False)
-                            taxon_tmp = taxon_tmp.replace({np.nan: '', None: ''})
-                            now_record = taxon_tmp.to_dict('records')[0]
-                            if len(taxon_tmp[(taxon_tmp.name_status==now_record.get('name_status'))&(taxon_tmp.is_in_taiwan==now_record.get('is_in_taiwan'))]) == 1:
-                                # 地位不同 -> 依照優先序給
-                                # 要標注有多個結果
-                                final_df.append(now_record)
+                            if best == 'yes':
+                                taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False)
+                                taxon_tmp = taxon_tmp.replace({np.nan: '', None: ''})
+                                now_record = taxon_tmp.to_dict('records')[0]
+                                if len(taxon_tmp[(taxon_tmp.name_status==now_record.get('name_status'))&(taxon_tmp.is_in_taiwan==now_record.get('is_in_taiwan'))]) == 1:
+                                    # 地位不同 -> 依照優先序給
+                                    # 要標注有多個結果
+                                    final_df.append(now_record)
+                                else:
+                                    # 全部地位相同 -> 不回傳 但提示有多個結果
+                                    final_df.append({'search_term': now_record.get('search_term')})
                             else:
-                                # 全部地位相同 -> 不回傳 但提示有多個結果
-                                final_df.append({'search_term': now_record.get('search_term')})
+                                # 排序 但全給
+                                taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False).sort_values(by='score',ascending=False)
+                                taxon_tmp = taxon_tmp.replace({np.nan: '', None: ''})
+                                now_records = taxon_tmp.to_dict('records')
+                                for now_record in now_records:
+                                    final_df.append(now_record)
                         else:
                             final_df.append(df[df.search_term==dd].to_dict('records')[0])
-
 
                     df = pd.DataFrame(final_df, columns=['search_term', 'score', 'name_status', 'namecode', 'family', 'kingdom',
                                                         'phylum', 'class', 'order', 'genus', 'is_in_taiwan', 'is_endemic',
@@ -1616,19 +1625,23 @@ def download_match_results(request):
             })
             if result.status_code == 200:
                 result = result.json()
-                df = pd.DataFrame(result['data'])
-                df['r'] = df[0].apply(lambda x: pd.json_normalize(x, 'results', ['search_term', 'matched_clean', 'score']))
+                data = result['data']
                 df_flat = pd.DataFrame()
-                for i in df.index:
-                    yi = df.iloc[i].r
-                    if len(yi):
-                        for yii in range(len(yi)):
-                            if yi.accepted_namecode[yii]:
-                                namecode_list.append(yi.accepted_namecode[yii])
-                            df_flat = df_flat.append(yi.loc[yii])
-                    else:
-                        df_flat = df_flat.append({'search_term': df.iloc[i,0]['search_term'], 'match_type': 'No match'},ignore_index=True)
+                for ddd in data:
+                    for dd in ddd:
+                        tmp_dict = {
+                            'search_term': dd['search_term'],
+                            'matched_clean': dd['matched_clean'], 
+                            'score': dd['score']
+                        }
+                        for d in dd['results']:
+                            tmp_dict.update(d)
+                            df_flat = pd.concat([df_flat, pd.DataFrame([tmp_dict])], ignore_index=True)
+                        if not dd['results']:
+                            df_flat = pd.concat([df_flat, pd.DataFrame([{'search_term': dd['search_term'], 'namecode': 'no match'}])], ignore_index=True)
                 df = df_flat
+                namecode_list = list(df[df.namecode.notnull()].namecode.unique())
+
                 #JOIN taxon
                 if namecode_list:
                     query = f""" SELECT at.is_endemic, at.alien_type, at.is_terrestrial, 
@@ -1662,18 +1675,24 @@ def download_match_results(request):
 
                         for dd in df.search_term.unique():
                             if matched_count[matched_count.search_term==dd].taxon_id.values[0] > 1:
-
-                                taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False)
-                                taxon_tmp = taxon_tmp.replace({np.nan: '', None: ''})
-                                now_record = taxon_tmp.to_dict('records')[0]
-                                if len(taxon_tmp[(taxon_tmp.name_status==now_record.get('name_status'))&(taxon_tmp.is_in_taiwan==now_record.get('is_in_taiwan'))]) == 1:
-                                    # 地位不同 -> 依照優先序給
-                                    # 要標注有多個結果
-                                    tmp_df.append(now_record)
+                                if best == 'yes':
+                                    taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False)
+                                    taxon_tmp = taxon_tmp.replace({np.nan: '', None: ''})
+                                    now_record = taxon_tmp.to_dict('records')[0]
+                                    if len(taxon_tmp[(taxon_tmp.name_status==now_record.get('name_status'))&(taxon_tmp.is_in_taiwan==now_record.get('is_in_taiwan'))]) == 1:
+                                        # 地位不同 -> 依照優先序給
+                                        # 要標注有多個結果
+                                        tmp_df.append(now_record)
+                                    else:
+                                        # 全部地位相同 -> 不回傳 但提示有多個結果
+                                        tmp_df.append({'search_term': now_record.get('search_term'), 'match_type': now_record.get('match_type')})
                                 else:
-                                    # 全部地位相同 -> 不回傳 但提示有多個結果
-                                    tmp_df.append({'search_term': now_record.get('search_term'), 'match_type': now_record.get('match_type')})
-
+                                    # 排序 但全給
+                                    taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False).sort_values(by='score',ascending=False)
+                                    taxon_tmp = taxon_tmp.replace({np.nan: '', None: ''})
+                                    now_records = taxon_tmp.to_dict('records')
+                                    for now_record in now_records:
+                                        tmp_df.append(now_record)
                             else:
                                 tmp_df.append(df[df.search_term==dd].to_dict('records')[0])
 
@@ -1686,6 +1705,7 @@ def download_match_results(request):
                             'rank_id', 'accepted_name', 'common_name_c', 'is_in_taiwan',
                             'not_official'])
                         df = df.replace({np.nan: '', None: ''})
+                        df.loc[(df.namecode=='no match'),'match_type']= 'No match'
 
                         for i in df.index:
                             alt_list = []
