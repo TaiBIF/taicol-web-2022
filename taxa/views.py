@@ -315,13 +315,14 @@ def taxon(request, taxon_id):
                 if data['namecode']:
                     url = 'https://data.taieol.tw/eol/endpoint/image/species/{}'.format(data['namecode'])
                     r = requests.get(url)
-                    img = r.json()
-                    for ii in img:
-                        license_str = ii['license']
-                        if license_str:
-                            license_str = 'CC-' + license_str.upper()
-                        foto = {'author':ii['author'], 'src':ii['image_big'], 'provider':ii['provider'],'permalink': ii['permalink'], 'license': license_str }
-                        data['images'].append(foto)
+                    if r.status_code == 200:
+                        img = r.json()
+                        for ii in img:
+                            license_str = ii['license']
+                            if license_str:
+                                license_str = 'CC-' + license_str.upper()
+                            foto = {'author':ii['author'], 'src':ii['image_big'], 'provider':ii['provider'],'permalink': ii['permalink'], 'license': license_str }
+                            data['images'].append(foto)
                         
                 # 學名
                 if data['rank_id'] == 47:
