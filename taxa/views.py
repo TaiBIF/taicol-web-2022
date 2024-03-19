@@ -146,13 +146,14 @@ def get_autocomplete_taxon(request):
     
     names = '[]'
     results = []
+    s = time.time()
     if keyword_str := request.GET.get('keyword','').strip():
         cultured_condition = ''
-        if request.GET.get('cultured') != 'on':
+        if request.GET.get('with_cultured') != 'on':
             cultured_condition = ' AND at.is_cultured != 1'
         from_tree =  request.GET.get('from_tree')
         lin_rank = request.GET.get('lin_rank')
-        not_official = request.GET.get('not_official')
+        with_not_official = request.GET.get('with_not_official')
 
         # 確認keyword是不是包含中文
         if re.search(r'[\u4e00-\u9fff]+', keyword_str):
@@ -167,7 +168,7 @@ def get_autocomplete_taxon(request):
                             JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
                             INNER JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND name_c REGEXP '{keyword_str}'
                             {'INNER JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id' if from_tree else ''}
-                            WHERE at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} {' AND at.not_official = 0' if not_official == 'off' else ''}
+                            WHERE at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} {' AND at.not_official = 0' if with_not_official == 'off' else ''}
                             {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
                             ORDER BY tn.name
                             LIMIT 10
@@ -211,7 +212,7 @@ def get_autocomplete_taxon(request):
                                 FROM api_taxon_usages atu
                                 JOIN base_name ON atu.taxon_name_id = base_name.id
                                 JOIN api_taxon at ON atu.taxon_id = at.taxon_id 
-                                    AND at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition}  {' AND at.not_official = 0' if not_official == 'off' else ''}
+                                    AND at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition}  {' AND at.not_official = 0' if with_not_official == 'off' else ''}
                                     {' AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
                                 WHERE atu.is_deleted =0 
                             )
@@ -292,29 +293,6 @@ def taxon(request, taxon_id):
                     JOIN taxon_names tn ON at.accepted_taxon_name_id = tn.id
                     WHERE at.taxon_id = %s AND atu.is_latest = 1 AND atu.status = 'accepted'
                 """
-        # query = f"""
-        #             WITH base_query AS (SELECT taxon_id, GROUP_CONCAT(name_c SEPARATOR ', ') AS alternative_name_c
-        #                       FROM api_common_name WHERE is_primary = 0 AND taxon_id = %s GROUP BY taxon_id)
-        #             SELECT tn.name, an.formatted_name as f_name, concat_WS(' ', an.formatted_name, an.name_author ) as sci_name, 
-        #             acn.name_c as common_name_c, at.accepted_taxon_name_id as name_id, at.rank_id,
-        #             atu.status, att.path, at.is_endemic, at.is_terrestrial, at.is_freshwater, at.is_brackish,
-        #             at.is_marine, at.is_fossil, at.is_in_taiwan, at.alien_type,
-        #             ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, ac.iucn_taxon_id, 
-        #             ac.red_category, ac.red_note, ac.protected_category, ac.protected_note,
-        #             tn.original_taxon_name_id, at.links, anc.namecode, bq.alternative_name_c, at.is_in_taiwan, at.is_cultured,
-        #             CONCAT_WS (' ',tn.name, CONCAT_WS(',', acn.name_c, bq.alternative_name_c)) as taxon_group_str
-        #             FROM api_taxon at 
-        #             LEFT JOIN base_query bq ON bq.taxon_id = at.taxon_id
-        #             LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
-        #             LEFT JOIN api_names an ON at.accepted_taxon_name_id =  an.taxon_name_id 
-        #             LEFT JOIN api_namecode anc ON at.accepted_taxon_name_id =  anc.taxon_name_id 
-        #             JOIN api_taxon_usages atu ON at.taxon_id = atu.taxon_id
-        #             LEFT JOIN api_taxon_tree att ON at.taxon_id = att.taxon_id
-        #             LEFT JOIN api_conservation ac ON at.taxon_id = ac.taxon_id 
-        #             JOIN taxon_names tn ON at.accepted_taxon_name_id = tn.id
-        #             WHERE at.taxon_id = %s AND atu.is_latest = 1 AND atu.status = 'accepted'
-        #         """
-                # WHERE at.taxon_id = %s AND atu.is_deleted = 0 AND atu.is_latest = 1 AND atu.status = 'accepted'
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             cursor.execute(query, (taxon_id, taxon_id))
@@ -337,13 +315,14 @@ def taxon(request, taxon_id):
                 if data['namecode']:
                     url = 'https://data.taieol.tw/eol/endpoint/image/species/{}'.format(data['namecode'])
                     r = requests.get(url)
-                    img = r.json()
-                    for ii in img:
-                        license_str = ii['license']
-                        if license_str:
-                            license_str = 'CC-' + license_str.upper()
-                        foto = {'author':ii['author'], 'src':ii['image_big'], 'provider':ii['provider'],'permalink': ii['permalink'], 'license': license_str }
-                        data['images'].append(foto)
+                    if r.status_code == 200:
+                        img = r.json()
+                        for ii in img:
+                            license_str = ii['license']
+                            if license_str:
+                                license_str = 'CC-' + license_str.upper()
+                            foto = {'author':ii['author'], 'src':ii['image_big'], 'provider':ii['provider'],'permalink': ii['permalink'], 'license': license_str }
+                            data['images'].append(foto)
                         
                 # 學名
                 if data['rank_id'] == 47:
@@ -920,39 +899,50 @@ def taxon(request, taxon_id):
         infra_str = 'Infraspecies' if get_language() == 'en-us' else '種下'
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
+            query = "SELECT tree_stat FROM api_taxon_tree where taxon_id = %s "
             # 如果自己是種下的話要調整
-            if data.get('rank_id') <= 46 and data.get('rank_id') >= 35:
-                query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
-                        JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                        WHERE att.path LIKE %s AND at.rank_id > 34 AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND att.taxon_id != %s
-                        GROUP BY at.rank_id ORDER BY at.rank_id ASC;"""
-                cursor.execute(query, (f'%>{taxon_id}%', taxon_id ))
-            else:
-                query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
-                        JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                        WHERE att.path LIKE %s AND at.rank_id > %s AND at.is_in_taiwan = 1 AND at.is_deleted != 1
-                        GROUP BY at.rank_id ORDER BY at.rank_id ASC;"""
-                cursor.execute(query, (f'%>{taxon_id}%', data.get('rank_id'), ))
-            stats = cursor.fetchall()
+            # if data.get('rank_id') <= 46 and data.get('rank_id') >= 35:
+            #     query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
+            #             JOIN api_taxon at ON att.taxon_id = at.taxon_id
+            #             WHERE att.path LIKE %s AND at.rank_id > 34 AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND att.taxon_id != %s
+            #             GROUP BY at.rank_id ORDER BY at.rank_id ASC;"""
+            #     cursor.execute(query, (f'%>{taxon_id}%', taxon_id ))
+            # else:
+            #     query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
+            #             JOIN api_taxon at ON att.taxon_id = at.taxon_id
+            #             WHERE att.path LIKE %s AND at.rank_id > %s AND at.is_in_taiwan = 1 AND at.is_deleted != 1
+            #             GROUP BY at.rank_id ORDER BY at.rank_id ASC;"""
+            #     cursor.execute(query, (f'%>{taxon_id}%', data.get('rank_id'), ))
+            cursor.execute(query, (taxon_id, ))
+            # 包含栽培豢養 & 未經正式紀錄
+            stat_map_key = 'with_not_official_with_cultured'
+            stat_list = cursor.fetchall()
             conn.close()
-            stats = pd.DataFrame(stats, columns=['count','rank_id'])
+            stats = []
+            for sl in stat_list:
+                if sl[0] and sl != '[]':
+                    sl_list = json.loads(sl[0])
+                    for ssl in sl_list:
+                        stats.append({'rank_id': ssl['rank_id'], 'count': ssl['count'].get(stat_map_key)})
+            stats = pd.DataFrame(stats)
             spp = 0
-            for sr in stats.rank_id.unique():
-                c = stats[stats.rank_id==sr]['count'].sum()
-                count_str = f'{rank_map_dict[sr]} {c}' if get_language() == 'en-us' else f'{c}{rank_map_dict[sr]}'
-                if sr <= 46 and sr >= 35:
-                    spp += c
-                elif sr == 47:
-                    if spp > 0:
-                        infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-                        stat_str += f"""<a href='{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str} </a>"""
-                    stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"""
-                else:
-                    stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"""
-            if spp > 0 and infra_str not in stat_str:
-                # 如果沒有47 最後要把種下加回去
-                infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-                stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str}</a>"""
+            if len(stats):
+                for sr in stats.rank_id.unique():
+                    c = stats[stats.rank_id==sr]['count'].sum()
+                    count_str = f'{rank_map_dict[sr]} {c}' if get_language() == 'en-us' else f'{c}{rank_map_dict[sr]}'
+                    if sr <= 46 and sr >= 35:
+                        spp += c
+                    elif sr == 47:
+                        if spp > 0:
+                            infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+                            stat_str += f"""<a href='{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str} </a>"""
+                        stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"""
+                    else:
+                        stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"""
+                if spp > 0 and infra_str not in stat_str:
+                    # 如果沒有47 最後要把種下加回去
+                    infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+                    stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str}</a>"""
     
         if is_deleted:
             data['rank_d'] = 'Deleted' if get_language() == 'en-us' else '已刪除 Deleted'
@@ -973,10 +963,20 @@ def taxon(request, taxon_id):
 def get_root_tree(request):
     translation.activate(request.POST.get('lang'))
     lin_rank = request.POST.get('lin_rank')
-    cultured = request.POST.get('cultured')
-    not_official = request.POST.get('not_official') # 未經正式紀錄 off: 排除, on: 包含
+    with_cultured = request.POST.get('with_cultured')
+    with_not_official = request.POST.get('with_not_official') # 未經正式紀錄 off: 排除, on: 包含
 
-    if cultured != 'on': # 排除栽培豢養
+
+    if with_not_official == 'off' and with_cultured == 'off':
+        stat_map_key = 'official_not_cultured'
+    elif with_not_official == 'off' and with_cultured == 'on':
+        stat_map_key = 'official_with_cultured'
+    elif with_not_official == 'on' and with_cultured == 'off':
+        stat_map_key = 'with_not_official_not_cultured'
+    elif with_not_official == 'on' and with_cultured == 'on':
+        stat_map_key = 'with_not_official_with_cultured'
+
+    if with_cultured != 'on': # 排除栽培豢養
         is_cultured = [0, None] 
     else: # 包含栽培豢養
         is_cultured = [0,1]
@@ -989,41 +989,56 @@ def get_root_tree(request):
 
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
-        query = f"""SELECT substring(att.{'lin_path' if lin_rank == 'on' else 'path'}, -8, 8) as kingdom_taxon, COUNT(distinct(att.taxon_id)), 
-                at.rank_id FROM api_taxon_tree att 
+        query = f"""SELECT att.tree_stat, at.taxon_id FROM api_taxon_tree att 
                 JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                WHERE at.rank_id > 3 AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND at.is_cultured in %s
-                {'AND at.not_official = 0' if not_official == 'off' else ''}
-                GROUP BY at.rank_id, kingdom_taxon ORDER BY at.rank_id ASC; """
-        cursor.execute(query, (is_cultured,))
-        total_stats = cursor.fetchall()
+                WHERE at.rank_id = 3; """
+        cursor.execute(query)
+        stat_list = cursor.fetchall()
         conn.close()
-        total_stats = pd.DataFrame(total_stats, columns=['kingdom_taxon','count','rank_id'])
+        total_stats = []
+        for sl in stat_list:
+            if sl[0] and sl != '[]':
+                sl_list = json.loads(sl[0])
+                for ssl in sl_list:
+                    total_stats.append({'rank_id': ssl['rank_id'], 'count': ssl['count'].get(stat_map_key), 'kingdom_taxon': sl[1]})
+        total_stats = pd.DataFrame(total_stats)
         if lin_rank == 'on':
             total_stats = total_stats[total_stats.rank_id.isin(lin_ranks+sub_lin_ranks)]
+    #     query = f"""SELECT substring(att.{'lin_path' if lin_rank == 'on' else 'path'}, -8, 8) as kingdom_taxon, 
+    #             COUNT(distinct(att.taxon_id)), 
+    #             at.rank_id FROM api_taxon_tree att 
+    #             JOIN api_taxon at ON att.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND at.is_cultured in %s
+    #             {'AND at.not_official = 0' if with_not_official == 'off' else ''}
+    #             WHERE at.rank_id > 3 
+    #             GROUP BY at.rank_id, kingdom_taxon ORDER BY at.rank_id ASC; """
+
+    #     cursor.execute(query, (is_cultured,))
+    #     total_stats = cursor.fetchall()
+    #     conn.close()
+    #     total_stats = pd.DataFrame(total_stats, columns=['kingdom_taxon','count','rank_id'])
 
     for k in kingdom_map.keys():
         stats = total_stats[total_stats.kingdom_taxon==k]
-
         spp = 0
         stat_str = ''
-        for sr in stats.rank_id.unique():
-            c = stats[stats.rank_id==sr]['count'].sum()
-            count_str = f'{rank_map_dict[sr]} {c}' if get_language() == 'en-us' else f'{c}{rank_map_dict[sr]}'
-            if sr <= 46 and sr >= 35:
-                spp += c
-            elif sr == 47:
-                if spp > 0:
-                    infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-                    stat_str += f"{infra_count_str} {count_str}"
+        if len(stats):
+            for sr in stats.rank_id.unique():
+                c = stats[stats.rank_id==sr]['count'].sum()
+                count_str = f'{rank_map_dict[sr]} {c}' if get_language() == 'en-us' else f'{c}{rank_map_dict[sr]}'
+                if sr <= 46 and sr >= 35:
+                    spp += c
+                elif sr == 47:
+                    if spp > 0:
+                        infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+                        stat_str += f"{infra_count_str} {count_str}"
+                    else:
+                        stat_str += f"{count_str} "
                 else:
                     stat_str += f"{count_str} "
-            else:
-                stat_str += f"{count_str} "
-        if spp > 0 and infra_str not in stat_str:
-            # 如果沒有47 最後要把種下加回去
-            infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-            stat_str += infra_count_str
+            if spp > 0 and infra_str not in stat_str:
+                # 如果沒有47 最後要把種下加回去
+                infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+                stat_str += infra_count_str
 
         kingdom_dict.append({'taxon_id': k, 
                              'name': f"Kingdom {kingdom_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",
@@ -1035,43 +1050,56 @@ def get_root_tree(request):
 
 
 def taxon_tree(request):
-    # 預設僅顯示林奈階層&包含栽培豢養&排除未經正式紀錄
+    # 預設包含栽培豢養&排除未經正式紀錄
+    stat_map_key = 'official_with_cultured'
+
     # 第一層 kingdom
     kingdom_dict = []
     infra_str = 'Infraspecies' if get_language() == 'en-us' else '種下'
     rank_map_dict = rank_map if get_language() == 'en-us' else rank_map_c
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
-        query = f"""SELECT substring(att.lin_path, -8, 8) as kingdom_taxon, COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
+        # query = f"""SELECT substring(att.lin_path, -8, 8) as kingdom_taxon, COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
+        #         JOIN api_taxon at ON att.taxon_id = at.taxon_id
+        #         WHERE at.rank_id > 3 AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND at.not_official = 0 
+        #         GROUP BY at.rank_id, at.is_cultured, kingdom_taxon ORDER BY at.rank_id ASC; """
+        query = f"""SELECT att.tree_stat, at.taxon_id FROM api_taxon_tree att 
                 JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                WHERE at.rank_id > 3 AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND at.not_official = 0 
-                GROUP BY at.rank_id, at.is_cultured, kingdom_taxon ORDER BY at.rank_id ASC; """
+                WHERE at.rank_id = 3; """
         cursor.execute(query)
-        total_stats = cursor.fetchall()
+        stat_list = cursor.fetchall()
         conn.close()
-        total_stats = pd.DataFrame(total_stats, columns=['kingdom_taxon','count','rank_id'])
+        total_stats = []
+        for sl in stat_list:
+            if sl[0] and sl != '[]':
+                sl_list = json.loads(sl[0])
+                for ssl in sl_list:
+                    total_stats.append({'rank_id': ssl['rank_id'], 'count': ssl['count'].get(stat_map_key), 'kingdom_taxon': sl[1]})
+        total_stats = pd.DataFrame(total_stats)
+        # 預設僅顯示林奈階層
         total_stats = total_stats[total_stats.rank_id.isin(lin_ranks+sub_lin_ranks)]
     for k in kingdom_map.keys():
         stats = total_stats[total_stats.kingdom_taxon==k]
         spp = 0
         stat_str = ''
-        for sr in stats.rank_id.unique():
-            c = stats[stats.rank_id==sr]['count'].sum()
-            count_str = f'{rank_map_dict[sr]} {c}' if get_language() == 'en-us' else f'{c}{rank_map_dict[sr]}'
-            if sr <= 46 and sr >= 35:
-                spp += c
-            elif sr == 47:
-                if spp > 0:
-                    infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-                    stat_str += f"{infra_count_str} {count_str}"
+        if len(stats):
+            for sr in stats.rank_id.unique():
+                c = stats[stats.rank_id==sr]['count'].sum()
+                count_str = f'{rank_map_dict[sr]} {c}' if get_language() == 'en-us' else f'{c}{rank_map_dict[sr]}'
+                if sr <= 46 and sr >= 35:
+                    spp += c
+                elif sr == 47:
+                    if spp > 0:
+                        infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+                        stat_str += f"{infra_count_str} {count_str}"
+                    else:
+                        stat_str += f"{count_str} "
                 else:
                     stat_str += f"{count_str} "
-            else:
-                stat_str += f"{count_str} "
-        if spp > 0 and infra_str not in stat_str:
-            # 如果沒有47 最後要把種下加回去
-            infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-            stat_str += infra_count_str
+            if spp > 0 and infra_str not in stat_str:
+                # 如果沒有47 最後要把種下加回去
+                infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
+                stat_str += infra_count_str
 
         kingdom_dict.append({'taxon_id': k, 
                              'name': f"Kingdom {kingdom_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",
@@ -1101,25 +1129,33 @@ def taxon_tree(request):
     return render(request, 'taxa/taxon_tree.html', {'kingdom_dict':kingdom_dict, 'search_stat': search_stat})
 
 
+# 只打開下面一層
 def get_sub_tree(request):
     taxon_id = request.POST.get('taxon_id')
-    cultured = request.POST.get('cultured')
+    with_cultured = request.POST.get('with_cultured')
     rank_id = request.POST.get('rank_id')
     lang = request.POST.get('lang', 'zh-hant')
     lin_rank = request.POST.get('lin_rank')
-    not_official = request.POST.get('not_official')
-    sub_dict = get_tree_stat(taxon_id,cultured,rank_id,False,lang,lin_rank,not_official)
+    with_not_official = request.POST.get('with_not_official')
+    s = time.time()
+    
+    conn = pymysql.connect(**db_settings)
+
+    sub_dict = get_tree_stat(taxon_id,with_cultured,rank_id,False,lang,lin_rank,with_not_official,conn)
+    # print(time.time()-s)
     return HttpResponse(json.dumps(sub_dict), content_type='application/json') 
 
 
 def get_taxon_path(request):
     taxon_id = request.POST.get('taxon_id')
     lin_rank = request.POST.get('lin_rank')
-    not_official = request.POST.get('not_official')
-    cultured = request.POST.get('cultured')
+    with_not_official = request.POST.get('with_not_official')
+    with_cultured = request.POST.get('with_cultured')
 
-    not_official_str = ' AND not_official = 0' if not_official == 'off' else ''
-    cultured_str = ' AND is_cultured != 1 ' if cultured != 'on' else '' # 排除栽培豢養
+    not_official_str = ' AND not_official = 0' if with_not_official == 'off' else ''
+    cultured_str = ' AND is_cultured != 1 ' if with_cultured != 'on' else '' # 排除栽培豢養
+
+    # s = time.time()
 
     resp = {}
     if taxon_id:
@@ -1143,6 +1179,8 @@ def get_taxon_path(request):
                     conn.close()
                     resp['path'] = Reverse([t[0] for t in t_ids])
                     resp['rank_id'] = Reverse([t[1] for t in t_ids])
+
+    # print(time.time()-s)
     return HttpResponse(json.dumps(resp), content_type='application/json') 
 
 
@@ -1152,18 +1190,85 @@ def get_sub_tree_list(request):
     taxon_id = request.POST.getlist('taxon_id[]')
     rank_id = request.POST.getlist('rank_id[]')
     rank_id = [int(r) for r in rank_id]
-    cultured = request.POST.get('cultured')
+    with_cultured = request.POST.get('with_cultured')
     lang = request.POST.get('lang', 'zh-hant')
     lin_rank = request.POST.get('lin_rank')
-    not_official = request.POST.get('not_official')
-    
+    with_not_official = request.POST.get('with_not_official')
+
+    # s = time.time()
+    not_official_str = ' AND at.not_official = 0' if with_not_official == 'off' else ''
+
+    # cultured_condition = ''
+    if with_cultured != 'on': # 排除栽培豢養
+        is_cultured = [0, None] 
+    else: # 包含栽培豢養
+        is_cultured = [0,1]
+        
 
     df = pd.DataFrame({'rank_id': rank_id, 'taxon_id': taxon_id})
 
+    conn = pymysql.connect(**db_settings)
+
+    s = time.time()
+
+    query = f"""
+                WITH base_query AS (
+                    SELECT att.taxon_id, att.tree_stat, 
+                    {'att.lin_parent_taxon_id' if lin_rank == 'on' else 'att.parent_taxon_id'} as parent_taxon_id 
+                    FROM api_taxon_tree att
+                    JOIN api_taxon at ON at.taxon_id = att.taxon_id
+                    WHERE {'att.lin_parent_taxon_id' if lin_rank == 'on' else 'att.parent_taxon_id'} IN %s
+                    AND at.is_in_taiwan = 1 
+                    AND at.is_deleted != 1 AND at.is_cultured IN %s {not_official_str}
+                    {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''} 
+                )
+                SELECT 
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                        'taxon_id', at.taxon_id,
+                        'rank_id', at.rank_id,
+                        'name_for_order', an.formatted_name,
+                        'formatted_name', CONCAT_WS(' ', {'acn.name_c,' if lang != 'en-us' else ''} r.display ->> '$."en-us"', an.formatted_name) ,
+                        'rank', r.display ->> '$."zh-tw"',
+                        'tree_stat', bq.tree_stat
+                        ) 
+                    ), bq.parent_taxon_id
+                FROM api_taxon at
+                JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
+                JOIN base_query bq ON bq.taxon_id = at.taxon_id 
+                LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
+                JOIN ranks r ON at.rank_id = r.id
+                GROUP BY bq.parent_taxon_id """
+
+                # ORDER BY at.rank_id DESC, an.formatted_name;"""
+
+    with conn.cursor() as cursor:
+        cursor.execute(query, (taxon_id, is_cultured, ))
+        infos = cursor.fetchall()
+        infos = pd.DataFrame(infos, columns=['info', 'taxon_id'])
+
+    # print('1', time.time()-s)
+    # print(df)
+
+   
     for i in df.index:
-        if x := get_tree_stat(df.taxon_id[i],cultured,int(df.rank_id[i]),True,lang,lin_rank,not_official):
+        # s = time.time()        
+        info_list = infos[infos.taxon_id==df.taxon_id[i]]['info'].to_list()
+        sub_titles = []
+        stat_list = []
+        for info in info_list:
+            infosss = json.loads(info)
+            if len(infosss):
+                infosss = pd.DataFrame(infosss).sort_values(['rank_id', 'name_for_order'], ascending=[False, True]).to_dict('records')
+                for ii in infosss:
+                    sub_titles.append([ii['taxon_id'], ii['rank_id'], ii['formatted_name'], ii['rank']])
+                    stat_list.append([ii['tree_stat'], ii['taxon_id']])
+
+        if x := get_tree_stat(df.taxon_id[i],with_cultured,int(df.rank_id[i]),True,lang,lin_rank,with_not_official, conn, stat_list, sub_titles):
             sub_dict_list.append(x)
     
+        # print('2', time.time()-s)
+
     return HttpResponse(json.dumps(sub_dict_list), content_type='application/json') 
 
 
@@ -1172,108 +1277,31 @@ def Reverse(lst):
     return new_lst
  
 
-def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank,not_official):
-    sub_dict = {}
-    sub_titles = []
-    rank_id = int(rank_id)
+
+
+def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,lin_rank,with_not_official,conn, stat_list,sub_titles):
     
+    c = time.time()
+    sub_dict = {}
+    rank_id = int(rank_id)
     infra_str = 'Infraspecies' if lang == 'en-us' else '種下'
     rank_map_dict = rank_map if lang == 'en-us' else rank_map_c
-    not_official_str = ' AND at.not_official = 0' if not_official == 'off' else ''
 
-    # cultured_condition = ''
-    if cultured != 'on': # 排除栽培豢養
-        is_cultured = [0, None] 
-    else: # 包含栽培豢養
-        is_cultured = [0,1]
-    conn = pymysql.connect(**db_settings)
-    query = f"""SELECT an.formatted_name 
-                FROM api_taxon at
-                JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
-                WHERE at.taxon_id = %s"""
-    with conn.cursor() as cursor:
-        cursor.execute(query, (taxon_id,))
-        taxon_info = cursor.fetchone()
-        formatted_name = taxon_info[0]
+    if with_not_official == 'off' and with_cultured == 'off':
+        stat_map_key = 'official_not_cultured'
+    elif with_not_official == 'off' and with_cultured == 'on':
+        stat_map_key = 'official_with_cultured'
+    elif with_not_official == 'on' and with_cultured == 'off':
+        stat_map_key = 'with_not_official_not_cultured'
+    elif with_not_official == 'on' and with_cultured == 'on':
+        stat_map_key = 'with_not_official_with_cultured'
 
+    # print('c', time.time()-c)
         
-    start = time.time()
-    # 如果自己的下階層是種下的話要調整
-    if rank_id <= 46 and rank_id >= 34:
-        query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id, 
-                    SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) AS p_group
-                    FROM api_taxon_tree att 
-                    JOIN api_taxon at ON att.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 {not_official_str}
-                        AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
-                        AND att.taxon_id != SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) 
-                    WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s 
-                    GROUP BY at.rank_id, p_group;
-                """
-        with conn.cursor() as cursor:
-            cursor.execute(query, (f'>{taxon_id}', is_cultured, 34, f'>{taxon_id}', f'%>{taxon_id}%'))
-            sub_stat = cursor.fetchall()
-            conn.close() 
-    else:
-        query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id, 
-                    SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) AS p_group
-                    FROM api_taxon_tree att 
-                    JOIN api_taxon at ON att.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 {not_official_str}
-                      AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
-                    WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s 
-                    GROUP BY at.rank_id, p_group;
-                """
-        with conn.cursor() as cursor:
-            cursor.execute(query, (f'>{taxon_id}', is_cultured, rank_id, f'%>{taxon_id}%',))
-            sub_stat = cursor.fetchall()
-            conn.close()    
-    sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id'])
-    sub_stat = sub_stat.sort_values('rank_id')
-    if lin_rank == 'on':
-        sub_stat = sub_stat[sub_stat.rank_id.isin(lin_ranks+sub_lin_ranks)]
-    
-    # 這邊應該可以先存好
-    # query = f"""
-    #             SELECT at.taxon_id, at.rank_id, 
-    #                    CONCAT_WS(' ', {'acn.name_c,' if lang != 'en-us' else ''} r.display ->> '$."en-us"', an.formatted_name), 
-    #                    r.display ->> '$."zh-tw"'
-    #             FROM api_taxon_tree att 
-    #             JOIN api_taxon at ON att.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 
-    #                     AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
-    #                     {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''} 
-    #             LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
-    #             JOIN ranks r ON at.rank_id = r.id
-    #             JOIN api_names an ON at.accepted_taxon_name_id= an.taxon_name_id 
-    #             WHERE att.{'lin_parent_taxon_id' if lin_rank == 'on' else 'parent_taxon_id'} = %s 
-    #             ORDER BY at.rank_id DESC, an.formatted_name;"""
+    # s = time.time()
 
-    query = f"""
-                WITH base_query AS (
-                    SELECT taxon_id FROM api_taxon_tree
-                    WHERE {'lin_parent_taxon_id' if lin_rank == 'on' else 'parent_taxon_id'} = %s
-                )
-                SELECT at.taxon_id, at.rank_id, 
-                       CONCAT_WS(' ', {'acn.name_c,' if lang != 'en-us' else ''} r.display ->> '$."en-us"', an.formatted_name), 
-                       r.display ->> '$."zh-tw"'
-                FROM api_taxon at
-                JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
-                JOIN base_query bq ON bq.taxon_id = at.taxon_id 
-                LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
-                JOIN ranks r ON at.rank_id = r.id
-                WHERE at.is_in_taiwan = 1 
-                        AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s  {not_official_str}
-                        {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''} 
-                ORDER BY at.rank_id DESC, an.formatted_name;"""
-
-    conn = pymysql.connect(**db_settings)
-    with conn.cursor() as cursor:
-        # 如果自己是種下的話要調整
-        if rank_id <= 46 and rank_id >= 35:
-            cursor.execute(query, (taxon_id,is_cultured, 34, ))
-        else:
-            cursor.execute(query, (taxon_id, is_cultured, rank_id, ))
-        sub_titles = cursor.fetchall()
-        # 下一層的rank有可能不一樣
-        conn.close() 
+    # print('a', time.time()-s)
+    # b = time.time()
 
     # 如果有跳過的部分，要顯示地位未定
     # 先找出下一個林奈階層應該要是什麼
@@ -1292,6 +1320,21 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank,not_
                 if st[1] not in uncertain_rank:
                     uncertain_rank.append(st[1])
 
+    # print('b', time.time()-b)    
+    # c = time.time()
+    sub_stat = []
+    for sl in stat_list:
+        for ssl in sl[0]:
+            sub_stat.append({'rank_id': ssl['rank_id'], 'count': ssl['count'].get(stat_map_key), 'taxon_id': sl[1]})
+
+    sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id'])
+    sub_stat = sub_stat.sort_values('rank_id')
+    sub_stat = sub_stat.reset_index(drop=True)
+
+    # print('c', time.time()-c)    
+
+    # c = time.time()
+
     for st in sub_titles:
         stat_str = ''
         spp = 0
@@ -1308,16 +1351,17 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank,not_
         else:
             rank_color = 'rank-second-gray'
         stat_name = st[2]
+        # cc = time.time()
         for i in stats.index:
             s = stats.iloc[i]
             if s['count'] > 0:
                 r_id = s.rank_id
-                count_str = f'{rank_map_dict[r_id]} {s["count"]}' if lang == 'en-us' else f'{s["count"]}{rank_map_dict[r_id]}'
+                count_str = f'{rank_map_dict[r_id]} {int(s["count"])}' if lang == 'en-us' else f'{int(s["count"])}{rank_map_dict[r_id]}'
                 if r_id <= 46 and r_id >= 35:
                     spp += s['count']
                 elif r_id == 47:
                     if spp > 0:
-                        infra_count_str = f'{infra_str} {spp}' if lang == 'en-us' else f'{spp}{infra_str}'
+                        infra_count_str = f'{infra_str} {int(spp)}' if lang == 'en-us' else f'{int(spp)}{infra_str}'
                         stat_str += f"{infra_count_str} {count_str}"
                     else:
                         stat_str += f"{count_str} "
@@ -1325,7 +1369,7 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank,not_
                     stat_str += f"{count_str} "
         if spp > 0 and infra_str not in stat_str:
             # 如果沒有47 最後要把種下加回去
-            infra_count_str = f'{infra_str} {spp}' if lang == 'en-us' else f'{spp}{infra_str}'
+            infra_count_str = f'{infra_str} {int(spp)}' if lang == 'en-us' else f'{int(spp)}{infra_str}'
             stat_str += infra_count_str
             # stat_str += f"{spp}種下"
         if rank_c not in sub_dict.keys():
@@ -1336,8 +1380,24 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank,not_
         else:
             sub_dict[rank_c]['data'] += [{'taxon_id': st[0], 'rank_id':st[1], 'name': stat_name, 'stat':stat_str.strip()}]
             sub_dict[rank_c]['taxon_id'] = taxon_id
+
+    # print('d', time.time()-c)  
+
+    # e = time.time()  
+
     lack_r = []
     if uncertains:
+
+        # 當前的階層
+        query = f"""SELECT an.formatted_name 
+                    FROM api_taxon at
+                    JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
+                    WHERE at.taxon_id = %s"""
+        with conn.cursor() as cursor:
+            cursor.execute(query, (taxon_id,))
+            taxon_info = cursor.fetchone()
+            formatted_name = taxon_info[0]
+
         if from_search_click:
             for r in lin_map.keys():
                 if r < min(uncertain_rank) and r > rank_id:
@@ -1360,12 +1420,12 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank,not_
                 s = stats.iloc[i]
                 if s['count'] > 0:
                     r_id = s.rank_id
-                    count_str = f'{rank_map_dict[r_id]} {s["count"]}' if lang == 'en-us' else f'{s["count"]}{rank_map_dict[r_id]}'
+                    count_str = f'{rank_map_dict[r_id]} {int(s["count"])}' if lang == 'en-us' else f'{int(s["count"])}{rank_map_dict[r_id]}'
                     if r_id <= 46 and r_id >= 35:
                         spp += s['count']
                     elif r_id == 47:
                         if spp > 0:
-                            infra_count_str = f'{infra_str} {spp}' if lang == 'en-us' else f'{spp}{infra_str}'
+                            infra_count_str = f'{infra_str} {int(spp)}' if lang == 'en-us' else f'{int(spp)}{infra_str}'
                             stat_str += f"{infra_count_str} {count_str}"
                         else:
                             stat_str += f"{count_str} "
@@ -1373,7 +1433,7 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank,not_
                         stat_str += f"{count_str} "
             if spp > 0 and infra_str not in stat_str:
                 # 如果沒有47 最後要把種下加回去
-                infra_count_str = f'{infra_str} {spp}' if lang == 'en-us' else f'{spp}{infra_str}'
+                infra_count_str = f'{infra_str} {int(spp)}' if lang == 'en-us' else f'{int(spp)}{infra_str}'
                 stat_str += infra_count_str
             if rank_map_c[nlh] not in sub_dict.keys():
                 sub_dict[rank_c] = {}
@@ -1403,8 +1463,10 @@ def get_tree_stat(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank,not_
                 if rank_map_c[ur] in final_sub_dict.keys():
                     final_sub_dict.pop(rank_map_c[ur])
 
-
+    # print('e', time.time()-e)
     return final_sub_dict
+
+
 
 
 def update_search_stat(request):
@@ -2245,147 +2307,6 @@ def update_catalogue_table_search(request):
 
 
 
-# working in progress
-# def get_tree_stat_new(taxon_id,cultured,rank_id,from_search_click,lang,lin_rank):
-#     sub_dict = {}
-#     sub_titles = []
-#     rank_id = int(rank_id)
-    
-#     infra_str = 'Infraspecies' if lang == 'en-us' else '種下'
-#     rank_map_dict = rank_map if lang == 'en-us' else rank_map_c
-
-#     if cultured != 'on': # 排除栽培豢養
-#         is_cultured = [0, None] 
-#     else: # 包含栽培豢養
-#         is_cultured = [0,1]
-#     conn = pymysql.connect(**db_settings)
-#     query = f"""SELECT an.formatted_name 
-#                 FROM api_taxon at
-#                 JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
-#                 WHERE at.taxon_id = %s"""
-#     with conn.cursor() as cursor:
-#         cursor.execute(query, (taxon_id,))
-#         taxon_info = cursor.fetchone()
-#         formatted_name = taxon_info[0]
-
-        
-#     start = time.time()
-#     # 如果自己的下階層是種下的話要調整
-#     # if rank_id <= 46 and rank_id >= 34:
-#     #     query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id, 
-#     #                 SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) AS p_group
-#     #                 FROM api_taxon_tree att 
-#     #                 JOIN api_taxon at ON att.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 
-#     #                     AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
-#     #                     AND att.taxon_id != SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) 
-#     #                 WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s 
-#     #                 GROUP BY at.rank_id, p_group;
-#     #             """
-#     #     with conn.cursor() as cursor:
-#     #         cursor.execute(query, (f'>{taxon_id}', is_cultured, 34, f'>{taxon_id}', f'%>{taxon_id}%'))
-#     #         sub_stat = cursor.fetchall()
-#     #         conn.close() 
-#     # else:
-#     #     query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id, 
-#     #                 SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) AS p_group
-#     #                 FROM api_taxon_tree att 
-#     #                 JOIN api_taxon at ON att.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
-#     #                 WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s 
-#     #                 GROUP BY at.rank_id, p_group;
-#     #             """
-#     #     with conn.cursor() as cursor:
-#     #         cursor.execute(query, (f'>{taxon_id}', is_cultured, rank_id, f'%>{taxon_id}%',))
-#     #         sub_stat = cursor.fetchall()
-#     #         conn.close()    
-#     query = f""" SELECT att.{'stat' if cultured == 'on' else 'stat_wo_cultured'} 
-#             FROM api_taxon_tree att WHERE att.taxon_id = %s
-#             """
-    
-
-#     with conn.cursor() as cursor:
-#         cursor.execute(query, (taxon_id,))
-#         sub_stat = cursor.fetchone()
-#         if sub_stat:
-#             sub_stat = sub_stat[0]
-#             sub_dict = json.loads(sub_stat)
-
-#     # sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id'])
-#     # sub_stat = sub_stat.sort_values('rank_id')
-#     # if lin_rank == 'on':
-#     #     sub_stat = sub_stat[sub_stat.rank_id.isin(lin_ranks+sub_lin_ranks)]
-
-#     query = f"""
-#                 WITH base_query AS (
-#                     SELECT taxon_id FROM api_taxon_tree
-#                     WHERE {'lin_parent_taxon_id' if lin_rank == 'on' else 'parent_taxon_id'} = %s
-#                 )
-#                 SELECT at.taxon_id, at.rank_id, 
-#                        CONCAT_WS(' ', {'acn.name_c,' if lang != 'en-us' else ''} r.display ->> '$."en-us"', an.formatted_name), 
-#                        r.display ->> '$."zh-tw"'
-#                 FROM api_taxon at
-#                 JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
-#                 JOIN base_query bq ON bq.taxon_id = at.taxon_id 
-#                 LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
-#                 JOIN ranks r ON at.rank_id = r.id
-#                 WHERE at.is_in_taiwan = 1 
-#                         AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
-#                         {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''} 
-#                 ORDER BY at.rank_id DESC, an.formatted_name;"""
-
-#     conn = pymysql.connect(**db_settings)
-#     with conn.cursor() as cursor:
-#         # 如果自己是種下的話要調整
-#         if rank_id <= 46 and rank_id >= 35:
-#             cursor.execute(query, (taxon_id,is_cultured, 34, ))
-#         else:
-#             cursor.execute(query, (taxon_id, is_cultured, rank_id, ))
-#         sub_titles = cursor.fetchall()
-#         sub_titles = pd.DataFrame(sub_titles, columns=['taxon_id','rank_id','name','rank'])
-#         # 下一層的rank有可能不一樣
-#         conn.close() 
-
-    
-#     # 如果有跳過的部分，要顯示地位未定
-#     # 先找出下一個林奈階層應該要是什麼
-#     next_lin_h = None
-#     if rank_id in lin_ranks:
-#         if lin_ranks.index(rank_id)+1 < len(lin_ranks):
-#             if lin_ranks[lin_ranks.index(rank_id)+1] < 34:
-#                 next_lin_h = lin_ranks[lin_ranks.index(rank_id)+1]
-
-#     # uncertains = []
-#     # uncertain_rank = []
-#     # if next_lin_h:
-#     #     for st in sub_titles:
-#     #         if not (st[1] == next_lin_h or st[1] < next_lin_h):
-#     #             uncertains.append(st)
-#     #             if st[1] not in uncertain_rank:
-#     #                 uncertain_rank.append(st[1])
-#     rank_color_map_c = {'界': 'rank-1-red', '門': 'rank-2-org', '綱': 'rank-3-yell', '目': 'rank-4-green', '科': 'rank-5-blue', '屬': 'rank-6-deepblue', '種': 'rank-7-purple'}
-#     # k = rank_map_c_reverse[next_lin_h]
-#         # if k != 'has_lack':
-#     k = rank_map_c[next_lin_h]
-#     if k in rank_color_map_c.keys():
-#         rank_color = rank_color_map_c[k]
-#     else:
-#         rank_color = 'rank-second-gray'
-#     sub_dict[k]['rank_color'] = rank_color
-#     tmp_data = []
-#     for ss in sub_dict[k]['data']:
-#         if ss.get('taxon_id'):
-#             stat_name = sub_titles[sub_titles.taxon_id==ss.get('taxon_id')].name.values[0]
-#         else:
-#             stat_name = f'{formatted_name} {lin_map[rank_map_c_reverse[k]]} incertae sedis'
-#         ss.update({'name': stat_name})
-#         tmp_data.append(ss)
-#         # sub_titles[sub_titles.taxon_id==ss.get('taxon_id')].name.values[0]
-#     sub_dict[k]['data'] = tmp_data
-
-#     return sub_dict
-
-
-
-
 
 
 # 2023-10-03 調整搜尋架構
@@ -2892,4 +2813,252 @@ def update_catalogue_table_search(request):
 #         response['next'] = gettext('下一頁')
 #         response['prev'] = gettext('上一頁')
 #         return JsonResponse(response, safe=False)
+
+
+# deprecated
+# def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,lin_rank,with_not_official):
+#     sub_dict = {}
+#     sub_titles = []
+#     rank_id = int(rank_id)
+
+#     # print(taxon_id, rank_id)
+    
+#     infra_str = 'Infraspecies' if lang == 'en-us' else '種下'
+#     rank_map_dict = rank_map if lang == 'en-us' else rank_map_c
+#     not_official_str = ' AND at.not_official = 0' if with_not_official == 'off' else ''
+
+#     # cultured_condition = ''
+#     if with_cultured != 'on': # 排除栽培豢養
+#         is_cultured = [0, None] 
+#     else: # 包含栽培豢養
+#         is_cultured = [0,1]
+
+#     conn = pymysql.connect(**db_settings)
+
+
+#     # print(formatted_name)
+        
+#     start = time.time()
+
+#     # 主要慢在這步
+#     # 取得各階層統計
+#     # 如果自己的下階層是種下的話要調整
+#     if rank_id <= 46 and rank_id >= 34:
+#         query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id, 
+#                     SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) AS p_group
+#                     FROM api_taxon_tree att 
+#                     JOIN api_taxon at ON att.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 {not_official_str}
+#                         AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
+#                         AND att.taxon_id != SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) 
+#                     WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s 
+#                     GROUP BY at.rank_id, p_group;
+#                 """
+#         with conn.cursor() as cursor:
+#             cursor.execute(query, (f'>{taxon_id}', is_cultured, 34, f'>{taxon_id}', f'%>{taxon_id}%'))
+#             sub_stat = cursor.fetchall()
+#             conn.close() 
+#     else:
+#         query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id, 
+#                     SUBSTRING_INDEX(SUBSTRING_INDEX({'att.lin_path' if lin_rank == 'on' else 'att.path'}, %s, 1), '>', -1) AS p_group
+#                     FROM api_taxon_tree att 
+#                     JOIN api_taxon at ON att.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 {not_official_str}
+#                       AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s 
+#                     WHERE {'att.lin_path' if lin_rank == 'on' else 'att.path'} LIKE %s 
+#                     GROUP BY at.rank_id, p_group;
+#                 """
+#         with conn.cursor() as cursor:
+#             cursor.execute(query, (f'>{taxon_id}', is_cultured, rank_id, f'%>{taxon_id}%',))
+#             sub_stat = cursor.fetchall()
+#             conn.close()    
+
+#     # print(query)
+#     sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id'])
+#     sub_stat = sub_stat.sort_values('rank_id')
+#     if lin_rank == 'on':
+#         sub_stat = sub_stat[sub_stat.rank_id.isin(lin_ranks+sub_lin_ranks)]
+
+#     # print(sub_stat)
+    
+#     print('start1', time.time()-start)
+
+#     start = time.time()
+
+#     # 取得各階層學名
+#     # TODO 這步可以簡化嗎
+#     query = f"""
+#                 WITH base_query AS (
+#                     SELECT taxon_id FROM api_taxon_tree
+#                     WHERE {'lin_parent_taxon_id' if lin_rank == 'on' else 'parent_taxon_id'} = %s
+#                 )
+#                 SELECT at.taxon_id, at.rank_id, 
+#                        CONCAT_WS(' ', {'acn.name_c,' if lang != 'en-us' else ''} r.display ->> '$."en-us"', an.formatted_name), 
+#                        r.display ->> '$."zh-tw"'
+#                 FROM api_taxon at
+#                 JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
+#                 JOIN base_query bq ON bq.taxon_id = at.taxon_id 
+#                 LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
+#                 JOIN ranks r ON at.rank_id = r.id
+#                 WHERE at.is_in_taiwan = 1 
+#                         AND at.is_deleted != 1 AND at.is_cultured IN %s AND at.rank_id > %s  {not_official_str}
+#                         {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''} 
+#                 ORDER BY at.rank_id DESC, an.formatted_name;"""
+
+#     conn = pymysql.connect(**db_settings)
+#     with conn.cursor() as cursor:
+#         # 如果自己是種下的話要調整
+#         if rank_id <= 46 and rank_id >= 35:
+#             cursor.execute(query, (taxon_id,is_cultured, 34, ))
+#         else:
+#             cursor.execute(query, (taxon_id, is_cultured, rank_id, ))
+#         sub_titles = cursor.fetchall()
+#         # 下一層的rank有可能不一樣
+#         conn.close() 
+    
+#     print(sub_titles)
+
+#     # 如果有跳過的部分，要顯示地位未定
+#     # 先找出下一個林奈階層應該要是什麼
+#     next_lin_h = None
+#     if rank_id in lin_ranks:
+#         if lin_ranks.index(rank_id)+1 < len(lin_ranks):
+#             if lin_ranks[lin_ranks.index(rank_id)+1] < 34:
+#                 next_lin_h = lin_ranks[lin_ranks.index(rank_id)+1]
+
+#     uncertains = []
+#     uncertain_rank = []
+#     if next_lin_h:
+#         for st in sub_titles:
+#             if not (st[1] == next_lin_h or st[1] < next_lin_h):
+#                 uncertains.append(st)
+#                 if st[1] not in uncertain_rank:
+#                     uncertain_rank.append(st[1])
+
+#     for st in sub_titles:
+#         stat_str = ''
+#         spp = 0
+#         stat_name = ''
+#         rank_c = st[3]
+#         # 如果是自己種下的話 這邊要調整
+#         if st[1] in sub_lin_ranks:
+#             stats = sub_stat[(sub_stat.taxon_id==st[0])&(sub_stat.rank_id.isin(sub_lin_ranks))]
+#         else:
+#             stats = sub_stat[(sub_stat.taxon_id==st[0])&(sub_stat.rank_id>st[1])]
+#         stats = stats.reset_index(drop=True)
+#         if st[1] in lin_ranks:
+#             rank_color = rank_color_map[st[1]]
+#         else:
+#             rank_color = 'rank-second-gray'
+#         stat_name = st[2]
+#         for i in stats.index:
+#             s = stats.iloc[i]
+#             if s['count'] > 0:
+#                 r_id = s.rank_id
+#                 count_str = f'{rank_map_dict[r_id]} {s["count"]}' if lang == 'en-us' else f'{s["count"]}{rank_map_dict[r_id]}'
+#                 if r_id <= 46 and r_id >= 35:
+#                     spp += s['count']
+#                 elif r_id == 47:
+#                     if spp > 0:
+#                         infra_count_str = f'{infra_str} {spp}' if lang == 'en-us' else f'{spp}{infra_str}'
+#                         stat_str += f"{infra_count_str} {count_str}"
+#                     else:
+#                         stat_str += f"{count_str} "
+#                 else:
+#                     stat_str += f"{count_str} "
+#         if spp > 0 and infra_str not in stat_str:
+#             # 如果沒有47 最後要把種下加回去
+#             infra_count_str = f'{infra_str} {spp}' if lang == 'en-us' else f'{spp}{infra_str}'
+#             stat_str += infra_count_str
+#             # stat_str += f"{spp}種下"
+#         if rank_c not in sub_dict.keys():
+#             sub_dict[rank_c] = {}
+#             sub_dict[rank_c]['data'] = [{'taxon_id': st[0], 'rank_id':st[1], 'name': stat_name, 'stat':stat_str.strip()}]
+#             sub_dict[rank_c]['rank_color'] = rank_color
+#             sub_dict[rank_c]['taxon_id'] = taxon_id
+#         else:
+#             sub_dict[rank_c]['data'] += [{'taxon_id': st[0], 'rank_id':st[1], 'name': stat_name, 'stat':stat_str.strip()}]
+#             sub_dict[rank_c]['taxon_id'] = taxon_id
+#     lack_r = []
+#     if uncertains:
+#         print('hello')
+#         # 當前的階層 - 如果有地位未定才需要
+#         query = f"""SELECT an.formatted_name 
+#                     FROM api_taxon at
+#                     JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
+#                     WHERE at.taxon_id = %s"""
+#         with conn.cursor() as cursor:
+#             cursor.execute(query, (taxon_id,))
+#             taxon_info = cursor.fetchone()
+#             formatted_name = taxon_info[0]
+
+#         if from_search_click:
+#             for r in lin_map.keys():
+#                 if r < min(uncertain_rank) and r > rank_id:
+#                     lack_r.append(r)
+#         else:
+#             lack_r = [next_lin_h]
+#         for nlh in lack_r:
+#             stat_str = ''
+#             spp = 0
+#             stat_name = ''
+#             rank_color = rank_color_map[nlh]
+#             rank_c = rank_map_c[nlh]
+#             stats = sub_stat[sub_stat.taxon_id.isin([un[0] for un in uncertains])]
+#             stats = stats.groupby('rank_id',as_index=False).sum('count')
+#             stats = stats[stats.rank_id > nlh]
+#             stats = stats.reset_index(drop=True)
+#             # 補所有地位未定的部分
+#             stat_name = f'{formatted_name} {lin_map[nlh]} incertae sedis' if lang == 'en-us' else f'地位未定 {formatted_name} {lin_map[nlh]} incertae sedis' 
+#             for i in stats.index:
+#                 s = stats.iloc[i]
+#                 if s['count'] > 0:
+#                     r_id = s.rank_id
+#                     count_str = f'{rank_map_dict[r_id]} {s["count"]}' if lang == 'en-us' else f'{s["count"]}{rank_map_dict[r_id]}'
+#                     if r_id <= 46 and r_id >= 35:
+#                         spp += s['count']
+#                     elif r_id == 47:
+#                         if spp > 0:
+#                             infra_count_str = f'{infra_str} {spp}' if lang == 'en-us' else f'{spp}{infra_str}'
+#                             stat_str += f"{infra_count_str} {count_str}"
+#                         else:
+#                             stat_str += f"{count_str} "
+#                     else:
+#                         stat_str += f"{count_str} "
+#             if spp > 0 and infra_str not in stat_str:
+#                 # 如果沒有47 最後要把種下加回去
+#                 infra_count_str = f'{infra_str} {spp}' if lang == 'en-us' else f'{spp}{infra_str}'
+#                 stat_str += infra_count_str
+#             if rank_map_c[nlh] not in sub_dict.keys():
+#                 sub_dict[rank_c] = {}
+#                 sub_dict[rank_c]['data'] = [{'taxon_id': None, 'rank_id':nlh, 'name': stat_name, 'stat':stat_str.strip()}]
+#                 sub_dict[rank_c]['rank_color'] = rank_color
+#                 sub_dict[rank_c]['taxon_id'] = taxon_id
+#             else:
+#                 sub_dict[rank_c]['data'] += [{'taxon_id': None, 'rank_id':nlh, 'name': stat_name, 'stat':stat_str.strip()}]
+#                 sub_dict[rank_c]['taxon_id'] = taxon_id
+#     final_sub_dict = {}
+#     final_sub_dict['has_lack'] = False
+#     total_ranks = []
+#     for r in rank_map_c.keys():
+#         if sub_dict.get(rank_map_c[r]):
+#             total_ranks.append(r)
+#             final_sub_dict[rank_map_c[r]] = sub_dict[rank_map_c[r]]
+
+#     for r in lack_r:
+#         final_sub_dict[rank_map_c[r]]['parent_rank_id'] = total_ranks[total_ranks.index(r) - 1]
+
+#     # 把補了地位未定的階層拿掉
+#     if lack_r:
+#         final_sub_dict['has_lack'] = True
+#         final_sub_dict[rank_map_c[total_ranks[total_ranks.index(max(lack_r)) + 1]]]['parent_rank_id'] = max(lack_r)
+#         if not from_search_click:
+#             for ur in uncertain_rank:
+#                 if rank_map_c[ur] in final_sub_dict.keys():
+#                     final_sub_dict.pop(rank_map_c[ur])
+
+#     print('start2' ,time.time()-start)
+
+#     print(final_sub_dict)
+
+#     return final_sub_dict
+
 

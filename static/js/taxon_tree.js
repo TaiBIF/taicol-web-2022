@@ -16,9 +16,9 @@ var $getSubListArr = `<div class="arr">
 </div>`
 
 function getSubList(item){
-    let cultured = 'off';
-    if ($('input[name="cultured"]').is(':checked')){
-        cultured = 'on';
+    let with_cultured = 'off';
+    if ($('input[name="with_cultured"]').is(':checked')){
+        with_cultured = 'on';
     }
 
     let lin_rank = 'off';
@@ -26,9 +26,9 @@ function getSubList(item){
         lin_rank = 'on';
     }
 
-    let not_official = 'off';
-    if ($('input[name="not_official"]').is(':checked')){
-        not_official = 'on';
+    let with_not_official = 'off';
+    if ($('input[name="with_not_official"]').is(':checked')){
+        with_not_official = 'on';
     }
 
     if ($(item).data('taxon')){
@@ -40,18 +40,19 @@ function getSubList(item){
     if ($(item).data('fetched')=="0"){
         $('.loadingbox').removeClass('d-none');
         $.ajax({
-            url: "/get_sub_tree",
+            url: "/get_sub_tree_list",
             data:  {'csrfmiddlewaretoken' : $csrf_token,
-                    'taxon_id': taxon_id,
-                    'rank_id': $(item).data('rank'),
-                    'cultured': cultured,
+                    'taxon_id': [taxon_id],
+                    'rank_id': [$(item).data('rank')],
+                    'with_cultured': with_cultured,
                     'lin_rank': lin_rank,
-                    'not_official': not_official,
+                    'with_not_official': with_not_official,
                     'lang': $lang },
             type: 'POST',
             dataType : 'json',
         })
-        .done(function(results) {
+        .done(function(resp) {
+            results = resp[0]
             $('.loadingbox').addClass('d-none');
             $(item).data('fetched','1');
             let html_str;
@@ -66,7 +67,7 @@ function getSubList(item){
                             html_str += `
                             <li>
                                 <span class="anchor" id="${results[j]['data'][i]['taxon_id']}" ></span>
-                                <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[j]['data'][i]['taxon_id']}" data-rank="${results[j]['data'][i]['rank_id']}">
+                                <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-with_cultured="${with_cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[j]['data'][i]['taxon_id']}" data-rank="${results[j]['data'][i]['rank_id']}">
                                     <div class="cir-box">
                                         ${j}
                                     </div>
@@ -80,7 +81,7 @@ function getSubList(item){
                             html_str += `
                             <li>
                                 <span class="anchor" id="" ></span>
-                                <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${taxon_id}" data-rank="${results[j]['data'][i]['rank_id']}">
+                                <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-with_cultured="${with_cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${taxon_id}" data-rank="${results[j]['data'][i]['rank_id']}">
                                     <div class="cir-box">
                                         ${j}
                                     </div>
@@ -162,7 +163,7 @@ $(function (){
     // })    
 
     // 栽培豢養
-    $('input[name="cultured"], input[name="lin_rank"], input[name="not_official"]').change(function() {
+    $('input[name="with_cultured"], input[name="lin_rank"], input[name="with_not_official"]').change(function() {
         let current_taxon_id;
         if ($('.main-box .item-box.now').length >0){
             // 只選擇最後一個
@@ -172,9 +173,9 @@ $(function (){
             $( "#keyword" ).val('').trigger('change');
         }
 
-        let cultured = 'off';
-        if ($('input[name="cultured"]').is(':checked')){
-            cultured = 'on';
+        let with_cultured = 'off';
+        if ($('input[name="with_cultured"]').is(':checked')){
+            with_cultured = 'on';
         }
 
         let lin_rank = 'off';
@@ -182,18 +183,18 @@ $(function (){
             lin_rank = 'on';
         }
 
-        let not_official = 'off';
-        if ($('input[name="not_official"]').is(':checked')){
-            not_official = 'on';
+        let with_not_official = 'off';
+        if ($('input[name="with_not_official"]').is(':checked')){
+            with_not_official = 'on';
         }
 
 
         $.ajax({
             url: "/get_root_tree",
             data:  {'csrfmiddlewaretoken' : $csrf_token,
-                    'cultured': cultured,
+                    'with_cultured': with_cultured,
                     'lin_rank': lin_rank,
-                    'not_official': not_official,
+                    'with_not_official': with_not_official,
                     'lang': $lang},
             type: 'POST',
             dataType : 'json',
@@ -210,7 +211,7 @@ $(function (){
                 $('.tree-area .main-box ul.kingdom').append(
                     `<li>
                     <span class="anchor" id="${ r.taxon_id }" ></span>
-                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${ cultured }" data-lin_rank="${ lin_rank }" data-fetched="0" data-taxon="${ r.taxon_id }" data-rank="3">
+                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-with_cultured="${ with_cultured }" data-lin_rank="${ lin_rank }" data-fetched="0" data-taxon="${ r.taxon_id }" data-rank="3">
                         <div class="cir-box">
                             界
                         </div>
@@ -295,18 +296,18 @@ $(function (){
             delay: 250,
             dataType: 'json',
             data: function (params) {
-                let cultured = 'off';
-                if ($('input[name="cultured"]').is(':checked')){
-                    cultured = 'on';
+                let with_cultured = 'off';
+                if ($('input[name="with_cultured"]').is(':checked')){
+                    with_cultured = 'on';
                 }
                 let lin_rank = 'off';
                 if ($('input[name="lin_rank"]').is(':checked')){
                     lin_rank = 'on';
                 }
 
-                let not_official = 'off';
-                if ($('input[name="not_official"]').is(':checked')){
-                    not_official = 'on';
+                let with_not_official = 'off';
+                if ($('input[name="with_not_official"]').is(':checked')){
+                    with_not_official = 'on';
                 }
 
                 if (params.term != undefined ){
@@ -315,9 +316,9 @@ $(function (){
                             return {
                                 keyword: params.term,
                                 from_tree: 'true',
-                                cultured: cultured,
+                                with_cultured: with_cultured,
                                 lin_rank : lin_rank,
-                                not_official: not_official,
+                                with_not_official: with_not_official,
                                 lang: $lang
                                 };
                         }
@@ -325,9 +326,9 @@ $(function (){
                         return {
                             keyword: params.term,
                             from_tree: 'true',
-                            cultured: cultured,
+                            with_cultured: with_cultured,
                             lin_rank: lin_rank,
-                            not_official: not_official,
+                            with_not_official: with_not_official,
                             lang: $lang
                             };
 
@@ -366,17 +367,17 @@ $(function (){
 });
 
 function searchClick(keyword_taxon_id, add_stat){
-    let cultured = 'off';
-    if ($('input[name="cultured"]').is(':checked')){
-        cultured = 'on';
+    let with_cultured = 'off';
+    if ($('input[name="with_cultured"]').is(':checked')){
+        with_cultured = 'on';
     }
     let lin_rank = 'off';
     if ($('input[name="lin_rank"]').is(':checked')){
         lin_rank = 'on';
     }
-    let not_official = 'off';
-    if ($('input[name="not_official"]').is(':checked')){
-        not_official = 'on';
+    let with_not_official = 'off';
+    if ($('input[name="with_not_official"]').is(':checked')){
+        with_not_official = 'on';
     }
     // 關閉所有的樹
     $('.main-box .item-box').removeClass('now');
@@ -396,9 +397,9 @@ function searchClick(keyword_taxon_id, add_stat){
             url: "/get_taxon_path",
             data:  {'csrfmiddlewaretoken' : $csrf_token,
                     'taxon_id': keyword_taxon_id,
-                    'cultured': cultured,
+                    'with_cultured': with_cultured,
                     'lin_rank': lin_rank,
-                    'not_official': not_official},
+                    'with_not_official': with_not_official},
             type: 'POST',
             dataType : 'json',
         })
@@ -443,9 +444,9 @@ function searchClick(keyword_taxon_id, add_stat){
 
 function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
 
-    let cultured = 'off';
-    if ($('input[name="cultured"]').is(':checked')){
-        cultured = 'on';
+    let with_cultured = 'off';
+    if ($('input[name="with_cultured"]').is(':checked')){
+        with_cultured = 'on';
     }
 
     let lin_rank = 'off';
@@ -453,9 +454,9 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
         lin_rank = 'on';
     }
 
-    let not_official = 'off';
-    if ($('input[name="not_official"]').is(':checked')){
-        not_official = 'on';
+    let with_not_official = 'off';
+    if ($('input[name="with_not_official"]').is(':checked')){
+        with_not_official = 'on';
     }
 
     $.ajax({
@@ -463,9 +464,9 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
         data:  {'csrfmiddlewaretoken' : $csrf_token,
                 'taxon_id': fetch_taxon,
                 'rank_id': fetch_rank_id,
-                'cultured': cultured,
+                'with_cultured': with_cultured,
                 'lin_rank': lin_rank,
-                'not_official': not_official,
+                'with_not_official': with_not_official,
                 'lang': $lang
             },
         type: 'POST',
@@ -491,7 +492,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                         html_str += `
                         <li>
                             <span class="anchor" id="${results[r][j]['data'][i]['taxon_id']}" ></span>
-                            <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                            <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-with_cultured="${with_cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
                                 <div class="cir-box">
                                     ${j}
                                 </div>
@@ -505,7 +506,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                         html_str += `
                         <li>
                             <span class="anchor" id="" ></span>
-                            <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${results[r][j]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                            <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-with_cultured="${with_cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${results[r][j]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
                                 <div class="cir-box">
                                     ${j}
                                 </div>
@@ -534,7 +535,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                                 html_str += `
                                 <li>
                                     <span class="anchor" id="${results[r][j]['data'][i]['taxon_id']}" ></span>
-                                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-with_cultured="${with_cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
                                         <div class="cir-box">
                                             ${j}
                                         </div>
@@ -548,7 +549,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                                 html_str += `
                                 <li>
                                     <span class="anchor" id="" ></span>
-                                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${results[r][j]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-with_cultured="${with_cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="" data-parent_taxon="${results[r][j]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
                                         <div class="cir-box">
                                             ${j}
                                         </div>
@@ -578,7 +579,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                                 html_str += `
                                 <li>
                                     <span class="anchor" id="${results[r][j]['data'][i]['taxon_id']}" ></span>
-                                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-cultured="${cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
+                                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-with_cultured="${with_cultured}" data-lin_rank="${lin_rank}" data-fetched="0" data-taxon="${results[r][j]['data'][i]['taxon_id']}" data-rank="${results[r][j]['data'][i]['rank_id']}">
                                         <div class="cir-box">
                                             ${j}
                                         </div>
