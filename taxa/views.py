@@ -244,7 +244,17 @@ def get_autocomplete_taxon(request):
 
 
 def name_match(request):
-    return render(request, 'taxa/name_match.html')
+    url = env('REACT_WEB_INTERNAL_API_URL') + '/api/admin/download/'
+    resp = requests.get(url)
+    taxon_updated_at = None
+    if resp.status_code == 200:
+        resp = resp.json()['rows']
+        resp = [r for r in resp if r['Category']['name'] == '名錄檔案 (物種)']
+        data = pd.DataFrame(resp)
+        taxon_updated_at = data.publishedDate.max()
+        taxon_updated_at = taxon_updated_at.split('T')[0]
+
+    return render(request, 'taxa/name_match.html', {'taxon_updated_at': taxon_updated_at})
 
 
 def taxon(request, taxon_id):

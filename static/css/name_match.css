@@ -83,3 +83,9 @@
     overflow-y: hidden;
     overflow-x: auto;
 }
+
+.name-match-note {
+    font-size: 14px;
+    color: #C65454;
+    margin-bottom: 10px;
+}
