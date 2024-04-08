@@ -55,7 +55,7 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 			//console.log(results.data)
 			for (let i = 0; i < results.data.length; i++) {
 
-				console.log(results.data)
+				// console.log(results.data)
 
 				let alert_str = '';
 
