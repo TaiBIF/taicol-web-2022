@@ -89,3 +89,15 @@
     color: #C65454;
     margin-bottom: 10px;
 }
+
+.mb-20px {
+	margin-bottom: 20px;
+}
+
+.d-flex {
+	display: flex;
+}
+
+button.download_check:disabled {
+	background-color: grey !important;
+}

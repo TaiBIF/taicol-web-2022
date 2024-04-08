@@ -2,7 +2,7 @@
 {% load static %}
 {% load i18n %}
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/name_match.css' %}?v2">
+<link rel=stylesheet type="text/css" href="{% static 'css/name_match.css' %}?v3">
 {% endblock style %}
 
 {% block body %}
@@ -13,6 +13,50 @@
 		<div id="loader"></div>
 	</div>
 </div>
+
+<!--離線產生彈跳框-->
+<div class="popbox downloadpop d-none">
+	<div class="rel">
+		<div class="w-bg">
+			<div class="xx">
+				<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+					<g id="Group_8961" data-name="Group 8961" transform="translate(-1288 -210)">
+						<g id="Ellipse_145" data-name="Ellipse 145" transform="translate(1288 210)" fill="#fff" stroke="#4c8da7" stroke-width="2">
+							<circle cx="25" cy="25" r="25" stroke="none"/>
+							<circle cx="25" cy="25" r="24" fill="none"/>
+						</g>
+						<g id="Group_7748" data-name="Group 7748" transform="translate(100.696 1061.993) rotate(-45)">
+							<line id="Line_265" data-name="Line 265" x2="25" transform="translate(1429.5 271.5)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+							<line id="Line_266" data-name="Line 266" x2="25" transform="translate(1442.5 259.5) rotate(90)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+						</g>
+					</g>
+				</svg>
+			</div>
+			<div class="title-area">
+				<h2>{% trans "下載比對結果" %}<span></span></h2>
+			</div>
+			<div class="error-form">
+				<form id="downloadForm">
+					<div class="mark-title">
+						<p>{% trans "檔案為離線產生，處理完成後，系統會寄下載資訊到您輸入的電子郵件信箱。如未收到信件，請聯絡我們。" %}</p>
+					</div>
+					<div class="mark-title">
+						<img src="{% static 'image/title-mark.svg' %}">
+						<span class="ml-5">{% trans "聯絡信箱" %}</span>
+					</div>
+					<div class="d-flex mb-20px">
+						<input type="text" name="download_email" class="w-50" id="download_email">
+						<svg id="email-check" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="lightgrey" class="bi bi-check my-auto" viewBox="0 0 16 16">
+							<path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
+						</svg>
+					</div>
+				</form>
+				<button class="send-btn download_check" disabled>{% trans "確認送出" %}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 
 	<div class="page-top">
 		<div class="big-top">
@@ -54,10 +98,10 @@
 				{% else %}
 					*比對來源名錄為最近一版（{{ taxon_updated_at }}）的版本下載名錄，與網站名錄可能不同步。
 				{% endif %}
-			</p>
 
+			</p>
 			<div class="name-checkitem-box">
-				<form id="matchForm" action="{% url 'download_match_results' %}" method="POST">
+				<form id="matchForm" method="POST">
 				{% csrf_token %}		
 				<!--
 				<div class="flex-item">
@@ -116,5 +160,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/name_match.js' %}?v5"></script>
+<script src="{% static 'js/name_match.js' %}?v6"></script>
 {% endblock script %}

@@ -1489,6 +1489,7 @@ def update_search_stat(request):
 
 
 def get_match_result(request):
+
     translation.activate(request.POST.get('lang'))
     response = {}
     response['page'] = {}
@@ -1550,9 +1551,9 @@ def get_match_result(request):
                         namecode_list.append(d['namecode'])
                         df_flat = pd.concat([df_flat, pd.DataFrame([tmp_dict])], ignore_index=True)
                     if not dd['results']:
-                        df_flat = pd.concat([df_flat, pd.DataFrame([{'search_term': dd['search_term'], 'namecode': 'no match'}])], ignore_index=True)
+                        df_flat = pd.concat([df_flat, pd.DataFrame([{'search_term': dd['search_term'], 'namecode': 'no match', 'formatted_name': gettext('無結果')}])], ignore_index=True)
             df = df_flat
-
+            # print(df, namecode_list)
             # 確認是否有對到多個學名的情況
             matched_count = df[['search_term','namecode']].groupby('search_term', as_index=False).count()
             matched_count = matched_count.rename(columns={'namecode': 'taxon_id'})
@@ -1667,6 +1668,15 @@ def get_match_result(request):
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 
+
+def download_match_results_offline(request):
+    task = threading.Thread(target=download_match_results, args=(request,))
+    task.start()
+    return JsonResponse({"status": 'success'}, safe=False)
+
+
+
+# 統一改成離線產生
 def download_match_results(request):
 
     # 下載的欄位
@@ -1677,15 +1687,17 @@ def download_match_results(request):
     best = request.POST.get('best','yes')
     name = request.POST.get('name')
     file_format = request.POST.get('file_format','csv')
+    download_email = request.POST.get('download_email')
     final_df = pd.DataFrame()
     # 用loop取得name match結果 每頁30筆
     if name:
         name = name.splitlines()
-        t_names = []
-        t_names = [n for n in name if n not in t_names and n] # 排除重複 & 空值
+        t_names = name
+        t_names = list(set(t_names))
+        # t_names = [n for n in name if n not in t_names and n] # 排除重複 & 空值
         total_page = math.ceil(len(t_names) / 30)
         for page in range(total_page): 
-            namecode_list = []
+            # namecode_list = []
             names = ('|').join(t_names[page*30:(page+1)*30])
             df = pd.DataFrame()
             url = env('NOMENMATCH_ROOT')
@@ -1699,6 +1711,7 @@ def download_match_results(request):
                 result = result.json()
                 data = result['data']
                 df_flat = pd.DataFrame()
+                namecode_list = []
                 for ddd in data:
                     for dd in ddd:
                         tmp_dict = {
@@ -1708,12 +1721,17 @@ def download_match_results(request):
                         }
                         for d in dd['results']:
                             tmp_dict.update(d)
+                            namecode_list.append(d['namecode'])
                             df_flat = pd.concat([df_flat, pd.DataFrame([tmp_dict])], ignore_index=True)
                         if not dd['results']:
                             df_flat = pd.concat([df_flat, pd.DataFrame([{'search_term': dd['search_term'], 'namecode': 'no match'}])], ignore_index=True)
                 df = df_flat
-                namecode_list = list(df[df.namecode.notnull()].namecode.unique())
+                # 確認是否有對到多個學名的情況
+                matched_count = df[['search_term','namecode']].groupby('search_term', as_index=False).count()
+                matched_count = matched_count.rename(columns={'namecode': 'taxon_id'})
+                namecode_list = list(set(namecode_list))
 
+                # namecode_list = list(df[(df.namecode.notnull())&(df.namecode!='no match')].namecode.unique())
                 #JOIN taxon
                 if namecode_list:
                     query = f""" SELECT at.is_endemic, at.alien_type, at.is_terrestrial, 
@@ -1734,17 +1752,12 @@ def download_match_results(request):
                         info = pd.DataFrame(info, columns=['is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil',
                                                             'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'accepted_name', 'common_name_c',
                                                             'is_in_taiwan', 'not_official'])
-                        df = df.merge(info,how='left',left_on='accepted_namecode', right_on='taxon_id')
-                
-                        # 確認是否有對到多個學名的情況
-                        matched_count = df[['search_term','taxon_id']].groupby('search_term', as_index=False).count()
-
+                        df = df.merge(info,how='left',left_on='namecode', right_on='taxon_id')
+                        # # 確認是否有對到多個學名的情況
+                        # matched_count = df[['search_term','taxon_id']].groupby('search_term', as_index=False).count()
                         # 如果有多個結果 
-                        
                         custom_dict = {'accepted': 0, 'not-accepted': 1, 'misapplied': 2}
-
                         tmp_df = []
-
                         for dd in df.search_term.unique():
                             if matched_count[matched_count.search_term==dd].taxon_id.values[0] > 1:
                                 if best == 'yes':
@@ -1767,18 +1780,16 @@ def download_match_results(request):
                                         tmp_df.append(now_record)
                             else:
                                 tmp_df.append(df[df.search_term==dd].to_dict('records')[0])
-
                         df = pd.DataFrame(tmp_df, columns =['matched', 'simple_name', 'common_name', 'accepted_namecode',
-                            'namecode', 'name_status', 'source', 'kingdom', 'phylum', 'class',
-                            'order', 'family', 'genus', 'taxon_rank', 'match_type', 'search_term',
-                            'matched_clean', 'score', 'is_endemic', 'alien_type', 'is_terrestrial',
-                            'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'taxon_id',
-                            'protected_category', 'red_category', 'iucn_category', 'cites_listing',
-                            'rank_id', 'accepted_name', 'common_name_c', 'is_in_taiwan',
-                            'not_official'])
+                                                            'namecode', 'name_status', 'source', 'kingdom', 'phylum', 'class',
+                                                            'order', 'family', 'genus', 'taxon_rank', 'match_type', 'search_term',
+                                                            'matched_clean', 'score', 'is_endemic', 'alien_type', 'is_terrestrial',
+                                                            'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'taxon_id',
+                                                            'protected_category', 'red_category', 'iucn_category', 'cites_listing',
+                                                            'rank_id', 'accepted_name', 'common_name_c', 'is_in_taiwan',
+                                                            'not_official'])
                         df = df.replace({np.nan: '', None: ''})
                         df.loc[(df.namecode=='no match'),'match_type']= 'No match'
-
                         for i in df.index:
                             alt_list = []
                             if df.iloc[i].alien_type:
@@ -1790,10 +1801,9 @@ def download_match_results(request):
                         df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
                         df['rank'] = df['rank_id'].apply(lambda x: rank_map[x] if x else '')
                         df.loc[df.taxon_id!='','is_endemic'] = df.loc[df.taxon_id.notnull(),'is_endemic'].apply(lambda x: 1 if x == 1 else 0)
-
-                df = df.replace({np.nan: '', None: ''})
-                # TODO concat
-                final_df = final_df.append(df)
+                df = df.replace({np.nan: '', None: '', 'no match': ''})
+                # final_df = final_df.append(df)
+                final_df = pd.concat([final_df,df],ignore_index=True)
     
     # [c for c in cols if c in final_df.keys()]
     for c in cols:
@@ -1804,33 +1814,37 @@ def download_match_results(request):
     final_df = final_df.rename(columns={"protected_category": "protected", "red_category": "redlist", "iucn_category": "iucn",
                                         "cites_listing": "cites", "accepted_namecode": "taxon_id", "name_status": "usage_status", "simple_name": "match_name"})
    
-    # final_df = final_df.rename(columns={
-    #     "search_term":"查詢字串","name":"比對結果","common_name_c":"中文名","kingdom":"界","phylum":"門","class":"綱","order":"目","family":"科",
-    #     "genus":"屬","rank":"階層","is_endemic":"是否為特有",
-    #     "alien_type":"原生/外來性","is_terrestrial":"是否為陸生生物","is_freshwater":"是否為淡水生物","is_brackish":"是否為半鹹水生物","is_marine":"是否為海洋生物",
-    #     "is_fossil": "是否為化石種",
-    #     "protected_category":"臺灣保育類等級","red_category":"臺灣紅皮書評估",
-    #     "iucn_category":"IUCN國際自然保育聯盟紅皮書評估","cites_listing":"CITES華盛頓公約附錄","accepted_namecode":"物種編碼"
-    # })
-
     final_df = final_df.drop_duplicates()
+
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
     is_list = ["is_endemic","is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","is_in_taiwan",'not_official']
+
     if file_format == 'json':
         # 改成True False                
         final_df[is_list] = final_df[is_list].replace({0: False, 1: True, '0': False, '1': True})
-        response = HttpResponse(content_type="application/json")
-        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
-        final_df.to_json(response, orient='records')
+        df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
+        compression_options = dict(method='zip', archive_name=df_file_name)
+        zip_file_name = df_file_name.replace("json","zip")
+        final_df.to_json(f'/tc-web-volumes/media/match_result/{zip_file_name}', orient='records', compression=compression_options)
     else:
         # 改成字串true false
         final_df[is_list] = final_df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] =  f'attachment; filename=taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
-        final_df.to_csv(response, index=False)
+        df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
+        compression_options = dict(method='zip', archive_name=df_file_name)
+        zip_file_name = df_file_name.replace("csv","zip")
+        final_df.to_csv(f'/tc-web-volumes/media/match_result/{zip_file_name}', compression=compression_options, index=False)
 
-    return response
+
+    download_url = request.scheme+"://" + request.META['HTTP_HOST']+ MEDIA_URL + os.path.join('match_result', zip_file_name)
+    if env('WEB_ENV') != 'dev':
+        download_url = download_url.replace('http', 'https')
+
+    email_body = render_to_string('taxa/download.html', {'download_url': download_url, })
+    send_mail('[TaiCOL] 下載比對結果', email_body, 'no-reply@taicol.tw', [download_email])
+
+
+    # return response
 
 
 

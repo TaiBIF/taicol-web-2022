@@ -1,11 +1,36 @@
 var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
 
+	//https://emailregex.com
+
+	function ValidateEmail(inputText){
+		let mailformat = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
+		if(inputText.match(mailformat)){
+			$('#email-check').attr('fill', 'green');
+			$('button.download_check').prop('disabled', false);
+		} else {
+			$('#email-check').attr('fill', 'lightgrey');
+			$('button.download_check').prop('disabled', true);
+		}
+	}
+
 	function downloadData(format){
 		var input1 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
 
-		$('form').append(input1);
-		$('form').submit()	
+		$('form#matchForm').append(input1);
+
+
+		$.ajax({
+			url: "/download_match_results_offline",
+			data: $('form#matchForm').serialize() + "&download_email=" + $('input[name=download_email]').val(),		
+			type: 'POST',
+			dataType : 'json',
+		})
+		.done(function(results) {
+			$lang == 'en-us' ? alert('Your request has been sent.') : alert('請求已送出')
+		})
+
+		// $('form').submit()	
 	}
 
 	function getData(page){
@@ -179,8 +204,36 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
 
         $('.downloadData').on('click',function(){
-            downloadData($(this).data('type'))
+            // downloadData($(this).data('type'))
+			$('button.download_check').data('type', $(this).data('type'))
+
+			$('.downloadpop').fadeIn("slow");
+			$('.downloadpop').removeClass("d-none");
+	
         })
+
+
+
+		$( ".downloadpop .xx" ).click(function() {
+			$('.downloadpop').fadeOut("slow");
+			$('.downloadpop').addClass('d-none')
+		});
+		
+		
+	
+		$( "#download_email" ).keyup(function() {
+			ValidateEmail($(this).val())
+		  });
+	
+
+		$('.download_check').on('click', function(){
+			downloadData($(this).data('type'))
+			// alert('請求已送出')
+			// $lang == 'en-us' ? alert('Your request has been sent.') : alert('請求已送出')
+
+			$('.downloadpop').fadeOut("slow");
+			$('.downloadpop').addClass('d-none')
+		})
 
 		$('.search').click(function (){
 			if ($('textarea').val()!=''){
