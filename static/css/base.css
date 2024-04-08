@@ -121,7 +121,10 @@
 @media (max-width: 767.98px) {
     .shortcut-menu-wrapper {
         /* right: 0rem; */
-        bottom: 1rem;
+        /* bottom: 1rem; */
+        bottom: 4rem;
+        right: 1rem;
+    
     }
 
     .shortcut-menu-wrapper .btn {
