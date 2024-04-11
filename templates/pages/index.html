@@ -1,7 +1,17 @@
 
 {% extends 'base.html' %} 
 {% load static %}
+{% load i18n %}
 
 {% block body %}
+
+<!-- shortcut begin -->
+<div class="shortcut-menu-wrapper">
+<a class="btn" href="https://forms.gle/wPBoH6w5LLRAeT5S8" target="_blank">
+    <img src="{% static 'image/logo-removebg.png' %}" alt="" class="stamp">
+    {% trans "填寫問卷" %}
+</a>
+</div>
+
 <div id="home-container"></div>
 {% endblock %}

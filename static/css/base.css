@@ -46,3 +46,104 @@
 .editor-box ul, .editor-box ol {
     margin-left: 20px;
 }
+
+/* 網站捷徑 */
+.shortcut-menu-wrapper {
+    position: fixed;
+    right: 2rem;
+    bottom: 2rem;
+    z-index: 1030;
+    text-align: center;
+    background-color: #F5F5F5	;
+    border: #dad3cd solid 1px;
+        /* background-image: -webkit-gradient(linear,
+            left top,
+            left bottom,
+            from(#faf9f9),
+            to(#eee8e6));
+    /* border: #ddd 1px; */
+    width: 100px;
+    border-radius: 10px;
+    opacity: 0.9;
+    padding-bottom: 5px;
+
+}
+
+.shortcut-menu-wrapper .btn {
+    width: 120px;
+    border: 0.25rem;
+    background: transparent;
+    /* background-image: -webkit-gradient(linear,
+            left top,
+            left bottom,
+            from(#faf9f9),
+            to(#eee8e6));
+    background-image: -o-linear-gradient(top, #faf9f9 0%, #eee8e6 100%);
+    background-image: linear-gradient(180deg, #faf9f9 0%, #eee8e6 100%); */
+    /* border: 1px solid #dad3cd; */
+    color: #000;
+    font-size: 14px;
+}
+
+.shortcut-menu-wrapper .stamp {
+    width: 60px;
+    height: auto;
+    display: block;
+    margin: 0.5rem auto;
+}
+
+.shortcut-menu-wrapper .dropdown-menu {
+    width: 120px;
+    min-width: 120px;
+    padding: 0;
+    background-color: #faf9f9;
+    margin-bottom: -1px;
+    border: 1px solid #dad3cd;
+    border-bottom: 0;
+}
+
+.shortcut-menu-wrapper .dropdown-item {
+    padding: 0.25rem 0;
+    color: #000;
+    text-align: center;
+    border-bottom: 1px solid #e4dfdb;
+}
+
+.shortcut-menu-wrapper .dropdown-item:hover {
+    color: #4a3e3a;
+    background-color: #fff;
+}
+
+.shortcut-menu-wrapper:hover .dropdown-menu {
+    display: block;
+}
+
+@media (max-width: 767.98px) {
+    .shortcut-menu-wrapper {
+        /* right: 0rem; */
+        /* bottom: 1rem; */
+        bottom: 4rem;
+        right: 1rem;
+    
+    }
+
+    .shortcut-menu-wrapper .btn {
+        width: 90px;
+        /* padding: 0.35rem; */
+    }
+
+    .shortcut-menu-wrapper .stamp {
+        width: 48px;
+        margin: 0.125rem auto;
+    }
+
+    .shortcut-menu-wrapper .dropdown-menu {
+        width: 90px;
+        min-width: 90px;
+    }
+
+    .shortcut-menu-wrapper .dropdown-menu .dropdown-item {
+        padding: 0.5rem;
+        white-space: pre-wrap;
+    }
+}
