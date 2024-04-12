@@ -371,42 +371,42 @@ def taxon(request, taxon_id):
                     data['cites_listing'] = '/'.join(c_list_str)
 
                 if data['cites_note']:
-                    if len(json.loads(data['cites_note'])) > 1:
-                        c_str = ''
-                        for c in json.loads(data['cites_note']):
-                            c_str += f"{c['listing']}, {c['name']}; "
-                            if c.get('is_primary'):
-                                data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + c['name']
-                        data['cites_note'] = c_str.rstrip(';')
-                    elif len(json.loads(data['cites_note'])) == 1:
-                        if json.loads(data['cites_note'])[0].get('is_primary'):
-                            data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + json.loads(data['cites_note'])[0]['name']
-                        data['cites_note'] = ''
-                    else:
-                        data['cites_note'] = ''
+                    # if len(json.loads(data['cites_note'])) > 1:
+                    c_str = ''
+                    for c in json.loads(data['cites_note']):
+                        c_str += f"{c['listing']}, {c['name']}; "
+                        if c.get('is_primary'):
+                            data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + c['name']
+                    data['cites_note'] = c_str.rstrip(';')
+                    # elif len(json.loads(data['cites_note'])) == 1:
+                    #     if json.loads(data['cites_note'])[0].get('is_primary'):
+                    #         data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + json.loads(data['cites_note'])[0]['name']
+                    #     data['cites_note'] = ''
+                    # else:
+                    #     data['cites_note'] = ''
 
                 if c_iucn := data['iucn_category']:
                     data['iucn_category'] = c_iucn if get_language() == 'en-us' else iucn_map_c[c_iucn] + ' ' + c_iucn
                     data['iucn_url'] = "https://apiv3.iucnredlist.org/api/v3/taxonredirect/" + str(data['iucn_taxon_id'])
 
                 if data['iucn_note']:
-                    if len(json.loads(data['iucn_note'])) > 1:
-                        c_str = ''
-                        for c in json.loads(data['iucn_note']):
-                            c_str += f"{c['category']}, {c['name']}; "
-                        data['iucn_note'] = c_str.rstrip(';')
-                    else:
-                        data['iucn_note'] = ''
+                    # if len(json.loads(data['iucn_note'])) > 1:
+                    c_str = ''
+                    for c in json.loads(data['iucn_note']):
+                        c_str += f"{c['category']}, {c['name']}; "
+                    data['iucn_note'] = c_str.rstrip(';')
+                    # else:
+                    #     data['iucn_note'] = ''
 
                 if c_red := data['red_category']:
                     data['red_category'] =  c_red if get_language() == 'en-us' else redlist_map_c[c_red] + ' ' + c_red
 
                 if data['red_note']: # 紅皮書的note全部都放
-                    if len(json.loads(data['red_note'])):
-                        c_str = ''
-                        for c in json.loads(data['red_note']):
-                            c_str += f"{c['red_category']}, {c['name']}; <br>"
-                        data['red_note'] = c_str.rstrip(';<br>')
+                    # if len(json.loads(data['red_note'])):
+                    c_str = ''
+                    for c in json.loads(data['red_note']):
+                        c_str += f"{c['red_category']}, {c['name']}; <br>"
+                    data['red_note'] = c_str.rstrip(';<br>')
                     # else:
                     #     data['red_note'] = ''
 
@@ -414,13 +414,13 @@ def taxon(request, taxon_id):
                     data['protected_category'] =  protected_map[c_protected] if get_language() == 'en-us' else f'第 {c_protected} 級 {protected_map_c[c_protected]}'
 
                 if data['protected_note']:
-                    if len(json.loads(data['protected_note'])) > 1:
-                        c_str = ''
-                        for c in json.loads(data['protected_note']):
-                            c_str += f"{c['category']}, {c['name']}; "
-                        data['protected_note'] = c_str.rstrip(';')
-                    else:
-                        data['protected_note'] = ''
+                    # if len(json.loads(data['protected_note'])) > 1:
+                    c_str = ''
+                    for c in json.loads(data['protected_note']):
+                        c_str += f"{c['protected_category']}, {c['name']}; "
+                    data['protected_note'] = c_str.rstrip(';')
+                    # else:
+                    #     data['protected_note'] = ''
 
                 # 高階層
                 data['higher'] = []
