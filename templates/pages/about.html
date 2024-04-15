@@ -61,7 +61,11 @@
 					</p>
 				</div>
 				<p>
-					{% trans "臺灣物種名錄 (Catalogue of Life in Taiwan, TaiCOL) 為一收集整合臺灣物種學名相關資訊並提供物種名錄的資料庫，早期稱為「臺灣生物多樣性國家資訊網」(TaiBNET)。資料庫建置之起源可溯至「生物多樣性公約」中，第十七條要求締約國應促進一切公眾可得的生物多樣性保護和永續利用相關資訊的交流。為配合行政院2001年頒布之《生物多樣性推動方案》，科技部 (原國科會) 於2002至2004年間委託中央研究院整合臺灣生物多樣性資訊並建置資料庫，臺灣物種名錄網站於2003年建立並對外公開。2006年起計畫經費改由農委會支助，持續修訂名錄且逐步擴充同物異名、中文俗名、文獻，以及原生/外來/保育屬性等物種相關資訊，並釋出物種學名編碼予國內各大生物多樣性資料庫作為資料骨幹或資料交換之用。" %}
+					{% if LANGUAGE_CODE == 'en-us' %} 
+						Catalogue of Life in Taiwan (TaiCOL) is a database that collects and integrates information about species in Taiwan and provides the species checklist. It was originally named "Taiwan Biodiversity National Information Network" (TaiBNET). The establishment of the database can be traced back to the Convention on Biological Diversity, as Article 17 requires contracting parties to promote the exchange of all publicly available information on the conservation and sustainable use of biological diversity. To align with the "Biodiversity Promotion Plan" promulgated by the Taiwan Executive Yuan in 2001, National Science and Technology Council commissioned Academia Sinica to integrate Taiwan’s biodiversity information and build a database from 2002 to 2004. TaiCOL website was established and opened to the public in 2003. Since 2006, project funds have been supported by the Forestry and Nature Conservation Agency (formerly Forestry Bureau). The checklist has been continuously revised and gradually expanded with synonyms, Chinese common names, references, native/exotic/conservation attributes and other species-related information. Species name codes have been released to all domestic large biodiversity databases as data backbones or for data exchange.
+					{% else %}
+						臺灣物種名錄 (Catalogue of Life in Taiwan, TaiCOL) 為一收集整合臺灣物種學名相關資訊並提供物種名錄的資料庫，早期稱為「臺灣生物多樣性國家資訊網」(TaiBNET)。資料庫建置之起源可溯至「生物多樣性公約」中，第十七條要求締約國應促進一切公眾可得的生物多樣性保護和永續利用相關資訊的交流。為配合行政院2001年頒布之《生物多樣性推動方案》，國科會於2002至2004年間委託中央研究院整合臺灣生物多樣性資訊並建置資料庫，臺灣物種名錄網站於2003年建立並對外公開。2006年起計畫經費改由農業部林業保育署（原農委會林務局）支助，持續修訂名錄且逐步擴充同物異名、中文俗名、文獻，以及原生/外來/保育屬性等物種相關資訊，並釋出物種學名編碼予國內各大生物多樣性資料庫作為資料骨幹或資料交換之用。
+					{% endif %}
 				</p>
 			</div>
 		</div>
