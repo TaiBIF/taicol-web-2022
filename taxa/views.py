@@ -1544,7 +1544,7 @@ def get_match_result(request):
                     tmp_dict = {
                         'search_term': dd['search_term'],
                         'matched_clean': dd['matched_clean'], 
-                        'score': dd['score']
+                        # 'score': dd['score']
                     }
                     for d in dd['results']:
                         tmp_dict.update(d)
@@ -1717,7 +1717,7 @@ def download_match_results(request):
                         tmp_dict = {
                             'search_term': dd['search_term'],
                             'matched_clean': dd['matched_clean'], 
-                            'score': dd['score']
+                            # 'score': dd['score']
                         }
                         for d in dd['results']:
                             tmp_dict.update(d)
