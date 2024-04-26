@@ -844,6 +844,78 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, 
 
 
 
+def create_name_history(names, nids, taxon_id, ref_df):
+    name_history = []
+    conn = pymysql.connect(**db_settings)
+    for n in nids:
+        current_nid = json.loads(n[0]).get('new_taxon_name_id')
+        if len(names[names.taxon_name_id==current_nid]):
+            name_ = names[names.taxon_name_id==current_nid].sci_name_ori.values[0]
+        else:
+            query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
+            with conn.cursor() as cursor:
+                cursor.execute(query, (current_nid,))
+                name_ = cursor.fetchone()
+                name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
+        if n[2] and n[3] != 4:
+            name_history.append({'name_id': current_nid,'name': name_, 'ref': '',
+                                 'reference_id': n[2], 'updated_at': n[1]})
+        else:
+            name_history.append({'name_id': current_nid,'name': name_, 'ref':'', 
+                                 'reference_id': None, 'updated_at': n[1]})
+    # 第一次建立的時候 放在最後 因為改成desc
+    
+    with conn.cursor() as cursor:     
+        query = f'''SELECT ath.note, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), ru.reference_id, r.type FROM api_taxon_history ath
+                    LEFT JOIN reference_usages ru ON ath.reference_id = ru.reference_id and ath.accepted_taxon_name_id = ru.accepted_taxon_name_id and ath.taxon_name_id = ru.taxon_name_id
+                    LEFT JOIN `references` r ON ru.reference_id = r.id
+                    WHERE ath.taxon_id = %s AND ath.`type` = 5 ORDER BY ath.updated_at DESC;'''
+        cursor.execute(query, (taxon_id,))
+        first = cursor.fetchone()
+        if first:
+            current_nid = json.loads(first[0]).get('taxon_name_id')
+            if len(names[names.taxon_name_id==current_nid]):
+                name_ = names[names.taxon_name_id==current_nid].sci_name_ori.values[0]
+            else:
+                query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
+                conn = pymysql.connect(**db_settings)
+                with conn.cursor() as cursor:
+                    cursor.execute(query, (current_nid,))
+                    name_ = cursor.fetchone()
+                    name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
+            if first[2] and first[3] != 4: # 如果不是backbone
+                name_history.append({'name_id': current_nid, 'name': name_, 'ref': '',
+                                     'reference_id': first[2], 'updated_at': first[1]})
+            else:
+                name_history.append({'name_id': current_nid, 'name': name_, 'ref': '', 
+                                     'reference_id': None, 'updated_at': first[1]})
+                
+    name_history = pd.DataFrame(name_history)
+    # 先找出reference_id沒有在ref_df裡面的
+    all_ref = name_history[name_history.reference_id.notnull()].reference_id.unique()
+    no_ref = [a for a in all_ref if a not in ref_df.reference_id.unique()]
+    
+    if len(no_ref):
+        query = f"SELECT distinct(r.id), c.short_author \
+                FROM api_citations c \
+                JOIN `references` r ON c.reference_id = r.id \
+                WHERE c.reference_id IN %s AND r.type != 4 GROUP BY r.id" 
+        conn = pymysql.connect(**db_settings)
+        with conn.cursor() as cursor:
+            cursor.execute(query, (no_ref, ))
+            short_refs = cursor.fetchall()
+            for sr in short_refs:
+                ref_df = pd.concat([ref_df, pd.DataFrame([{'reference_id': sr[0], 'ref': sr[1]}])], ignore_index=True)
+
+    conn.close()
+
+    name_history = name_history.merge(ref_df, how='left', sort=False)
+    name_history = name_history.to_dict('records')
+
+    
+    return name_history
+
+
 
     # for i in taxon_history[taxon_history.history_type.isin([8,9])].index:
     #     row = taxon_history.iloc[i]

@@ -371,56 +371,40 @@ def taxon(request, taxon_id):
                     data['cites_listing'] = '/'.join(c_list_str)
 
                 if data['cites_note']:
-                    # if len(json.loads(data['cites_note'])) > 1:
                     c_str = ''
                     for c in json.loads(data['cites_note']):
                         c_str += f"{c['listing']}, {c['name']}; "
                         if c.get('is_primary'):
                             data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + c['name']
                     data['cites_note'] = c_str.rstrip(';')
-                    # elif len(json.loads(data['cites_note'])) == 1:
-                    #     if json.loads(data['cites_note'])[0].get('is_primary'):
-                    #         data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + json.loads(data['cites_note'])[0]['name']
-                    #     data['cites_note'] = ''
-                    # else:
-                    #     data['cites_note'] = ''
 
                 if c_iucn := data['iucn_category']:
                     data['iucn_category'] = c_iucn if get_language() == 'en-us' else iucn_map_c[c_iucn] + ' ' + c_iucn
                     data['iucn_url'] = "https://apiv3.iucnredlist.org/api/v3/taxonredirect/" + str(data['iucn_taxon_id'])
 
                 if data['iucn_note']:
-                    # if len(json.loads(data['iucn_note'])) > 1:
                     c_str = ''
                     for c in json.loads(data['iucn_note']):
                         c_str += f"{c['category']}, {c['name']}; "
                     data['iucn_note'] = c_str.rstrip(';')
-                    # else:
-                    #     data['iucn_note'] = ''
 
                 if c_red := data['red_category']:
                     data['red_category'] =  c_red if get_language() == 'en-us' else redlist_map_c[c_red] + ' ' + c_red
 
                 if data['red_note']: # 紅皮書的note全部都放
-                    # if len(json.loads(data['red_note'])):
                     c_str = ''
                     for c in json.loads(data['red_note']):
                         c_str += f"{c['red_category']}, {c['name']}; <br>"
                     data['red_note'] = c_str.rstrip(';<br>')
-                    # else:
-                    #     data['red_note'] = ''
 
                 if c_protected := data['protected_category']:
                     data['protected_category'] =  protected_map[c_protected] if get_language() == 'en-us' else f'第 {c_protected} 級 {protected_map_c[c_protected]}'
 
                 if data['protected_note']:
-                    # if len(json.loads(data['protected_note'])) > 1:
                     c_str = ''
                     for c in json.loads(data['protected_note']):
                         c_str += f"{c['protected_category']}, {c['name']}; "
                     data['protected_note'] = c_str.rstrip(';')
-                    # else:
-                    #     data['protected_note'] = ''
 
                 # 高階層
                 data['higher'] = []
@@ -428,7 +412,6 @@ def taxon(request, taxon_id):
                     path = data['path'].split('>')
                     # 專家列表
                     # 如果同一個專家有多個taxon_group要concat
-                    # experts = Expert.objects.filter(taxon_id__in=path).values('name','name_e','email').annotate(taxon_group_agg=StringAgg('taxon_group', delimiter=', '))
                     path = [p for p in path if p != taxon_id]
                     if path:
                         query = f"""
@@ -485,8 +468,6 @@ def taxon(request, taxon_id):
                                 else:
                                     current_h_dict['rank_color'] = 'rank-second-gray'
                                 data['higher'].append(current_h_dict)
-                # else:
-                #     experts = Expert.objects.filter(taxon_id=taxon_id)
 
                 # 學名變遷
                 # 確認是否為歧異
@@ -503,7 +484,6 @@ def taxon(request, taxon_id):
                     is_ambiguous = [i[0] for i in is_ambiguous]
                     conn.close()
 
-                # TODO 這邊還要加上taxon_history裡面的name?
                 query = f"""SELECT atu.taxon_name_id, an.formatted_name, an.name_author, ac.short_author, atu.status,
                             ru.status, JSON_EXTRACT(ru.properties, '$.is_in_taiwan'), tn.nomenclature_id, 
                             tn.publish_year, ru.per_usages,
@@ -739,15 +719,10 @@ def taxon(request, taxon_id):
                         person_ids = cursor.fetchall()
                         person_ids = [str(p[0]) for p in person_ids]
                         if len(person_ids):
-                            # print(person_ids)
                             url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/expert/?person_id={(',').join(person_ids)}"
-                            # print(url)
                             person_resp = requests.get(url)
                             person_resp = person_resp.json()
                             experts = person_resp.get('rows')
-                            # print(person_resp)
-                    # http://127.0.0.1:3000/api/admin/expert/?page=1
-
 
                 alt_list = []
                 data['alien_types'] = []
@@ -779,8 +754,6 @@ def taxon(request, taxon_id):
                 conn = pymysql.connect(**db_settings)
                 # 抓過去的
                 # 如果是backbone不給ref
-                # TODO 這邊可能過去的學名被拿掉了 ?
-                # TODO 這邊的寫法有問題 應該也要考慮old_taxon_name_id? -> 應該是之前產生taxon的bug
                 with conn.cursor() as cursor:     
                     query = f'''SELECT ath.note, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), ru.reference_id, r.type FROM api_taxon_history ath
                                 LEFT JOIN reference_usages ru ON ath.reference_id = ru.reference_id and ath.accepted_taxon_name_id = ru.accepted_taxon_name_id and ath.taxon_name_id = ru.taxon_name_id
@@ -788,53 +761,8 @@ def taxon(request, taxon_id):
                                 WHERE ath.taxon_id = %s AND ath.`type` = 0 ORDER BY ath.updated_at DESC;'''
                     cursor.execute(query, (taxon_id,))
                     nids = cursor.fetchall()
-                if nids:
-                    for n in nids:
-                        current_nid = json.loads(n[0]).get('new_taxon_name_id')
-                        if len(names[names.taxon_name_id==current_nid]):
-                            name_ = names[names.taxon_name_id==current_nid].sci_name_ori.values[0]
-                        else:
-                            query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
-                            conn = pymysql.connect(**db_settings)
-                            with conn.cursor() as cursor:
-                                cursor.execute(query, (current_nid,))
-                                name_ = cursor.fetchone()
-                                name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
-                                conn.close()
-                        if n[2] and n[3] != 4:
-                            name_history.append({'name_id': current_nid,'name': name_,
-                                                 'ref': ref_df[ref_df.reference_id==n[2]].ref.values[0],
-                                                 'reference_id': n[2], 'updated_at': n[1]})
-                        else:
-                            name_history.append({'name_id': current_nid,'name': name_,  
-                                                 'ref':'', 'reference_id': None, 'updated_at': n[1]})
-                # 第一次建立的時候 放在最後 因為改成desc
-                with conn.cursor() as cursor:     
-                    query = f'''SELECT ath.note, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), ru.reference_id, r.type FROM api_taxon_history ath
-                                LEFT JOIN reference_usages ru ON ath.reference_id = ru.reference_id and ath.accepted_taxon_name_id = ru.accepted_taxon_name_id and ath.taxon_name_id = ru.taxon_name_id
-                                LEFT JOIN `references` r ON ru.reference_id = r.id
-                                WHERE ath.taxon_id = %s AND ath.`type` = 5 ORDER BY ath.updated_at DESC;'''
-                    cursor.execute(query, (taxon_id,))
-                    first = cursor.fetchone()
-                    if first:
-                        current_nid = json.loads(first[0]).get('taxon_name_id')
-                        if len(names[names.taxon_name_id==current_nid]):
-                            name_ = names[names.taxon_name_id==current_nid].sci_name_ori.values[0]
-                        else:
-                            query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
-                            conn = pymysql.connect(**db_settings)
-                            with conn.cursor() as cursor:
-                                cursor.execute(query, (current_nid,))
-                                name_ = cursor.fetchone()
-                                name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
-                                conn.close()
-                        if first[2] and first[3] != 4: # 如果不是backbone
-                            name_history.append({'name_id': current_nid, 'name': name_,
-                                                 'ref': ref_df[ref_df.reference_id==first[2]].ref.values[0],
-                                                 'reference_id': first[2], 'updated_at': first[1]})
-                        else:
-                            name_history.append({'name_id': current_nid, 'name': name_,
-                                                 'ref': '', 'reference_id': None, 'updated_at': first[1]})
+                name_history = create_name_history(names=names, nids=nids, taxon_id=taxon_id, ref_df=ref_df)
+
                 # 相關連結
                 # ncbi如果超過一個就忽略
                 if data['links']:
