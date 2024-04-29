@@ -583,7 +583,7 @@ def taxon(request, taxon_id):
                                             if current_ref not in ref_list: 
                                                 ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_r_type])
                                 # 排除backbone
-                                ref_list = [r for r in ref_list if r[3] != 4 ]
+                                ref_list = [r for r in ref_list if r[3] not in [4,6] ]
                                 # 如果不是動物的非原始組合名 排除自己的發表文獻 
                                 if not has_original:
                                     ref_list = [r for r in ref_list if r[1] not in names[names.taxon_name_id==n].o_reference_id.to_list()]
@@ -611,7 +611,7 @@ def taxon(request, taxon_id):
                                             if current_ref not in ref_list: 
                                                 ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_r_type])
                                 # 排除backbone
-                                ref_list = [r for r in ref_list if r[3] != 4 ]
+                                ref_list = [r for r in ref_list if r[3] not in [4,6] ]
                                 # 如果不是動物的非原始組合名 排除自己的發表文獻 
                                 if not has_original:
                                     ref_list = [r for r in ref_list if r[1] not in names[names.taxon_name_id==n].o_reference_id.to_list()]
@@ -646,7 +646,7 @@ def taxon(request, taxon_id):
                                             if current_ref not in ref_list:
                                                 ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_type])
                                 # 排除backbone & 自己的發表文獻
-                                ref_list = [r for r in ref_list if r[3] != 4 ]
+                                ref_list = [r for r in ref_list if r[3] not in [4,6] ]
                                 # 如果不是動物的非原始組合名 排除自己的發表文獻 
                                 if not has_original:
                                     ref_list = [r for r in ref_list if r[1] not in names[names.taxon_name_id==n].o_reference_id.to_list()]
@@ -689,7 +689,7 @@ def taxon(request, taxon_id):
                             JOIN reference_usages ru ON atu.reference_id = ru.reference_id and atu.accepted_taxon_name_id = ru.accepted_taxon_name_id and atu.taxon_name_id = ru.taxon_name_id \
                             JOIN `references` r ON ru.reference_id = r.id \
                             JOIN api_citations c ON ru.reference_id = c.reference_id \
-                            WHERE atu.taxon_id = %s and r.type != 4 and ru.status != '' AND atu.is_deleted = 0 GROUP BY r.id \
+                            WHERE atu.taxon_id = %s and r.type not in (4,6) and ru.status != '' AND atu.is_deleted = 0 GROUP BY r.id \
                             UNION  \
                             SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year, c.author, c.short_author, r.type \
                             FROM taxon_names tn \
@@ -703,8 +703,8 @@ def taxon(request, taxon_id):
                 with conn.cursor() as cursor:
                     cursor.execute(query, (par1, taxon_id))
                     refs_r = cursor.fetchall()
-                    refs = [[r[0],r[1]] for r in refs_r if [r[0],r[1]] not in refs and r[-1] != 4]
-                    short_refs = [[r[0],r[4]] for r in refs_r if [r[0],r[4]] not in short_refs and r[-1] != 4]
+                    refs = [[r[0],r[1]] for r in refs_r if [r[0],r[1]] not in refs and r[-1] not in [4,6]]
+                    short_refs = [[r[0],r[4]] for r in refs_r if [r[0],r[4]] not in short_refs and r[-1] not in [4,6]]
                     conn.close()
                 
                 ref_df = pd.DataFrame(short_refs, columns=['reference_id', 'ref'])
@@ -739,8 +739,8 @@ def taxon(request, taxon_id):
                             current_note = []
                             for atn in at_names:
                                 # 抓出name對應的非backbone reference
-                                if len(alien_type_df[(alien_type_df.alien_type==at)&(alien_type_df.taxon_name_id==atn)&(alien_type_df.reference_type!=4)]):
-                                    at_refs_list = alien_type_df[(alien_type_df.alien_type==at)&(alien_type_df.taxon_name_id==atn)&(alien_type_df.reference_type!=4)].reference_id.unique()
+                                if len(alien_type_df[(alien_type_df.alien_type==at)&(alien_type_df.taxon_name_id==atn)&(alien_type_df.reference_type.isin([4,6]))]):
+                                    at_refs_list = alien_type_df[(alien_type_df.alien_type==at)&(alien_type_df.taxon_name_id==atn)&(alien_type_df.reference_type.isin([4,6]))].reference_id.unique()
                                     at_refs = ref_df[ref_df.reference_id.isin(at_refs_list)].ref.to_list()
                                     current_note.append(f'{names[names.taxon_name_id==atn].sci_name_ori.to_list()[0]}: {", ".join(at_refs)}')
                             data['alien_types'].append({
@@ -767,10 +767,7 @@ def taxon(request, taxon_id):
                 # ncbi如果超過一個就忽略
                 if data['links']:
                     tmp_links = json.loads(data['links'])
-                    # tmp_links = []
-                    # for tl in xx:
-                    #     if tl not in tmp_links:
-                    #         tmp_links.append(tl)
+
                     for t in tmp_links:
                         if t["source"] in ["fishbase_order","amphibiansoftheworld"]:
                             links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': data['name'], 'hidden_name': True, 'category': link_map[t["source"]]['category']}]
@@ -1867,6 +1864,9 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
 
         if re.search(r'[\u4e00-\u9fff]+', keyword_str):
             # 改成用api_common_name查詢 只回傳有效名
+            # 中文 預設回傳有效
+            if not req.getlist('status'):
+                condition +=  f' AND (atu.status = "accepted")'
 
             query = f"""
                         WITH base_query AS (
@@ -1877,6 +1877,7 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
                         """
         else:
             # 先單純用taxon_names的表搜尋 如果有結果再繼續往下搜
+            # 英文 預設回傳全部地位
             first_query = f"SELECT id FROM taxon_names WHERE `name` {keyword_str} AND deleted_at IS NULL LIMIT 1"
             conn = pymysql.connect(**db_settings)
             with conn.cursor() as cursor:
@@ -1893,6 +1894,16 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
                         """
             else:
                 return None, None
+
+
+    # 地位
+    if status := req.getlist('status'):
+        if len(status) < 3:
+            ss_list = []
+            for ss in status:
+                ss_list.append(f'atu.status = "{ss}"')
+            condition +=  f" AND ({' OR '.join(ss_list)})"
+
 
     # is_ 系列
 
@@ -1991,15 +2002,6 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
         condition +=  f' AND att.path like "%>{higher_taxon_id}%"'
 
 
-    # 地位
-    if status := req.getlist('status'):
-        if len(status) < 3:
-            ss_list = []
-            for ss in status:
-                ss_list.append(f'atu.status = "{ss}"')
-            condition +=  f" AND ({' OR '.join(ss_list)})"
-
-
     if condition.startswith(' AND'):
         condition = condition[4:]
 
@@ -2010,8 +2012,9 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
                         JOIN api_taxon at ON atu.taxon_id = at.taxon_id
                         LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
                         {conserv_join}
-                        WHERE atu.`status` = 'accepted' AND atu.is_latest = 1 AND atu.taxon_id IN (SELECT * FROM base_query) AND  {condition}
+                        WHERE atu.taxon_id IN (SELECT * FROM base_query) AND  {condition}
                     """
+                        # WHERE atu.`status` = 'accepted' AND atu.is_latest = 1 AND atu.taxon_id IN (SELECT * FROM base_query) AND  {condition}
         else:
             base = f"""
                         FROM api_taxon_usages atu
@@ -2026,6 +2029,13 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
                         LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
                         {conserv_join}
                         WHERE {condition}"""
+        
+
+    print(base)
+
+    print('=======')
+
+    print(query)
     
 
     return base, query
@@ -2195,7 +2205,6 @@ def catalogue_search(request):
         if not base and not base_query:
             pass
         else:
-            # base, base_query = get_conditioned_query_search(req, from_url=True)
             response = get_query_data_search(base, offset, response, limit, base_query)
         response['header'] = f"""
             <tr>

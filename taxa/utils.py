@@ -693,7 +693,7 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, 
       conn.close()
       taxon_history = pd.DataFrame(th, columns=['history_type', 'content', 'short_author', 'updated_at', 'editor', 'reference_id', 'note', 'reference_type'])
   # 整理文獻
-  taxon_history['ref'] = taxon_history.apply(lambda x: f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(x.reference_id)}" target="_blank">{x.short_author}</a>' if x.short_author and x.reference_type != 4 else '', axis=1)
+  taxon_history['ref'] = taxon_history.apply(lambda x: f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(x.reference_id)}" target="_blank">{x.short_author}</a>' if x.short_author and x.reference_type not in [4,6] else '', axis=1)
   # 整理時間
   taxon_history['updated_at'] = taxon_history.updated_at.dt.strftime('%Y-%m-%d')
   # 整理編輯者
@@ -830,8 +830,8 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, 
     taxon_history.loc[i,'content'] = content
   taxon_history = taxon_history.drop(index=drop_conserv)
 
-  # 如果是新增文獻，且文獻的type==4 -> 移除
-  taxon_history = taxon_history[~((taxon_history.reference_type==4)&(taxon_history.history_type==2))]
+  # 如果是新增文獻，且文獻的type==4 or 6 -> 移除
+  taxon_history = taxon_history[~((taxon_history.reference_type.isin([4,6]))&(taxon_history.history_type==2))]
   taxon_history = taxon_history[['title','content','ref','updated_at','editor']]
   taxon_history.loc[taxon_history['title']==gettext('新增Taxon'),'content'] = ''
 #   taxon_history = taxon_history.drop_duplicates(subset=['title','content','ref']).to_dict(orient='records')
@@ -857,7 +857,7 @@ def create_name_history(names, nids, taxon_id, ref_df):
                 cursor.execute(query, (current_nid,))
                 name_ = cursor.fetchone()
                 name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
-        if n[2] and n[3] != 4:
+        if n[2] and n[3] not in [4,6]:
             name_history.append({'name_id': current_nid,'name': name_, 'ref': '',
                                  'reference_id': n[2], 'updated_at': n[1]})
         else:
@@ -883,7 +883,7 @@ def create_name_history(names, nids, taxon_id, ref_df):
                     cursor.execute(query, (current_nid,))
                     name_ = cursor.fetchone()
                     name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
-            if first[2] and first[3] != 4: # 如果不是backbone
+            if first[2] and first[3] not in [4,6]: # 如果不是backbone
                 name_history.append({'name_id': current_nid, 'name': name_, 'ref': '',
                                      'reference_id': first[2], 'updated_at': first[1]})
             else:
@@ -899,7 +899,7 @@ def create_name_history(names, nids, taxon_id, ref_df):
         query = f"SELECT distinct(r.id), c.short_author \
                 FROM api_citations c \
                 JOIN `references` r ON c.reference_id = r.id \
-                WHERE c.reference_id IN %s AND r.type != 4 GROUP BY r.id" 
+                WHERE c.reference_id IN %s AND r.type not in (4,6) GROUP BY r.id" 
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             cursor.execute(query, (no_ref, ))
@@ -909,6 +909,11 @@ def create_name_history(names, nids, taxon_id, ref_df):
 
     conn.close()
 
+    if len(ref_df):
+        
+        ref_df['reference_id'] = ref_df['reference_id'].astype('object')
+        name_history['reference_id'] = name_history['reference_id'].astype('object')
+
     name_history = name_history.merge(ref_df, how='left', sort=False)
     name_history = name_history.to_dict('records')
 
@@ -917,72 +922,3 @@ def create_name_history(names, nids, taxon_id, ref_df):
 
 
 
-    # for i in taxon_history[taxon_history.history_type.isin([8,9])].index:
-    #     row = taxon_history.iloc[i]
-    #     taxon_history.loc[i,'content'] = content_str
-
-      # for thh in th:
-      #     if thh[0] == 4:
-      #         c = json.loads(thh[6])
-      #         # content_str = []
-      #         content_str = ''
-      #         if c.get('old'):
-      #             o_path_list = c.get('old').split('>')
-      #             if len(o_path_list) > 1: # 不包含自己
-      #                 query = f"""SELECT an.formatted_name
-      #                             FROM api_taxon at
-      #                             JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
-      #                             WHERE at.taxon_id IN %s
-      #                             ORDER BY at.rank_id ASC"""
-      #                 conn = pymysql.connect(**db_settings)
-      #                 with conn.cursor() as cursor:
-      #                     cursor.execute(query, (o_path_list, ))
-      #                     ops = cursor.fetchall()
-      #                     ops = [o[0] for o in ops]
-      #                     content_str = (' > ').join(ops)
-      #                     if content_str:
-      #                         content_str = f'({gettext("原階層：")}{content_str})'
-      #         # content_str = old_path_str_name
-      #         # row = [taxon_history_dict[thh[0]], content_str, f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
-      #     elif thh[0] == 6: # 刪除Taxon
-      #         if thh[5]:
-      #             if new_taxon_id:
-      #                 row = [taxon_history_dict[thh[0]], f'''{gettext("請參見")} <a class="new_taxon_aa" href="/{"en-us" if lang == "en-us" else "zh-hant"}/taxon/{new_taxon_id}">{new_taxon_name if new_taxon_name else new_taxon_id}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
-      #                                     <defs>
-      #                                         <clipPath id="clip-path">
-      #                                             <rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"></rect>
-      #                                         </clipPath>
-      #                                     </defs>
-      #                                     <g id="link-icon" transform="translate(0 0.359)">
-      #                                         <g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
-      #                                             <path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"></path>
-      #                                             <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
-      #                                         </g>
-      #                                     </g>
-      #                                 </svg></a>''', f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
-      #             else:
-      #                 row = [taxon_history_dict[thh[0]], '', f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
-      #         else:
-      #             if new_taxon_id:
-      #                 row = [taxon_history_dict[thh[0]], f'''{gettext("請參見")} <a class="new_taxon_aa" href="/{"en-us" if lang == "en-us" else "zh-hant"}/taxon/{new_taxon_id}">{new_taxon_name if new_taxon_name else new_taxon_id}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
-      #                                     <defs>
-      #                                         <clipPath id="clip-path">
-      #                                             <rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"></rect>
-      #                                         </clipPath>
-      #                                     </defs>
-      #                                     <g id="link-icon" transform="translate(0 0.359)">
-      #                                         <g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
-      #                                             <path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"></path>
-      #                                             <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
-      #                                         </g>
-      #                                     </g>
-      #                                 </svg></a>''', '', thh[3].strftime("%Y-%m-%d"), 'TaiCOL管理員']
-      #             else:
-      #                 row = [taxon_history_dict[thh[0]], '', '', thh[3].strftime("%Y-%m-%d"), 'TaiCOL管理員']
-
-      #     elif thh[5] and thh[2] and thh[-1] != 4:
-      #         row = [taxon_history_dict[thh[0]], thh[1], f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(thh[5])}" target="_blank">{thh[2]}</a>', thh[3].strftime("%Y-%m-%d"), thh[4]]
-      #     else:
-      #         row = [taxon_history_dict[thh[0]], thh[1], '', thh[3].strftime("%Y-%m-%d"), thh[4]]
-      #     taxon_history.append(row)
-  # taxon_history = pd.DataFrame(taxon_history, columns=['type','content','ref','datetime','editor'])
