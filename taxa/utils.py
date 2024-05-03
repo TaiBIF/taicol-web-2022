@@ -111,7 +111,7 @@ status_map_taxon_c = {'accepted': {'en-us': 'Accepted', 'zh-tw': '接受名'}, '
                       'undetermined': {'en-us': 'Undetermined', 'zh-tw': '未決'}, 'misapplied': {'en-us': 'Misapplied', 'zh-tw': '誤用'}}
 
 rank_color_map = { 3: 'rank-1-red', 12: 'rank-2-org', 18: 'rank-3-yell', 22: 'rank-4-green', 26: 'rank-5-blue', 
-                  30: 'rank-6-deepblue', 34: 'rank-7-purple'}
+                  30: 'rank-6-deepblue', 34: 'rank-7-purple', 49:'rank-second-gray' }
 
 attr_map_c = {'is_in_taiwan':'存在於臺灣','is_endemic':'臺灣特有','is_terrestrial':'陸生','is_freshwater':'淡水','is_brackish':'半鹹水','is_marine':'海洋','is_fossil':'化石','native': '原生','naturalized':'歸化','invasive':'入侵','cultured':'栽培豢養', 'is_cultured': '栽培豢養'}
 attr_map = {'is_in_taiwan':'Exist in Taiwan','is_endemic':'Endemic to Taiwan','is_terrestrial':'Terrestrial','is_freshwater':'Freshwater','is_brackish':'Brackish','is_marine':'Marine','is_fossil':'Fossil', 'native': 'Native','naturalized':'Naturalized','invasive':'Invasive','cultured':'Cultured', 'is_cultured': 'Cultured'}
@@ -155,6 +155,14 @@ lin_map = {
     18: 'classis',
     22: 'ordo',
     26: 'familia',
+}
+
+lin_map_w_order = {
+    3: {'name': 'kingdom', 'rank_order': 5},
+    12: {'name': 'phylum', 'rank_order': 14},
+    18: {'name': 'classis', 'rank_order': 23},
+    22: {'name': 'ordo', 'rank_order': 27},
+    26: {'name': 'familia', 'rank_order': 32},
 }
 
 lin_ranks = [3,12,18,22,26,30,34]
@@ -307,7 +315,7 @@ def return_download_file(base, base_query):
         query = base_query + f"""
                         SELECT distinct tn.name, atu.status, at.taxon_id, at.accepted_taxon_name_id, 
                             tnn.name, an.name_author, an.formatted_name, at.rank_id, acnn.name_c, 
-                            at.is_hybrid, at.is_in_taiwan, at.is_endemic, JSON_EXTRACT(at.alien_type, '$[*].alien_type'), 
+                            at.is_hybrid, at.is_in_taiwan, at.is_endemic, at.alien_type, 
                             at.is_fossil, at.is_terrestrial, at.is_freshwater, at.is_brackish, at.is_marine,
                             at.not_official, ac.cites_listing, ac.iucn_category, ac.red_category, ac.protected_category, ac.sensitive_suggest,
                             at.created_at, at.updated_at, att.path
@@ -323,7 +331,7 @@ def return_download_file(base, base_query):
         query = f"""
                         SELECT distinct tn.name, atu.status, at.taxon_id, at.accepted_taxon_name_id, 
                             tnn.name, an.name_author, an.formatted_name, at.rank_id, acnn.name_c, 
-                            at.is_hybrid, at.is_in_taiwan, at.is_endemic, JSON_EXTRACT(at.alien_type, '$[*].alien_type'), 
+                            at.is_hybrid, at.is_in_taiwan, at.is_endemic, at.alien_type, 
                             at.is_fossil, at.is_terrestrial, at.is_freshwater, at.is_brackish, at.is_marine,
                             at.not_official, ac.cites_listing, ac.iucn_category, ac.red_category, ac.protected_category, ac.sensitive_suggest,
                             at.created_at, at.updated_at, att.path
@@ -354,10 +362,6 @@ def return_download_file(base, base_query):
             df = df.merge(name_c, how='left')
         else:
             df['alternative_name_c'] = None
-
-
-    df['alien_type'] = df['alien_type'].replace({None: '[]'})
-    df['alien_type'] = df.alien_type.apply(lambda x: ','.join(list(dict.fromkeys(eval(x)))))
 
     df['created_at'] = df.created_at.dt.strftime('%Y-%m-%d')
     df['updated_at'] = df.updated_at.dt.strftime('%Y-%m-%d')
@@ -416,6 +420,13 @@ def return_download_file(base, base_query):
 
     for i in df.index:
         row = df.iloc[i]
+
+
+        # TODO 這邊要修改
+
+        df['alien_type'] = df['alien_type'].replace({None: '[]'})
+        df['alien_type'] = df.alien_type.apply(lambda x: ','.join(list(dict.fromkeys(eval(x)))))
+
         if path := row.path:
             path = path.split('>')
             # 拿掉自己
@@ -651,7 +662,6 @@ taxon_history_map = {
     15: 'Taxon divided ',
     16: 'Common name deleted: ',
     17: 'Name deleted: '}
-
 
 taxon_history_map_c = {
     0: '有效名變更', # v
@@ -917,8 +927,155 @@ def create_name_history(names, nids, taxon_id, ref_df):
     name_history = name_history.merge(ref_df, how='left', sort=False)
     name_history = name_history.to_dict('records')
 
-    
     return name_history
 
 
 
+def create_alien_type_display(alien_json, ref_df, names):
+    has_cultured = 0
+    alien_types = []
+    alien_type_df = pd.DataFrame(alien_json)
+    # 先取得alien_status_note
+    query = "SELECT id, properties ->> '$.alien_status_note' FROM reference_usages WHERE id IN %s"
+    conn = pymysql.connect(**db_settings)
+    with conn.cursor() as cursor:
+        cursor.execute(query, (list(alien_type_df.reference_usage_id.unique()), ))
+        notes = pd.DataFrame(cursor.fetchall(), columns=['reference_usage_id', 'alien_status_note'])
+        alien_type_df = alien_type_df.merge(notes, how='left')
+
+    # print(alien_type_df.to_dict('records'))
+    if len(alien_type_df):
+        alt_list = alien_type_df.alien_type.unique()
+        # 決定誰是主要alien_type
+        if len(alt_list) == 1:
+            main_at = alt_list[0]
+        else:
+            # TODO 尚未完成
+            # 如果裡面沒有is_latest的話 再決定誰是最新
+            if len(alien_type_df[alien_type_df.is_latest==True]):
+                main_at = alien_type_df[alien_type_df.is_latest==True].alien_type.values[0]
+            else:
+                main_at = check_alien_latest(temp=alien_type_df,conn=conn)
+
+
+        
+        current_note = []
+        for at in alt_list:
+            if at == 'cultured':
+                has_cultured = 1
+            at_rows = alien_type_df[alien_type_df.alien_type==at].to_dict('records')
+            # current_note = []
+            for atr in at_rows:
+                if atr.get('alien_status_note'):
+                    if atr.get('reference_type') not in [4,6]:
+                        at_ref = ref_df[ref_df.reference_id==atr.get('reference_id')].ref.to_list()[0]
+                        at_name = names[names.taxon_name_id==atr.get('taxon_name_id')].sci_name_ori.to_list()[0]
+                        current_note.append(f"{atr.get('alien_status_note')} ({at_ref}, {at_name})")
+                    else:
+                        current_note.append(atr.get('alien_status_note'))
+                else:
+                    if atr.get('reference_type') not in [4,6]:
+                        at_ref = ref_df[ref_df.reference_id==atr.get('reference_id')].ref.to_list()[0]
+                        at_name = names[names.taxon_name_id==atr.get('taxon_name_id')].sci_name_ori.to_list()[0]
+                        current_note.append(f"{at_ref}, {at_name}")
+            # print(at_rows)
+            alien_types.append({
+                'alien_type': attr_map_c[at],
+                'note': '; '.join(current_note)
+            })
+        # alien_types = 
+    
+    return has_cultured, alien_types, attr_map_c[main_at]
+
+
+
+def check_alien_latest(temp, conn):
+    # temp = temp[temp.ru_status=='accepted']
+    query = '''SELECT r.publish_year, ac.publish_date, r.id FROM `api_citations` ac
+                JOIN   `references` r ON r.id = ac.reference_id
+                WHERE r.id in %s'''
+    with conn.cursor() as cursor:
+        execute_line = cursor.execute(query, (list(temp.reference_id.unique()),))
+        # ref_more_info = cursor.fetchall()
+        temp_year = pd.DataFrame(cursor.fetchall(), columns=['publish_year', 'publish_date', 'reference_id'])
+        temp = temp.merge(temp_year)
+
+    latest_ru_id_list = []
+    # 如果有super backbone 忽略其他
+    if len(temp[temp['reference_type']==6]):
+        latest_ru_id_list += temp[temp['reference_type'] == 6].reference_usage_id.to_list()
+    else:
+        # 如果有文獻的話就忽略backbone
+        ignore_backbone = False
+        ignore_checklist = False
+        if len(temp[(temp['reference_type']!=4)]):
+            temp = temp[(temp['reference_type']!=4)]
+            ignore_backbone = True
+        # 如果有非名錄文獻的話 忽略名錄文獻
+        if len(temp[(temp['reference_type']!=5)]):
+            temp = temp[(temp['reference_type']!=5)]
+            ignore_checklist = True
+        # 如果都是backbone就直接比, 如果有大於一個reference_id, 比較年份
+        yr = temp[['reference_id', 'publish_year']].drop_duplicates()
+        max_yr = yr.publish_year.max()
+        if len(yr[yr['publish_year'] == max_yr]) > 1:
+            currently_cannot_decide = False
+            temp = temp[(temp.publish_year==max_yr)]
+            dt = temp[['reference_id', 'publish_date']].drop_duplicates()
+            if len(dt[dt.publish_date!='']):
+                max_dt = dt[dt.publish_date!=''].publish_date.max()
+                if len(dt[dt['publish_date'] == max_dt]) > 1:
+                    currently_cannot_decide = True
+                else:
+                    latest_ru_id_list += temp[temp['publish_date'] == max_dt].reference_usage_id.to_list()
+            else:
+                currently_cannot_decide = True
+            if currently_cannot_decide:
+                ref_ids = dt.reference_id.to_list()
+                query = '''SELECT JSON_EXTRACT(r.properties, "$.book_title"), 
+                            JSON_EXTRACT(r.properties, "$.volume"), JSON_EXTRACT(r.properties, "$.issue") FROM `references` r
+                            WHERE r.id in %s'''
+                with conn.cursor() as cursor:
+                    execute_line = cursor.execute(query, (ref_ids,))
+                    ref_more_info = cursor.fetchall()
+                    ref_more_info = pd.DataFrame(ref_more_info, columns=['book_title', 'volume', 'issue'])
+                    if len(ref_more_info.drop_duplicates()) == 1:
+                    # 判斷是同一期期刊的不同篇文章  擇一當作最新文獻
+                        latest_ru_id_list += temp[temp['reference_id'] == ref_ids[0]].reference_usage_id.to_list()
+        else:
+            if ignore_backbone and ignore_checklist:
+                latest_ru_id_list += temp[(temp['publish_year'] == max_yr) & (temp['reference_type'] != 5)  & (temp['reference_type'] != 4)].reference_usage_id.to_list()
+            elif ignore_checklist and not ignore_backbone:
+                latest_ru_id_list += temp[(temp['publish_year'] == max_yr) & (temp['reference_type'] != 5)].reference_usage_id.to_list()
+            # 這裡也要排除backbone
+            elif ignore_backbone and not ignore_checklist:
+                latest_ru_id_list += temp[(temp['publish_year'] == max_yr) & (temp['reference_type'] != 4)].reference_usage_id.to_list()
+            else:
+                latest_ru_id_list += temp[(temp['publish_year'] == max_yr)].reference_usage_id.to_list()
+    # if len(latest_ru_id_list) > 1:
+    if len(latest_ru_id_list):
+        main_at = temp[temp.reference_usage_id==latest_ru_id_list[0]].alien_type.values[0]
+    else:
+        main_at = None
+    return main_at
+    # # 如果最新的是同一篇文獻 且互為同模異名 要判斷usage中的group 來決定誰是最新
+    # is_obj_syns = False
+    # if len(latest_ru_id_list) > 1:
+    #     temp_rows = temp[temp.reference_usage_id.isin(latest_ru_id_list)]
+    #     # 先確認是不是同模
+    #     # 1. 全部有一樣的original_taxon_name_id (長度可以超過2)
+    #     if len(temp_rows.original_taxon_name_id.unique()) == 1:
+    #         if temp_rows.original_taxon_name_id.unique()[0] is not None:
+    #             is_obj_syns = True
+    #     # 2. A 是 B 的基礎名
+    #     # 3. B 是 A 的基礎名
+    #     elif len(latest_ru_id_list) == 2:
+    #         if len(temp_rows[temp_rows.original_taxon_name_id.notnull()]) == 1:
+    #             a_name = temp_rows[temp_rows.original_taxon_name_id.notnull()].original_taxon_name_id.values[0]
+    #             if len(temp_rows[temp_rows.taxon_name_id==a_name]) == 1:
+    #                 is_obj_syns = True
+    #     if is_obj_syns:
+    #         # 抓出group
+    #         group_min = temp_rus[temp_rus.reference_usage_id.isin(latest_ru_id_list)].group.min()
+    #         latest_ru_id_list = temp_rus[(temp_rus.reference_usage_id.isin(latest_ru_id_list))&(temp_rus.group==group_min)].reference_usage_id.to_list()
+    # return latest_ru_id_list, is_obj_syns
