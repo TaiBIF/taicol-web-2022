@@ -291,7 +291,7 @@ def taxon(request, taxon_id):
                     ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, ac.iucn_taxon_id, 
                     ac.red_category, ac.red_note, ac.protected_category, ac.protected_note,
                     tn.original_taxon_name_id, at.links, anc.namecode, at.is_in_taiwan, at.is_cultured,
-                    CONCAT_WS (' ',tn.name, CONCAT_WS(',', acn.name_c, bq.alternative_name_c)) as taxon_group_str
+                    CONCAT_WS (' ',tn.name, CONCAT_WS(',', acn.name_c, bq.alternative_name_c)) as taxon_group_str, ranks.order as rank_order
                     FROM api_taxon at 
                     LEFT JOIN base_query bq ON bq.taxon_id = at.taxon_id
                     LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
@@ -301,6 +301,7 @@ def taxon(request, taxon_id):
                     LEFT JOIN api_taxon_tree att ON at.taxon_id = att.taxon_id
                     LEFT JOIN api_conservation ac ON at.taxon_id = ac.taxon_id 
                     JOIN taxon_names tn ON at.accepted_taxon_name_id = tn.id
+                    JOIN ranks ON ranks.id = tn.rank_id
                     WHERE at.taxon_id = %s AND atu.is_latest = 1 AND atu.status = 'accepted'
                 """
         conn = pymysql.connect(**db_settings)
@@ -310,7 +311,6 @@ def taxon(request, taxon_id):
             if results:
                 for i in range(len(cursor.description)):
                     data[cursor.description[i][0]] = results[i]
-
                 # 抓回alternative name c
                 cursor.execute("select taxon_id, name_c from api_common_name where taxon_id = %s and is_primary = 0;", (taxon_id, ))
                 name_c_df = cursor.fetchall()
@@ -319,7 +319,6 @@ def taxon(request, taxon_id):
                     name_c_df = name_c_df.groupby(['taxon_id'], as_index = False).agg({'alternative_name_c': ','.join})
                     data['alternative_name_c'] = name_c_df.alternative_name_c.values[0]
                 conn.close()        
-
                 # 照片
                 data['images'] = []
                 if data['namecode']:
@@ -333,7 +332,6 @@ def taxon(request, taxon_id):
                                 license_str = 'CC-' + license_str.upper()
                             foto = {'author':ii['author'], 'src':ii['image_big'], 'provider':ii['provider'],'permalink': ii['permalink'], 'license': license_str }
                             data['images'].append(foto)
-                        
                 # 學名
                 if data['rank_id'] == 47:
                     # 不會超過上限 group concat維持
@@ -361,7 +359,6 @@ def taxon(request, taxon_id):
                             links += [{'href': link_map['worms']['url_prefix'], 'title': link_map['worms']['title'], 'suffix': data['name'], 'category': link_map['worms']['category'], 'hidden_name': True}]
                 if not is_in_taiwan:
                     data['is_list'].append(gettext('不存在於臺灣'))
-                
                 # 保育資訊
                 if c_cites := data['cites_listing']:
                     c_list = c_cites.split('/')
@@ -369,94 +366,72 @@ def taxon(request, taxon_id):
                     for cl in c_list:
                         c_list_str.append(cites_map[cl] if get_language() == 'en-us' else cites_map_c[cl])
                     data['cites_listing'] = '/'.join(c_list_str)
-
                 if data['cites_note']:
-                    # if len(json.loads(data['cites_note'])) > 1:
                     c_str = ''
                     for c in json.loads(data['cites_note']):
                         c_str += f"{c['listing']}, {c['name']}; "
                         if c.get('is_primary'):
                             data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + c['name']
                     data['cites_note'] = c_str.rstrip(';')
-                    # elif len(json.loads(data['cites_note'])) == 1:
-                    #     if json.loads(data['cites_note'])[0].get('is_primary'):
-                    #         data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + json.loads(data['cites_note'])[0]['name']
-                    #     data['cites_note'] = ''
-                    # else:
-                    #     data['cites_note'] = ''
-
                 if c_iucn := data['iucn_category']:
                     data['iucn_category'] = c_iucn if get_language() == 'en-us' else iucn_map_c[c_iucn] + ' ' + c_iucn
                     data['iucn_url'] = "https://apiv3.iucnredlist.org/api/v3/taxonredirect/" + str(data['iucn_taxon_id'])
-
                 if data['iucn_note']:
-                    # if len(json.loads(data['iucn_note'])) > 1:
                     c_str = ''
                     for c in json.loads(data['iucn_note']):
                         c_str += f"{c['category']}, {c['name']}; "
                     data['iucn_note'] = c_str.rstrip(';')
-                    # else:
-                    #     data['iucn_note'] = ''
-
                 if c_red := data['red_category']:
                     data['red_category'] =  c_red if get_language() == 'en-us' else redlist_map_c[c_red] + ' ' + c_red
-
                 if data['red_note']: # 紅皮書的note全部都放
-                    # if len(json.loads(data['red_note'])):
                     c_str = ''
                     for c in json.loads(data['red_note']):
                         c_str += f"{c['red_category']}, {c['name']}; <br>"
                     data['red_note'] = c_str.rstrip(';<br>')
-                    # else:
-                    #     data['red_note'] = ''
-
                 if c_protected := data['protected_category']:
                     data['protected_category'] =  protected_map[c_protected] if get_language() == 'en-us' else f'第 {c_protected} 級 {protected_map_c[c_protected]}'
-
                 if data['protected_note']:
-                    # if len(json.loads(data['protected_note'])) > 1:
                     c_str = ''
                     for c in json.loads(data['protected_note']):
                         c_str += f"{c['protected_category']}, {c['name']}; "
                     data['protected_note'] = c_str.rstrip(';')
-                    # else:
-                    #     data['protected_note'] = ''
-
                 # 高階層
                 data['higher'] = []
                 if data['path']:
                     path = data['path'].split('>')
                     # 專家列表
                     # 如果同一個專家有多個taxon_group要concat
-                    # experts = Expert.objects.filter(taxon_id__in=path).values('name','name_e','email').annotate(taxon_group_agg=StringAgg('taxon_group', delimiter=', '))
                     path = [p for p in path if p != taxon_id]
                     if path:
                         query = f"""
                                     WITH base_query AS (SELECT taxon_id, GROUP_CONCAT(name_c SEPARATOR ', ') AS alternative_name_c
                                     FROM api_common_name WHERE is_primary = 0 AND taxon_id IN %s GROUP BY taxon_id)
                                 SELECT t.rank_id, t.taxon_id, an.formatted_name, acn.name_c as common_name_c, 
-                                CONCAT_WS (' ',tn.name, CONCAT_WS(',', acn.name_c, bq.alternative_name_c)) 
+                                CONCAT_WS (' ',tn.name, CONCAT_WS(',', acn.name_c, bq.alternative_name_c)), ranks.order
                                 FROM api_taxon t 
                                 LEFT JOIN base_query bq ON bq.taxon_id = t.taxon_id
                                 LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1
                                 JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id 
                                 JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id 
-                                WHERE t.taxon_id IN %s and t.rank_id >= 3 
+                                JOIN ranks ON ranks.id = t.rank_id
+                                WHERE t.taxon_id IN %s 
                                 ORDER BY t.rank_id ASC"""
+                                # WHERE t.taxon_id IN %s and t.rank_id >= 3 
                         conn = pymysql.connect(**db_settings)
                         with conn.cursor() as cursor:
                             cursor.execute(query,(path,path))
                             higher = cursor.fetchall()
                             conn.close()
-                            higher = pd.DataFrame(higher, columns=['rank_id','taxon_id','formatted_name','common_name_c', 'taxon_group_str'])
+                            higher = pd.DataFrame(higher, columns=['rank_id','taxon_id','formatted_name','common_name_c', 'taxon_group_str', 'rank_order'])
                             # 補上階層未定 
                             # 先找出應該要有哪些林奈階層
-                            current_ranks = higher.rank_id.to_list() + [data['rank_id']]
-                            for x in lin_map.keys():
-                                if x not in current_ranks and x < max(current_ranks) and x > min(current_ranks):
-                                    higher = pd.concat([higher, pd.Series({'rank_id': x, 'common_name_c': '地位未定', 'taxon_id': None}).to_frame().T], ignore_index=True)
+                            current_rank_orders = higher.rank_order.to_list() + [data['rank_order']]
+                            for x in lin_map_w_order.keys():
+                                now_order = lin_map_w_order[x]['rank_order']
+                                if now_order not in current_rank_orders and now_order < max(current_rank_orders) and now_order > min(current_rank_orders):
+                                    higher = pd.concat([higher, pd.Series({'rank_id': x, 'common_name_c': '地位未定', 'taxon_id': None, 'rank_order': lin_map_w_order[x]['rank_order']}).to_frame().T], ignore_index=True)
                             # 從最大的rank開始補
-                            higher = higher.sort_values('rank_id', ignore_index=True, ascending=False)
+                            higher = higher.sort_values('rank_order', ignore_index=True, ascending=False)
                             for hi in higher[higher.taxon_id.isnull()].index:
                                 found_hi = hi + 1
                                 if found_hi < len(higher):
@@ -464,7 +439,7 @@ def taxon(request, taxon_id):
                                         found_hi += 1
                                 higher.loc[hi, 'formatted_name'] = f'{higher.loc[found_hi].formatted_name} {lin_map[higher.loc[hi].rank_id]} incertae sedis'
                             higher = higher.replace({None: '', np.nan: ''})
-                            higher = higher.sort_values('rank_id', ignore_index=True)
+                            higher = higher.sort_values('rank_order', ignore_index=True)
                             for h in higher.index:
                                 current_h_row = higher.loc[h]
                                 current_h_dict = {}
@@ -485,8 +460,6 @@ def taxon(request, taxon_id):
                                 else:
                                     current_h_dict['rank_color'] = 'rank-second-gray'
                                 data['higher'].append(current_h_dict)
-                # else:
-                #     experts = Expert.objects.filter(taxon_id=taxon_id)
 
                 # 學名變遷
                 # 確認是否為歧異
@@ -503,7 +476,6 @@ def taxon(request, taxon_id):
                     is_ambiguous = [i[0] for i in is_ambiguous]
                     conn.close()
 
-                # TODO 這邊還要加上taxon_history裡面的name?
                 query = f"""SELECT atu.taxon_name_id, an.formatted_name, an.name_author, ac.short_author, atu.status,
                             ru.status, JSON_EXTRACT(ru.properties, '$.is_in_taiwan'), tn.nomenclature_id, 
                             tn.publish_year, ru.per_usages,
@@ -603,7 +575,7 @@ def taxon(request, taxon_id):
                                             if current_ref not in ref_list: 
                                                 ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_r_type])
                                 # 排除backbone
-                                ref_list = [r for r in ref_list if r[3] != 4 ]
+                                ref_list = [r for r in ref_list if r[3] not in [4,6] ]
                                 # 如果不是動物的非原始組合名 排除自己的發表文獻 
                                 if not has_original:
                                     ref_list = [r for r in ref_list if r[1] not in names[names.taxon_name_id==n].o_reference_id.to_list()]
@@ -631,7 +603,7 @@ def taxon(request, taxon_id):
                                             if current_ref not in ref_list: 
                                                 ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_r_type])
                                 # 排除backbone
-                                ref_list = [r for r in ref_list if r[3] != 4 ]
+                                ref_list = [r for r in ref_list if r[3] not in [4,6] ]
                                 # 如果不是動物的非原始組合名 排除自己的發表文獻 
                                 if not has_original:
                                     ref_list = [r for r in ref_list if r[1] not in names[names.taxon_name_id==n].o_reference_id.to_list()]
@@ -666,7 +638,7 @@ def taxon(request, taxon_id):
                                             if current_ref not in ref_list:
                                                 ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_type])
                                 # 排除backbone & 自己的發表文獻
-                                ref_list = [r for r in ref_list if r[3] != 4 ]
+                                ref_list = [r for r in ref_list if r[3] not in [4,6] ]
                                 # 如果不是動物的非原始組合名 排除自己的發表文獻 
                                 if not has_original:
                                     ref_list = [r for r in ref_list if r[1] not in names[names.taxon_name_id==n].o_reference_id.to_list()]
@@ -709,7 +681,7 @@ def taxon(request, taxon_id):
                             JOIN reference_usages ru ON atu.reference_id = ru.reference_id and atu.accepted_taxon_name_id = ru.accepted_taxon_name_id and atu.taxon_name_id = ru.taxon_name_id \
                             JOIN `references` r ON ru.reference_id = r.id \
                             JOIN api_citations c ON ru.reference_id = c.reference_id \
-                            WHERE atu.taxon_id = %s and r.type != 4 and ru.status != '' AND atu.is_deleted = 0 GROUP BY r.id \
+                            WHERE atu.taxon_id = %s and r.type not in (4,6) and ru.status != '' AND atu.is_deleted = 0 GROUP BY r.id \
                             UNION  \
                             SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year, c.author, c.short_author, r.type \
                             FROM taxon_names tn \
@@ -723,8 +695,8 @@ def taxon(request, taxon_id):
                 with conn.cursor() as cursor:
                     cursor.execute(query, (par1, taxon_id))
                     refs_r = cursor.fetchall()
-                    refs = [[r[0],r[1]] for r in refs_r if [r[0],r[1]] not in refs and r[-1] != 4]
-                    short_refs = [[r[0],r[4]] for r in refs_r if [r[0],r[4]] not in short_refs and r[-1] != 4]
+                    refs = [[r[0],r[1]] for r in refs_r if [r[0],r[1]] not in refs and r[-1] not in [4,6]]
+                    short_refs = [[r[0],r[4]] for r in refs_r if [r[0],r[4]] not in short_refs and r[-1] not in [4,6]]
                     conn.close()
                 
                 ref_df = pd.DataFrame(short_refs, columns=['reference_id', 'ref'])
@@ -739,48 +711,34 @@ def taxon(request, taxon_id):
                         person_ids = cursor.fetchall()
                         person_ids = [str(p[0]) for p in person_ids]
                         if len(person_ids):
-                            # print(person_ids)
                             url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/expert/?person_id={(',').join(person_ids)}"
-                            # print(url)
                             person_resp = requests.get(url)
                             person_resp = person_resp.json()
                             experts = person_resp.get('rows')
-                            # print(person_resp)
-                    # http://127.0.0.1:3000/api/admin/expert/?page=1
 
-
-                alt_list = []
                 data['alien_types'] = []
+                alien_types = []
                 has_cultured = 0
+                main_at = ''
                 if data['alien_type']:
-                    alien_type_df = pd.DataFrame(json.loads(data['alien_type']))
-                    if len(alien_type_df):
-                        alt_list = alien_type_df.alien_type.unique()
-                        for at in alt_list:
-                            if at == 'cultured':
-                                has_cultured = 1
-                            # 抓出所有的name
-                            at_names = alien_type_df[alien_type_df.alien_type==at].taxon_name_id.unique()
-                            current_note = []
-                            for atn in at_names:
-                                # 抓出name對應的非backbone reference
-                                if len(alien_type_df[(alien_type_df.alien_type==at)&(alien_type_df.taxon_name_id==atn)&(alien_type_df.reference_type!=4)]):
-                                    at_refs_list = alien_type_df[(alien_type_df.alien_type==at)&(alien_type_df.taxon_name_id==atn)&(alien_type_df.reference_type!=4)].reference_id.unique()
-                                    at_refs = ref_df[ref_df.reference_id.isin(at_refs_list)].ref.to_list()
-                                    current_note.append(f'{names[names.taxon_name_id==atn].sci_name_ori.to_list()[0]}: {", ".join(at_refs)}')
-                            data['alien_types'].append({
-                                'alien_type': attr_map_c[at],
-                                'note': ', '.join(current_note)
-                            })
-                #  如果有is_cultured要加上去 如果是backbone不給文獻
+                    # 這邊要改成根據文獻優先性只顯示一種主要的alien_type
+                    # 其餘全部放入note中
+                    # 如果有多個alien_type再判斷就好
+                    alien_json = json.loads(data['alien_type'])
+                    if len(alien_json):
+                        has_cultured, alien_types, main_at = create_alien_type_display(alien_json=alien_json,ref_df=ref_df,names=names)
+        
+                data['alien_types'] = alien_types
+                data['alien_type'] = main_at
+
+                # 如果有is_cultured要加上去 如果是backbone不給文獻
+                # 因為有些是下階層是栽培豢養才加上is_cultured 會沒有對應的cultured文獻
                 if not has_cultured and data['is_cultured']:
                     data['alien_types'].append({'alien_type': attr_map_c['cultured'],'note': None})
 
                 conn = pymysql.connect(**db_settings)
                 # 抓過去的
                 # 如果是backbone不給ref
-                # TODO 這邊可能過去的學名被拿掉了 ?
-                # TODO 這邊的寫法有問題 應該也要考慮old_taxon_name_id? -> 應該是之前產生taxon的bug
                 with conn.cursor() as cursor:     
                     query = f'''SELECT ath.note, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), ru.reference_id, r.type FROM api_taxon_history ath
                                 LEFT JOIN reference_usages ru ON ath.reference_id = ru.reference_id and ath.accepted_taxon_name_id = ru.accepted_taxon_name_id and ath.taxon_name_id = ru.taxon_name_id
@@ -788,61 +746,13 @@ def taxon(request, taxon_id):
                                 WHERE ath.taxon_id = %s AND ath.`type` = 0 ORDER BY ath.updated_at DESC;'''
                     cursor.execute(query, (taxon_id,))
                     nids = cursor.fetchall()
-                if nids:
-                    for n in nids:
-                        current_nid = json.loads(n[0]).get('new_taxon_name_id')
-                        if len(names[names.taxon_name_id==current_nid]):
-                            name_ = names[names.taxon_name_id==current_nid].sci_name_ori.values[0]
-                        else:
-                            query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
-                            conn = pymysql.connect(**db_settings)
-                            with conn.cursor() as cursor:
-                                cursor.execute(query, (current_nid,))
-                                name_ = cursor.fetchone()
-                                name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
-                                conn.close()
-                        if n[2] and n[3] != 4:
-                            name_history.append({'name_id': current_nid,'name': name_,
-                                                 'ref': ref_df[ref_df.reference_id==n[2]].ref.values[0],
-                                                 'reference_id': n[2], 'updated_at': n[1]})
-                        else:
-                            name_history.append({'name_id': current_nid,'name': name_,  
-                                                 'ref':'', 'reference_id': None, 'updated_at': n[1]})
-                # 第一次建立的時候 放在最後 因為改成desc
-                with conn.cursor() as cursor:     
-                    query = f'''SELECT ath.note, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), ru.reference_id, r.type FROM api_taxon_history ath
-                                LEFT JOIN reference_usages ru ON ath.reference_id = ru.reference_id and ath.accepted_taxon_name_id = ru.accepted_taxon_name_id and ath.taxon_name_id = ru.taxon_name_id
-                                LEFT JOIN `references` r ON ru.reference_id = r.id
-                                WHERE ath.taxon_id = %s AND ath.`type` = 5 ORDER BY ath.updated_at DESC;'''
-                    cursor.execute(query, (taxon_id,))
-                    first = cursor.fetchone()
-                    if first:
-                        current_nid = json.loads(first[0]).get('taxon_name_id')
-                        if len(names[names.taxon_name_id==current_nid]):
-                            name_ = names[names.taxon_name_id==current_nid].sci_name_ori.values[0]
-                        else:
-                            query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
-                            conn = pymysql.connect(**db_settings)
-                            with conn.cursor() as cursor:
-                                cursor.execute(query, (current_nid,))
-                                name_ = cursor.fetchone()
-                                name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
-                                conn.close()
-                        if first[2] and first[3] != 4: # 如果不是backbone
-                            name_history.append({'name_id': current_nid, 'name': name_,
-                                                 'ref': ref_df[ref_df.reference_id==first[2]].ref.values[0],
-                                                 'reference_id': first[2], 'updated_at': first[1]})
-                        else:
-                            name_history.append({'name_id': current_nid, 'name': name_,
-                                                 'ref': '', 'reference_id': None, 'updated_at': first[1]})
+                name_history = create_name_history(names=names, nids=nids, taxon_id=taxon_id, ref_df=ref_df)
+
                 # 相關連結
                 # ncbi如果超過一個就忽略
                 if data['links']:
                     tmp_links = json.loads(data['links'])
-                    # tmp_links = []
-                    # for tl in xx:
-                    #     if tl not in tmp_links:
-                    #         tmp_links.append(tl)
+
                     for t in tmp_links:
                         if t["source"] in ["fishbase_order","amphibiansoftheworld"]:
                             links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': data['name'], 'hidden_name': True, 'category': link_map[t["source"]]['category']}]
@@ -1939,6 +1849,9 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
 
         if re.search(r'[\u4e00-\u9fff]+', keyword_str):
             # 改成用api_common_name查詢 只回傳有效名
+            # 中文 預設回傳有效
+            if not req.getlist('status'):
+                condition +=  f' AND (atu.status = "accepted")'
 
             query = f"""
                         WITH base_query AS (
@@ -1949,6 +1862,7 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
                         """
         else:
             # 先單純用taxon_names的表搜尋 如果有結果再繼續往下搜
+            # 英文 預設回傳全部地位
             first_query = f"SELECT id FROM taxon_names WHERE `name` {keyword_str} AND deleted_at IS NULL LIMIT 1"
             conn = pymysql.connect(**db_settings)
             with conn.cursor() as cursor:
@@ -1965,6 +1879,16 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
                         """
             else:
                 return None, None
+
+
+    # 地位
+    if status := req.getlist('status'):
+        if len(status) < 3:
+            ss_list = []
+            for ss in status:
+                ss_list.append(f'atu.status = "{ss}"')
+            condition +=  f" AND ({' OR '.join(ss_list)})"
+
 
     # is_ 系列
 
@@ -2063,15 +1987,6 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
         condition +=  f' AND att.path like "%>{higher_taxon_id}%"'
 
 
-    # 地位
-    if status := req.getlist('status'):
-        if len(status) < 3:
-            ss_list = []
-            for ss in status:
-                ss_list.append(f'atu.status = "{ss}"')
-            condition +=  f" AND ({' OR '.join(ss_list)})"
-
-
     if condition.startswith(' AND'):
         condition = condition[4:]
 
@@ -2082,8 +1997,9 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
                         JOIN api_taxon at ON atu.taxon_id = at.taxon_id
                         LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
                         {conserv_join}
-                        WHERE atu.`status` = 'accepted' AND atu.is_latest = 1 AND atu.taxon_id IN (SELECT * FROM base_query) AND  {condition}
+                        WHERE atu.taxon_id IN (SELECT * FROM base_query) AND  {condition}
                     """
+                        # WHERE atu.`status` = 'accepted' AND atu.is_latest = 1 AND atu.taxon_id IN (SELECT * FROM base_query) AND  {condition}
         else:
             base = f"""
                         FROM api_taxon_usages atu
@@ -2098,6 +2014,13 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
                         LEFT JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id
                         {conserv_join}
                         WHERE {condition}"""
+        
+
+    print(base)
+
+    print('=======')
+
+    print(query)
     
 
     return base, query
@@ -2267,7 +2190,6 @@ def catalogue_search(request):
         if not base and not base_query:
             pass
         else:
-            # base, base_query = get_conditioned_query_search(req, from_url=True)
             response = get_query_data_search(base, offset, response, limit, base_query)
         response['header'] = f"""
             <tr>
