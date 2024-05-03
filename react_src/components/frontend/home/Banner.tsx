@@ -6,7 +6,7 @@ const Banner: React.FC = () => {
   const [keyword, setKeyword] = React.useState('');
 
   const handleSearch = () => {
-    window.location.href = `/catalogue?filter=0&status=accepted&keyword=${keyword}`;
+    window.location.href = `/catalogue?filter=0&keyword=${keyword}`;
   }
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -50,7 +50,7 @@ const Banner: React.FC = () => {
 					</div>
 					<div className="search-bar">
 						<input type="text" placeholder={placeholder_keyword} onKeyDown={handleKeyDown} onChange={(e) =>setKeyword(e.target.value)}/>
-						<a href="/catalogue?filter=2&status=accepted" className="more">
+						<a href="/catalogue?filter=2" className="more">
 							<svg xmlns="http://www.w3.org/2000/svg" width="27" height="23" viewBox="0 0 27 23">
 								<path id="Polygon_1" data-name="Polygon 1" d="M11.775,2.939a2,2,0,0,1,3.45,0L25.232,19.988A2,2,0,0,1,23.507,23H3.493a2,2,0,0,1-1.725-3.012Z" transform="translate(27 23) rotate(180)" fill="#4c8da7"></path>
 							</svg>
