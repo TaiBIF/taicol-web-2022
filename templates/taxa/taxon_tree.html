@@ -54,25 +54,7 @@
 				</div>
 				{% endif %}
 				<div class="cont-search-bar">
-					<select class="keyword" id="keyword" data-placeholder="{% trans "請輸入關鍵字" %}"></select>
-					<!--
-					<input type="text" name="keyword" id="keyword" placeholder="請輸入關鍵字">
-					<input type="hidden" name="keyword_taxon_id" id="keyword_taxon_id">-->
-					
-					<!--
-					<button class="search">
-						<svg id="Group_6882" data-name="Group 6882" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="36.847" height="36.775" viewBox="0 0 36.847 36.775">
-							<defs>
-								<clipPath id="clip-path">
-									<rect id="Rectangle_65" data-name="Rectangle 65" width="36.847" height="36.775" fill="#4c8da7"/>
-								</clipPath>
-							</defs>
-							<g id="Group_135" data-name="Group 135" clip-path="url(#clip-path)">
-								<path id="Path_6196" data-name="Path 6196" d="M0,15.8V13.791c.093-.611.172-1.224.282-1.832A14.8,14.8,0,0,1,11.626.36C12.373.206,13.135.118,13.89,0h1.943c.091.022.182.049.274.065.813.14,1.642.22,2.438.424a14.772,14.772,0,0,1,9.4,21.166c-.407.768-.9,1.489-1.4,2.3a2.517,2.517,0,0,1,.305.233q4.493,4.478,8.985,8.958a3.734,3.734,0,0,1,1.016,1.4v.718a2.258,2.258,0,0,1-.753,1.148,1.856,1.856,0,0,1-2.5-.29q-4.694-4.682-9.383-9.369A1.8,1.8,0,0,1,24,26.422c-.154.116-.212.156-.27.2A14.833,14.833,0,0,1,.359,17.991C.208,17.268.118,16.532,0,15.8m3.673-1.04A11.15,11.15,0,1,0,14.861,3.676,11.17,11.17,0,0,0,3.673,14.762" fill="#4c8da7"/>
-							</g>
-						</svg>
-					</button>
-					-->
+					<select class="keyword" id="keyword" data-placeholder="{% trans '請輸入關鍵字' %}"></select>
 				</div>
 				<div class="item-box check-set">
 					<div class="right-check">
@@ -127,30 +109,6 @@
 					{% endfor %}
 				</ul>
 
-				<!--
-				<ul class="rank-1-red kingdom_c d-none">
-					{% for k in kingdom_dict_c %}
-					<li>
-						<span class="anchor" id="{{ k.taxon_id }}" ></span>
-						<div class="item-box getSubList" data-cultured="off" data-fetched="0" data-taxon="{{ k.taxon_id }}" data-rank="3">
-							<div class="cir-box">
-								界
-							</div>
-							<h2 class="redirectTaxonPage" data-taxon_id="{{ k.taxon_id }}">{{ k.name|safe }}</h2>
-							<p>{{ k.stat }}</p>
-							<div class="arr">
-								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
-										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-									</g>
-								</svg>
-							</div>
-						</div>
-					</li>
-					{% endfor %}
-				</ul>
-				-->
 
 			</div>
 		</div>
@@ -161,5 +119,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon_tree.js' %}?v4"></script>
+<script src="{% static 'js/taxon_tree.js' %}?v5"></script>
 {% endblock script %}
