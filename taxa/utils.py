@@ -971,16 +971,25 @@ def create_alien_type_display(alien_json, ref_df, names):
             for atr in at_rows:
                 if atr.get('alien_status_note'):
                     if atr.get('reference_type') not in [4,6]:
-                        at_ref = ref_df[ref_df.reference_id==atr.get('reference_id')].ref.to_list()[0]
                         at_name = names[names.taxon_name_id==atr.get('taxon_name_id')].sci_name_ori.to_list()[0]
-                        current_note.append(f"{atr.get('alien_status_note')} ({at_ref}, {at_name})")
+                        if len(ref_df[ref_df.reference_id==atr.get('reference_id')]):
+                            # TODO 這邊是暫時的
+                            at_ref = ref_df[ref_df.reference_id==atr.get('reference_id')].ref.to_list()[0]
+                            current_note.append(f"{atr.get('alien_status_note')} ({at_ref}, {at_name})")
+                        else:
+                            current_note.append(f"{atr.get('alien_status_note')} ({at_name})")
                     else:
                         current_note.append(atr.get('alien_status_note'))
                 else:
                     if atr.get('reference_type') not in [4,6]:
-                        at_ref = ref_df[ref_df.reference_id==atr.get('reference_id')].ref.to_list()[0]
                         at_name = names[names.taxon_name_id==atr.get('taxon_name_id')].sci_name_ori.to_list()[0]
-                        current_note.append(f"{at_ref}, {at_name}")
+                        if len(ref_df[ref_df.reference_id==atr.get('reference_id')]) and len(names[names.taxon_name_id==atr.get('taxon_name_id')]):
+                            # TODO 這邊是暫時的
+                            at_ref = ref_df[ref_df.reference_id==atr.get('reference_id')].ref.to_list()[0]
+                            
+                            current_note.append(f"{at_ref}, {at_name}")
+                        else:
+                            current_note.append(f"{at_name}")
             # print(at_rows)
             alien_types.append({
                 'alien_type': attr_map_c[at],
