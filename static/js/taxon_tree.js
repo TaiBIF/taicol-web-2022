@@ -47,7 +47,8 @@ function getSubList(item){
                     'with_cultured': with_cultured,
                     'lin_rank': lin_rank,
                     'with_not_official': with_not_official,
-                    'lang': $lang },
+                    'lang': $lang,
+                    'from_search_click': false },
             type: 'POST',
             dataType : 'json',
         })
@@ -467,7 +468,8 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                 'with_cultured': with_cultured,
                 'lin_rank': lin_rank,
                 'with_not_official': with_not_official,
-                'lang': $lang
+                'lang': $lang,
+                'from_search_click': true
             },
         type: 'POST',
         dataType : 'json',

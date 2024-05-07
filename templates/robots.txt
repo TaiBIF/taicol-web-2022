@@ -48,4 +48,5 @@ Disallow: /en-us/taxon
 Disallow: /zh-hant/catalogue
 Disallow: /zh-hant/taxon/tree
 Disallow: /zh-hant/taxon
+Disallow: /redirect_taicol
 

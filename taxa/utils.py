@@ -67,15 +67,16 @@ with conn.cursor() as cursor:
     for k in kingdom:
         kingdom_map[k[1]] = {'name': k[0], 'common_name_c': k[2]}
 
-rank_map, rank_map_c,rank_map_c_reverse = {}, {}, {}
+rank_map, rank_map_c,rank_map_c_reverse, rank_order_map = {}, {}, {}, {}
 conn = pymysql.connect(**db_settings)
-query = "SELECT id, display from ranks"
+query = "SELECT id, display, `order` from ranks"
 with conn.cursor() as cursor:
     cursor.execute(query)
     ranks = cursor.fetchall()
     rank_map = dict(zip([r[0] for r in ranks], [eval(r[1])['en-us'] for r in ranks]))
     rank_map_c = dict(zip([r[0] for r in ranks], [eval(r[1])['zh-tw'] for r in ranks]))
     rank_map_c_reverse = dict(zip([eval(r[1])['zh-tw'] for r in ranks],[r[0] for r in ranks]))
+    rank_order_map = dict(zip([r[0] for r in ranks], [r[2] for r in ranks]))
 
 
 # rank_map = {
@@ -163,10 +164,12 @@ lin_map_w_order = {
     18: {'name': 'classis', 'rank_order': 23},
     22: {'name': 'ordo', 'rank_order': 27},
     26: {'name': 'familia', 'rank_order': 32},
+    30: {'name': '', 'rank_order': 36},
 }
 
 lin_ranks = [3,12,18,22,26,30,34]
 sub_lin_ranks = [35,36,37,38,39,40,41,42,43,44,45,46]
+
 
 var_df = pd.DataFrame([
 ('鲃','[鲃䰾]'),
