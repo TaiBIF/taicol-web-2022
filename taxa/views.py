@@ -8,11 +8,11 @@ import pandas as pd
 import numpy as np
 import math
 import re
-import glob
+# import glob
 import os
 import datetime
-from taxa.models import Feedback, SearchStat
-from django.contrib.postgres.aggregates import StringAgg
+from taxa.models import SearchStat
+# from django.contrib.postgres.aggregates import StringAgg
 import time
 import requests
 from django.db.models import F
@@ -21,7 +21,7 @@ from django.core.mail import send_mail
 import threading
 from django.template.loader import render_to_string
 
-from django.contrib import messages
+# from django.contrib import messages
 
 from  django.utils.translation import get_language, gettext
 
@@ -146,7 +146,7 @@ def get_autocomplete_taxon(request):
     
     names = '[]'
     results = []
-    s = time.time()
+    # s = time.time()
     if keyword_str := request.GET.get('keyword','').strip():
         cultured_condition = ''
         if request.GET.get('with_cultured') != 'on':
@@ -208,7 +208,7 @@ def get_autocomplete_taxon(request):
                             WHERE deleted_at is null AND `name` REGEXP '{keyword_str}' LIMIT 50
                             ), 
                             base_query AS(
-                                SELECT distinct atu.taxon_id, atu.taxon_name_id, atu.accepted_taxon_name_id, atu.status
+                                SELECT distinct atu.taxon_id, atu.taxon_name_id, atu.status
                                 FROM api_taxon_usages atu
                                 JOIN base_name ON atu.taxon_name_id = base_name.id
                                 JOIN api_taxon at ON atu.taxon_id = at.taxon_id 
@@ -220,7 +220,7 @@ def get_autocomplete_taxon(request):
                             FROM base_query bq
                             INNER JOIN api_taxon at ON at.taxon_id = bq.taxon_id
                             INNER JOIN base_name tn ON bq.taxon_name_id = tn.id AND tn.id IN (bq.taxon_name_id)
-                            INNER JOIN base_name tnn ON bq.accepted_taxon_name_id = tnn.id AND tnn.id IN (bq.accepted_taxon_name_id)
+                            INNER JOIN taxon_names tnn ON at.accepted_taxon_name_id = tnn.id 
                             LEFT JOIN api_common_name acn ON acn.taxon_id = bq.taxon_id
                             GROUP BY bq.taxon_id, tn.name, tnn.name, bq.status;
                         """
@@ -229,7 +229,6 @@ def get_autocomplete_taxon(request):
                     cursor.execute(query)
                     results = cursor.fetchall()
                     conn.close()
-            # print(time.time()-s)
             
         ds = pd.DataFrame(results, columns=['id','name','text','name_status'])
         if len(ds):
