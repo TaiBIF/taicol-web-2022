@@ -128,6 +128,8 @@ def download_search_results(request):
 
     df = return_download_file(base, base_query)
 
+    # print(df.alien_status_note)
+
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
     if file_format == 'json':
         response = HttpResponse(content_type="application/json")
@@ -286,7 +288,7 @@ def taxon(request, taxon_id):
                     SELECT tn.name, an.formatted_name as f_name, concat_WS(' ', an.formatted_name, an.name_author ) as sci_name, 
                     acn.name_c as common_name_c, at.accepted_taxon_name_id as name_id, at.rank_id,
                     atu.status, att.path, at.is_endemic, at.is_terrestrial, at.is_freshwater, at.is_brackish,
-                    at.is_marine, at.is_fossil, at.is_in_taiwan, at.alien_type,
+                    at.is_marine, at.is_fossil, at.is_in_taiwan, at.main_alien_type, at.alien_note,
                     ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, ac.iucn_taxon_id, 
                     ac.red_category, ac.red_note, ac.protected_category, ac.protected_note,
                     tn.original_taxon_name_id, at.links, anc.namecode, at.is_in_taiwan, at.is_cultured,
@@ -459,7 +461,6 @@ def taxon(request, taxon_id):
                                 else:
                                     current_h_dict['rank_color'] = 'rank-second-gray'
                                 data['higher'].append(current_h_dict)
-
                 # 學名變遷
                 # 確認是否為歧異
                 query = """
@@ -474,7 +475,6 @@ def taxon(request, taxon_id):
                     is_ambiguous = cursor.fetchall()
                     is_ambiguous = [i[0] for i in is_ambiguous]
                     conn.close()
-
                 query = f"""SELECT atu.taxon_name_id, an.formatted_name, an.name_author, ac.short_author, atu.status,
                             ru.status, JSON_EXTRACT(ru.properties, '$.is_in_taiwan'), tn.nomenclature_id, 
                             tn.publish_year, ru.per_usages,
@@ -504,7 +504,6 @@ def taxon(request, taxon_id):
                     # r_publish_year 學名使用的文獻類別
                     # taxon_status 學名在分類群的地位
                     # ru_status 學名在學名使用的地位
-
                     if len(names):
                         names = names.sort_values('publish_year', ascending=False)
                         names = names.replace({None:'',np.nan:''})
@@ -656,7 +655,6 @@ def taxon(request, taxon_id):
                     name_changes['year'] = name_changes.year.replace({'': None}) # 讓年份為空值的在最後面
                     name_changes = name_changes.sort_values(by=['year','name'], ascending=[True, True])
                     name_changes = name_changes.name_str.to_list()
-
                 # 文獻
                 get_ref_list = new_refs + names.reference_id.to_list()
                 if get_ref_list:
@@ -697,9 +695,7 @@ def taxon(request, taxon_id):
                     refs = [[r[0],r[1]] for r in refs_r if [r[0],r[1]] not in refs and r[-1] not in [4,6]]
                     short_refs = [[r[0],r[4]] for r in refs_r if [r[0],r[4]] not in short_refs and r[-1] not in [4,6]]
                     conn.close()
-                
                 ref_df = pd.DataFrame(short_refs, columns=['reference_id', 'ref'])
-
                 # 取得expert
                 if len(ref_df):
                     query = "SELECT person_id FROM person_reference WHERE reference_id in %s"
@@ -719,16 +715,19 @@ def taxon(request, taxon_id):
                 alien_types = []
                 has_cultured = 0
                 main_at = ''
-                if data['alien_type']:
+                # if data['alien_type']:
                     # 這邊要改成根據文獻優先性只顯示一種主要的alien_type
                     # 其餘全部放入note中
                     # 如果有多個alien_type再判斷就好
-                    alien_json = json.loads(data['alien_type'])
-                    if len(alien_json):
-                        has_cultured, alien_types, main_at = create_alien_type_display(alien_json=alien_json,ref_df=ref_df,names=names)
+                    # alien_json = json.loads(data['alien_type'])
+                    # if len(alien_json):
+                        # has_cultured, alien_types, main_at = create_alien_type_display(alien_json=alien_json,ref_df=ref_df,names=names)
+                has_cultured, alien_types = create_alien_type_display(alien_types=data['alien_note'],ref_df=ref_df,names=names)
+
+                # print()
         
                 data['alien_types'] = alien_types
-                data['alien_type'] = main_at
+                data['alien_type'] = attr_map_c[data['main_alien_type']]
 
                 # 如果有is_cultured要加上去 如果是backbone不給文獻
                 # 因為有些是下階層是栽培豢養才加上is_cultured 會沒有對應的cultured文獻
@@ -901,8 +900,6 @@ def get_root_tree(request):
         is_cultured = [0,1]
         
     kingdom_dict = []
-    # kingdom_dict_c = []
-    # for k in kingdom_map.keys():
     infra_str = 'Infraspecies' if get_language() == 'en-us' else '種下'
     rank_map_dict = rank_map if get_language() == 'en-us' else rank_map_c
 
@@ -978,13 +975,10 @@ def taxon_tree(request):
     rank_map_dict = rank_map if get_language() == 'en-us' else rank_map_c
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
-        # query = f"""SELECT substring(att.lin_path, -8, 8) as kingdom_taxon, COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
-        #         JOIN api_taxon at ON att.taxon_id = at.taxon_id
-        #         WHERE at.rank_id > 3 AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND at.not_official = 0 
-        #         GROUP BY at.rank_id, at.is_cultured, kingdom_taxon ORDER BY at.rank_id ASC; """
+        # TODO 要加上病毒的unranked
         query = f"""SELECT att.tree_stat, at.taxon_id FROM api_taxon_tree att 
                 JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                WHERE at.rank_id = 3; """
+                WHERE at.rank_id = 3 OR at.rank_id = 50; """
         cursor.execute(query)
         stat_list = cursor.fetchall()
         conn.close()
@@ -997,6 +991,7 @@ def taxon_tree(request):
         total_stats = pd.DataFrame(total_stats)
         # 預設僅顯示林奈階層
         total_stats = total_stats[total_stats.rank_id.isin(lin_ranks+sub_lin_ranks)]
+
     for k in kingdom_map.keys():
         stats = total_stats[total_stats.kingdom_taxon==k]
         spp = 0
@@ -1019,9 +1014,9 @@ def taxon_tree(request):
                 # 如果沒有47 最後要把種下加回去
                 infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
                 stat_str += infra_count_str
-
+        
         kingdom_dict.append({'taxon_id': k, 
-                             'name': f"Kingdom {kingdom_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",
+                             'name': f"{'Kingdom ' if kingdom_map[k]['name'] != 'Viruses' else ''}{kingdom_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_map[k]['common_name_c']} {'Kingdom ' if kingdom_map[k]['name'] != 'Viruses' else ''}{kingdom_map[k]['name']}",
                              'stat': stat_str.strip()})
     
     search_stat = SearchStat.objects.all().order_by('-count')[:100]
@@ -1142,7 +1137,7 @@ def get_sub_tree_list(request):
                     WHERE {'att.lin_parent_taxon_id' if lin_rank == 'on' else 'att.parent_taxon_id'} IN %s
                     AND at.is_in_taiwan = 1 
                     AND at.is_deleted != 1 AND at.is_cultured IN %s {not_official_str}
-                    {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''} 
+                    {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46,49)' if lin_rank == 'on' else ''} 
                 )
                 SELECT 
                     JSON_ARRAYAGG(
@@ -1165,6 +1160,8 @@ def get_sub_tree_list(request):
 
                 # ORDER BY at.rank_id DESC, an.formatted_name;"""
 
+
+    # print(query)
     with conn.cursor() as cursor:
         cursor.execute(query, (taxon_id, is_cultured, ))
         infos = cursor.fetchall()
@@ -1172,6 +1169,7 @@ def get_sub_tree_list(request):
         infos = pd.DataFrame(infos, columns=['info', 'taxon_id'])
 
    
+    # print(infos)
     for i in df.index:
         current_rank_order = rank_order_map[df.rank_id[i]]
         info_list = infos[infos.taxon_id==df.taxon_id[i]]['info'].to_list()
@@ -1193,6 +1191,8 @@ def get_sub_tree_list(request):
         # if x := get_tree_stat(df.taxon_id[i],with_cultured,int(df.rank_id[i]),True,lang,lin_rank,with_not_official, conn, stat_list, sub_titles):
         if x := get_tree_stat(df.taxon_id[i],with_cultured,int(df.rank_id[i]),from_search_click,lang,lin_rank,with_not_official, conn, stat_list, sub_titles):
             sub_dict_list.append(x)
+
+        # print(sub_dict_list)
     
         # print('2', time.time()-s)
 
@@ -1230,6 +1230,8 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,lin_rank
         if lin_ranks.index(rank_id)+1 < len(lin_ranks):
             if lin_ranks[lin_ranks.index(rank_id)+1] < 34:
                 next_lin_h = lin_ranks[lin_ranks.index(rank_id)+1]
+
+    # print(rank_id, next_lin_h)
 
     uncertains = []
     uncertain_rank_order = []
@@ -1929,18 +1931,24 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
 
     # alien_type
     if alien_type := req.getlist('alien_type'):
-        c = 1
+        # c = 1
+        aa_list = []
         for a in alien_type:
-            if c == 1:
-                a_str = '''JSON_CONTAINS(at.alien_type, '{"alien_type":"''' + a + '''"}')  > 0'''
-            else:
-                a_str += ''' OR JSON_CONTAINS(at.alien_type, '{"alien_type":"''' + a + '''"}')  > 0'''
-            c += 1
-        if 'OR' in a_str:
-            a_str = f" AND ({a_str})"
-        else:
-            a_str = f" AND {a_str}"
-        condition += a_str
+            # for ss in status:
+            aa_list.append(f'at.main_alien_type = "{a}"')
+        condition +=  f" AND ({' OR '.join(aa_list)})"
+
+    # print(aa_list, condition)
+        #     if c == 1:
+        #         a_str = '''JSON_CONTAINS(at.alien_type, '{"alien_type":"''' + a + '''"}')  > 0'''
+        #     else:
+        #         a_str += ''' OR JSON_CONTAINS(at.alien_type, '{"alien_type":"''' + a + '''"}')  > 0'''
+        #     c += 1
+        # if 'OR' in a_str:
+        #     a_str = f" AND ({a_str})"
+        # else:
+        #     a_str = f" AND {a_str}"
+        # condition += a_str
 
     # 日期
     # 不用考慮時差 已經是 UTC +8
@@ -2040,7 +2048,7 @@ def get_query_data_search(base, offset, response, limit, base_query):
         query = base_query + f"""
                     , cte as (
                         SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.alien_type, att.path, tn.name
+                            at.is_endemic, at.main_alien_type, att.path, tn.name
                         {base[0]}
                         LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
                         INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
@@ -2054,7 +2062,7 @@ def get_query_data_search(base, offset, response, limit, base_query):
         query = f"""
                     WITH cte as (
                         SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.alien_type, att.path, tn.name
+                            at.is_endemic, at.main_alien_type, att.path, tn.name
                         {base[0]}
                         LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
                         INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
@@ -2095,7 +2103,7 @@ def get_query_data_search(base, offset, response, limit, base_query):
                         else: # 取科
                             results.loc[i,'taxon_group'] = 26
                 if p:
-                    start = time.time()
+                    # start = time.time()
                     if get_language() == 'en-us':
                         query = f"SELECT t.taxon_id, t.rank_id, tn.name \
                                 FROM api_taxon t \
@@ -2117,13 +2125,14 @@ def get_query_data_search(base, offset, response, limit, base_query):
                 # 界
                 kingdoms = higher_taxa[(higher_taxa.rank_id==3)].taxon_id.to_list()
                 for i in results.index:
-                    alt_list = []
+                    # alt_list = []
+                    # if results.iloc[i].alien_type:
+                    #     for at in json.loads(results.iloc[i].alien_type):
+                    #         alt_list.append(at.get('alien_type').capitalize() if get_language() == 'en-us' else attr_map_c[at.get('alien_type')])
+                    #         # alt_list.append(attr_map_c[at.get('alien_type')])
+                    # alt_list = list(dict.fromkeys(alt_list))
                     if results.iloc[i].alien_type:
-                        for at in json.loads(results.iloc[i].alien_type):
-                            alt_list.append(at.get('alien_type').capitalize() if get_language() == 'en-us' else attr_map_c[at.get('alien_type')])
-                            # alt_list.append(attr_map_c[at.get('alien_type')])
-                    alt_list = list(dict.fromkeys(alt_list))
-                    results.loc[i,'alien_type'] = ','.join(alt_list)
+                        results.loc[i,'alien_type'] = attr_map_c[results.iloc[i].alien_type]
                     if results.iloc[i].path:
                         path = results.iloc[i].path.split('>')
                         ks = [k for k in kingdoms if k in path]

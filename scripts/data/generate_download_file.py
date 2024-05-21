@@ -8,7 +8,7 @@ import pandas as pd
 # from datetime import datetime, timedelta, strftime
 import json
 import numpy as np
-from taxa.utils import rank_map, rank_map_c, lin_map, lin_ranks
+from taxa.utils import rank_map, rank_map_c, lin_map, lin_ranks, attr_map_c
 
 
 # 下載檔案不給刪除的taxon
@@ -21,13 +21,13 @@ db_settings = {
     "db": env('DB_DBNAME'),
 }
 
-
+# JSON_EXTRACT(t.alien_type, '$[*].alien_type'), 
 
 # 名錄檔案（物種）
 # 已改成新的common_name寫法
 query = """
         SELECT t.taxon_id, t.accepted_taxon_name_id, tn.name, an.name_author, an.formatted_name, 
-        t.rank_id, acn.name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, JSON_EXTRACT(t.alien_type, '$[*].alien_type'), 
+        t.rank_id, acn.name_c, t.is_hybrid, t.is_in_taiwan, t.is_endemic, t.main_alien_type, t.alien_note,
         t.is_fossil, t.is_terrestrial, 
         t.is_freshwater, t.is_brackish, t.is_marine, ac.cites_listing, ac.cites_note, ac.iucn_category, ac.iucn_note, 
         ac.red_category, ac.red_note, ac.protected_category, ac.protected_note, ac.sensitive_suggest, ac.sensitive_note, 
@@ -45,7 +45,7 @@ with conn.cursor() as cursor:
     cursor.execute(query)
     df = cursor.fetchall()
     df = pd.DataFrame(df, columns=['taxon_id','name_id','simple_name','name_author','formatted_name','rank','common_name_c',
-                                    'is_hybrid','is_in_taiwan','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine',
+                                    'is_hybrid','is_in_taiwan','is_endemic','alien_type','alien_status_note','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine',
                                     'cites','cites_note','iucn','iucn_note','redlist','redlist_note','protected','protected_note','sensitive','sensitive_note',
                                     'created_at','updated_at','path','not_official'])
     # 取回alternative_name
@@ -56,8 +56,8 @@ with conn.cursor() as cursor:
     df = df.merge(name_c_df, how='left')
 
 
-df['alien_type'] = df['alien_type'].replace({None: '[]'})
-df['alien_type'] = df.alien_type.apply(lambda x: ','.join(list(dict.fromkeys(eval(x)))))
+# df['alien_type'] = df['alien_type'].replace({None: '[]'})
+# df['alien_type'] = df.alien_type.apply(lambda x: ','.join(list(dict.fromkeys(eval(x)))))
 
 last_updated = df['updated_at'].max().strftime('%Y%m%d')
 
@@ -104,6 +104,21 @@ for i in df.index:
     if i % 1000 == 0:
         print(i)
     row = df.iloc[i]
+    if row.alien_status_note:
+        alien_rows = json.loads(row.alien_status_note)
+        final_aliens = []
+        already_types = []
+        if len(alien_rows) > 1:
+            for at in alien_rows:
+                already_types.append(at.get('alien_type'))
+                if at.get('status_note'):
+                    final_aliens.append(f"{at.get('alien_type')}:{at.get('status_note')}")
+                else:
+                    if at.get('alien_type') not in already_types:
+                        final_aliens.append(at.get('alien_type'))
+        final_aliens = list(dict.fromkeys(final_aliens))
+    df.loc[i, 'alien_status_note'] = '|'.join(final_aliens)
+
     if path := row.path:
         path = path.split('>')
         # 拿掉自己
@@ -147,7 +162,7 @@ df = df.replace({np.nan: '', None: ''})
 
 # 欄位順序
 cols = ['taxon_id','name_id','simple_name','name_author','formatted_name','synonyms','formatted_synonyms','misapplied','formatted_misapplied','rank',
-        'common_name_c','alternative_name_c','is_hybrid','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater',
+        'common_name_c','alternative_name_c','is_hybrid','is_endemic','alien_type','alien_status_note','is_fossil','is_terrestrial','is_freshwater',
         'is_brackish','is_marine','cites','iucn','redlist','protected','sensitive','created_at','updated_at',
         'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c','is_in_taiwan','not_official']
 
@@ -163,7 +178,7 @@ taxon = df[cols]
 
 # taxon[taxon.is_in_taiwan=='true'].drop(columns=['is_in_taiwan']).to_csv(f"TaiCOL_taxon_{today.strftime('%Y%m%d')}.csv",index=False)
 # taxon[taxon.is_in_taiwan=='true'].drop(columns=['is_in_taiwan']).to_csv(f"TaiCOL_taxon_20230728.csv",index=False)
-
+# TODO 
 
 compression_options = dict(method='zip', archive_name=f"TaiCOL_taxon_{last_updated}.csv")
 taxon.to_csv(f'TaiCOL_taxon_{last_updated}.zip', compression=compression_options, index=False)
@@ -171,7 +186,7 @@ taxon.to_csv(f'TaiCOL_taxon_{last_updated}.zip', compression=compression_options
 
 # 名錄檔案（學名）
 # 需包含非台灣的學名，取最新的usage
-taxa_cols = ['name_id','taxon_id','common_name_c','alternative_name_c','is_in_taiwan','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','cites','cites_note',
+taxa_cols = ['name_id','taxon_id','common_name_c','alternative_name_c','is_in_taiwan','is_endemic','alien_type','alien_status_note','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','cites','cites_note',
             'iucn','redlist','protected','sensitive','kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
 
 taxon_for_name = df[taxa_cols]
@@ -301,7 +316,7 @@ names = names.replace({np.nan: None, 'null': None})
 
 name_cols = ['name_id','nomenclature_name','rank','simple_name','name_author','formatted_name','latin_genus','latin_s1','s2_rank','latin_s2',
 's3_rank','latin_s3','original_name_id','is_hybrid','hybrid_parent','protologue','type_name_id','namecode','created_at','updated_at',
-'taxon_id','usage_status','is_in_taiwan','common_name_c','alternative_name_c','is_endemic','alien_type',
+'taxon_id','usage_status','is_in_taiwan','common_name_c','alternative_name_c','is_endemic','alien_type','alien_status_note',
 'is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','cites','iucn','redlist','protected','sensitive',
 'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
 
@@ -310,23 +325,24 @@ names = names[name_cols]
 
 names = names.replace({np.nan: '', None: ''})
 
+# TODO 確定學名多對應的status問題
 
 compression_options = dict(method='zip', archive_name=f"TaiCOL_name_{last_updated}.csv")
 names.to_csv(f'TaiCOL_name_{last_updated}.zip', compression=compression_options, index=False)
 
 
-# 學名檔案2023-12
+# 學名檔案2024-03
 #  //就學名有幾筆
 # 共XXXX筆
-# 共 164678 筆
+# 共 165701 筆
 
 
-# 物種檔案2023-10
+# 物種檔案2024-03
 # //就Taxon有幾筆，但括號內只統計種rank34
 # 共xxxx筆（其中臺灣存在計??????種）
 # taxon[taxon.is_in_taiwan=='true'].groupby('rank',as_index=False).taxon_id.nunique()
 
-# 共 102596 筆（其中臺灣存在計 63253 種）
+# 共 103482 筆（其中臺灣存在計 63840 種）
 
 
 

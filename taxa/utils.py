@@ -2,7 +2,7 @@ from conf.settings import env
 import pymysql
 import math
 import pandas as pd
-import re
+# import re
 # from datetime import datetime, timedelta, strftime
 import json
 import numpy as np
@@ -57,15 +57,21 @@ with conn.cursor() as cursor:
 
 kingdom_map = {}
 conn = pymysql.connect(**db_settings)
-query = "SELECT tn.name, at.taxon_id, acn.name_c FROM taxon_names tn \
+query = '''SELECT tn.name, at.taxon_id, acn.name_c FROM taxon_names tn \
          JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id \
          JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1\
-         WHERE tn.rank_id = 3 ORDER BY tn.name"
+         WHERE tn.rank_id = 3\
+         UNION ALL \
+         SELECT tn.name, at.taxon_id, "病毒" FROM taxon_names tn \
+         JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id \
+          WHERE tn.rank_id = 50 \
+        '''
 with conn.cursor() as cursor:
     cursor.execute(query)
     kingdom = cursor.fetchall()
     for k in kingdom:
         kingdom_map[k[1]] = {'name': k[0], 'common_name_c': k[2]}
+
 
 rank_map, rank_map_c,rank_map_c_reverse, rank_order_map = {}, {}, {}, {}
 conn = pymysql.connect(**db_settings)
@@ -112,7 +118,7 @@ status_map_taxon_c = {'accepted': {'en-us': 'Accepted', 'zh-tw': '接受名'}, '
                       'undetermined': {'en-us': 'Undetermined', 'zh-tw': '未決'}, 'misapplied': {'en-us': 'Misapplied', 'zh-tw': '誤用'}}
 
 rank_color_map = { 3: 'rank-1-red', 12: 'rank-2-org', 18: 'rank-3-yell', 22: 'rank-4-green', 26: 'rank-5-blue', 
-                  30: 'rank-6-deepblue', 34: 'rank-7-purple', 49:'rank-second-gray' }
+                  30: 'rank-6-deepblue', 34: 'rank-7-purple', 49:'rank-second-gray'}
 
 attr_map_c = {'is_in_taiwan':'存在於臺灣','is_endemic':'臺灣特有','is_terrestrial':'陸生','is_freshwater':'淡水','is_brackish':'半鹹水','is_marine':'海洋','is_fossil':'化石','native': '原生','naturalized':'歸化','invasive':'入侵','cultured':'栽培豢養', 'is_cultured': '栽培豢養'}
 attr_map = {'is_in_taiwan':'Exist in Taiwan','is_endemic':'Endemic to Taiwan','is_terrestrial':'Terrestrial','is_freshwater':'Freshwater','is_brackish':'Brackish','is_marine':'Marine','is_fossil':'Fossil', 'native': 'Native','naturalized':'Naturalized','invasive':'Invasive','cultured':'Cultured', 'is_cultured': 'Cultured'}
@@ -159,6 +165,8 @@ lin_map = {
 }
 
 lin_map_w_order = {
+    50: {'name': '', 'rank_order': 0},
+    49: {'name': '', 'rank_order': 1},
     3: {'name': 'kingdom', 'rank_order': 5},
     12: {'name': 'phylum', 'rank_order': 14},
     18: {'name': 'classis', 'rank_order': 23},
@@ -167,7 +175,7 @@ lin_map_w_order = {
     30: {'name': '', 'rank_order': 36},
 }
 
-lin_ranks = [3,12,18,22,26,30,34]
+lin_ranks = [50, 49, 3, 12, 18, 22, 26, 30, 34]
 sub_lin_ranks = [35,36,37,38,39,40,41,42,43,44,45,46]
 
 
@@ -318,7 +326,7 @@ def return_download_file(base, base_query):
         query = base_query + f"""
                         SELECT distinct tn.name, atu.status, at.taxon_id, at.accepted_taxon_name_id, 
                             tnn.name, an.name_author, an.formatted_name, at.rank_id, acnn.name_c, 
-                            at.is_hybrid, at.is_in_taiwan, at.is_endemic, at.alien_type, 
+                            at.is_hybrid, at.is_in_taiwan, at.is_endemic, at.main_alien_type, at.alien_note,
                             at.is_fossil, at.is_terrestrial, at.is_freshwater, at.is_brackish, at.is_marine,
                             at.not_official, ac.cites_listing, ac.iucn_category, ac.red_category, ac.protected_category, ac.sensitive_suggest,
                             at.created_at, at.updated_at, att.path
@@ -334,7 +342,7 @@ def return_download_file(base, base_query):
         query = f"""
                         SELECT distinct tn.name, atu.status, at.taxon_id, at.accepted_taxon_name_id, 
                             tnn.name, an.name_author, an.formatted_name, at.rank_id, acnn.name_c, 
-                            at.is_hybrid, at.is_in_taiwan, at.is_endemic, at.alien_type, 
+                            at.is_hybrid, at.is_in_taiwan, at.is_endemic, at.main_alien_type, at.alien_note,
                             at.is_fossil, at.is_terrestrial, at.is_freshwater, at.is_brackish, at.is_marine,
                             at.not_official, ac.cites_listing, ac.iucn_category, ac.red_category, ac.protected_category, ac.sensitive_suggest,
                             at.created_at, at.updated_at, att.path
@@ -345,16 +353,17 @@ def return_download_file(base, base_query):
                         LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
                         WHERE {base[1]} 
                 """
-
+        
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
         cursor.execute(query)
         df = cursor.fetchall()
         df = pd.DataFrame(df, columns=['search_name','usage_status', 'taxon_id','name_id','simple_name','name_author','formatted_name','rank','common_name_c',
-                                        'is_hybrid','is_in_taiwan','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine',
+                                        'is_hybrid','is_in_taiwan','is_endemic','alien_type','alien_status_note','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine',
                                         'not_official', 'cites','iucn','redlist','protected','sensitive','created_at','updated_at','path'])
         df = df.drop_duplicates()
         df = df.reset_index(drop=True)
+        # print(df.keys())
         # 在這步取得alternative_common_name
         name_c_query = "select name_c, taxon_id from api_common_name where taxon_id IN %s and is_primary = 0"
         cursor.execute(name_c_query, (df.taxon_id.to_list(),))
@@ -423,13 +432,22 @@ def return_download_file(base, base_query):
 
     for i in df.index:
         row = df.iloc[i]
+        if row.alien_status_note:
+            alien_rows = json.loads(row.alien_status_note)
+            final_aliens = []
+            already_types = []
+            if len(alien_rows) > 1:
+                for at in alien_rows:
+                    already_types.append(at.get('alien_type'))
+                    if at.get('status_note'):
+                        final_aliens.append(f"{at.get('alien_type')}：{at.get('status_note')}")
+                    else:
+                        if at.get('alien_type') not in already_types:
+                            final_aliens.append(at.get('alien_type'))
+            final_aliens = list(dict.fromkeys(final_aliens))
+        df.loc[i, 'alien_status_note'] = '|'.join(final_aliens)
 
-
-        # TODO 這邊要修改
-
-        df['alien_type'] = df['alien_type'].replace({None: '[]'})
-        df['alien_type'] = df.alien_type.apply(lambda x: ','.join(list(dict.fromkeys(eval(x)))))
-
+        # TODO 這邊還沒修改成rank_order
         if path := row.path:
             path = path.split('>')
             # 拿掉自己
@@ -462,16 +480,20 @@ def return_download_file(base, base_query):
     is_list = ['is_hybrid','is_in_taiwan','is_endemic','is_fossil','is_terrestrial','is_freshwater','is_brackish','is_marine','not_official']
     df[is_list] = df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
 
+
     df = df.replace({np.nan: '', None: ''})
+
 
     # 欄位順序
     cols = ['search_name','usage_status','taxon_id','name_id','simple_name','name_author','formatted_name','synonyms','formatted_synonyms','misapplied','formatted_misapplied','rank',
-            'common_name_c','alternative_name_c','is_hybrid','is_in_taiwan','is_endemic','alien_type','is_fossil','is_terrestrial','is_freshwater',
+            'common_name_c','alternative_name_c','is_hybrid','is_in_taiwan','is_endemic','alien_type','alien_status_note','is_fossil','is_terrestrial','is_freshwater',
             'is_brackish','is_marine','not_official','cites','iucn','redlist','protected','sensitive','created_at','updated_at',
             'kingdom','kingdom_c','phylum','phylum_c','class','class_c','order','order_c','family','family_c','genus','genus_c']
 
+    # print(df.keys())
     for c in cols:
         if c not in df.keys():
+            # print(c)
             df[c] = ''
     # cites要改成 I,II,III
     df['cites'] = df['cites'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III') if x else x)
@@ -934,70 +956,66 @@ def create_name_history(names, nids, taxon_id, ref_df):
 
 
 
-def create_alien_type_display(alien_json, ref_df, names):
+def create_alien_type_display(alien_types, ref_df, names):
+    final_aliens = []
+    # query = "SELECT main_alien_type, alien_note FROM api_taxon WHERE taxon_id = %s"
+    # conn = pymysql.connect(**db_settings)
+    # with conn.cursor() as cursor:
+    #     cursor.execute(query, (taxon_id, ))
+    #     alien_types = cursor.fetchone()
+        # alien_type_df = pd.DataFrame(cursor.fetchall(), columns=['main_alien_type', 'alien_note'])
+        # alien_type_df = alien_type_df.merge(notes, how='left')
+    
+    # main_at = alien_types[0]
     has_cultured = 0
-    alien_types = []
-    alien_type_df = pd.DataFrame(alien_json)
-    # 先取得alien_status_note
-    query = "SELECT id, properties ->> '$.alien_status_note' FROM reference_usages WHERE id IN %s"
-    conn = pymysql.connect(**db_settings)
-    with conn.cursor() as cursor:
-        cursor.execute(query, (list(alien_type_df.reference_usage_id.unique()), ))
-        notes = pd.DataFrame(cursor.fetchall(), columns=['reference_usage_id', 'alien_status_note'])
-        alien_type_df = alien_type_df.merge(notes, how='left')
 
-    # print(alien_type_df.to_dict('records'))
-    if len(alien_type_df):
-        alt_list = alien_type_df.alien_type.unique()
-        # 決定誰是主要alien_type
-        if len(alt_list) == 1:
-            main_at = alt_list[0]
-        else:
-            # TODO 尚未完成
-            # 如果裡面沒有is_latest的話 再決定誰是最新
-            if len(alien_type_df[alien_type_df.is_latest==True]):
-                main_at = alien_type_df[alien_type_df.is_latest==True].alien_type.values[0]
-            else:
-                main_at = check_alien_latest(temp=alien_type_df,conn=conn)
+    # current_note = []
+    if alien_types:
+        alien_rows = json.loads(alien_types)
+        ru_list = [r.get('reference_usage_id') for r in alien_rows]
+        query = """SELECT ru.id, ru.taxon_name_id, ru.reference_id, r.type FROM reference_usages ru
+                    JOIN  `references` r ON r.id = ru.reference_id  WHERE ru.id IN %s; """
+        with conn.cursor() as cursor:
+            cursor.execute(query, (ru_list, ))
+            rus = cursor.fetchall()
 
-
-        
-        current_note = []
-        for at in alt_list:
-            if at == 'cultured':
-                has_cultured = 1
-            at_rows = alien_type_df[alien_type_df.alien_type==at].to_dict('records')
-            # current_note = []
-            for atr in at_rows:
-                if atr.get('alien_status_note'):
-                    if atr.get('reference_type') not in [4,6]:
-                        at_name = names[names.taxon_name_id==atr.get('taxon_name_id')].sci_name_ori.to_list()[0]
-                        if len(ref_df[ref_df.reference_id==atr.get('reference_id')]):
+        if len(alien_rows) > 1:
+            for at in alien_rows:
+                current_ru = [ru for ru in rus if ru[0] == at.get('reference_usage_id')][0]
+                if at.get('alien_type') == 'cultured':
+                    has_cultured = 1
+                # at_rows = alien_type_df[alien_type_df.alien_type==at].to_dict('records')
+                current_note = []
+                # for atr in at:
+                if at.get('status_note'):
+                    if current_ru[3] not in [4,6]:
+                        at_name = names[names.taxon_name_id==current_ru[1]].sci_name_ori.to_list()[0]
+                        if len(ref_df[ref_df.reference_id==current_ru[2]]):
                             # TODO 這邊是暫時的
-                            at_ref = ref_df[ref_df.reference_id==atr.get('reference_id')].ref.to_list()[0]
-                            current_note.append(f"{atr.get('alien_status_note')} ({at_ref}, {at_name})")
+                            at_ref = ref_df[ref_df.reference_id==current_ru[2]].ref.to_list()[0]
+                            current_note.append(f"{at.get('status_note')} ({at_ref}, {at_name})")
                         else:
-                            current_note.append(f"{atr.get('alien_status_note')} ({at_name})")
+                            current_note.append(f"{at.get('status_note')} ({at_name})")
                     else:
-                        current_note.append(atr.get('alien_status_note'))
+                        current_note.append(at.get('status_note'))
                 else:
-                    if atr.get('reference_type') not in [4,6]:
-                        at_name = names[names.taxon_name_id==atr.get('taxon_name_id')].sci_name_ori.to_list()[0]
-                        if len(ref_df[ref_df.reference_id==atr.get('reference_id')]) and len(names[names.taxon_name_id==atr.get('taxon_name_id')]):
+                    if current_ru[3] not in [4,6]:
+                        at_name = names[names.taxon_name_id==current_ru[1]].sci_name_ori.to_list()[0]
+                        if len(ref_df[ref_df.reference_id==current_ru[2]]) and len(names[names.taxon_name_id==current_ru[1]]):
                             # TODO 這邊是暫時的
-                            at_ref = ref_df[ref_df.reference_id==atr.get('reference_id')].ref.to_list()[0]
-                            
+                            at_ref = ref_df[ref_df.reference_id==current_ru[2]].ref.to_list()[0]
                             current_note.append(f"{at_ref}, {at_name}")
                         else:
                             current_note.append(f"{at_name}")
-            # print(at_rows)
-            alien_types.append({
-                'alien_type': attr_map_c[at],
-                'note': '; '.join(current_note)
-            })
+                # print(at_rows)
+                final_aliens.append({
+                    'alien_type': attr_map_c[at.get('alien_type')],
+                    'note': '; '.join(current_note)
+                })
         # alien_types = 
+    return has_cultured, final_aliens
     
-    return has_cultured, alien_types, attr_map_c[main_at]
+    # return has_cultured, alien_types, attr_map_c[main_at]
 
 
 
