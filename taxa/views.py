@@ -693,9 +693,9 @@ def taxon(request, taxon_id):
                     cursor.execute(query, (par1, taxon_id))
                     refs_r = cursor.fetchall()
                     refs = [[r[0],r[1]] for r in refs_r if [r[0],r[1]] not in refs and r[-1] not in [4,6]]
-                    short_refs = [[r[0],r[4]] for r in refs_r if [r[0],r[4]] not in short_refs and r[-1] not in [4,6]]
+                    short_refs = [[r[0],r[4],r[5]] for r in refs_r if [r[0],r[4],r[5]] not in short_refs and r[-1] not in [4,6]]
                     conn.close()
-                ref_df = pd.DataFrame(short_refs, columns=['reference_id', 'ref'])
+                ref_df = pd.DataFrame(short_refs, columns=['reference_id', 'ref', 'type'])
                 # 取得expert
                 if len(ref_df):
                     query = "SELECT person_id FROM person_reference WHERE reference_id in %s"
@@ -714,7 +714,7 @@ def taxon(request, taxon_id):
                 data['alien_types'] = []
                 alien_types = []
                 has_cultured = 0
-                main_at = ''
+                # main_at = ''
                 # if data['alien_type']:
                     # 這邊要改成根據文獻優先性只顯示一種主要的alien_type
                     # 其餘全部放入note中
@@ -722,12 +722,16 @@ def taxon(request, taxon_id):
                     # alien_json = json.loads(data['alien_type'])
                     # if len(alien_json):
                         # has_cultured, alien_types, main_at = create_alien_type_display(alien_json=alien_json,ref_df=ref_df,names=names)
-                has_cultured, alien_types = create_alien_type_display(alien_types=data['alien_note'],ref_df=ref_df,names=names)
+                # print(data['alien_note'])
+                has_cultured, alien_types = create_alien_type_display(alien_types=data['alien_note'],ref_df=ref_df)
 
                 # print()
         
                 data['alien_types'] = alien_types
-                data['alien_type'] = attr_map_c[data['main_alien_type']]
+                if data['main_alien_type']:
+                    data['alien_type'] = attr_map_c[data['main_alien_type']]
+                # else:
+
 
                 # 如果有is_cultured要加上去 如果是backbone不給文獻
                 # 因為有些是下階層是栽培豢養才加上is_cultured 會沒有對應的cultured文獻
@@ -819,18 +823,6 @@ def taxon(request, taxon_id):
         with conn.cursor() as cursor:
             query = "SELECT tree_stat FROM api_taxon_tree where taxon_id = %s "
             # 如果自己是種下的話要調整
-            # if data.get('rank_id') <= 46 and data.get('rank_id') >= 35:
-            #     query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
-            #             JOIN api_taxon at ON att.taxon_id = at.taxon_id
-            #             WHERE att.path LIKE %s AND at.rank_id > 34 AND at.is_in_taiwan = 1 AND at.is_deleted != 1 AND att.taxon_id != %s
-            #             GROUP BY at.rank_id ORDER BY at.rank_id ASC;"""
-            #     cursor.execute(query, (f'%>{taxon_id}%', taxon_id ))
-            # else:
-            #     query = f"""SELECT COUNT(distinct(att.taxon_id)), at.rank_id FROM api_taxon_tree att 
-            #             JOIN api_taxon at ON att.taxon_id = at.taxon_id
-            #             WHERE att.path LIKE %s AND at.rank_id > %s AND at.is_in_taiwan = 1 AND at.is_deleted != 1
-            #             GROUP BY at.rank_id ORDER BY at.rank_id ASC;"""
-            #     cursor.execute(query, (f'%>{taxon_id}%', data.get('rank_id'), ))
             cursor.execute(query, (taxon_id, ))
             # 包含栽培豢養 & 未經正式紀錄
             stat_map_key = 'with_not_official_with_cultured'
