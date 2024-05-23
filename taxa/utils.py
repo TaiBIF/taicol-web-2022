@@ -408,6 +408,18 @@ def return_download_file(base, base_query):
 
     df = df.merge(misapplied, on='taxon_id', how='left')
 
+
+    query = "SELECT r.id, c.short_author, r.type \
+                FROM `references` r  \
+                LEFT JOIN api_citations c ON r.id = c.reference_id \
+                JOIN api_taxon_usages atu ON r.id = atu.reference_id  \
+                WHERE atu.taxon_id IN %s"  
+    conn = pymysql.connect(**db_settings)
+    with conn.cursor() as cursor:
+        cursor.execute(query, (df.taxon_id.to_list(), ))
+        refs = pd.DataFrame(cursor.fetchall(), columns=['reference_id', 'ref', 'type'])
+
+
     # higher taxa
     total_path = []
 
@@ -440,15 +452,7 @@ def return_download_file(base, base_query):
             # alien_rows = json.loads(row.alien_status_note)
             alien_rows = pd.DataFrame(json.loads(row.alien_status_note))
             if len(alien_rows):
-                ref_list = alien_rows.reference_id.to_list()
-                query = "SELECT r.id, c.short_author, r.type \
-                            FROM `references` r  \
-                            LEFT JOIN api_citations c ON r.id = c.reference_id \
-                            WHERE r.id IN %s"  
-                conn = pymysql.connect(**db_settings)
-                with conn.cursor() as cursor:
-                    cursor.execute(query, (ref_list, ))
-                    refs = pd.DataFrame(cursor.fetchall(), columns=['reference_id', 'ref', 'type'])
+                # ref_list = alien_rows.reference_id.to_list()
 
                 alien_rows = alien_rows.merge(refs,how='left')
                 alien_rows = alien_rows.replace({np.nan: None})
