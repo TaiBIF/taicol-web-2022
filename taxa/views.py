@@ -171,7 +171,7 @@ def get_autocomplete_taxon(request):
                             INNER JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND name_c REGEXP '{keyword_str}'
                             {'INNER JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id' if from_tree else ''}
                             WHERE at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} {' AND at.not_official = 0' if with_not_official == 'off' else ''}
-                            {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
+                            {'AND at.rank_id in (49,50,3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
                             ORDER BY tn.name
                             LIMIT 10
                         )
@@ -215,7 +215,7 @@ def get_autocomplete_taxon(request):
                                 JOIN base_name ON atu.taxon_name_id = base_name.id
                                 JOIN api_taxon at ON atu.taxon_id = at.taxon_id 
                                     AND at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition}  {' AND at.not_official = 0' if with_not_official == 'off' else ''}
-                                    {' AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
+                                    {' AND at.rank_id in (49,50,3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
                                 WHERE atu.is_deleted =0 
                             )
                             SELECT bq.taxon_id, tn.name, CONCAT_WS(' ', tnn.name,GROUP_CONCAT(acn.name_c order by acn.is_primary DESC separator ',' )), bq.status
@@ -886,10 +886,10 @@ def get_root_tree(request):
     elif with_not_official == 'on' and with_cultured == 'on':
         stat_map_key = 'with_not_official_with_cultured'
 
-    if with_cultured != 'on': # 排除栽培豢養
-        is_cultured = [0, None] 
-    else: # 包含栽培豢養
-        is_cultured = [0,1]
+    # if with_cultured != 'on': # 排除栽培豢養
+    #     is_cultured = [0, None] 
+    # else: # 包含栽培豢養
+    #     is_cultured = [0,1]
         
     kingdom_dict = []
     infra_str = 'Infraspecies' if get_language() == 'en-us' else '種下'
@@ -899,7 +899,7 @@ def get_root_tree(request):
     with conn.cursor() as cursor:
         query = f"""SELECT att.tree_stat, at.taxon_id FROM api_taxon_tree att 
                 JOIN api_taxon at ON att.taxon_id = at.taxon_id
-                WHERE at.rank_id = 3; """
+                WHERE at.rank_id = 3 OR at.rank_id = 50; """
         cursor.execute(query)
         stat_list = cursor.fetchall()
         conn.close()
@@ -967,7 +967,7 @@ def taxon_tree(request):
     rank_map_dict = rank_map if get_language() == 'en-us' else rank_map_c
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
-        # TODO 要加上病毒的unranked
+        # 要加上病毒的unranked
         query = f"""SELECT att.tree_stat, at.taxon_id FROM api_taxon_tree att 
                 JOIN api_taxon at ON att.taxon_id = at.taxon_id
                 WHERE at.rank_id = 3 OR at.rank_id = 50; """
@@ -1035,22 +1035,6 @@ def taxon_tree(request):
     return render(request, 'taxa/taxon_tree.html', {'kingdom_dict':kingdom_dict, 'search_stat': search_stat})
 
 
-# # 只打開下面一層
-# def get_sub_tree(request): 
-#     taxon_id = request.POST.get('taxon_id')
-#     with_cultured = request.POST.get('with_cultured')
-#     rank_id = request.POST.get('rank_id')
-#     lang = request.POST.get('lang', 'zh-hant')
-#     lin_rank = request.POST.get('lin_rank')
-#     with_not_official = request.POST.get('with_not_official')
-#     s = time.time()
-    
-#     conn = pymysql.connect(**db_settings)
-
-#     sub_dict = get_tree_stat(taxon_id,with_cultured,rank_id,False,lang,lin_rank,with_not_official,conn)
-#     # print(time.time()-s)
-#     return HttpResponse(json.dumps(sub_dict), content_type='application/json') 
-
 
 def get_taxon_path(request):
     taxon_id = request.POST.get('taxon_id')
@@ -1058,13 +1042,12 @@ def get_taxon_path(request):
     with_not_official = request.POST.get('with_not_official')
     with_cultured = request.POST.get('with_cultured')
 
-    not_official_str = ' AND not_official = 0' if with_not_official == 'off' else ''
-    cultured_str = ' AND is_cultured != 1 ' if with_cultured != 'on' else '' # 排除栽培豢養
-
-    # s = time.time()
+    not_official_str = ' AND at.not_official = 0' if with_not_official == 'off' else ''
+    cultured_str = ' AND at.is_cultured != 1 ' if with_cultured != 'on' else '' # 排除栽培豢養
 
     resp = {}
     if taxon_id:
+        # print(taxon_id)
         conn = pymysql.connect(**db_settings)
         query = f"SELECT {'lin_path' if lin_rank == 'on' else 'path'} FROM api_taxon_tree WHERE taxon_id = %s;"
         with conn.cursor() as cursor:
@@ -1073,20 +1056,21 @@ def get_taxon_path(request):
             conn.close()
             if ps:
                 path = ps[0].split('>')
-                # if  != 'on': # 要排除栽培豢養
-                #     query = f"""SELECT taxon_id, rank_id FROM api_taxon WHERE {}
-                #                 AND taxon_id IN %s ORDER BY rank_id DESC;"""
-                # else:
-                query = f"SELECT taxon_id, rank_id FROM api_taxon WHERE taxon_id IN %s {cultured_str} {not_official_str} ORDER BY rank_id DESC;"
+                query = f"""SELECT at.taxon_id, at.rank_id FROM api_taxon at
+                            JOIN `ranks` r ON r.id = at.rank_id
+                            WHERE at.taxon_id IN %s {cultured_str} {not_official_str} 
+                            ORDER BY r.order DESC;"""
+                # print(query) 
+                # print(path)
                 conn = pymysql.connect(**db_settings)
                 with conn.cursor() as cursor:
                     cursor.execute(query, (path,))
                     t_ids = cursor.fetchall()
+                    # print('t_ids', t_ids)
                     conn.close()
                     resp['path'] = Reverse([t[0] for t in t_ids])
                     resp['rank_id'] = Reverse([t[1] for t in t_ids])
 
-    # print(time.time()-s)
     return HttpResponse(json.dumps(resp), content_type='application/json') 
 
 
@@ -1102,7 +1086,6 @@ def get_sub_tree_list(request):
     with_not_official = request.POST.get('with_not_official')
     from_search_click = request.POST.get('from_search_click')
 
-
     # s = time.time()
     not_official_str = ' AND at.not_official = 0' if with_not_official == 'off' else ''
 
@@ -1111,7 +1094,7 @@ def get_sub_tree_list(request):
         is_cultured = [0, None] 
     else: # 包含栽培豢養
         is_cultured = [0,1]
-        
+
 
     df = pd.DataFrame({'rank_id': rank_id, 'taxon_id': taxon_id})
 
@@ -1129,7 +1112,7 @@ def get_sub_tree_list(request):
                     WHERE {'att.lin_parent_taxon_id' if lin_rank == 'on' else 'att.parent_taxon_id'} IN %s
                     AND at.is_in_taiwan = 1 
                     AND at.is_deleted != 1 AND at.is_cultured IN %s {not_official_str}
-                    {'AND at.rank_id in (3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46,49)' if lin_rank == 'on' else ''} 
+                    {'AND at.rank_id in (50,49,3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''} 
                 )
                 SELECT 
                     JSON_ARRAYAGG(
@@ -1150,8 +1133,6 @@ def get_sub_tree_list(request):
                 JOIN ranks r ON at.rank_id = r.id
                 GROUP BY bq.parent_taxon_id """
 
-                # ORDER BY at.rank_id DESC, an.formatted_name;"""
-
 
     # print(query)
     with conn.cursor() as cursor:
@@ -1160,15 +1141,13 @@ def get_sub_tree_list(request):
         # print(infos)
         infos = pd.DataFrame(infos, columns=['info', 'taxon_id'])
 
-   
+    # print(df)
     # print(infos)
     for i in df.index:
         current_rank_order = rank_order_map[df.rank_id[i]]
         info_list = infos[infos.taxon_id==df.taxon_id[i]]['info'].to_list()
         sub_titles = []
         stat_list = []
-
-
         for info in info_list:
             infosss = json.loads(info)
             if len(infosss):
@@ -1178,15 +1157,20 @@ def get_sub_tree_list(request):
                     if ii['rank_order'] > current_rank_order:
                         sub_titles.append([ii['taxon_id'], ii['rank_id'], ii['formatted_name'], ii['rank'], ii['rank_order']])
                         stat_list.append([ii['tree_stat'], ii['taxon_id']])
-
-        # print(df.taxon_id[i],with_cultured,int(df.rank_id[i]),True,lang,lin_rank,with_not_official, conn, stat_list, sub_titles)
-        # if x := get_tree_stat(df.taxon_id[i],with_cultured,int(df.rank_id[i]),True,lang,lin_rank,with_not_official, conn, stat_list, sub_titles):
-        if x := get_tree_stat(df.taxon_id[i],with_cultured,int(df.rank_id[i]),from_search_click,lang,lin_rank,with_not_official, conn, stat_list, sub_titles):
+        # print(i)
+        if x := get_tree_stat(taxon_id=df.taxon_id[i],
+                                with_cultured=with_cultured,
+                                rank_id=int(df.rank_id[i]),
+                                from_search_click=from_search_click,
+                                lang=lang,
+                                with_not_official=with_not_official, 
+                                conn=conn, 
+                                stat_list=stat_list, 
+                                sub_titles=sub_titles):
             sub_dict_list.append(x)
+            # print(x)
+            # print(sub_dict_list)
 
-        # print(sub_dict_list)
-    
-        # print('2', time.time()-s)
 
     return HttpResponse(json.dumps(sub_dict_list), content_type='application/json') 
 
@@ -1196,10 +1180,7 @@ def Reverse(lst):
     return new_lst
  
 
-
-# print(df.taxon_id[i],with_cultured,int(df.rank_id[i]),True,lang,lin_rank,with_not_official, conn, stat_list, sub_titles)
-
-def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,lin_rank,with_not_official,conn, stat_list,sub_titles):
+def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,with_not_official,conn, stat_list,sub_titles):
     
     sub_dict = {}
     rank_id = int(rank_id)
@@ -1220,8 +1201,9 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,lin_rank
     next_lin_h = None
     if rank_id in lin_ranks:
         if lin_ranks.index(rank_id)+1 < len(lin_ranks):
-            if lin_ranks[lin_ranks.index(rank_id)+1] < 34:
+            if lin_ranks[lin_ranks.index(rank_id)+1] < 34 or lin_ranks[lin_ranks.index(rank_id)+1] > 47:
                 next_lin_h = lin_ranks[lin_ranks.index(rank_id)+1]
+    # print('next_lin_h', next_lin_h)
 
     # print(rank_id, next_lin_h)
 
@@ -1245,7 +1227,6 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,lin_rank
             sub_stat.append({'rank_id': ssl['rank_id'], 'count': ssl['count'].get(stat_map_key), 'taxon_id': sl[1], 'rank_order':rank_order_map[ssl['rank_id']]})
 
     sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id','rank_order'])
-    # sub_stat = sub_stat.sort_values('rank_id')
     sub_stat = sub_stat.sort_values('rank_order')
     sub_stat = sub_stat.reset_index(drop=True)
 
@@ -1259,7 +1240,6 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,lin_rank
         if st[1] in sub_lin_ranks:
             stats = sub_stat[(sub_stat.taxon_id==st[0])&(sub_stat.rank_id.isin(sub_lin_ranks))]
         else:
-            # stats = sub_stat[(sub_stat.taxon_id==st[0])&(sub_stat.rank_id>st[1])]
             stats = sub_stat[(sub_stat.taxon_id==st[0])&(sub_stat.rank_order>st[-1])]
         stats = stats.reset_index(drop=True)
         if st[1] in lin_ranks:
@@ -1311,14 +1291,14 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,lin_rank
             taxon_info = cursor.fetchone()
             formatted_name = taxon_info[0]
 
-        if from_search_click == 'true':
-            # TODO 這邊要改成用rank_order
-            for r in lin_map.keys():
-                now_order = rank_order_map[r]
-                if now_order < min(uncertain_rank_order) and now_order > rank_order_map[rank_id]:
-                    lack_r.append(r)
-        else:
-            lack_r = [next_lin_h]
+        # if from_search_click == 'true':
+
+        #     for r in lin_map.keys():
+        #         now_order = rank_order_map[r]
+        #         if now_order < min(uncertain_rank_order) and now_order > rank_order_map[rank_id]:
+        #             lack_r.append(r)
+        # else:
+        lack_r = [next_lin_h]
         for nlh in lack_r:
             stat_str = ''
             spp = 0
@@ -1327,7 +1307,7 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,lin_rank
             rank_c = rank_map_c[nlh]
             stats = sub_stat[sub_stat.taxon_id.isin([un[0] for un in uncertains])]
             stats = stats.groupby(['rank_order','rank_id'],as_index=False).sum('count')
-            # stats = stats[stats.rank_id > nlh]
+
             stats = stats[stats.rank_order > rank_order_map[nlh]]
             stats = stats.reset_index(drop=True)
             # 補所有地位未定的部分
@@ -1375,11 +1355,13 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,lin_rank
         # print(lack_r)
         # print(final_sub_dict)
         final_sub_dict['has_lack'] = True
-        final_sub_dict[rank_map_c[total_ranks[total_ranks.index(max(lack_r)) + 1]]]['parent_rank_id'] = max(lack_r)
-        if from_search_click == 'false':
-            for ur in uncertain_rank:
-                if rank_map_c[ur] in final_sub_dict.keys():
-                    final_sub_dict.pop(rank_map_c[ur])
+        # print(lack_r)
+        # print(total_ranks)
+        # final_sub_dict[rank_map_c[total_ranks[total_ranks.index(max(lack_r)) + 1]]]['parent_rank_id'] = max(lack_r)
+        # if from_search_click == 'false':
+        for ur in uncertain_rank:
+            if rank_map_c[ur] in final_sub_dict.keys():
+                final_sub_dict.pop(rank_map_c[ur])
 
     return final_sub_dict
 
@@ -1476,7 +1458,6 @@ def get_match_result(request):
                             LEFT JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
                             WHERE at.taxon_id IN %s AND at.is_deleted != 1
                         """ 
-                # at.is_terrestrial, at.is_freshwater, at.is_brackish, at.is_marine, at.is_fossil, ac.cites_listing,
                 conn = pymysql.connect(**db_settings)
                 with conn.cursor() as cursor:
                     cursor.execute(query,(namecode_list,))
@@ -2117,12 +2098,7 @@ def get_query_data_search(base, offset, response, limit, base_query):
                 # 界
                 kingdoms = higher_taxa[(higher_taxa.rank_id==3)].taxon_id.to_list()
                 for i in results.index:
-                    # alt_list = []
-                    # if results.iloc[i].alien_type:
-                    #     for at in json.loads(results.iloc[i].alien_type):
-                    #         alt_list.append(at.get('alien_type').capitalize() if get_language() == 'en-us' else attr_map_c[at.get('alien_type')])
-                    #         # alt_list.append(attr_map_c[at.get('alien_type')])
-                    # alt_list = list(dict.fromkeys(alt_list))
+
                     if results.iloc[i].alien_type:
                         results.loc[i,'alien_type'] = attr_map_c[results.iloc[i].alien_type]
                     if results.iloc[i].path:
