@@ -484,6 +484,10 @@ msgstr "Domain"
 msgid "總界"
 msgstr "Superkingdom"
 
+#: templates/taxa/catalogue.html:198
+msgid "病毒域"
+msgstr "Realm"
+
 #: templates/taxa/catalogue.html:237
 msgid "原生"
 msgstr "Native"

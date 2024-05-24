@@ -10,7 +10,7 @@
 
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon_tree.css' %}?v1">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon_tree.css' %}?v2">
 {% endblock style %}
 
 {% block body %}
@@ -88,11 +88,17 @@
 				<ul class="rank-1-red kingdom d-block">
 					<!--選到的給now並展開第二層-->
 					{% for k in kingdom_dict %}
-					<li>
+					<li {% if 'Viruses' in k.name %} class="unranked-li" {% endif %}>
 						<span class="anchor" id="{{ k.taxon_id }}" ></span>
-						<div class="item-box getSubList" data-with_cultured="on" data-lin_rank="on" data-fetched="0" data-taxon="{{ k.taxon_id }}" data-rank="3">
+						<div class="item-box getSubList" data-with_cultured="on" data-lin_rank="on" 
+														data-fetched="0" data-taxon="{{ k.taxon_id }}" 
+														data-rank={% if 'Viruses' not in k.name %}"3"{% else %}50{% endif %}>
 							<div class="cir-box">
-								界
+								{% if 'Viruses' not in k.name %}
+									界 
+								{% else %}
+									未定
+								{% endif %}
 							</div>
 							<h2><a href="/{{ LANGUAGE_CODE }}/taxon/{{ k.taxon_id }}">{{ k.name|safe }}</a></h2>
 							<p>{{ k.stat }}</p>
@@ -119,5 +125,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon_tree.js' %}?v5"></script>
+<script src="{% static 'js/taxon_tree.js' %}?v6"></script>
 {% endblock script %}

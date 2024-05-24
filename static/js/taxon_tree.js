@@ -210,11 +210,11 @@ $(function (){
                 let still_has_sub = r.stat ? true : false;
 
                 $('.tree-area .main-box ul.kingdom').append(
-                    `<li>
+                    `<li ${ r.name.includes('Viruses') ? 'class="unranked-li"' :  ''}>
                     <span class="anchor" id="${ r.taxon_id }" ></span>
-                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-with_cultured="${ with_cultured }" data-lin_rank="${ lin_rank }" data-fetched="0" data-taxon="${ r.taxon_id }" data-rank="3">
+                    <div class="item-box ${still_has_sub ? 'getSubList' : ''}" data-with_cultured="${ with_cultured }" data-lin_rank="${ lin_rank }" data-fetched="0" data-taxon="${ r.taxon_id }" data-rank="${ r.name.includes('Viruses') ? 50 :  3}">
                         <div class="cir-box">
-                            界
+                            ${ r.name.includes('Viruses') ? '未定' :  '界'}
                         </div>
                         <h2><a href="/${$lang}/taxon/${ r.taxon_id }">${ r.name }</a></h2>
                         <p>${ r.stat }</p>
@@ -413,6 +413,8 @@ function searchClick(keyword_taxon_id, add_stat){
                     fetch_rank_id.push(results.rank_id[i])
                 }
               }
+
+            // console.log(fetch_taxon, fetch_rank_id)
             //fetch_taxon.push(keyword_taxon_id)
             if (fetch_taxon.length > 0){
                 fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id)
