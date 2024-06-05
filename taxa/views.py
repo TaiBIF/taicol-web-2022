@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from taxa.utils import *
 from django.http import HttpResponse,JsonResponse
 import json
-from conf.settings import env, MEDIA_URL
+from conf.settings import env, MEDIA_URL, SOLR_PREFIX
 import pymysql
 import pandas as pd
 import numpy as np
@@ -20,10 +20,11 @@ from django.utils import timezone, translation
 from django.core.mail import send_mail
 import threading
 from django.template.loader import render_to_string
+import html
 
 # from django.contrib import messages
 
-from  django.utils.translation import get_language, gettext
+from django.utils.translation import get_language, gettext
 
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -91,12 +92,9 @@ def send_download_request(request):
 def download_search_results_offline(request):
     req = request.POST
     file_format = req.get('file_format','csv')
-    # subset by taxon_id
-    base, base_query  = get_conditioned_query_search(req, from_url=True, need_conserv_join=True) # 不考慮facet選項
-    base = base.split('WHERE')
 
-    df = return_download_file(base, base_query)
-
+    solr_query_list = get_conditioned_solr_search(req)
+    df = return_download_file_by_solr(solr_query_list)
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
     if file_format == 'json':
@@ -122,15 +120,12 @@ def download_search_results_offline(request):
 def download_search_results(request):
     req = request.POST
     file_format = req.get('file_format','csv')
-    # subset by taxon_id
-    base, base_query = get_conditioned_query_search(req, from_url=True, need_conserv_join=True) # 不考慮facet選項
-    base = base.split('WHERE')
 
-    df = return_download_file(base, base_query)
-
-    # print(df.alien_status_note)
+    solr_query_list = get_conditioned_solr_search(req)
+    df = return_download_file_by_solr(solr_query_list)
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
+
     if file_format == 'json':
         response = HttpResponse(content_type="application/json")
         response['Content-Disposition'] =  f'attachment; filename=taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
@@ -143,104 +138,177 @@ def download_search_results(request):
     return response
 
 
-def get_autocomplete_taxon(request):
-    translation.activate(request.GET.get('lang'))
+# deprecated
+# def get_autocomplete_taxon(request):
+#     translation.activate(request.GET.get('lang'))
     
+#     names = '[]'
+#     results = []
+#     # s = time.time()
+#     if keyword_str := request.GET.get('keyword','').strip():
+#         cultured_condition = ''
+#         if request.GET.get('with_cultured') != 'on':
+#             cultured_condition = ' AND at.is_cultured != 1'
+#         from_tree =  request.GET.get('from_tree')
+#         lin_rank = request.GET.get('lin_rank')
+#         with_not_official = request.GET.get('with_not_official')
+
+#         # 確認keyword是不是包含中文
+#         if re.search(r'[\u4e00-\u9fff]+', keyword_str):
+#             keyword_str = get_variants(keyword_str)
+            
+#             # 改成用api_common_name查詢 只回傳有效名
+#             # 下拉選單用的 group concat維持現狀
+#             query = f"""
+#                         WITH base_query AS(
+#                             SELECT distinct at.taxon_id, tn.name AS tn_name, tn.name AS tnn_name
+#                             FROM api_taxon at 
+#                             JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
+#                             INNER JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND name_c REGEXP '{keyword_str}'
+#                             {'INNER JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id' if from_tree else ''}
+#                             WHERE at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} {' AND at.not_official = 0' if with_not_official == 'off' else ''}
+#                             {'AND at.rank_id in (49,50,3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
+#                             ORDER BY tn.name
+#                             LIMIT 10
+#                         )
+#                         SELECT bq.taxon_id, bq.tn_name, CONCAT_WS(' ', bq.tnn_name, GROUP_CONCAT(acn.name_c order by acn.is_primary DESC separator ',' )), 'accepted'
+#                         FROM base_query bq
+#                         JOIN api_taxon at ON at.taxon_id = bq.taxon_id
+#                         LEFT JOIN api_common_name acn ON acn.taxon_id = bq.taxon_id
+#                         GROUP BY bq.taxon_id, bq.tn_name, bq.tnn_name ;
+#                         """
+#             conn = pymysql.connect(**db_settings)
+#             with conn.cursor() as cursor:
+#                 cursor.execute(query)
+#                 results = cursor.fetchall()
+#                 conn.close()
+
+#         else:
+#             # s = time.time()
+#             # 先單純用taxon_names的表搜尋 如果有結果再繼續往下搜
+#             first_query = f"SELECT id FROM taxon_names WHERE `name` REGEXP %s AND deleted_at IS NULL LIMIT 1"
+#             conn = pymysql.connect(**db_settings)
+#             with conn.cursor() as cursor:
+#                 cursor.execute(first_query, (keyword_str,))
+#                 first_results = cursor.fetchone()
+
+#             if first_results:
+#                 # 只join有查到相關字的base_name表
+#                                 # AND atu.taxon_name_id in (
+#                                 #     SELECT id
+#                                 #     FROM base_name
+#                                 # )
+#                 # 下拉選單用的 group concat維持現狀
+#                 query = f"""
+#                             WITH base_name AS (
+#                             SELECT id, name
+#                             FROM taxon_names 
+#                             WHERE deleted_at is null AND `name` REGEXP '{keyword_str}' LIMIT 50
+#                             ), 
+#                             base_query AS(
+#                                 SELECT distinct atu.taxon_id, atu.taxon_name_id, atu.status
+#                                 FROM api_taxon_usages atu
+#                                 JOIN base_name ON atu.taxon_name_id = base_name.id
+#                                 JOIN api_taxon at ON atu.taxon_id = at.taxon_id 
+#                                     AND at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition}  {' AND at.not_official = 0' if with_not_official == 'off' else ''}
+#                                     {' AND at.rank_id in (49,50,3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
+#                                 WHERE atu.is_deleted =0 
+#                             )
+#                             SELECT bq.taxon_id, tn.name, CONCAT_WS(' ', tnn.name,GROUP_CONCAT(acn.name_c order by acn.is_primary DESC separator ',' )), bq.status
+#                             FROM base_query bq
+#                             INNER JOIN api_taxon at ON at.taxon_id = bq.taxon_id
+#                             INNER JOIN base_name tn ON bq.taxon_name_id = tn.id AND tn.id IN (bq.taxon_name_id)
+#                             INNER JOIN taxon_names tnn ON at.accepted_taxon_name_id = tnn.id 
+#                             LEFT JOIN api_common_name acn ON acn.taxon_id = bq.taxon_id
+#                             GROUP BY bq.taxon_id, tn.name, tnn.name, bq.status;
+#                         """
+#                 conn = pymysql.connect(**db_settings)
+#                 with conn.cursor() as cursor:
+#                     cursor.execute(query)
+#                     results = cursor.fetchall()
+#                     conn.close()
+            
+#         ds = pd.DataFrame(results, columns=['id','name','text','name_status'])
+#         if len(ds):
+#             if get_language() == 'en-us':
+#                 ds['text'] = ds.apply(lambda x: x['name'] + f" ({name_status_map[x['name_status']]} {x['text']})" if x['name_status'] != 'accepted' else x['text'], axis=1)
+#             else:
+#                 ds['text'] = ds.apply(lambda x: x['name'] + f" ({x['text']} {name_status_map_c[x['name_status']]})" if x['name_status'] != 'accepted' else x['text'], axis=1)
+#         names = ds[['text','id']].to_json(orient='records')
+
+#     return HttpResponse(names, content_type='application/json') 
+
+
+def get_autocomplete_taxon_by_solr(request):
+
+    translation.activate(request.GET.get('lang'))
+
     names = '[]'
-    results = []
-    # s = time.time()
-    if keyword_str := request.GET.get('keyword','').strip():
-        cultured_condition = ''
+    keyword_reg = ''
+    query_list = []
+    # NOTE 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1  的資料
+    query_list.append('is_in_taiwan:true')
+
+
+    if keyword := request.GET.get('keyword','').strip():
+
         if request.GET.get('with_cultured') != 'on':
-            cultured_condition = ' AND at.is_cultured != 1'
-        from_tree =  request.GET.get('from_tree')
-        lin_rank = request.GET.get('lin_rank')
-        with_not_official = request.GET.get('with_not_official')
+            query_list.append('-is_cultured:true')
 
-        # 確認keyword是不是包含中文
-        if re.search(r'[\u4e00-\u9fff]+', keyword_str):
-            keyword_str = get_variants(keyword_str)
-            
-            # 改成用api_common_name查詢 只回傳有效名
-            # 下拉選單用的 group concat維持現狀
-            query = f"""
-                        WITH base_query AS(
-                            SELECT distinct at.taxon_id, tn.name AS tn_name, tn.name AS tnn_name
-                            FROM api_taxon at 
-                            JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
-                            INNER JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND name_c REGEXP '{keyword_str}'
-                            {'INNER JOIN api_taxon_tree att ON att.taxon_id = at.taxon_id' if from_tree else ''}
-                            WHERE at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition} {' AND at.not_official = 0' if with_not_official == 'off' else ''}
-                            {'AND at.rank_id in (49,50,3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
-                            ORDER BY tn.name
-                            LIMIT 10
-                        )
-                        SELECT bq.taxon_id, bq.tn_name, CONCAT_WS(' ', bq.tnn_name, GROUP_CONCAT(acn.name_c order by acn.is_primary DESC separator ',' )), 'accepted'
-                        FROM base_query bq
-                        JOIN api_taxon at ON at.taxon_id = bq.taxon_id
-                        LEFT JOIN api_common_name acn ON acn.taxon_id = bq.taxon_id
-                        GROUP BY bq.taxon_id, bq.tn_name, bq.tnn_name ;
-                        """
-            conn = pymysql.connect(**db_settings)
-            with conn.cursor() as cursor:
-                cursor.execute(query)
-                results = cursor.fetchall()
-                conn.close()
+        if request.GET.get('lin_rank') == 'on':
+            query_list.append('rank_id:(50 OR 49 OR 3 OR 12 OR 18 OR 22 OR 26 OR 30 OR 34 OR 35 OR 36 OR 37 OR 38 OR 39 OR 40 OR 41 OR 42 OR 43 OR 44 OR 45 OR 46)')
 
-        else:
-            # s = time.time()
-            # 先單純用taxon_names的表搜尋 如果有結果再繼續往下搜
-            first_query = f"SELECT id FROM taxon_names WHERE `name` REGEXP %s AND deleted_at IS NULL LIMIT 1"
-            conn = pymysql.connect(**db_settings)
-            with conn.cursor() as cursor:
-                cursor.execute(first_query, (keyword_str,))
-                first_results = cursor.fetchone()
+        if request.GET.get('with_not_official') == 'off':
+            query_list.append('not_official:false')
 
-            if first_results:
-                # 只join有查到相關字的base_name表
-                                # AND atu.taxon_name_id in (
-                                #     SELECT id
-                                #     FROM base_name
-                                # )
-                # 下拉選單用的 group concat維持現狀
-                query = f"""
-                            WITH base_name AS (
-                            SELECT id, name
-                            FROM taxon_names 
-                            WHERE deleted_at is null AND `name` REGEXP '{keyword_str}' LIMIT 50
-                            ), 
-                            base_query AS(
-                                SELECT distinct atu.taxon_id, atu.taxon_name_id, atu.status
-                                FROM api_taxon_usages atu
-                                JOIN base_name ON atu.taxon_name_id = base_name.id
-                                JOIN api_taxon at ON atu.taxon_id = at.taxon_id 
-                                    AND at.is_in_taiwan = 1 AND at.is_deleted != 1 {cultured_condition}  {' AND at.not_official = 0' if with_not_official == 'off' else ''}
-                                    {' AND at.rank_id in (49,50,3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''}
-                                WHERE atu.is_deleted =0 
-                            )
-                            SELECT bq.taxon_id, tn.name, CONCAT_WS(' ', tnn.name,GROUP_CONCAT(acn.name_c order by acn.is_primary DESC separator ',' )), bq.status
-                            FROM base_query bq
-                            INNER JOIN api_taxon at ON at.taxon_id = bq.taxon_id
-                            INNER JOIN base_name tn ON bq.taxon_name_id = tn.id AND tn.id IN (bq.taxon_name_id)
-                            INNER JOIN taxon_names tnn ON at.accepted_taxon_name_id = tnn.id 
-                            LEFT JOIN api_common_name acn ON acn.taxon_id = bq.taxon_id
-                            GROUP BY bq.taxon_id, tn.name, tnn.name, bq.status;
-                        """
-                conn = pymysql.connect(**db_settings)
-                with conn.cursor() as cursor:
-                    cursor.execute(query)
-                    results = cursor.fetchall()
-                    conn.close()
-            
-        ds = pd.DataFrame(results, columns=['id','name','text','name_status'])
+        keyword = html.unescape(keyword)
+        keyword_reg = get_variants(keyword)
+
+
+    query_str = '&fq='.join(query_list)
+
+    taxa_str = f'search_name:"{keyword}"^5 OR search_name:/{escape_solr_query(keyword)}.*/^4 OR search_name:/{keyword_reg}/^3 OR search_name:/{keyword_reg}.*/^2 OR search_name:/.*{escape_solr_query(keyword)}.*/^1 OR search_name:/.*{keyword_reg}.*/'
+
+    ds = []
+    if keyword_reg:
+        response = requests.get(f'{SOLR_PREFIX}taxa/select?q.op=OR&q={taxa_str}&fq={query_str}&rows=20')
+    # else:
+    #     response = requests.get(f'{SOLR_PREFIX}taxa/select?q.op=OR&q=*%3A*&rows=20&fq={query_str}&sort=simple_name%20desc&start=10')
+
+        taxa_list = response.json()['response']['docs']
+
+
+        ds = pd.DataFrame(taxa_list)
         if len(ds):
-            if get_language() == 'en-us':
-                ds['text'] = ds.apply(lambda x: x['name'] + f" ({name_status_map[x['name_status']]} {x['text']})" if x['name_status'] != 'accepted' else x['text'], axis=1)
-            else:
-                ds['text'] = ds.apply(lambda x: x['name'] + f" ({x['text']} {name_status_map_c[x['name_status']]})" if x['name_status'] != 'accepted' else x['text'], axis=1)
-        names = ds[['text','id']].to_json(orient='records')
+            lack_cols = [k for k in  ['taxon_id', 'simple_name', 'search_name', 'common_name_c', 'alternative_name_c','status'] if k not in ds.keys()]
 
-    return HttpResponse(names, content_type='application/json') 
+            for c in lack_cols:
+                ds[c] = ''
+            
+            ds = ds[['taxon_id', 'simple_name', 'search_name', 'common_name_c', 'alternative_name_c','status']]
+
+            ds = ds.replace({None: '', np.nan: ''})
+
+            for i in ds.index:
+                row = ds.iloc[i]
+                name_c_str = row.common_name_c
+                if row.alternative_name_c:
+                    name_c_str += ',' + row.alternative_name_c
+
+                if name_c_str:
+                    ds.loc[i, 'text'] = row.simple_name + ' ' + name_c_str
+                else:
+                    ds.loc[i, 'text'] = row.simple_name 
+
+            if get_language() == 'en-us':
+                ds['text'] = ds.apply(lambda x: x['search_name'] + f" ({name_status_map[x['status']]} {x['text']})" if x['status'] != 'accepted' else x['text'], axis=1)
+            else:
+                ds['text'] = ds.apply(lambda x: x['search_name'] + f" ({x['text']} {name_status_map_c[x['status']]})" if x['status'] != 'accepted' else x['text'], axis=1)
+            
+            ds = ds.rename(columns={'taxon_id': 'id'})
+            names = ds[['text','id']].to_json(orient='records')
+    
+    return HttpResponse(names, content_type='application/json')
 
 
 
@@ -2011,136 +2079,210 @@ def get_conditioned_query_search(req, from_url=False, need_conserv_join=False): 
 
 
 
+# deprecated
+# def get_query_data_search(base, offset, response, limit, base_query):
 
-def get_query_data_search(base, offset, response, limit, base_query):
+
+#     s = time.time()
+#     response['data'] = []
+#     conn = pymysql.connect(**db_settings)
+#     base = base.split('WHERE')
+#     if base_query:
+#         query = base_query + f"""
+#                     , cte as (
+#                         SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
+#                             at.is_endemic, at.main_alien_type, att.path, tn.name
+#                         {base[0]}
+#                         LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
+#                         INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
+#                         LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
+#                         WHERE {base[1]} 
+#                     )
+#                     select * FROM ( TABLE cte ORDER BY name LIMIT {limit} OFFSET {offset} ) sub
+#                     RIGHT  JOIN (SELECT count(*) FROM cte) c(full_count) ON true;
+#                 """
+#     else:
+#         query = f"""
+#                     WITH cte as (
+#                         SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
+#                             at.is_endemic, at.main_alien_type, att.path, tn.name
+#                         {base[0]}
+#                         LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
+#                         INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
+#                         LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
+#                         WHERE {base[1]} 
+#                     )
+#                     select * FROM ( TABLE cte ORDER BY name LIMIT {limit} OFFSET {offset} ) sub
+#                     RIGHT  JOIN (SELECT count(*) FROM cte) c(full_count) ON true;
+#                 """
+
+#     # count_query = base_query + " SELECT count(distinct atu.taxon_name_id, atu.taxon_id )" + base
+#     # acnn 是為了join主要使用學名 
+#     with conn.cursor() as cursor:
+#         cursor.execute(query)
+#         results = cursor.fetchall()
+#         results = pd.DataFrame(results, columns=['taxon_id','rank','name','common_name_c','status','is_endemic','alien_type','path', 'simple_name','full_count'])
+#         conn.close()
+
+#         print('a', time.time()-s)
+#         s = time.time()
+
+#         if len(results):
+#             count = results.full_count.values[0]
+#             if count:
+#                 results = results.drop(columns=['simple_name'])
+#                 results = results.drop_duplicates()
+#                 results = results.reset_index()
+#                 results['kingdom'] = 3
+#                 results['taxon_group'] = 0
+#                 higher_taxa = pd.DataFrame(columns=['taxon_id','rank_id','name'])
+#                 p = []
+#                 for i in results.index:
+#                     if results.iloc[i].path:
+#                         path = results.iloc[i].path.split('>')
+#                         p += [pa for pa in path if pa not in p]
+#                         # TODO 這邊要修改成rank_order
+#                         if results.iloc[i]['rank'] <= 3 :
+#                             results.loc[i,'taxon_group'] = None
+#                         elif results.iloc[i]['rank'] < 30: # 屬以上取上層
+#                             higher = [h for h in [3,12,18,22,26] if h < results.iloc[i]['rank']]
+#                             results.loc[i,'taxon_group'] = higher[-1]
+#                         else: # 取科
+#                             results.loc[i,'taxon_group'] = 26
+#                 if p:
+#                     # start = time.time()
+#                     if get_language() == 'en-us':
+#                         query = f"SELECT t.taxon_id, t.rank_id, tn.name \
+#                                 FROM api_taxon t \
+#                                 JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
+#                                 WHERE t.taxon_id IN %s AND t.rank_id IN (3,12,18,22,26)"
+#                     else:
+#                         query = f"SELECT t.taxon_id, t.rank_id, CONCAT_WS(' ', acn.name_c, tn.name) \
+#                                 FROM api_taxon t \
+#                                 JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
+#                                 LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1\
+#                                 WHERE t.taxon_id IN %s AND t.rank_id IN (3,12,18,22,26)"
+#                     conn = pymysql.connect(**db_settings)
+#                     with conn.cursor() as cursor:
+#                         cursor.execute(query, (p,))
+#                         higher_taxa = cursor.fetchall()
+#                         higher_taxa = pd.DataFrame(higher_taxa, columns=['taxon_id','rank_id','name'])
+#                         conn.close()
+#                     print('b', time.time()-s)
+#                     s = time.time()
+#                 # 界
+#                 kingdoms = higher_taxa[(higher_taxa.rank_id==3)].taxon_id.to_list()
+#                 for i in results.index:
+
+#                     if results.iloc[i].alien_type:
+#                         results.loc[i,'alien_type'] = attr_map_c[results.iloc[i].alien_type]
+#                     if results.iloc[i].path:
+#                         path = results.iloc[i].path.split('>')
+#                         ks = [k for k in kingdoms if k in path]
+#                         if ks:
+#                             results.loc[i,'kingdom'] = higher_taxa[higher_taxa.taxon_id==ks[0]].name.values[0]
+#                         else:
+#                             results.loc[i,'kingdom'] = ''
+#                         # 所屬類群
+#                         t_groups = higher_taxa[(higher_taxa.rank_id==results.iloc[i].taxon_group)].taxon_id.to_list()
+#                         ts = [t for t in t_groups if t in path]
+#                         if ts:
+#                             results.loc[i,'taxon_group'] = higher_taxa[higher_taxa.taxon_id==ts[0]].name.values[0]
+#                         else:
+#                             results.loc[i,'taxon_group'] = ''
+#                     else:
+#                         results.loc[i,'kingdom'] = ''
+#                         results.loc[i,'taxon_group'] = ''
+#                 if get_language() == 'en-us':
+#                     results['rank'] = results['rank'].apply(lambda x: rank_map[x])
+#                     results['status'] = results['status'].apply(lambda x: x.capitalize() if x else None)
+#                 else:
+#                     results['rank'] = results['rank'].apply(lambda x: rank_map_c[x])
+#                     results['status'] = results['status'].apply(lambda x: status_map_c[x] if x else None)
+#                 results['is_endemic'] = results['is_endemic'].apply(lambda x: gettext('臺灣特有') if x == 1 else None)
+#                 results = results.drop(columns=['path'])
+#                 results = results.replace({np.nan: '', None: ''})
+#                 results = results.to_json(orient='records')
+                
+#                 response['data'] = json.loads(results)
+
+#                 print('c', time.time()-s)
+
+
+#                 response['count'] = {}
+#                 response['count']['total'] = [{'count': count}]
+#                 # pagination
+#                 response['page'] = {}
+#                 response['page']['total_page'] = int(math.ceil((response['count']['total'][0]['count']) / limit))
+#                 response['page']['current_page'] = int(offset / limit + 1)
+#                 # response['page']['page_list'] = get_page_list(response['page']['current_page'], response['count']['total'][0]['count'], limit)
+#                 response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
+
+
+#     return response
+
+
+
+def get_solr_data_search(query_list, offset, response, limit):
 
     response['data'] = []
-    conn = pymysql.connect(**db_settings)
-    base = base.split('WHERE')
-    if base_query:
-        query = base_query + f"""
-                    , cte as (
-                        SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.main_alien_type, att.path, tn.name
-                        {base[0]}
-                        LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
-                        INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                        LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
-                        WHERE {base[1]} 
-                    )
-                    select * FROM ( TABLE cte ORDER BY name LIMIT {limit} OFFSET {offset} ) sub
-                    RIGHT  JOIN (SELECT count(*) FROM cte) c(full_count) ON true;
-                """
-    else:
-        query = f"""
-                    WITH cte as (
-                        SELECT distinct(at.taxon_id), at.rank_id, an.formatted_name, acnn.name_c, atu.status,
-                            at.is_endemic, at.main_alien_type, att.path, tn.name
-                        {base[0]}
-                        LEFT JOIN api_names an ON atu.taxon_name_id = an.taxon_name_id
-                        INNER JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                        LEFT JOIN api_common_name acnn ON at.taxon_id = acnn.taxon_id AND acnn.is_primary = 1
-                        WHERE {base[1]} 
-                    )
-                    select * FROM ( TABLE cte ORDER BY name LIMIT {limit} OFFSET {offset} ) sub
-                    RIGHT  JOIN (SELECT count(*) FROM cte) c(full_count) ON true;
-                """
 
-    # count_query = base_query + " SELECT count(distinct atu.taxon_name_id, atu.taxon_id )" + base
-    # acnn 是為了join主要使用學名 
-    with conn.cursor() as cursor:
-        cursor.execute(query)
-        results = cursor.fetchall()
-        results = pd.DataFrame(results, columns=['taxon_id','rank','name','common_name_c','status','is_endemic','alien_type','path', 'simple_name','full_count'])
-        conn.close()
+    query = { "query": "*:*",
+              "offset": offset,
+              "limit": limit,
+              "filter": query_list,
+              "sort": 'search_name asc',
+            }
 
-        if len(results):
-            count = results.full_count.values[0]
-            if count:
-                results = results.drop(columns=['simple_name'])
-                results = results.drop_duplicates()
-                results = results.reset_index()
-                results['kingdom'] = 3
-                results['taxon_group'] = 0
-                higher_taxa = pd.DataFrame(columns=['taxon_id','rank_id','name'])
-                p = []
-                for i in results.index:
-                    if results.iloc[i].path:
-                        path = results.iloc[i].path.split('>')
-                        p += [pa for pa in path if pa not in p]
-                        if results.iloc[i]['rank'] <= 3:
-                            results.loc[i,'taxon_group'] = None
-                        elif results.iloc[i]['rank'] < 30: # 屬以上取上層
-                            higher = [h for h in [3,12,18,22,26] if h < results.iloc[i]['rank']]
-                            results.loc[i,'taxon_group'] = higher[-1]
-                        else: # 取科
-                            results.loc[i,'taxon_group'] = 26
-                if p:
-                    # start = time.time()
-                    if get_language() == 'en-us':
-                        query = f"SELECT t.taxon_id, t.rank_id, tn.name \
-                                FROM api_taxon t \
-                                JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
-                                WHERE t.taxon_id IN %s AND t.rank_id IN (3,12,18,22,26)"
-                    else:
-                        query = f"SELECT t.taxon_id, t.rank_id, CONCAT_WS(' ', acn.name_c, tn.name) \
-                                FROM api_taxon t \
-                                JOIN taxon_names tn ON t.accepted_taxon_name_id = tn.id \
-                                LEFT JOIN api_common_name acn ON acn.taxon_id = t.taxon_id AND acn.is_primary = 1\
-                                WHERE t.taxon_id IN %s AND t.rank_id IN (3,12,18,22,26)"
-                    conn = pymysql.connect(**db_settings)
-                    with conn.cursor() as cursor:
-                        cursor.execute(query, (p,))
-                        higher_taxa = cursor.fetchall()
-                        higher_taxa = pd.DataFrame(higher_taxa, columns=['taxon_id','rank_id','name'])
-                        conn.close()
-                    # print('higher', start-time.time())
-                # 界
-                kingdoms = higher_taxa[(higher_taxa.rank_id==3)].taxon_id.to_list()
-                for i in results.index:
+    query_req = json.dumps(query)
 
-                    if results.iloc[i].alien_type:
-                        results.loc[i,'alien_type'] = attr_map_c[results.iloc[i].alien_type]
-                    if results.iloc[i].path:
-                        path = results.iloc[i].path.split('>')
-                        ks = [k for k in kingdoms if k in path]
-                        if ks:
-                            results.loc[i,'kingdom'] = higher_taxa[higher_taxa.taxon_id==ks[0]].name.values[0]
-                        else:
-                            results.loc[i,'kingdom'] = ''
-                        # 所屬類群
-                        t_groups = higher_taxa[(higher_taxa.rank_id==results.iloc[i].taxon_group)].taxon_id.to_list()
-                        ts = [t for t in t_groups if t in path]
-                        if ts:
-                            results.loc[i,'taxon_group'] = higher_taxa[higher_taxa.taxon_id==ts[0]].name.values[0]
-                        else:
-                            results.loc[i,'taxon_group'] = ''
-                    else:
-                        results.loc[i,'kingdom'] = ''
-                        results.loc[i,'taxon_group'] = ''
-                if get_language() == 'en-us':
-                    results['rank'] = results['rank'].apply(lambda x: rank_map[x])
-                    results['status'] = results['status'].apply(lambda x: x.capitalize() if x else None)
-                else:
-                    results['rank'] = results['rank'].apply(lambda x: rank_map_c[x])
-                    results['status'] = results['status'].apply(lambda x: status_map_c[x] if x else None)
-                results['is_endemic'] = results['is_endemic'].apply(lambda x: gettext('臺灣特有') if x == 1 else None)
-                results = results.drop(columns=['path'])
-                results = results.replace({np.nan: '', None: ''})
-                results = results.to_json(orient='records')
-                
-                response['data'] = json.loads(results)
+    resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
+    resp = resp.json()
 
+    count = resp['response']['numFound']
 
-                response['count'] = {}
-                response['count']['total'] = [{'count': count}]
-                # pagination
-                response['page'] = {}
-                response['page']['total_page'] = int(math.ceil((response['count']['total'][0]['count']) / limit))
-                response['page']['current_page'] = int(offset / limit + 1)
-                # response['page']['page_list'] = get_page_list(response['page']['current_page'], response['count']['total'][0]['count'], limit)
-                response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
+    if count:
+        results = pd.DataFrame(resp['response']['docs'])
+        results = results.rename(columns={'common_name': 'common_name_c', 'rank_id': 'rank'})
 
+        # 一定要有的欄位
+        musthave_cols = ['formatted_search_name','taxon_name_id','formatted_accepted_name','common_name_c','rank','status',
+                        'kingdom', 'kingdom_c', 'taxon_group', 'taxon_group_c', 'is_endemic', 'alien_type']
+
+        for m in musthave_cols:
+            if m not in results.keys():
+                results[m] = None
+
+        results['name'] = results.apply(lambda x: x.formatted_search_name if x.taxon_name_id else x.formatted_accepted_name, axis=1)
+
+        results = results.replace({np.nan: None})
+
+        if get_language() == 'en-us':
+            results['rank'] = results['rank'].apply(lambda x: rank_map[int(x)])
+            results['status'] = results['status'].apply(lambda x: x.capitalize() if x else None)
+            results['alien_type'] = results['alien_type'].apply(lambda x: x.capitalize() if x else None)
+        else:
+            results['rank'] = results['rank'].apply(lambda x: rank_map_c[int(x)])
+            results['status'] = results['status'].apply(lambda x: status_map_c[x] if x else None)
+            results['kingdom'] = results.apply(lambda x: f"{x.kingdom_c} {x.kingdom}" if x.kingdom_c else x.kingdom, axis=1)
+            results['taxon_group'] = results.apply(lambda x: f"{x.taxon_group_c} {x.taxon_group}" if x.taxon_group_c else x.taxon_group, axis=1)
+            results['alien_type'] = results['alien_type'].apply(lambda x: attr_map_c[x] if x else None)
+
+        results['is_endemic'] = results['is_endemic'].apply(lambda x: gettext('臺灣特有') if x == True else None)
+
+        results = results.drop(columns=['path'])
+        results = results.replace({np.nan: '', None: ''})
+        results = results.to_json(orient='records')
+    
+        response['data'] = json.loads(results)
+
+    response['count'] = {}
+    response['count']['total'] = [{'count': count}]
+    # pagination
+    response['page'] = {}
+    response['page']['total_page'] = int(math.ceil((response['count']['total'][0]['count']) / limit))
+    response['page']['current_page'] = int(offset / limit + 1)
+    response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
 
     return response
 
@@ -2156,6 +2298,7 @@ def catalogue_search(request):
         req = request.POST
         
         # 先確認是不是taxonID 若是的話直接跳轉至物種頁
+
         if req.get('keyword'):
             query = "SELECT id FROM api_taxon WHERE `taxon_id` = %s"
             conn = pymysql.connect(**db_settings)
@@ -2166,11 +2309,16 @@ def catalogue_search(request):
                     return HttpResponse(json.dumps({'is_taxon_id': True, 'taxon_id': req.get('keyword')},cls=NpEncoder))
 
         offset = limit * (int(req.get('page',1))-1)
-        base, base_query = get_conditioned_query_search(req, from_url=True)
-        if not base and not base_query:
-            pass
-        else:
-            response = get_query_data_search(base, offset, response, limit, base_query)
+
+        # s = time.time()
+        solr_query_list = get_conditioned_solr_search(req)
+        # print(time.time() - s)
+
+        # s = time.time()
+        response = get_solr_data_search(solr_query_list, offset, response, limit)
+        # print(time.time() - s)
+
+
         response['header'] = f"""
             <tr>
                 <td>{gettext('學名')}</td>
@@ -2228,3 +2376,130 @@ def update_catalogue_table_search(request):
 
     return HttpResponse(json.dumps(response,cls=NpEncoder))
 
+
+
+def get_conditioned_solr_search(req): 
+
+    query_list = []
+    # NOTE 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1  的資料
+    query_list.append('is_in_taiwan:true')
+
+    # 如果有輸入keyword的話preselect 但是limit offset要加在preselect這邊
+    # /.* .*/
+
+    if keyword := req.get('keyword','').strip():
+
+        keyword = get_variants(keyword)
+        keyword_type = req.get('name-select','contain')
+        
+        if keyword_type == "equal":
+            # 中文名可能有異體字 英文名有大小寫問題 要修改成REGEXP
+            keyword_str = f"search_name:/{keyword}/"
+        elif keyword_type == "startwith":
+            keyword_str = f"search_name:/{keyword}.*/"
+        else: # contain
+            keyword_str = f"search_name:/.*{keyword}.*/"
+
+        query_list.append(keyword_str)
+
+    # 如果沒有keyword的話 要排除掉搜尋中文名的資料 不然會有重複的問題
+    else:
+
+        query_list.append('taxon_name_id:*') # 確保不是中文名
+
+
+    # 地位
+    if status := req.getlist('status'):
+        if len(status) < 3:
+            ss_list = []
+            for ss in status:
+                ss_list.append(f'status:"{ss}"')
+            query_list.append(f"({' OR '.join(ss_list)})")
+
+    # is_ 系列
+
+    if req.get('is_endemic'):
+        query_list.append('is_endemic:true')
+
+    is_list = ['is_terrestrial','is_freshwater','is_brackish','is_marine']
+    is_cond = []
+    for i in is_list:
+        if req.get(i):
+            is_cond.append(f"{i}:true")
+
+    if is_cond:
+        query_list.append(f"({' OR '.join(is_cond)})")
+
+    # fossil要獨立出來
+
+    if req.get('is_fossil'):
+        query_list.append('is_fossil:true')
+
+    # rank
+
+    rank = req.getlist('rank')
+    if rank:
+        for r in rank:
+            rr_list = []
+            rr_list.append(f'rank_id:{int(r)}')
+        query_list.append(f"({' OR '.join(rr_list)})")
+
+    # alien_type
+
+    if alien_type := req.getlist('alien_type'):
+        # c = 1
+        aa_list = []
+        for a in alien_type:
+            aa_list.append(f'alien_type:"{a}"')
+        query_list.append(f"({' OR '.join(aa_list)})")
+
+
+    # 日期
+    # 不用考慮時差 已經是 UTC +8
+
+    if date := req.get('date'):
+        date_type = req.get('date-select','gl')
+        
+        if date_type == "gl":
+            date += 'T00:00:00Z'
+            query_list.append(f'updated_at:[{date} TO *]')
+        elif date_type == "sl":
+            date += 'T23:59:59Z'
+            query_list.append(f'updated_at:[* TO {date}]')
+        else:
+            query_list.append(f'updated_at:[{date}T00:00:00Z TO {date}T23:59:59Z]')
+
+    # 保育資訊
+
+    for con in ['protected','redlist','iucn']:
+        if cs := req.getlist(con):
+            cs_list = []
+            for css in cs:
+                if css == 'none':
+                    cs_list.append(f'-{con}:*')
+                else:
+                    cs_list.append(f'{con}:"{css}"')
+            if cs_list:
+                c_str = f"({' OR '.join(cs_list)})"
+                query_list.append(c_str)
+
+    # CITES類別要用like
+
+    if cs := req.getlist('cites'):
+        cs_list = []
+        for css in cs:
+            if css == 'none':
+                cs_list.append(f'-cites:*')
+            else:
+                cs_list.append(f'cites:/.*{css}.*/')
+        if cs_list:
+            c_str = f"({' OR '.join(cs_list)})"
+            query_list.append(c_str)
+
+    # 較高分類群
+
+    if higher_taxon_id := req.get('taxon_group'):
+        query_list.append(f'path:/.*{higher_taxon_id}.*/')
+
+
+    return query_list

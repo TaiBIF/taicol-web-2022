@@ -160,3 +160,7 @@
     }
 }
 
+
+.page-num a {
+    cursor: pointer;
+}

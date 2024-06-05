@@ -33,6 +33,19 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     env_file:
      - .env
+  solr:
+    build: ./solr-workspace
+    image: taicol-solr-image
+    container_name: taicol-solr-container
+    ports:
+      - "8983:8983"
+    restart: always
+    volumes:
+      - ../tc-web-volumes/solr:/var/solr
+      - ../tc-web-volumes/bucket:/bucket
+      - ./solr-workspace/:/workspace
+    environment:
+      - SOLR_JAVA_MEM=-Xms4g -Xmx4g
   # nginx:
   #   image: nginx:1.19.10-alpine
   #   restart: always
