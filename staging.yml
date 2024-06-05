@@ -69,8 +69,8 @@ services:
       - ../tc-web-volumes/solr:/var/solr
       - ../tc-web-volumes/bucket:/bucket
       - ./solr-workspace/:/workspace
-    environment:
-      - SOLR_JAVA_MEM=-Xms4g -Xmx4g
+    # environment:
+    #   - SOLR_JAVA_MEM=-Xms4g -Xmx4g
   # nginx:
   #   image: nginx:1.19.10-alpine
   #   restart: always
