@@ -386,14 +386,14 @@
 									<div class="green-tag-box">
 										{% if data.alien_type %}
 											<div class="item">{% trans data.alien_type %}</div>
-											{% if data.alien_types|length > 0 %}
+											{% if data.alien_notes|length > 0 %}
 												<div class="alien-tooltip">
 													<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle cl-blue" viewBox="0 0 16 16">
 														<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
 														<path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
 													</svg>												
 													<span class="alien-tooltiptext">
-														{% for i in data.alien_types  %}
+														{% for i in data.alien_notes  %}
 														{{ i.alien_type }}{% if i.note %}：{{ i.note|safe }}{% endif %}<br>
 														{% endfor %}
 													</span>  
@@ -408,9 +408,9 @@
 										{% endif %}
 									</div>
 									<div class="inf-short">
-										{% if data.protected_category  %}
+										{% if data.protected  %}
 										<div class="d-flex">
-										<p>{% trans "保育類" %}：{{ data.protected_category }} 
+										<p>{% trans "保育類" %}：{{ data.protected }} 
 											{% if data.protected_note %}
 											<div class="tooltip">
 												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle cl-blue" viewBox="0 0 16 16">
@@ -423,9 +423,9 @@
 										</p>
 										</div>
 										{% endif %}										
-										{% if data.red_category  %}
+										{% if data.redlist  %}
 										<div class="d-flex">
-										<p>{% trans "臺灣紅皮書" %}：{{ data.red_category }} 
+										<p>{% trans "臺灣紅皮書" %}：{{ data.redlist }} 
 											{% if data.red_note %}
 											<div class="tooltip">
 												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle cl-blue" viewBox="0 0 16 16">
@@ -438,9 +438,9 @@
 										</p>
 										</div>
 										{% endif %}
-										{% if data.iucn_category  %}
+										{% if data.iucn  %}
 										<div class="d-flex">
-										<p>IUCN：<a target="_blank" href="{{ data.iucn_url }}">{{ data.iucn_category }}</a>
+										<p>IUCN：<a target="_blank" href="{{ data.iucn_url }}">{{ data.iucn }}</a>
 											{% if data.iucn_note %}
 											<div class="tooltip">
 												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle cl-blue" viewBox="0 0 16 16">
@@ -453,9 +453,9 @@
 										</p>
 										</div>
 										{% endif %}
-										{% if data.cites_listing  %}
+										{% if data.cites  %}
 										<div class="d-flex">
-										<p>CITES：<a target="_blank" href="{{ data.cites_url }}">{{ data.cites_listing }}</a>
+										<p>CITES：<a target="_blank" href="{{ data.cites_url }}">{{ data.cites }}</a>
 											{% if data.cites_note %}
 											<div class="tooltip">
 												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle cl-blue" viewBox="0 0 16 16">

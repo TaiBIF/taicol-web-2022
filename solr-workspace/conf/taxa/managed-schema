@@ -484,6 +484,8 @@
  <field name="is_cultured" type="boolean"/>
  <field name="is_in_taiwan" type="boolean"/>
  <field name="not_official" type="boolean"/>
+ <field name="is_deleted" type="boolean"/>
+
  <field name="path" type="string"/>
  <field name="parent_taxon_id" type="string"/>
  <field name="lin_path" type="string"/>

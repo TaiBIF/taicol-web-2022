@@ -7,7 +7,7 @@ import pandas as pd
 import json
 import numpy as np
 from  django.utils.translation import get_language, gettext
-
+import time 
 import requests
 
 def get_page_list(current_page, total_page, window=5):
@@ -333,41 +333,45 @@ def get_variants(string):
 def create_conservation_note(data):
 
     # 保育資訊
-    if c_cites := data['cites_listing']:
+
+    if c_cites := data.get('cites'):
         c_list = c_cites.split('/')
         c_list_str = []
         for cl in c_list:
             c_list_str.append(cites_map[cl] if get_language() == 'en-us' else cites_map_c[cl])
-        data['cites_listing'] = '/'.join(c_list_str)
-    if data['cites_note']:
-        c_str = ''
-        for c in json.loads(data['cites_note']):
-            c_str += f"{c['listing']}, {c['name']}; "
-            if c.get('is_primary'):
-                data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + c['name']
-        data['cites_note'] = c_str.rstrip(';')
-    if c_iucn := data['iucn_category']:
-        data['iucn_category'] = c_iucn if get_language() == 'en-us' else iucn_map_c[c_iucn] + ' ' + c_iucn
+        data['cites'] = '/'.join(c_list_str)
+        if data['cites_note']:
+            c_str = ''
+            for c in json.loads(data['cites_note']):
+                c_str += f"{c['listing']}, {c['name']}; "
+                if c.get('is_primary'):
+                    data['cites_url'] = "https://checklist.cites.org/#/en/search/output_layout=taxonomic&scientific_name=" + c['name']
+            data['cites_note'] = c_str.rstrip(';')
+
+    if c_iucn := data.get('iucn'):
+        data['iucn'] = c_iucn if get_language() == 'en-us' else iucn_map_c[c_iucn] + ' ' + c_iucn
         data['iucn_url'] = "https://apiv3.iucnredlist.org/api/v3/taxonredirect/" + str(data['iucn_taxon_id'])
-    if data['iucn_note']:
-        c_str = ''
-        for c in json.loads(data['iucn_note']):
-            c_str += f"{c['category']}, {c['name']}; "
-        data['iucn_note'] = c_str.rstrip(';')
-    if c_red := data['red_category']:
-        data['red_category'] =  c_red if get_language() == 'en-us' else redlist_map_c[c_red] + ' ' + c_red
-    if data['red_note']: # 紅皮書的note全部都放
-        c_str = ''
-        for c in json.loads(data['red_note']):
-            c_str += f"{c['red_category']}, {c['name']}; <br>"
-        data['red_note'] = c_str.rstrip(';<br>')
-    if c_protected := data['protected_category']:
-        data['protected_category'] =  protected_map[c_protected] if get_language() == 'en-us' else f'第 {c_protected} 級 {protected_map_c[c_protected]}'
-    if data['protected_note']:
-        c_str = ''
-        for c in json.loads(data['protected_note']):
-            c_str += f"{c['protected_category']}, {c['name']}; "
-        data['protected_note'] = c_str.rstrip(';')
+        if data['iucn_note']:
+            c_str = ''
+            for c in json.loads(data['iucn_note']):
+                c_str += f"{c['category']}, {c['name']}; "
+            data['iucn_note'] = c_str.rstrip(';')
+
+    if c_red := data.get('redlist'):
+        data['redlist'] =  c_red if get_language() == 'en-us' else redlist_map_c[c_red] + ' ' + c_red
+        if data['red_note']: # 紅皮書的note全部都放
+            c_str = ''
+            for c in json.loads(data['red_note']):
+                c_str += f"{c['red_category']}, {c['name']}; <br>"
+            data['red_note'] = c_str.rstrip(';<br>')
+
+    if c_protected := data.get('protected'):
+        data['protected'] =  protected_map[c_protected] if get_language() == 'en-us' else f'第 {c_protected} 級 {protected_map_c[c_protected]}'
+        if data['protected_note']:
+            c_str = ''
+            for c in json.loads(data['protected_note']):
+                c_str += f"{c['protected_category']}, {c['name']}; "
+            data['protected_note'] = c_str.rstrip(';')
 
     return data
 
@@ -716,28 +720,28 @@ taxon_history_map_c = {
     }
 
 
-def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, current_page=1,limit=8):
+def create_history_display(taxon_history, lang, new_taxon_id, new_taxon_name, names, current_page=1,limit=8):
   taxon_history_dict = taxon_history_map if lang == 'en-us' else taxon_history_map_c
-  # taxon_history = []
-  taxon_history = pd.DataFrame(columns=['history_type', 'content', 'short_author', 'updated_at', 'user_name', 'reference_id', 'note', 'reference_type'])
-  query = f"""SELECT distinct ath.type, ath.content, ac.short_author, ath.updated_at, usr.name, ru.reference_id, ath.note, r.type
-                FROM api_taxon_history ath 
-                LEFT JOIN reference_usages ru ON ru.reference_id = ath.reference_id and ru.taxon_name_id = ath.taxon_name_id and ru.accepted_taxon_name_id = ath.accepted_taxon_name_id
-                LEFT JOIN import_usage_logs iul ON iul.reference_id = ru.reference_id
-                LEFT JOIN users usr ON usr.id = iul.user_id
-                LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
-                LEFT JOIN `references` r ON ath.reference_id = r.id
-                WHERE ath.taxon_id = %s ORDER BY ath.updated_at DESC"""
-  conn = pymysql.connect(**db_settings)
-  with conn.cursor() as cursor:
-      cursor.execute(query, (taxon_id, ))
-      th = cursor.fetchall()
-      conn.close()
-      taxon_history = pd.DataFrame(th, columns=['history_type', 'content', 'short_author', 'updated_at', 'editor', 'reference_id', 'note', 'reference_type'])
+#   # taxon_history = []
+#   taxon_history = pd.DataFrame(columns=['history_type', 'content', 'short_author', 'updated_at', 'user_name', 'reference_id', 'note', 'reference_type'])
+#   query = f"""SELECT distinct ath.type, ath.content, ac.short_author, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), usr.name, ru.reference_id, ath.note, r.type
+#                 FROM api_taxon_history ath 
+#                 LEFT JOIN reference_usages ru ON ru.reference_id = ath.reference_id and ru.taxon_name_id = ath.taxon_name_id and ru.accepted_taxon_name_id = ath.accepted_taxon_name_id
+#                 LEFT JOIN import_usage_logs iul ON iul.reference_id = ru.reference_id
+#                 LEFT JOIN users usr ON usr.id = iul.user_id
+#                 LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
+#                 LEFT JOIN `references` r ON ath.reference_id = r.id
+#                 WHERE ath.taxon_id = %s ORDER BY ath.updated_at DESC"""
+#   conn = pymysql.connect(**db_settings)
+#   with conn.cursor() as cursor:
+#       cursor.execute(query, (taxon_id, ))
+#       th = cursor.fetchall()
+#       conn.close()
+#       taxon_history = pd.DataFrame(th, columns=['history_type', 'content', 'short_author', 'updated_at', 'editor', 'reference_id', 'note', 'reference_type'])
   # 整理文獻
   taxon_history['ref'] = taxon_history.apply(lambda x: f'<a href="https://nametool.taicol.tw/{"en-us" if lang == "en-us" else "zh-tw"}/references/{int(x.reference_id)}" target="_blank">{x.short_author}</a>' if x.short_author and x.reference_type not in [4,6] else '', axis=1)
   # 整理時間
-  taxon_history['updated_at'] = taxon_history.updated_at.dt.strftime('%Y-%m-%d')
+    #   taxon_history['updated_at'] = taxon_history.updated_at.dt.strftime('%Y-%m-%d')
   # 整理編輯者
   taxon_history.loc[taxon_history['editor']=='TaiCOL管理員','editor'] = 'TaiCOL'
   # 整理標題
@@ -809,27 +813,39 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, 
       else:
         taxon_history.loc[i,'content'] = ''
   # 分類階層更新
+  s = time.time()
   for i in taxon_history[taxon_history.history_type==4].index:
       row = taxon_history.iloc[i]
       c = json.loads(row.note)
       content_str = ''
       if c.get('old'):
           o_path_list = c.get('old').split('>')
-          if len(o_path_list) > 1: # 不包含自己
-              query = f"""SELECT an.formatted_name
-                          FROM api_taxon at
-                          JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
-                          WHERE at.taxon_id IN %s
-                          ORDER BY at.rank_id ASC"""
-              conn = pymysql.connect(**db_settings)
-              with conn.cursor() as cursor:
-                  cursor.execute(query, (o_path_list, ))
-                  ops = cursor.fetchall()
-                  ops = [o[0] for o in ops]
-                  content_str = (' > ').join(ops)
-                  if content_str:
-                      content_str = f'({gettext("原階層：")}{content_str})'
+          path_str = ' OR '.join(o_path_list)
+          path_resp = requests.get(f'{SOLR_PREFIX}taxa/select?fq=taxon_name_id:*&q=taxon_id:({path_str})&fl=taxon_id,formatted_accepted_name&rows=1000')
+          content_str = ''
+          if path_resp.status_code == 200:
+              higher = pd.DataFrame(path_resp.json()['response']['docs'])
+            #   print(higher)
+              ops = []
+              for pp in o_path_list: # 要根據path的的順序排
+                #   print(pp)
+                  ops.append(higher[higher.taxon_id==pp].formatted_accepted_name.values[0])
+              content_str = (' > ').join(ops)
+              if content_str:
+                content_str = f'({gettext("原階層：")}{content_str})'
+        #   if len(o_path_list) > 1: # 不包含自己
+        #       query = f"""SELECT an.formatted_name
+        #                   FROM api_taxon at
+        #                   JOIN api_names an ON an.taxon_name_id = at.accepted_taxon_name_id
+        #                   WHERE at.taxon_id IN %s
+        #                   ORDER BY at.rank_id ASC"""
+        #       conn = pymysql.connect(**db_settings)
+        #       with conn.cursor() as cursor:
+        #           cursor.execute(query, (o_path_list, ))
+        #           ops = cursor.fetchall()
+                #   ops = [o[0] for o in ops]
       taxon_history.loc[i,'content'] = content_str
+  print('path changed', time.time()-s)
   # 新增/移除屬性
   taxon_history.loc[taxon_history.history_type.isin([8,9]),'content'] = taxon_history[taxon_history.history_type.isin([8,9])].note.apply(lambda x: attr_map[x] if lang == 'en-us' else attr_map_c[x] )
   drop_conserv = []
@@ -886,70 +902,48 @@ def create_history_display(taxon_id, lang, new_taxon_id, new_taxon_name, names, 
 
 
 
-def create_name_history(names, nids, taxon_id, ref_df):
+def create_name_history(names, name_history_list, ref_df):
     name_history = []
-    conn = pymysql.connect(**db_settings)
-    for n in nids:
-        current_nid = json.loads(n[0]).get('new_taxon_name_id')
+    # conn = pymysql.connect(**db_settings)
+    for n in name_history_list:
+        if n[-1] == 5: # 新增taxon
+            current_nid = json.loads(n[0]).get('taxon_name_id')
+        elif n[-1] == 0: # 有效名變更
+            current_nid = json.loads(n[0]).get('new_taxon_name_id')
         if len(names[names.taxon_name_id==current_nid]):
             name_ = names[names.taxon_name_id==current_nid].sci_name_ori.values[0]
-        else:
-            query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
-            with conn.cursor() as cursor:
-                cursor.execute(query, (current_nid,))
-                name_ = cursor.fetchone()
-                name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
+        # else:
+        #     query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
+        #     with conn.cursor() as cursor:
+        #         cursor.execute(query, (current_nid,))
+        #         name_ = cursor.fetchone()
+        #         name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
         if n[2] and n[3] not in [4,6]:
             name_history.append({'name_id': current_nid,'name': name_, 'ref': '',
                                  'reference_id': n[2], 'updated_at': n[1]})
         else:
             name_history.append({'name_id': current_nid,'name': name_, 'ref':'', 
                                  'reference_id': None, 'updated_at': n[1]})
-    # 第一次建立的時候 放在最後 因為改成desc
-    
-    with conn.cursor() as cursor:     
-        query = f'''SELECT ath.note, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), ru.reference_id, r.type FROM api_taxon_history ath
-                    LEFT JOIN reference_usages ru ON ath.reference_id = ru.reference_id and ath.accepted_taxon_name_id = ru.accepted_taxon_name_id and ath.taxon_name_id = ru.taxon_name_id
-                    LEFT JOIN `references` r ON ru.reference_id = r.id
-                    WHERE ath.taxon_id = %s AND ath.`type` = 5 ORDER BY ath.updated_at DESC;'''
-        cursor.execute(query, (taxon_id,))
-        first = cursor.fetchone()
-        if first:
-            current_nid = json.loads(first[0]).get('taxon_name_id')
-            if len(names[names.taxon_name_id==current_nid]):
-                name_ = names[names.taxon_name_id==current_nid].sci_name_ori.values[0]
-            else:
-                query = f"SELECT formatted_name FROM api_names WHERE taxon_name_id = %s"
-                conn = pymysql.connect(**db_settings)
-                with conn.cursor() as cursor:
-                    cursor.execute(query, (current_nid,))
-                    name_ = cursor.fetchone()
-                    name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
-            if first[2] and first[3] not in [4,6]: # 如果不是backbone
-                name_history.append({'name_id': current_nid, 'name': name_, 'ref': '',
-                                     'reference_id': first[2], 'updated_at': first[1]})
-            else:
-                name_history.append({'name_id': current_nid, 'name': name_, 'ref': '', 
-                                     'reference_id': None, 'updated_at': first[1]})
-                
+                            
     name_history = pd.DataFrame(name_history)
-    # 先找出reference_id沒有在ref_df裡面的
-    all_ref = name_history[name_history.reference_id.notnull()].reference_id.unique()
-    no_ref = [a for a in all_ref if a not in ref_df.reference_id.unique()]
+    # # 先找出reference_id沒有在ref_df裡面的
+    # all_ref = name_history[name_history.reference_id.notnull()].reference_id.unique()
+    # no_ref = [a for a in all_ref if a not in ref_df.reference_id.unique()]
     
-    if len(no_ref):
-        query = f"SELECT distinct(r.id), c.short_author \
-                FROM api_citations c \
-                JOIN `references` r ON c.reference_id = r.id \
-                WHERE c.reference_id IN %s AND r.type not in (4,6) GROUP BY r.id" 
-        conn = pymysql.connect(**db_settings)
-        with conn.cursor() as cursor:
-            cursor.execute(query, (no_ref, ))
-            short_refs = cursor.fetchall()
-            for sr in short_refs:
-                ref_df = pd.concat([ref_df, pd.DataFrame([{'reference_id': sr[0], 'ref': sr[1]}])], ignore_index=True)
+    # print('no_ref', no_ref)
+    # if len(no_ref):
+    #     query = f"SELECT distinct(r.id), c.short_author \
+    #             FROM api_citations c \
+    #             JOIN `references` r ON c.reference_id = r.id \
+    #             WHERE c.reference_id IN %s AND r.type not in (4,6) GROUP BY r.id" 
+    #     conn = pymysql.connect(**db_settings)
+    #     with conn.cursor() as cursor:
+    #         cursor.execute(query, (no_ref, ))
+    #         short_refs = cursor.fetchall()
+    #         for sr in short_refs:
+    #             ref_df = pd.concat([ref_df, pd.DataFrame([{'reference_id': sr[0], 'ref': sr[1]}])], ignore_index=True)
 
-    conn.close()
+    #     conn.close()
 
     if len(ref_df):
         
@@ -963,152 +957,223 @@ def create_name_history(names, nids, taxon_id, ref_df):
 
 
 
-def create_alien_type_display(alien_types, ref_df):
+def create_alien_type_display(alien_types):
     final_aliens = []
 
     has_cultured = 0
 
+    # if alien_types:
+    #     alien_rows = json.loads(alien_types)
+    #     alien_rows = pd.DataFrame(alien_rows)
+    # else:
+    #     alien_rows = []
     if alien_types:
-        alien_rows = json.loads(alien_types)
-        alien_rows = pd.DataFrame(alien_rows)
-    else:
-        alien_rows = []
 
-    if len(alien_rows):
+        alien_rows = alien_types.split('|')
 
-        if len(alien_rows[alien_rows.alien_type=='cultured']):
-            has_cultured = 1
+        for aa in alien_rows:
+            now_aa = aa.split(':')
 
-        alien_rows = alien_rows.merge(ref_df,how='left')
-        alien_rows = alien_rows.replace({np.nan: None})
-        # 排除backbone & note 為null
-        # 是backbone 沒有note
-        # 不顯示
-        alien_rows = alien_rows[~((alien_rows['type'].isin([4,6]))&(alien_rows.status_note.isnull()))]
-        alien_rows = alien_rows.sort_values('is_latest', ascending=False)
-        alien_rows = alien_rows[['alien_type','status_note','ref','type']].drop_duplicates()
+            if now_aa == 'cultured':
+                has_cultured = 1
+
+            if len(now_aa) > 1:
+                final_aliens.append({
+                    'alien_type': attr_map_c[now_aa[0]],
+                    'note': now_aa[1]
+                })
+            elif len(now_aa) == 1:
+                final_aliens.append({
+                    'alien_type': attr_map_c[now_aa[0]],
+                })
+
+
+
+    # if len(alien_rows):
+
+
+        # if len(alien_rows[alien_rows.alien_type=='cultured']):
+        #     has_cultured = 1
+
+        # alien_rows = alien_rows.merge(ref_df,how='left')
+        # alien_rows = alien_rows.replace({np.nan: None})
+        # # 排除backbone & note 為null
+        # # 是backbone 沒有note
+        # # 不顯示
+        # alien_rows = alien_rows[~((alien_rows['type'].isin([4,6]))&(alien_rows.status_note.isnull()))]
+        # alien_rows = alien_rows.sort_values('is_latest', ascending=False)
+        # alien_rows = alien_rows[['alien_type','status_note','ref','type']].drop_duplicates()
         
-        for at in alien_rows.to_dict('records'):
-            # 是backbone 有note
-            # 歸化: note
-            if at.get('type') in [4,6] and at.get('status_note'):
-                final_aliens.append({
-                    'alien_type': attr_map_c[at.get('alien_type')],
-                    'note': at.get('status_note')
-                })
-                # final_aliens.append(f"{at.get('alien_type')}: {at.get('status_note')}")
-            # 不是backbone 有note
-            # 原生: Chang-Yang et al., 2022 (note)
-            elif at.get('status_note'):
-                # final_aliens.append(f"{at.get('alien_type')}: {at.get('ref')} ({at.get('status_note')})")
-                final_aliens.append({
-                    'alien_type': attr_map_c[at.get('alien_type')],
-                    'note': f"{at.get('ref')} ({at.get('status_note')})"
-                })
-            # 不是backbone 沒有notenote
-            # 原生: Chang-Yang et al., 2022
-            elif at.get('ref'):
-                # final_aliens.append(f"{at.get('alien_type')}: {at.get('ref')}")
-                final_aliens.append({
-                    'alien_type': attr_map_c[at.get('alien_type')],
-                    'note': at.get('ref')
-                })
+        # for at in alien_rows.to_dict('records'):
+        #     # 是backbone 有note
+        #     # 歸化: note
+        #     if at.get('type') in [4,6] and at.get('status_note'):
+        #         final_aliens.append({
+        #             'alien_type': attr_map_c[at.get('alien_type')],
+        #             'note': at.get('status_note')
+        #         })
+        #         # final_aliens.append(f"{at.get('alien_type')}: {at.get('status_note')}")
+        #     # 不是backbone 有note
+        #     # 原生: Chang-Yang et al., 2022 (note)
+        #     elif at.get('status_note'):
+        #         # final_aliens.append(f"{at.get('alien_type')}: {at.get('ref')} ({at.get('status_note')})")
+        #         final_aliens.append({
+        #             'alien_type': attr_map_c[at.get('alien_type')],
+        #             'note': f"{at.get('ref')} ({at.get('status_note')})"
+        #         })
+        #     # 不是backbone 沒有notenote
+        #     # 原生: Chang-Yang et al., 2022
+        #     elif at.get('ref'):
+        #         # final_aliens.append(f"{at.get('alien_type')}: {at.get('ref')}")
+        #         final_aliens.append({
+        #             'alien_type': attr_map_c[at.get('alien_type')],
+        #             'note': at.get('ref')
+        #         })
 
     return has_cultured, final_aliens
     
 
+def create_link_display(data,taxon_id):
+
+    links = []
+
+    if data['links']:
+        tmp_links = json.loads(data['links'])
+
+        for t in tmp_links:
+            if t["source"] in ["fishbase_order","amphibiansoftheworld"]:
+                links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': data['name'], 'hidden_name': True, 'category': link_map[t["source"]]['category']}]
+            elif t["source"] == 'nc':
+                links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('=')[1].split('&')[0], 'category': link_map[t["source"]]['category']}]
+            elif t["source"] == 'amphibiansoftheworld':
+                links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('/')[-1], 'category': link_map[t["source"]]['category']}]
+            elif t["source"] != 'ncbi':
+                links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'category': link_map[t["source"]]['category']}]
+    if data['path']:
+        # LPSN 
+        if 't0000005' in data['path'] or 't0000004' in data['path']:
+            suffix = f"{rank_map[data['rank_id']].lower()}/{data['name'].replace(' ','-').lower()}"
+            links += [{'href': link_map['lpsn']['url_prefix'], 'title': link_map['lpsn']['title'], 'suffix': suffix, 'category': link_map['lpsn']['category'], 'hidden_name': True}]
+        # Antwiki
+        if 't0005989' in data['path']:
+            links += [{'href': link_map['antwiki']['url_prefix'], 'title': link_map['antwiki']['title'], 'suffix': data['name'], 'category': link_map['antwiki']['category'], 'hidden_name': True}]
+        # mycobank
+        if 't0000008' in data['path']:
+            links += [{'href': link_map['mycobank']['url_prefix'], 'title': link_map['mycobank']['title'], 'suffix': data['name'], 'category': link_map['mycobank']['category'], 'hidden_name': True}]
+        # Animal Diversity Web
+        if 't0000009' in data['path']:
+            links += [{'href': link_map['adw']['url_prefix'], 'title': link_map['adw']['title'], 'suffix': data['name'], 'category': link_map['adw']['category'], 'hidden_name': True}]
+        # POWO, tropicos
+        if 't0000003' in data['path']:
+            for pp in ['powo','tropicos','taiherbarium']:
+                links += [{'href': link_map[pp]['url_prefix'], 'title': link_map[pp]['title'], 'suffix': data['name'], 'category': link_map[pp]['category'], 'hidden_name': True}]
+        if any([ccc in data['path'] for ccc in ['t0000007','t0000092','t0000096','t0000093','t0000243','t0000338']]):
+            links += [{'href': link_map['algaebase']['url_prefix'], 'title': link_map['algaebase']['title'], 'suffix': data['name'], 'category': link_map['algaebase']['category'], 'hidden_name': True}]
+    # 全部都接 wikispecies,discoverlife,taibif,inat,irmng
+    for s in ['wikispecies','discoverlife','inat','irmng','gisd','ncbi']:
+        links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'], 'hidden_name': True, 'category': link_map[s]['category']}]
+    # taibif接taxonID
+    links += [{'href': link_map['taibif']['url_prefix'], 'title': link_map['taibif']['title'] ,'suffix': taxon_id, 'hidden_name': True, 'category': link_map['taibif']['category']}]
+    links = pd.DataFrame(links).drop_duplicates()
+    links['category'] = links['category'].apply(lambda x: '; '.join([ gettext(xx) for xx in x.split(';')]))
+    
+    links = links.sort_values('category', ascending=False).to_dict('records')
+
+    return links
 
 
-def check_alien_latest(temp, conn):
-    # temp = temp[temp.ru_status=='accepted']
-    query = '''SELECT r.publish_year, ac.publish_date, r.id FROM `api_citations` ac
-                JOIN   `references` r ON r.id = ac.reference_id
-                WHERE r.id in %s'''
-    with conn.cursor() as cursor:
-        execute_line = cursor.execute(query, (list(temp.reference_id.unique()),))
-        # ref_more_info = cursor.fetchall()
-        temp_year = pd.DataFrame(cursor.fetchall(), columns=['publish_year', 'publish_date', 'reference_id'])
-        temp = temp.merge(temp_year)
 
-    latest_ru_id_list = []
-    # 如果有super backbone 忽略其他
-    if len(temp[temp['reference_type']==6]):
-        latest_ru_id_list += temp[temp['reference_type'] == 6].reference_usage_id.to_list()
-    else:
-        # 如果有文獻的話就忽略backbone
-        ignore_backbone = False
-        ignore_checklist = False
-        if len(temp[(temp['reference_type']!=4)]):
-            temp = temp[(temp['reference_type']!=4)]
-            ignore_backbone = True
-        # 如果有非名錄文獻的話 忽略名錄文獻
-        if len(temp[(temp['reference_type']!=5)]):
-            temp = temp[(temp['reference_type']!=5)]
-            ignore_checklist = True
-        # 如果都是backbone就直接比, 如果有大於一個reference_id, 比較年份
-        yr = temp[['reference_id', 'publish_year']].drop_duplicates()
-        max_yr = yr.publish_year.max()
-        if len(yr[yr['publish_year'] == max_yr]) > 1:
-            currently_cannot_decide = False
-            temp = temp[(temp.publish_year==max_yr)]
-            dt = temp[['reference_id', 'publish_date']].drop_duplicates()
-            if len(dt[dt.publish_date!='']):
-                max_dt = dt[dt.publish_date!=''].publish_date.max()
-                if len(dt[dt['publish_date'] == max_dt]) > 1:
-                    currently_cannot_decide = True
-                else:
-                    latest_ru_id_list += temp[temp['publish_date'] == max_dt].reference_usage_id.to_list()
-            else:
-                currently_cannot_decide = True
-            if currently_cannot_decide:
-                ref_ids = dt.reference_id.to_list()
-                query = '''SELECT JSON_EXTRACT(r.properties, "$.book_title"), 
-                            JSON_EXTRACT(r.properties, "$.volume"), JSON_EXTRACT(r.properties, "$.issue") FROM `references` r
-                            WHERE r.id in %s'''
-                with conn.cursor() as cursor:
-                    execute_line = cursor.execute(query, (ref_ids,))
-                    ref_more_info = cursor.fetchall()
-                    ref_more_info = pd.DataFrame(ref_more_info, columns=['book_title', 'volume', 'issue'])
-                    if len(ref_more_info.drop_duplicates()) == 1:
-                    # 判斷是同一期期刊的不同篇文章  擇一當作最新文獻
-                        latest_ru_id_list += temp[temp['reference_id'] == ref_ids[0]].reference_usage_id.to_list()
-        else:
-            if ignore_backbone and ignore_checklist:
-                latest_ru_id_list += temp[(temp['publish_year'] == max_yr) & (temp['reference_type'] != 5)  & (temp['reference_type'] != 4)].reference_usage_id.to_list()
-            elif ignore_checklist and not ignore_backbone:
-                latest_ru_id_list += temp[(temp['publish_year'] == max_yr) & (temp['reference_type'] != 5)].reference_usage_id.to_list()
-            # 這裡也要排除backbone
-            elif ignore_backbone and not ignore_checklist:
-                latest_ru_id_list += temp[(temp['publish_year'] == max_yr) & (temp['reference_type'] != 4)].reference_usage_id.to_list()
-            else:
-                latest_ru_id_list += temp[(temp['publish_year'] == max_yr)].reference_usage_id.to_list()
-    # if len(latest_ru_id_list) > 1:
-    if len(latest_ru_id_list):
-        main_at = temp[temp.reference_usage_id==latest_ru_id_list[0]].alien_type.values[0]
-    else:
-        main_at = None
-    return main_at
-    # # 如果最新的是同一篇文獻 且互為同模異名 要判斷usage中的group 來決定誰是最新
-    # is_obj_syns = False
-    # if len(latest_ru_id_list) > 1:
-    #     temp_rows = temp[temp.reference_usage_id.isin(latest_ru_id_list)]
-    #     # 先確認是不是同模
-    #     # 1. 全部有一樣的original_taxon_name_id (長度可以超過2)
-    #     if len(temp_rows.original_taxon_name_id.unique()) == 1:
-    #         if temp_rows.original_taxon_name_id.unique()[0] is not None:
-    #             is_obj_syns = True
-    #     # 2. A 是 B 的基礎名
-    #     # 3. B 是 A 的基礎名
-    #     elif len(latest_ru_id_list) == 2:
-    #         if len(temp_rows[temp_rows.original_taxon_name_id.notnull()]) == 1:
-    #             a_name = temp_rows[temp_rows.original_taxon_name_id.notnull()].original_taxon_name_id.values[0]
-    #             if len(temp_rows[temp_rows.taxon_name_id==a_name]) == 1:
-    #                 is_obj_syns = True
-    #     if is_obj_syns:
-    #         # 抓出group
-    #         group_min = temp_rus[temp_rus.reference_usage_id.isin(latest_ru_id_list)].group.min()
-    #         latest_ru_id_list = temp_rus[(temp_rus.reference_usage_id.isin(latest_ru_id_list))&(temp_rus.group==group_min)].reference_usage_id.to_list()
-    # return latest_ru_id_list, is_obj_syns
+
+# def check_alien_latest(temp, conn):
+#     # temp = temp[temp.ru_status=='accepted']
+#     query = '''SELECT r.publish_year, ac.publish_date, r.id FROM `api_citations` ac
+#                 JOIN   `references` r ON r.id = ac.reference_id
+#                 WHERE r.id in %s'''
+#     with conn.cursor() as cursor:
+#         execute_line = cursor.execute(query, (list(temp.reference_id.unique()),))
+#         # ref_more_info = cursor.fetchall()
+#         temp_year = pd.DataFrame(cursor.fetchall(), columns=['publish_year', 'publish_date', 'reference_id'])
+#         temp = temp.merge(temp_year)
+
+#     latest_ru_id_list = []
+#     # 如果有super backbone 忽略其他
+#     if len(temp[temp['reference_type']==6]):
+#         latest_ru_id_list += temp[temp['reference_type'] == 6].reference_usage_id.to_list()
+#     else:
+#         # 如果有文獻的話就忽略backbone
+#         ignore_backbone = False
+#         ignore_checklist = False
+#         if len(temp[(temp['reference_type']!=4)]):
+#             temp = temp[(temp['reference_type']!=4)]
+#             ignore_backbone = True
+#         # 如果有非名錄文獻的話 忽略名錄文獻
+#         if len(temp[(temp['reference_type']!=5)]):
+#             temp = temp[(temp['reference_type']!=5)]
+#             ignore_checklist = True
+#         # 如果都是backbone就直接比, 如果有大於一個reference_id, 比較年份
+#         yr = temp[['reference_id', 'publish_year']].drop_duplicates()
+#         max_yr = yr.publish_year.max()
+#         if len(yr[yr['publish_year'] == max_yr]) > 1:
+#             currently_cannot_decide = False
+#             temp = temp[(temp.publish_year==max_yr)]
+#             dt = temp[['reference_id', 'publish_date']].drop_duplicates()
+#             if len(dt[dt.publish_date!='']):
+#                 max_dt = dt[dt.publish_date!=''].publish_date.max()
+#                 if len(dt[dt['publish_date'] == max_dt]) > 1:
+#                     currently_cannot_decide = True
+#                 else:
+#                     latest_ru_id_list += temp[temp['publish_date'] == max_dt].reference_usage_id.to_list()
+#             else:
+#                 currently_cannot_decide = True
+#             if currently_cannot_decide:
+#                 ref_ids = dt.reference_id.to_list()
+#                 query = '''SELECT JSON_EXTRACT(r.properties, "$.book_title"), 
+#                             JSON_EXTRACT(r.properties, "$.volume"), JSON_EXTRACT(r.properties, "$.issue") FROM `references` r
+#                             WHERE r.id in %s'''
+#                 with conn.cursor() as cursor:
+#                     execute_line = cursor.execute(query, (ref_ids,))
+#                     ref_more_info = cursor.fetchall()
+#                     ref_more_info = pd.DataFrame(ref_more_info, columns=['book_title', 'volume', 'issue'])
+#                     if len(ref_more_info.drop_duplicates()) == 1:
+#                     # 判斷是同一期期刊的不同篇文章  擇一當作最新文獻
+#                         latest_ru_id_list += temp[temp['reference_id'] == ref_ids[0]].reference_usage_id.to_list()
+#         else:
+#             if ignore_backbone and ignore_checklist:
+#                 latest_ru_id_list += temp[(temp['publish_year'] == max_yr) & (temp['reference_type'] != 5)  & (temp['reference_type'] != 4)].reference_usage_id.to_list()
+#             elif ignore_checklist and not ignore_backbone:
+#                 latest_ru_id_list += temp[(temp['publish_year'] == max_yr) & (temp['reference_type'] != 5)].reference_usage_id.to_list()
+#             # 這裡也要排除backbone
+#             elif ignore_backbone and not ignore_checklist:
+#                 latest_ru_id_list += temp[(temp['publish_year'] == max_yr) & (temp['reference_type'] != 4)].reference_usage_id.to_list()
+#             else:
+#                 latest_ru_id_list += temp[(temp['publish_year'] == max_yr)].reference_usage_id.to_list()
+#     # if len(latest_ru_id_list) > 1:
+#     if len(latest_ru_id_list):
+#         main_at = temp[temp.reference_usage_id==latest_ru_id_list[0]].alien_type.values[0]
+#     else:
+#         main_at = None
+#     return main_at
+#     # # 如果最新的是同一篇文獻 且互為同模異名 要判斷usage中的group 來決定誰是最新
+#     # is_obj_syns = False
+#     # if len(latest_ru_id_list) > 1:
+#     #     temp_rows = temp[temp.reference_usage_id.isin(latest_ru_id_list)]
+#     #     # 先確認是不是同模
+#     #     # 1. 全部有一樣的original_taxon_name_id (長度可以超過2)
+#     #     if len(temp_rows.original_taxon_name_id.unique()) == 1:
+#     #         if temp_rows.original_taxon_name_id.unique()[0] is not None:
+#     #             is_obj_syns = True
+#     #     # 2. A 是 B 的基礎名
+#     #     # 3. B 是 A 的基礎名
+#     #     elif len(latest_ru_id_list) == 2:
+#     #         if len(temp_rows[temp_rows.original_taxon_name_id.notnull()]) == 1:
+#     #             a_name = temp_rows[temp_rows.original_taxon_name_id.notnull()].original_taxon_name_id.values[0]
+#     #             if len(temp_rows[temp_rows.taxon_name_id==a_name]) == 1:
+#     #                 is_obj_syns = True
+#     #     if is_obj_syns:
+#     #         # 抓出group
+#     #         group_min = temp_rus[temp_rus.reference_usage_id.isin(latest_ru_id_list)].group.min()
+#     #         latest_ru_id_list = temp_rus[(temp_rus.reference_usage_id.isin(latest_ru_id_list))&(temp_rus.group==group_min)].reference_usage_id.to_list()
+#     # return latest_ru_id_list, is_obj_syns
 
 
 
