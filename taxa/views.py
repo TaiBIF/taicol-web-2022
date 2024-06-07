@@ -246,22 +246,6 @@ def taxon(request, taxon_id):
 
     conn = pymysql.connect(**db_settings)
 
-    # time_s = time.time()
-
-    # with conn.cursor() as cursor:
-    #     cursor.execute("SELECT is_deleted, is_in_taiwan, not_official FROM api_taxon WHERE taxon_id = %s",taxon_id)
-    #     info = cursor.fetchone()
-    #     if info:
-    #         is_deleted = info[0]
-    #         is_in_taiwan = info[1]
-    #         not_official = info[2]
-    #         if not_official:
-    #             data['not_official'] = gettext('未經正式記錄')
-    #         has_taxon = True
-    #     # conn.close()
-
-    # print('0', time.time()-time_s)
-    # time_s = time.time()
     query = f"""
                 SELECT at.is_deleted, at.is_in_taiwan, at.not_official,
                     ac.cites_note, ac.iucn_note, ac.iucn_taxon_id, 
@@ -275,17 +259,15 @@ def taxon(request, taxon_id):
                 WHERE at.taxon_id = %s 
             """
     
-    # from api_taxon        
-    # 'cites_note',  'iucn_note', 'iucn_taxon_id', 'red_note', 'protected_note', 'original_taxon_name_id', 'links', 'namecode', 'tree_stat']
-   
-    # conn = pymysql.connect(**db_settings)
+
+
     with conn.cursor() as cursor:
         cursor.execute(query, (taxon_id,))
         results = cursor.fetchone()
         if results:
             for i in range(len(cursor.description)):
                 data[cursor.description[i][0]] = results[i]
-        # if info:
+
             is_deleted = data['is_deleted']
             is_in_taiwan = data['is_in_taiwan']
             not_official = data['not_official']
@@ -294,7 +276,7 @@ def taxon(request, taxon_id):
             if not is_deleted:
                 has_taxon = True
 
-    # print(data, has_taxon)
+
     if has_taxon:
 
         # 取有效學名的那筆資料
@@ -322,21 +304,6 @@ def taxon(request, taxon_id):
         if name_c_str:
             taxon_group_str += ' ' + name_c_str
 
-
-        # from solr: simple_name, formatted_accepted_name + name_author, common_name_c, accepted_taxon_name_id, taxon_rank_id, path,
-        # is_endemic, is_terrestrial, is_freshwater, is_brackish, is_marine, is_fossil, alien_type,
-        # cites, iucn, redlist, protected, is_cultured, taxon_group_str (* 用其他的資訊組合)
-
-        # data.keys()
-        # 'name', 'sci_name', 'common_name_c', 'name_id', 'rank_id', 'path', 'is_endemic', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'is_in_taiwan', 'main_alien_type', 'alien_note', 'cites_listing', 'cites_note', 'iucn_category', 'iucn_note', 'iucn_taxon_id', 'red_category', 'red_note', 'protected_category', 'protected_note', 'original_taxon_name_id', 'links', 'namecode', 'is_cultured', 'taxon_group_str', 'tree_stat']
-
-
-        # from api_taxon        
-        # 'cites_note',  'iucn_note', 'iucn_taxon_id', 'red_note', 'protected_note', 'original_taxon_name_id', 'links', 'namecode', 'tree_stat']
-
-        # print(data.keys()) # 先確定這邊有哪些可以改成用solr query就好
-        # print('1', time.time()-time_s)
-
         time_s = time.time()
 
         # 照片 用資料庫取得
@@ -344,6 +311,7 @@ def taxon(request, taxon_id):
 
         print('1', time.time()-time_s)
         time_s = time.time()
+
         # 學名
         if data['rank_id'] == 47:
             # 不會超過上限 group concat維持
@@ -590,7 +558,7 @@ def taxon(request, taxon_id):
                 # 確認是否為歧異
                 query = """
                         select taxon_name_id from api_taxon_usages 
-                        where  `status` = 'not-accepted' and is_deleted != 1 and taxon_name_id IN %s 
+                        where `status` = 'not-accepted' and is_deleted != 1 and taxon_name_id IN %s 
                         group by taxon_name_id having count(distinct(taxon_id)) > 1;
                         """
 
@@ -721,9 +689,7 @@ def taxon(request, taxon_id):
             used_refs = [int(str(u).replace('.0','')) for u in used_refs if u]
             refs = usage_refs[(~usage_refs.r_type.isin([4,6]))&(usage_refs.reference_id.isin(used_refs))]
             short_refs = list(usage_refs[~usage_refs.r_type.isin([4,6])][['reference_id','ref','r_type']].values)
-            # refs = [[r[0],r[1]] for r in refs_r if [r[0],r[1]] not in refs and r[-1] not in [4,6]]
-            # short_refs = [[r[0],r[4],r[5]] for r in refs_r if [r[0],r[4],r[5]] not in short_refs and r[-1] not in [4,6]]
-            # conn.close()
+
         ref_df = pd.DataFrame(short_refs, columns=['reference_id', 'ref', 'type'])
         print('6.5', time.time()-time_s)
         time_s = time.time()
@@ -745,8 +711,7 @@ def taxon(request, taxon_id):
                     person_resp = person_resp.json()
                     experts = person_resp.get('rows')
                 
-        refs = list(refs[['reference_id','full_ref']].drop_duplicates().values)
-        print(refs)
+            refs = list(refs[['reference_id','full_ref']].drop_duplicates().values)
 
         print('7', time.time()-time_s)
 
@@ -784,27 +749,20 @@ def taxon(request, taxon_id):
 
         # 變更歷史
         if is_deleted:
-            # conn = pymysql.connect(**db_settings)
             new_taxon_name = '', ''
             query = f"""SELECT tn.name, at.taxon_id FROM api_taxon at
                     JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
                     WHERE at.taxon_id = %s
                     """
-            # query = f"""SELECT tn.name, at.taxon_id FROM api_taxon at
-            # JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
-            # WHERE at.taxon_id = (SELECT new_taxon_id FROM api_taxon WHERE taxon_id = %s)
-            # """
             with conn.cursor() as cursor:
                 cursor.execute(query, (data['new_taxon_id'],))
                 new_taxon_name = cursor.fetchone()
                 if new_taxon_name:
                     new_taxon_name = new_taxon_name[0]
-                    # new_taxon_id = new_taxon_id[1]
 
         print('9.5', time.time()-time_s)
         time_s = time.time()
 
-        # taxon_history, current_page, total_page, page_list = create_history_display(taxon_id, get_language(), new_taxon_id, new_taxon_name, names, current_page=current_page)
         taxon_history = create_history_display(taxon_history_df, get_language(), new_taxon_id, new_taxon_name, names)
         data['self'] = ''
         data['self'] = {'rank_color': rank_color_map[data['rank_id']] if data['rank_id'] in [3,12,18,22,26,30,34] else 'rank-second-gray',
@@ -857,8 +815,6 @@ def taxon(request, taxon_id):
     elif not has_taxon:
         taxon_id = None
 
-
-    # TODO 這邊的refs要排除掉已經被移除的文獻
 
     print('total_time', time.time()-total_time)
 
