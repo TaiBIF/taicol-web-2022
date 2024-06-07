@@ -78,7 +78,7 @@
 	function resetForm(){
 		$("#moreForm")[0].reset();
 		$('input[name=keyword]').val('')
-		$('select[name=name-select]').val('contain');
+		$('select[name=name-select]').val('equal');
 		$('select[name=name-select]').niceSelect('update'); 
 		$('select[name=rank-select]').val('');
 		$('select[name=rank-select]').niceSelect('update'); 

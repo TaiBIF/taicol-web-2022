@@ -145,8 +145,10 @@ def get_autocomplete_taxon_by_solr(request):
     names = '[]'
     keyword_reg = ''
     query_list = []
-    # NOTE 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1  的資料
+
+    # 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1  的資料
     query_list.append('is_in_taiwan:true')
+    query_list.append('is_deleted:false')
 
 
     if keyword := request.GET.get('keyword','').strip():
@@ -159,6 +161,9 @@ def get_autocomplete_taxon_by_solr(request):
 
         if request.GET.get('with_not_official') == 'off':
             query_list.append('not_official:false')
+
+        if re.search(r'[\u4e00-\u9fff]+', keyword):
+            query_list.append('is_primary_common_name:true')
 
         keyword = html.unescape(keyword)
         keyword_reg = get_variants(keyword)
@@ -261,7 +266,7 @@ def taxon(request, taxon_id):
                 SELECT at.is_deleted, at.is_in_taiwan, at.not_official,
                     ac.cites_note, ac.iucn_note, ac.iucn_taxon_id, 
                     ac.red_note, ac.protected_note, tn.original_taxon_name_id, 
-                    at.links, anc.namecode, att.tree_stat, at.new_taxon_id
+                    at.links, anc.taieol_image as images, att.tree_stat, at.new_taxon_id
                 FROM api_taxon at 
                 LEFT JOIN api_namecode anc ON at.accepted_taxon_name_id =  anc.taxon_name_id 
                 LEFT JOIN api_taxon_tree att ON at.taxon_id = att.taxon_id
@@ -334,20 +339,8 @@ def taxon(request, taxon_id):
 
         time_s = time.time()
 
-        # 照片
-        # TODO 考慮把照片移到前端取得
-        data['images'] = []
-        if data['namecode']:
-            url = 'https://data.taieol.tw/eol/endpoint/image/species/{}'.format(data['namecode'])
-            r = requests.get(url)
-            if r.status_code == 200:
-                img = r.json()
-                for ii in img:
-                    license_str = ii['license']
-                    if license_str:
-                        license_str = 'CC-' + license_str.upper()
-                    foto = {'author':ii['author'], 'src':ii['image_big'], 'provider':ii['provider'],'permalink': ii['permalink'], 'license': license_str }
-                    data['images'].append(foto)
+        # 照片 用資料庫取得
+        data['images'] = json.loads(data['images']) if data['images'] else []
 
         print('1', time.time()-time_s)
         time_s = time.time()
@@ -397,7 +390,7 @@ def taxon(request, taxon_id):
             path = [p for p in path if p != taxon_id]
             if len(path):
                 path_str = ' OR '.join(path)
-                path_resp = requests.get(f'{SOLR_PREFIX}taxa/select?fq=taxon_name_id:*&q=taxon_id:({path_str})&fl=taxon_rank_id,taxon_id,formatted_accepted_name,common_name_c,alternative_name_c,simple_name&rows=1000')
+                path_resp = requests.get(f'{SOLR_PREFIX}taxa/select?fq=is_deleted:false&fq=taxon_name_id:*&q=taxon_id:({path_str})&fl=taxon_rank_id,taxon_id,formatted_accepted_name,common_name_c,alternative_name_c,simple_name&rows=1000')
                 if path_resp.status_code == 200:
                     higher = pd.DataFrame(path_resp.json()['response']['docs'])
                     for cc in ['common_name_c','alternative_name_c','taxon_group_str']:
@@ -459,19 +452,7 @@ def taxon(request, taxon_id):
         print('3', time.time()-time_s)
         time_s = time.time()
 
-        # 學名變遷
-        # query = f"""SELECT ath.type, ath.content, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), ath.reference_id, ath.note
-        #                 FROM api_taxon_history ath 
-        #                 WHERE ath.taxon_id = %s ORDER BY ath.updated_at DESC"""
-        # conn = pymysql.connect(**db_settings)
-        # with conn.cursor() as cursor:
-        #     cursor.execute(query, (taxon_id, ))
-        #     th = cursor.fetchall()
-        #     taxon_history_df = pd.DataFrame(th)
-        
-        # print('4', time.time()-time_s)
-        # time_s = time.time()
-
+        # 變更歷史 + 學名變遷
         query = f"""SELECT ath.type, ath.content, ac.short_author, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), usr.name, ath.reference_id, ath.note, r.type
                         FROM api_taxon_history ath 
                         LEFT JOIN import_usage_logs iul ON iul.reference_id = ath.reference_id
@@ -483,7 +464,6 @@ def taxon(request, taxon_id):
         with conn.cursor() as cursor:
             cursor.execute(query, (taxon_id, ))
             th = cursor.fetchall()
-            # conn.close()
             taxon_history_df = pd.DataFrame(th, columns=['history_type', 'content', 'short_author', 'updated_at', 'editor', 'reference_id', 'note', 'reference_type'])
             name_history_list = taxon_history_df[taxon_history_df.history_type.isin([0,5])][['note','updated_at','reference_id','reference_type','history_type']].drop_duplicates().values
 
@@ -491,29 +471,45 @@ def taxon(request, taxon_id):
         time_s = time.time()
 
 
-        # TODO 這邊取得names的時候要包含taxon_history裡面提到的name
-        
-        query = f"""SELECT atu.taxon_name_id, an.formatted_name, an.name_author, ac.short_author, atu.status,
-                    ru.status, tn.nomenclature_id, 
-                    tn.publish_year, ru.per_usages,
-                    ru.reference_id, tn.reference_id, r.publish_year, tn.rank_id, r.type, tn.original_taxon_name_id, ru.id
+        # 取得names的時候要包含taxon_history裡面提到的name
+
+        query = f""" WITH base_name AS (
+                        SELECT JSON_EXTRACT(note, "$.taxon_name_id") as taxon_name_id FROM api_taxon_history WHERE `type` IN (1,17) AND taxon_id = %s
+                        UNION
+                        SELECT JSON_EXTRACT(note, "$.old_taxon_name_id") as taxon_name_id FROM api_taxon_history WHERE `type` = 0 AND taxon_id = %s
+                        UNION
+                        SELECT JSON_EXTRACT(note, "$.new_taxon_name_id") as taxon_name_id FROM api_taxon_history WHERE `type` = 0 AND taxon_id = %s
+                    )
+                    SELECT atu.taxon_name_id, an.formatted_name, an.name_author, ac.short_author, atu.status,
+                            ru.status, tn.nomenclature_id, tn.publish_year, ru.per_usages, ru.reference_id, 
+                            tn.reference_id, r.publish_year, tn.rank_id, r.type, tn.original_taxon_name_id, ru.id,
+                            'from_usages'
                     FROM api_taxon_usages atu 
                     LEFT JOIN reference_usages ru ON atu.reference_id = ru.reference_id and atu.accepted_taxon_name_id = ru.accepted_taxon_name_id and atu.taxon_name_id = ru.taxon_name_id
                     LEFT JOIN api_names an ON an.taxon_name_id = atu.taxon_name_id
                     LEFT JOIN `references` r ON r.id = ru.reference_id
                     LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
                     LEFT JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                    WHERE atu.taxon_id = %s"""
-                    # WHERE atu.taxon_id = %s AND atu.is_deleted = 0
-        # conn = pymysql.connect(**db_settings)
+                    WHERE atu.taxon_id = %s AND atu.is_deleted = 0
+                    UNION 
+                    SELECT tn.id, an.formatted_name, an.name_author, '', '',
+                           '', tn.nomenclature_id, tn.publish_year, '', '',
+                           tn.reference_id, 'r_publish_year', tn.rank_id, 'r_type', tn.original_taxon_name_id, '', 'from_history'
+                    FROM taxon_names tn
+                    LEFT JOIN api_names an ON an.taxon_name_id = tn.id
+                    WHERE tn.id IN (SELECT taxon_name_id FROM base_name)
+                    """
         with conn.cursor() as cursor:
-            cursor.execute(query, (taxon_id, ))
+            cursor.execute(query, (taxon_id, taxon_id, taxon_id, taxon_id))
             names = cursor.fetchall()
             names = pd.DataFrame(names, columns=['taxon_name_id','sci_name','author','ref','taxon_status','ru_status',
                                                 'nomenclature_id','publish_year','per_usages','reference_id', 
-                                                'o_reference_id','r_publish_year','rank_id','r_type','original_taxon_name_id','ru_id'])
+                                                'o_reference_id','r_publish_year','rank_id','r_type','original_taxon_name_id','ru_id',
+                                                'name_source'])
             print('5.6', time.time()-time_s)
             time_s = time.time()
+
+            # print(names)
 
             # author 學名作者
             # ref 學名使用文獻
@@ -530,17 +526,16 @@ def taxon(request, taxon_id):
                 # 如果是雜交組合 要根據parent補上作者資訊    
                 # group concat 不會超過上限 維持原本寫法
                 for tnid in names[(names.taxon_name_id!=data['name_id'])&(names.rank_id==47)].taxon_name_id:
-                    query = f"WITH view as (SELECT tnhp.taxon_name_id, CONCAT_WS(' ',an.formatted_name, an.name_author ) as sci_name FROM taxon_name_hybrid_parent tnhp \
-                        JOIN api_names an ON tnhp.parent_taxon_name_id = an.taxon_name_id \
-                        WHERE tnhp.taxon_name_id = %s \
-                        ORDER BY tnhp.order) \
-                        SELECT group_concat(sci_name SEPARATOR ' × ') FROM view \
-                        GROUP BY taxon_name_id "
-                    conn = pymysql.connect(**db_settings)
+                    query = """WITH view as (SELECT tnhp.taxon_name_id, CONCAT_WS(' ',an.formatted_name, an.name_author ) as sci_name 
+                                FROM taxon_name_hybrid_parent tnhp 
+                                JOIN api_names an ON tnhp.parent_taxon_name_id = an.taxon_name_id 
+                                WHERE tnhp.taxon_name_id = %s 
+                                ORDER BY tnhp.order) 
+                                SELECT group_concat(sci_name SEPARATOR ' × ') FROM view 
+                                GROUP BY taxon_name_id """
                     with conn.cursor() as cursor:
                         cursor.execute(query, (tnid,))
                         n = cursor.fetchone()
-                        # conn.close()
                         if n:
                             names.loc[names.taxon_name_id==tnid,'sci_name'] = n[0] 
                 names['per_usages'] = names['per_usages'].apply(lambda x: json.loads(x) if x else [])
@@ -568,44 +563,38 @@ def taxon(request, taxon_id):
                 new_refs += names.reference_id.to_list()
                 new_refs += [n[2] for n in name_history_list]
                 new_refs = list(dict.fromkeys(new_refs))
-                
-                # query = f"""SELECT ac.reference_id, ac.short_author, r.publish_year, r.type
-                #             FROM api_citations ac 
-                #             JOIN `references` r ON r.id = ac.reference_id
-                #             WHERE ac.reference_id IN %s"""
-                
-                query = f"""(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year, c.author, c.short_author, r.type 
-                    FROM api_citations c 
-                    JOIN `references` r ON c.reference_id = r.id 
-                    WHERE c.reference_id IN %s GROUP BY r.id 
-                    UNION  
-                    SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content), r.publish_year, c.author, c.short_author, r.type 
-                    FROM taxon_names tn
-                    JOIN api_citations c ON tn.reference_id = c.reference_id
-                    JOIN `references` r ON c.reference_id = r.id
-                    WHERE tn.id IN (SELECT DISTINCT(taxon_name_id) FROM api_taxon_usages WHERE taxon_id = %s))
-                    ORDER BY author ASC, publish_year DESC """
 
-                # conn = pymysql.connect(**db_settings)
+                
+                query = f"""(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), 
+                            r.publish_year, c.author, c.short_author, r.type 
+                            FROM api_citations c 
+                            JOIN `references` r ON c.reference_id = r.id 
+                            WHERE c.reference_id IN %s GROUP BY r.id 
+                            UNION  
+                            SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content), 
+                            r.publish_year, c.author, c.short_author, r.type 
+                            FROM taxon_names tn
+                            JOIN api_citations c ON tn.reference_id = c.reference_id
+                            JOIN `references` r ON c.reference_id = r.id
+                            WHERE tn.id IN (SELECT DISTINCT(taxon_name_id) FROM api_taxon_usages WHERE taxon_id = %s))
+                            ORDER BY author ASC, publish_year DESC """
+
                 with conn.cursor() as cursor:
                     cursor.execute(query, (new_refs, taxon_id))
                     usage_refs = cursor.fetchall()
                     usage_refs = pd.DataFrame(usage_refs, columns=['reference_id','full_ref','publish_year','author','ref','r_type'])
-                    # conn.close()
 
                 print('5.8', time.time()-time_s)
                 time_s = time.time()
 
-
                 # 確認是否為歧異
                 query = """
-                    select taxon_name_id from api_taxon_usages 
-                    where  `status` = 'not-accepted' and is_deleted != 1 and taxon_name_id IN %s 
-                    group by taxon_name_id having count(distinct(taxon_id)) > 1;
-                """
+                        select taxon_name_id from api_taxon_usages 
+                        where  `status` = 'not-accepted' and is_deleted != 1 and taxon_name_id IN %s 
+                        group by taxon_name_id having count(distinct(taxon_id)) > 1;
+                        """
 
                 is_ambiguous = []
-                # conn = pymysql.connect(**db_settings)
                 with conn.cursor() as cursor:
                     cursor.execute(query, (list(names.taxon_name_id.unique()), ))
                     is_ambiguous = cursor.fetchall()
@@ -615,8 +604,8 @@ def taxon(request, taxon_id):
                 time_s = time.time()
 
 
-                # TODO 這邊要確定是不是這個學名已經被移出分類群中了
-                for n in names.taxon_name_id.unique():
+                # 只整理目前usage的
+                for n in names[names.name_source=='from_usages'].taxon_name_id.unique():
                     has_original = False
                     # 如果是動物法規 且有原始組合名 後面要用冒號接文獻
                     if len(names[(names.taxon_name_id==n)&(names.original_taxon_name_id!='')&(names.nomenclature_id==1)]):
@@ -714,20 +703,23 @@ def taxon(request, taxon_id):
                             name_changes += [[f"{names[names.taxon_name_id==n]['sci_name'].values[0]}{sep} {ref_str}",names[names.taxon_name_id==n]['publish_year'].min(), names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                         else:
                             name_changes += [[names[names.taxon_name_id==n]['sci_name'].values[0], names[names.taxon_name_id==n]['publish_year'].min(), names[names.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
-        if name_changes:
-            name_changes = pd.DataFrame(name_changes, columns=['name_str','year','name'])
-            name_changes['name'] = name_changes['name'].str.replace('<i>','').str.replace('</i>','')
-            name_changes['year'] = name_changes.year.replace({'': None}) # 讓年份為空值的在最後面
-            name_changes = name_changes.sort_values(by=['year','name'], ascending=[True, True])
-            name_changes = name_changes.name_str.to_list()
-        print('6', time.time()-time_s)
-        time_s = time.time()
+                
+                if name_changes:
+                    name_changes = pd.DataFrame(name_changes, columns=['name_str','year','name'])
+                    name_changes['name'] = name_changes['name'].str.replace('<i>','').str.replace('</i>','')
+                    name_changes['year'] = name_changes.year.replace({'': None}) # 讓年份為空值的在最後面
+                    name_changes = name_changes.sort_values(by=['year','name'], ascending=[True, True])
+                    name_changes = name_changes.name_str.to_list()
+                print('6', time.time()-time_s)
+                time_s = time.time()
 
         # 文獻
         # 這邊改用 usage_refs 的資料
-        # TODO 這邊要確定是不是這個學名已經被移出分類群中了
+        #  這邊要確定是不是這個文獻已經被移出分類群中了
         if len(usage_refs):
-            refs = list(usage_refs[~usage_refs.r_type.isin([4,6])][['reference_id','full_ref']].values)
+            used_refs = new_refs + names[names.name_source=='from_usages'].reference_id.to_list()
+            used_refs = [int(str(u).replace('.0','')) for u in used_refs if u]
+            refs = usage_refs[(~usage_refs.r_type.isin([4,6]))&(usage_refs.reference_id.isin(used_refs))]
             short_refs = list(usage_refs[~usage_refs.r_type.isin([4,6])][['reference_id','ref','r_type']].values)
             # refs = [[r[0],r[1]] for r in refs_r if [r[0],r[1]] not in refs and r[-1] not in [4,6]]
             # short_refs = [[r[0],r[4],r[5]] for r in refs_r if [r[0],r[4],r[5]] not in short_refs and r[-1] not in [4,6]]
@@ -738,11 +730,11 @@ def taxon(request, taxon_id):
 
 
         # 取得expert
-        if len(ref_df):
+        if len(refs):
             query = "SELECT person_id FROM person_reference WHERE reference_id in %s"
             person_ids = []
             with conn.cursor() as cursor:
-                cursor.execute(query, (list(ref_df.reference_id.unique()),))
+                cursor.execute(query, (list(refs.reference_id.unique()),))
                 person_ids = cursor.fetchall()
                 person_ids = [str(p[0]) for p in person_ids]
                 print('6.8', time.time()-time_s)
@@ -753,6 +745,8 @@ def taxon(request, taxon_id):
                     person_resp = person_resp.json()
                     experts = person_resp.get('rows')
                 
+        refs = list(refs[['reference_id','full_ref']].drop_duplicates().values)
+        print(refs)
 
         print('7', time.time()-time_s)
 
@@ -1975,14 +1969,22 @@ def get_conditioned_solr_search(req):
     query_list = []
     # NOTE 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1  的資料
     query_list.append('is_in_taiwan:true')
+    query_list.append('is_deleted:false')
 
     # 如果有輸入keyword的話preselect 但是limit offset要加在preselect這邊
     # /.* .*/
 
     if keyword := req.get('keyword','').strip():
 
+        # 如果是查詢中文的話 要加上status 只回傳主要中文名
+
+        if re.search(r'[\u4e00-\u9fff]+', keyword):
+            query_list.append('is_primary_common_name:true')
+
         keyword = get_variants(keyword)
-        keyword_type = req.get('name-select','contain')
+        keyword_type = req.get('name-select','equal')
+
+    
         
         if keyword_type == "equal":
             # 中文名可能有異體字 英文名有大小寫問題 要修改成REGEXP
@@ -1995,6 +1997,7 @@ def get_conditioned_solr_search(req):
         query_list.append(keyword_str)
 
     # 如果沒有keyword的話 要排除掉搜尋中文名的資料 不然會有重複的問題
+
     else:
 
         query_list.append('taxon_name_id:*') # 確保不是中文名
