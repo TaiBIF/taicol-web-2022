@@ -285,7 +285,7 @@ def taxon(request, taxon_id):
         solr_resp = solr_resp['response']['docs'][0]
 
         data['name'] = solr_resp.get('simple_name')
-        sci_name = f"{solr_resp.get('formatted_accepted_name')} {solr_resp.get('name_author')}"
+        sci_name = f"{solr_resp.get('formatted_accepted_name')} {solr_resp.get('name_author') if solr_resp.get('name_author') else ''}"
         data['sci_name'] = sci_name.strip()
         data['name_id'] = solr_resp.get('accepted_taxon_name_id')
         data['rank_id'] = int(solr_resp.get('taxon_rank_id').replace('.0',''))

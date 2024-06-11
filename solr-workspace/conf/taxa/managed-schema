@@ -483,6 +483,9 @@
  <field name="is_marine" type="boolean"/>
  <field name="is_cultured" type="boolean"/>
  <field name="is_in_taiwan" type="boolean"/>
+ <field name="is_hybrid" type="boolean"/>
+
+
  <field name="not_official" type="boolean"/>
  <field name="is_deleted" type="boolean"/>
 
