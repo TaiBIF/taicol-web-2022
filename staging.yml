@@ -69,6 +69,9 @@ services:
       - ../tc-web-volumes/solr:/var/solr
       - ../tc-web-volumes/bucket:/bucket
       - ./solr-workspace/:/workspace
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
     # environment:
     #   - SOLR_JAVA_MEM=-Xms4g -Xmx4g
   # nginx:
