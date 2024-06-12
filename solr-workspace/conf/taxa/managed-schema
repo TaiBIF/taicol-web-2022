@@ -488,6 +488,7 @@
 
  <field name="not_official" type="boolean"/>
  <field name="is_deleted" type="boolean"/>
+ <field name="new_taxon_id" type="string"/>
 
  <field name="path" type="string"/>
  <field name="parent_taxon_id" type="string"/>
