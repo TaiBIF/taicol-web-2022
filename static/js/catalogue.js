@@ -1,14 +1,16 @@
+// const { fromJS } = require("immutable");
+// const { escape } = require("querystring");
 
     var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
     // 要有其中之一存在才送出
 	let params = ['keyword','taxon_group','rank','is_endemic',
 				  'alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil',
-				  'protected_category','red_category','iucn_category','cites','date','status']
+				  'protected','redlist','iucn','cites','date','status']
 
 
 	let more_opts = ['is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil',
-				  'protected_category','red_category','iucn_category','cites','date']
+				  'protected','redlist','iucn','cites','date']
 
 
 
@@ -34,8 +36,15 @@
 				break;
 			}
 		}
+
 		if (has_search_parm){
-			getData(from_url=true);
+			if (urlParams.get('page') != '' && urlParams.get('page') != undefined){
+				page = urlParams.get('page')
+			} else {
+				page = 1
+			}
+
+			getData(page=page, from_url=true);
 		}
 
 
@@ -69,7 +78,7 @@
 	function resetForm(){
 		$("#moreForm")[0].reset();
 		$('input[name=keyword]').val('')
-		$('select[name=name-select]').val('contain');
+		$('select[name=name-select]').val('equal');
 		$('select[name=name-select]').niceSelect('update'); 
 		$('select[name=rank-select]').val('');
 		$('select[name=rank-select]').niceSelect('update'); 
@@ -102,192 +111,195 @@
 		}
 	}
 
-	function changeFacet(facet,value,from_url=false,page=1,from_mb_select=false){
+	// function changeFacet(facet,value,from_url=false,page=1,from_mb_select=false){
 
-		// 如果是本來就active的facet則改為沒有facet
-		if ($(`button.facet-${facet}-${value}`).hasClass('now')){
-			// 改回沒有facet
-			$(".facet-btn").removeClass('now');
-			$('input[name=hidden-value]').val('');
-			$('input[name=hidden-facet]').val('');
-			getData(false);
-		} else {
-			$(".facet-btn").removeClass('now');
-			$(`button.facet-${facet}-${value}`).addClass('now');
-			$('input[name=hidden-value]').val(value);
-			$('input[name=hidden-facet]').val(facet);
+	// 	// 如果是本來就active的facet則改為沒有facet
+	// 	if ($(`button.facet-${facet}-${value}`).hasClass('now')){
+	// 		// 改回沒有facet
+	// 		$(".facet-btn").removeClass('now');
+	// 		$('input[name=hidden-value]').val('');
+	// 		$('input[name=hidden-facet]').val('');
+	// 		getData(page=1, from_url=false);
+	// 	} else {
+	// 		$(".facet-btn").removeClass('now');
+	// 		$(`button.facet-${facet}-${value}`).addClass('now');
+	// 		$('input[name=hidden-value]').val(value);
+	// 		$('input[name=hidden-facet]').val(facet);
 
-			// 手機選單但不要cause onchange
-			if (!from_mb_select){
-				$('select[name=mb-select]').val(facet);
-				$('select[name=mb-select]').niceSelect('update');
-				$('select[name=mb-select]').trigger('change')
-				$('select[name=mb-select-sub]').val($(`option.facet-${facet}-${value}`).text().trim());
-				$('select[name=mb-select-sub]').niceSelect('update');
-			}
-			updateData(page, from_url);
-		}
+	// 		// 手機選單但不要cause onchange
+	// 		if (!from_mb_select){
+	// 			$('select[name=mb-select]').val(facet);
+	// 			$('select[name=mb-select]').niceSelect('update');
+	// 			$('select[name=mb-select]').trigger('change')
+	// 			$('select[name=mb-select-sub]').val($(`option.facet-${facet}-${value}`).text().trim());
+	// 			$('select[name=mb-select-sub]').niceSelect('update');
+	// 		}
+	// 		updateData(page, from_url);
+	// 	}
 		
-	}
+	// }
 
-	function updateData(page, from_url=false){
+	// function updateData(page, from_url=false){
 	
-		let total_page = $('input[name=total_page]').val();
-		if (($('input[name=date]').val()!='')&(!isValidDate($('input[name=date]').val()))){
-			alert('日期格式錯誤')
-		} else {
+	// 	let total_page = $('input[name=total_page]').val();
+	// 	if (($('input[name=date]').val()!='')&(!isValidDate($('input[name=date]').val()))){
+	// 		alert('日期格式錯誤')
+	// 	} else {
 
-			// 從facet或頁碼點選
-			// 只修改表格內容，不修改facet
-			$('.loadingbox').removeClass('d-none');
+	// 		// 從facet或頁碼點選
+	// 		// 只修改表格內容，不修改facet
+	// 		$('.loadingbox').removeClass('d-none');
 
-			$([document.documentElement, document.body]).animate({
-				scrollTop: $(".result-area").offset().top - 80
-			}, 200);
+	// 		$([document.documentElement, document.body]).animate({
+	// 			scrollTop: $(".result-area").offset().top - 80
+	// 		}, 200);
 
 			
-			let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
-					'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() +
-					'&page=' + page + '&total_page=' + total_page + '&facet=' + $('input[name=hidden-facet]').val() + 
-					'&value=' + $('input[name=hidden-value]').val()  
+	// 		let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
+	// 				'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() +
+	// 				'&page=' + page + '&total_page=' + total_page + '&facet=' + $('input[name=hidden-facet]').val() + 
+	// 				'&value=' + $('input[name=hidden-value]').val()  
 					
-			if ( $('#taxon_group').select2('data').length > 0 ){
-				query_str = query_str
-					+ "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
-					"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
-			}
-			if (!from_url){
-				var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
-				history.pushState(null, '', newRelativePathQuery);
-			}
+	// 		if ( $('#taxon_group').select2('data').length > 0 ){
+	// 			query_str = query_str
+	// 				+ "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
+	// 				"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
+	// 		}
 
-			$.ajax({
-				url: "/update_catalogue_table",
-				data: query_str + '&csrfmiddlewaretoken=' + $csrf_token,		
-				type: 'POST',
-				dataType : 'json',
-			})
-			.done(function(results) {
+	// 		// 如果不是從url來的話 代表是第一次查詢 加上 page =1
+	// 		if (!from_url){
+	// 			var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
+	// 			history.pushState(null, '', newRelativePathQuery);
+	// 		}
 
-				$('.loadingbox').addClass('d-none');
+	// 		$.ajax({
+	// 			url: `/${$lang}/catalogue`,
+	// 			// url: "/update_catalogue_table",
+	// 			data: query_str + '&csrfmiddlewaretoken=' + $csrf_token,		
+	// 			type: 'POST',
+	// 			dataType : 'json',
+	// 		})
+	// 		.done(function(results) {
 
-				$([document.documentElement, document.body]).animate({
-					scrollTop: $(".result-area").offset().top - 80
-				}, 200);
+	// 			$('.loadingbox').addClass('d-none');
 
-				// 修改共幾筆
-				$('#total-count').html(results['total_count']);
+	// 			$([document.documentElement, document.body]).animate({
+	// 				scrollTop: $(".result-area").offset().top - 80
+	// 			}, 200);
 
-				if (results['total_count'] > 1000){
-					$('.downloadData').off('click')
-					$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
+	// 			// 修改共幾筆
+	// 			$('#total-count').html(results['total_count']);
 
-					$('.offlineDownloadData').on('click', function(){
-						offlineDownloadData()
-						$('button.download_check').data('type', $(this).data('type'))
-					})
-				} else {
-					$('.offlineDownloadData').off('click')
-					$('.offlineDownloadData').removeClass('offlineDownloadData').addClass('downloadData')
-					$('.downloadData').on('click', function(){
-						downloadData($(this).data('type'))
-					})
-				}
+	// 			if (results['total_count'] > 1000){
+	// 				$('.downloadData').off('click')
+	// 				$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
+
+	// 				$('.offlineDownloadData').on('click', function(){
+	// 					offlineDownloadData()
+	// 					$('button.download_check').data('type', $(this).data('type'))
+	// 				})
+	// 			} else {
+	// 				$('.offlineDownloadData').off('click')
+	// 				$('.offlineDownloadData').removeClass('offlineDownloadData').addClass('downloadData')
+	// 				$('.downloadData').on('click', function(){
+	// 					downloadData($(this).data('type'))
+	// 				})
+	// 			}
 
 
-				// 清空頁碼
-				$('.page-num').remove()
-				$('.table-style1').html(results.header)
-				for (let i = 0; i < results.data.length; i++) {
-					let tag = '';
-					if (results.data[i]['is_endemic'] != ''){
-						tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
-					}
-					if (results.data[i]['alien_type'] != ''){
-						let alt_list = results.data[i]['alien_type'].split(',')
-						alt_list = [...new Set(alt_list)];
-						for (let a = 0; a < alt_list.length; a++) {
-							tag += '<div class="item">' + alt_list[a] + '</div>'
-						}
-					}
-					// `<tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}">
-					$('.table-style1').append(
-						`<tr>
-							<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['name']}</a></td>
-							<td>${results.data[i]['common_name_c']}</td>
-							<td>${results.data[i]['status']}</td>
-							<td>
-								<div class="tag-green">
-									${tag}
-								</div>
-							</td>							
-							<td>${results.data[i]['rank']}</td>
-							<td>${results.data[i]['taxon_group']}</td>
-							<td>${results.data[i]['kingdom']}</td>
-						</tr>`)
-				}
+	// 			// 清空頁碼
+	// 			$('.page-num').remove()
+	// 			$('.table-style1').html(results.header)
+	// 			for (let i = 0; i < results.data.length; i++) {
+	// 				let tag = '';
+	// 				if (results.data[i]['is_endemic'] != ''){
+	// 					tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
+	// 				}
+	// 				if (results.data[i]['alien_type'] != ''){
+	// 					let alt_list = results.data[i]['alien_type'].split(',')
+	// 					alt_list = [...new Set(alt_list)];
+	// 					for (let a = 0; a < alt_list.length; a++) {
+	// 						tag += '<div class="item">' + alt_list[a] + '</div>'
+	// 					}
+	// 				}
+	// 				// `<tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}">
+	// 				$('.table-style1').append(
+	// 					`<tr>
+	// 						<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['name']}</a></td>
+	// 						<td>${results.data[i]['common_name_c']}</td>
+	// 						<td>${results.data[i]['status']}</td>
+	// 						<td>
+	// 							<div class="tag-green">
+	// 								${tag}
+	// 							</div>
+	// 						</td>							
+	// 						<td>${results.data[i]['rank']}</td>
+	// 						<td>${results.data[i]['taxon_group']}</td>
+	// 						<td>${results.data[i]['kingdom']}</td>
+	// 					</tr>`)
+	// 			}
 					
-				$('.open_taxon').on('click', function(){
-					window.open($(this).data('href'),"_self");
-				})
-				$('.page-num').remove()
+	// 			$('.open_taxon').on('click', function(){
+	// 				window.open($(this).data('href'),"_self");
+	// 			})
+	// 			$('.page-num').remove()
 
-					// 頁碼
-					if (results.page.total_page > 1){  // 判斷超過一頁，有才加分頁按鈕
-						$('.scro-m').after(
-						`	<div class="page-num">
-							<!--現在位置加now-->
-							<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
-							<a href="javascript:;" data-page="${results.page.current_page - 1}" class="back updateData">
-								<img src="/static/image/pagear1.svg">
-								<p>${results.prev}</p>
-							</a>
-							<a href="javascript:;" data-page="${results.page.current_page + 1}" class="next updateData">
-								<p>${results.next}</p>
-								<img src="/static/image/pagear2.svg">
-							</a>
-							<a href="javascript:;" data-page="${results.page.total_page}" class="num updateData" id="page-end">${results.page.total_page}</a>
-						</div>
-						`)
-						$('.page-num').append(`
-							<input type="hidden" name="total_page" value="${results.page.total_page}">
-						`)
-					}
+	// 				// 頁碼
+	// 				if (results.page.total_page > 1){  // 判斷超過一頁，有才加分頁按鈕
+	// 					$('.scro-m').after(
+	// 					`	<div class="page-num">
+	// 						<!--現在位置加now-->
+	// 						<a data-page="1" class="num page-start updateData">1</a>
+	// 						<a data-page="${results.page.current_page - 1}" class="back updateData">
+	// 							<img src="/static/image/pagear1.svg">
+	// 							<p>${results.prev}</p>
+	// 						</a>
+	// 						<a data-page="${results.page.current_page + 1}" class="next updateData">
+	// 							<p>${results.next}</p>
+	// 							<img src="/static/image/pagear2.svg">
+	// 						</a>
+	// 						<a data-page="${results.page.total_page}" class="num updateData" id="page-end">${results.page.total_page}</a>
+	// 					</div>
+	// 					`)
+	// 					$('.page-num').append(`
+	// 						<input type="hidden" name="total_page" value="${results.page.total_page}">
+	// 					`)
+	// 				}
 
-					if (results.page.current_page==1){
-                        $('.back').removeClass('updateData')
-					} else if (results.page.current_page==results.page.total_page){
-                        $('.next').removeClass('updateData')
-					}
+	// 				if (results.page.current_page==1){
+    //                     $('.back').removeClass('updateData')
+	// 				} else if (results.page.current_page==results.page.total_page){
+    //                     $('.next').removeClass('updateData')
+	// 				}
 						
-					let html = ''
-					for (let i = 0; i < results.page.page_list.length; i++) {
-						if (results.page.page_list[i] == results.page.current_page){
-						html += `<a class="num now updateData" href="javascript:;" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a> `;
-						} else {
-						html += `<a class="num updateData" href="javascript:;" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a>  `
-						}
-					}
-					$('.back').after(html)
+	// 				let html = ''
+	// 				for (let i = 0; i < results.page.page_list.length; i++) {
+	// 					if (results.page.page_list[i] == results.page.current_page){
+	// 					html += `<a class="num now updateData" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a> `;
+	// 					} else {
+	// 					html += `<a class="num updateData" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a>  `
+	// 					}
+	// 				}
+	// 				$('.back').after(html)
 
-					$(".updateData").prop("onclick", null).off("click");
-                    $('.updateData').on('click', function(){
-                        updateData(parseInt($(this).data('page')))
-                    })
+	// 				$(".updateData").prop("onclick", null).off("click");
+    //                 $('.updateData').on('click', function(){
+    //                     updateData(parseInt($(this).data('page')))
+    //                 })
 
-			})
-			.fail(function( xhr, status, errorThrown ) {
-			$('.loadingbox').addClass('d-none');
-			//alert('發生未知錯誤！請聯絡管理員')
-			$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
-			//condition ? true_expression : false_expression
+	// 		})
+	// 		.fail(function( xhr, status, errorThrown ) {
+	// 		$('.loadingbox').addClass('d-none');
+	// 		//alert('發生未知錯誤！請聯絡管理員')
+	// 		$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
+	// 		//condition ? true_expression : false_expression
 
-			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
-			}) 
+	// 		console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
+	// 		}) 
 			
-		}
+	// 	}
 
-	}
+	// }
 	  
 
 	function downloadData(format){
@@ -315,12 +327,14 @@
 		$('form#moreForm input[name=taxon_group_str]').remove()
 	}
 
-	function getData(from_url){
+	function getData(page, from_url){
 
 		let query_str;
 		let facet = '';
 		let value = '';
-		let page = 1;
+		// let page = 1;
+
+		// 如果是從url進入 將url轉換成頁面上的查詢條件
 		if (from_url){
 			query_str = window.location.search;
 
@@ -330,7 +344,7 @@
 			page = urlParams.get('page');
 
 			// 多選系列
-			let mt = ['rank','alien_type','protected_category','red_category','iucn_category','cites','status']
+			let mt = ['rank','alien_type','protected','redlist','iucn','cites','status']
 			mt.forEach(function(m) {
 				if (urlParams.getAll(m)) {
 					if (m=='rank'){
@@ -394,13 +408,15 @@
 			});
 
 		} else {
+
+			// 如果不是從url進入的話 在這邊整理查詢項目成 query string
 			query_str = $('form#moreForm').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
-			'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val();
+			'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() + '&page=' + page;
 			if ($('#taxon_group').select2('data').length > 0){
 				query_str = query_str + "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
 						"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
 			}
-			var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
+			var newRelativePathQuery = window.location.pathname + '?' + query_str ;
 			history.pushState(null, '', newRelativePathQuery);
 		
 		}
@@ -427,6 +443,7 @@
 			window.enterPressed = false;
 		} else {
 
+			// 進入查詢
 
 			$('.loadingbox').removeClass('d-none');
 
@@ -441,12 +458,13 @@
 
 			$.ajax({
 				url: `/${$lang}/catalogue`,
-				// url: `/${$lang}/catalogue_search`,
 				data: query_str + '&csrfmiddlewaretoken=' +  $csrf_token,
 				type: 'POST',
 				dataType : 'json',
 			})
 			.done(function(results) {
+				// console.log(results)
+
 				if (results.is_taxon_id==true){
 					window.location = `/${$lang}/taxon/${results.taxon_id}`
 				} else {
@@ -596,12 +614,12 @@
 							if (results.data[i]['is_endemic'] != ''){
 								tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
 							}
-							if (results.data[i]['alien_type'] != ''){
-								let alt_list = results.data[i]['alien_type'].split(',')
-								alt_list = [...new Set(alt_list)];
-								for (let a = 0; a < alt_list.length; a++) {
-									tag += '<div class="item">' + alt_list[a] + '</div>'
-								}
+							if (results.data[i]['alien_type'] != '' && results.data[i]['alien_type'] != undefined ){
+							// 	let alt_list = results.data[i]['alien_type'].split(',')
+							// 	alt_list = [...new Set(alt_list)];
+							// 	for (let a = 0; a < alt_list.length; a++) {
+									tag += '<div class="item">' + results.data[i]['alien_type'] + '</div>'
+							// 	}
 							}
 							// <tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}"></tr>
 							$('.table-style1').append(
@@ -629,16 +647,16 @@
 							$('.scro-m').after(
 							`<div class="page-num">
 								<!--現在位置加now-->
-								<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
-								<a href="javascript:;" data-page="${results.page.current_page - 1}" class="back updateData">
+								<a data-page="1" class="num page-start getData">1</a>
+								<a data-page="${results.page.current_page - 1}" class="back getData">
 									<img src="/static/image/pagear1.svg">
 									<p>${results.prev}</p>
 								</a>
-								<a href="javascript:;" data-page="${results.page.current_page + 1}" class="next updateData">
+								<a data-page="${results.page.current_page + 1}" class="next getData">
 									<p>${results.next}</p>
 									<img src="/static/image/pagear2.svg">
 								</a>
-								<a href="javascript:;" data-page="${results.page.total_page}" class="num updateData" id="page-end">${results.page.total_page}</a>
+								<a data-page="${results.page.total_page}" class="num getData" id="page-end">${results.page.total_page}</a>
 							</div>
 							`)
 							$('.page-num').append(`
@@ -647,27 +665,38 @@
 						}
 
 						if (results.page.current_page==1){
-							$('.back').removeClass('updateData')
+							$('.back').removeClass('getData')
 							//$('.back').attr("onclick","");
 						} else if (results.page.current_page==results.page.total_page){
-							$('.next').removeClass('updateData')
+							$('.next').removeClass('getData')
 							//$('.next').attr("onclick","");
 						}
 							
 						let html = ''
 						for (let i = 0; i < results.page.page_list.length; i++) {
 							if (results.page.page_list[i] == results.page.current_page){
-							html += `<a class="num now updateData" href="javascript:;" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a> `;
+							html += `<a class="num now getData" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a> `;
 							} else {
-							html += `<a class="num updateData" href="javascript:;" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a>  `
+							html += `<a class="num getData" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a>  `
 							}
 						}
 						$('.back').after(html)
 				
-						$(".updateData").prop("onclick", null).off("click");
+						$(".getData").prop("onclick", null).off("click");
 
-						$('.updateData').on('click', function(){
-							updateData(parseInt($(this).data('page')))
+						$('.getData').on('click', function(){
+
+			
+							if ($(this).data('page') == undefined){
+								page = 1
+							} else {
+								page = $(this).data('page')
+							}
+							console.log(page)
+				
+							$('input[name=hidden-facet]').val('');
+							getData(page=page, from_url=false)
+
 						})
 
 						// nice select
@@ -731,22 +760,30 @@
 
 		let date_picker = new AirDatepicker('#updated_at', {locale: date_locale});
 
-        $('.changeFacet').on('click',function(){
-            changeFacet($(this).data('facet'), $(this).data('value'))
-        })
+        // $('.changeFacet').on('click',function(){
+        //     changeFacet($(this).data('facet'), $(this).data('value'))
+        // })
 
         $('.removeRankItem').on('click',function(){
             removeRankItem($(this))
         })
 
-        $('.updateData').on('click', function(){
-            updateData(parseInt($(this).data('page')))
-        })
+        // $('.updateData').on('click', function(){
+        //     updateData(parseInt($(this).data('page')))
+        // })
 
         $('.getData').on('click',function(){
+			// console.log($(this).data('page'))
 			// 如果是從搜尋 要把facet拿掉
+			
+			if ($(this).data('page') == undefined){
+				page = 1
+			} else {
+				page = $(this).data('page')
+			}
+
 			$('input[name=hidden-facet]').val('');
-            getData()
+            getData(page=page, from_url=false)
         })
 
         $('.resetForm').on('click',function(){
@@ -765,20 +802,16 @@
 					return $lang == 'en-us' ? "No result" : "查無結果";
 				},		 
 				searching: function(params) {
-					if (params.term != undefined ){
-						if (params.term.match(/[\u3400-\u9FBF]/)){
-							if (params.term.length >1){
-								return $lang == 'en-us' ? "Searching..." : '查詢中...';
-							} else {
-								throw false;  
-							}
-						} else if (params.term.trim().length  > 2){
+
+					if (params.term != undefined){
+
+					   if (params.term.trim().length  > 0){
 							return $lang == 'en-us' ? "Searching..." : '查詢中...';
-							
-						} else {
-							throw false;  
-						}					
-					} 
+					   } else {
+						   return false;  
+					   }
+					}
+
 				}
 			},		
 			ajax: {
@@ -786,20 +819,15 @@
 				dataType: 'json',
 				data: function (params) {
 					if (params.term != undefined ){
-						if (params.term.match(/[\u3400-\u9FBF]/)){
-							if (params.term.length >1){
-								return {
-									keyword: params.term,
-									from_tree: 'false',
-									lang: $lang
-									};
-							}
-						} else if (params.term.trim().length  > 2){
+						if (params.term.trim().length  > 0){
 							return {
-								keyword: params.term,
-								from_tree: 'false',
-								lang: $lang
-								};
+							   keyword: params.term,
+							   from_tree: 'false',
+							//    with_cultured: with_cultured,
+							//    lin_rank: lin_rank,
+							//    with_not_official: with_not_official,
+							   lang: $lang
+							};
 		
 						} else {
 							throw false;  
@@ -809,7 +837,7 @@
 					}
 				},			  
 				jsonpCallback: 'jsonCallback',
-				url: '/get_autocomplete_taxon',
+				url: '/get_autocomplete_taxon_by_solr',
 				processResults: function (data) {
 					return {
 						results: $.map(data, function (item) {
@@ -838,7 +866,7 @@
 			{	
 				e.preventDefault();
 				window.enterPressed = true;
-				getData();
+				getData(page=1, from_url=false);
 			}
 		});
 		

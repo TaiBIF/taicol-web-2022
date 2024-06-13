@@ -79,6 +79,23 @@ function controlAll(){
 
 $(function(){
 
+	// // 取得照片
+	// $.ajax({
+	// 	url: 'https://data.taieol.tw/eol/endpoint/image/species/417918',
+	// 	method: 'GET',
+	// 	dataType: 'json',
+	// 	data: '',
+	// 	async: true,　
+	   
+	// 	success: res =>{
+	// 		console.log(res)
+	// 		},
+	// 	error: err =>{
+	// 		console.log(err)
+	// 		},
+	// });
+	
+
 	$('.more-history').on('click', function(){
 		if ($(this).hasClass('now')){
 			$(this).removeClass('now')

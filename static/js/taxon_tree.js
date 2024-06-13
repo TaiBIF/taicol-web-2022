@@ -279,17 +279,13 @@ $(function (){
             },		 
             searching: function(params) {
                 if (params.term != undefined){
-                    if (params.term.match(/[\u3400-\u9FBF]/)){
-                        if (params.term.length >1){
-                            return $lang == 'en-us' ? "Searching..." : '查詢中...';
-                        } else {
-                            return false;  
-                        }
-                    } else if (params.term.trim().length  > 2){
+
+                    if (params.term.trim().length  > 0){
                         return $lang == 'en-us' ? "Searching..." : '查詢中...';
-                    } else {
-                        return false;  
-                    }					
+                   } else {
+                       return false;  
+                   }
+
                 }
             },
         },		
@@ -312,19 +308,8 @@ $(function (){
                 }
 
                 if (params.term != undefined ){
-                    if (params.term.match(/[\u3400-\u9FBF]/)){
-                        if (params.term.length >1){
-                            return {
-                                keyword: params.term,
-                                from_tree: 'true',
-                                with_cultured: with_cultured,
-                                lin_rank : lin_rank,
-                                with_not_official: with_not_official,
-                                lang: $lang
-                                };
-                        }
-                    } else if (params.term.trim().length  > 2){
-                        return {
+                    if (params.term.trim().length  > 0){
+                         return {
                             keyword: params.term,
                             from_tree: 'true',
                             with_cultured: with_cultured,
@@ -332,17 +317,16 @@ $(function (){
                             with_not_official: with_not_official,
                             lang: $lang
                             };
-
                     } else {
                         return false;  
-                    }					
+                    }
                 } else {
                     throw false;  
                 }
 
             },
             jsonpCallback: 'jsonCallback',
-            url: '/get_autocomplete_taxon',
+            url: '/get_autocomplete_taxon_by_solr',
             processResults: function (data) {
                 return {
                     results: $.map(data, function (item) {

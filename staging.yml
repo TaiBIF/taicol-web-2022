@@ -58,7 +58,22 @@ services:
         "--character-set-server=utf8mb4",
         "--collation-server=utf8mb4_unicode_ci",
       ]
+  solr:
+    build: ./solr-workspace
+    image: taicol-solr-image
+    container_name: taicol-solr-container
+    ports:
+      - "8983:8983"
+    restart: always
+    volumes:
+      - ../tc-web-volumes/solr:/var/solr
+      - ../tc-web-volumes/bucket:/bucket
+      - ./solr-workspace/:/workspace
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
+    # environment:
+    #   - SOLR_JAVA_MEM=-Xms4g -Xmx4g
   # nginx:
   #   image: nginx:1.19.10-alpine
   #   restart: always

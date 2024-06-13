@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
   django:
+    platform: linux/amd64
     build: .
     container_name: tc-web-django-dev-container
     image: tc-web-django-dev-image
@@ -19,19 +20,22 @@ services:
     env_file:
       - .env
   postgres:
-    image: postgres:14-alpine
+    platform: linux/amd64
+    build: ./postgres/
+    image: tc-web-psql-dev-image
     shm_size: '1g'
     container_name: tc-web-postgres-container
     restart: always
     volumes:
       - ../tc-web-volumes/pgdata:/var/lib/postgresql/data/pgdata
       - ../tc-web-volumes/bucket:/bucket
-      - ../tc-web-volumes/media/archive:/archive
+      # - ../tc-web-volumes/media/archive:/archive
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
     env_file:
      - .env
   mysql:
+    platform: linux/amd64
     build: ./scripts/mysql
     container_name: tc-web-mysql-container
     ports:
@@ -52,3 +56,19 @@ services:
         "--character-set-server=utf8mb4",
         "--collation-server=utf8mb4_unicode_ci",
       ]
+  solr:
+    build: ./solr-workspace
+    image: taicol-solr-image
+    container_name: taicol-solr-container
+    ports:
+      - "8983:8983"
+    restart: always
+    volumes:
+      - ../tc-web-volumes/solr:/var/solr
+      - ../tc-web-volumes/bucket:/bucket
+      - ./solr-workspace/:/workspace
+    # command:
+      # - solr-precreate
+      # - tbia_records
+    environment:
+      - SOLR_JAVA_MEM=-Xms4g -Xmx4g
