@@ -545,7 +545,7 @@ def create_history_display(taxon_history, lang, new_taxon_id, new_taxon_name, na
             o_path_list = c.get('old').split('>')
             path_str = ' OR '.join(o_path_list)
             # NOTE 這邊可能會需要query已經刪除的taxon
-            path_resp = requests.get(f'{SOLR_PREFIX}taxa/select?fq=taxon_name_id:*&q=taxon_id:({path_str})&fl=taxon_id,formatted_accepted_name&rows=1000')
+            path_resp = requests.get(f'{SOLR_PREFIX}taxa/select?fq=taxon_name_id:*&fq=status:accepted&q=taxon_id:({path_str})&fl=taxon_id,formatted_accepted_name&rows=1000')
             content_str = ''
             if path_resp.status_code == 200:
                 higher = pd.DataFrame(path_resp.json()['response']['docs'])

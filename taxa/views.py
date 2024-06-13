@@ -258,7 +258,6 @@ def taxon(request, taxon_id):
                 JOIN taxon_names tn ON at.accepted_taxon_name_id = tn.id
                 WHERE at.taxon_id = %s 
             """
-    
 
 
     with conn.cursor() as cursor:
@@ -357,7 +356,7 @@ def taxon(request, taxon_id):
             path = [p for p in path if p != taxon_id]
             if len(path):
                 path_str = ' OR '.join(path)
-                path_resp = requests.get(f'{SOLR_PREFIX}taxa/select?fq=is_deleted:false&fq=taxon_name_id:*&q=taxon_id:({path_str})&fl=taxon_rank_id,taxon_id,formatted_accepted_name,common_name_c,alternative_name_c,simple_name&rows=1000')
+                path_resp = requests.get(f'{SOLR_PREFIX}taxa/select?fq=is_deleted:false&fq=taxon_name_id:*&fq=status:accepted&q=taxon_id:({path_str})&fl=taxon_rank_id,taxon_id,formatted_accepted_name,common_name_c,alternative_name_c,simple_name&rows=1000')
                 if path_resp.status_code == 200:
                     higher = pd.DataFrame(path_resp.json()['response']['docs'])
                     for cc in ['common_name_c','alternative_name_c','taxon_group_str']:
