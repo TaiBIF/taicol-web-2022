@@ -589,7 +589,7 @@ def create_history_display(taxon_history, lang, new_taxon_id, new_taxon_name, na
         else:
             taxon_history.loc[i,'content'] = ''
     # 分類階層更新
-    s = time.time()
+    # s = time.time()
     for i in taxon_history[taxon_history.history_type==4].index:
         row = taxon_history.iloc[i]
         c = json.loads(row.note)
@@ -609,7 +609,7 @@ def create_history_display(taxon_history, lang, new_taxon_id, new_taxon_name, na
                 if content_str:
                     content_str = f'({gettext("原階層：")}{content_str})'
         taxon_history.loc[i,'content'] = content_str
-    print('path changed', time.time()-s)
+    # print('path changed', time.time()-s)
     # 新增/移除屬性
     taxon_history.loc[taxon_history.history_type.isin([8,9]),'content'] = taxon_history[taxon_history.history_type.isin([8,9])].note.apply(lambda x: attr_map[x] if lang == 'en-us' else attr_map_c[x] )
     drop_conserv = []

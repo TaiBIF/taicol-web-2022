@@ -707,8 +707,8 @@ def taxon(request, taxon_id):
                 cursor.execute(query, (list(refs.reference_id.unique()),))
                 person_ids = cursor.fetchall()
                 person_ids = [str(p[0]) for p in person_ids]
-                print('6.8', time.time()-time_s)
-                time_s = time.time()
+                # print('6.8', time.time()-time_s)
+                # time_s = time.time()
                 if len(person_ids):
                     url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/expert/?person_id={(',').join(person_ids)}"
                     person_resp = requests.get(url)
