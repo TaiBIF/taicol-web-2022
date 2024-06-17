@@ -243,7 +243,7 @@ def taxon(request, taxon_id):
     not_official = 0
     has_taxon = False
 
-    total_time = time.time()
+    # total_time = time.time()
 
     conn = pymysql.connect(**db_settings)
 
@@ -267,14 +267,13 @@ def taxon(request, taxon_id):
         if results:
             for i in range(len(cursor.description)):
                 data[cursor.description[i][0]] = results[i]
-
             is_deleted = data['is_deleted']
             is_in_taiwan = data['is_in_taiwan']
             not_official = data['not_official']
             if not_official:
                 data['not_official'] = gettext('未經正式記錄')
-            if not is_deleted:
-                has_taxon = True
+            # if not is_deleted:
+            has_taxon = True
 
 
     if has_taxon:
@@ -303,13 +302,13 @@ def taxon(request, taxon_id):
         if name_c_str:
             taxon_group_str += ' ' + name_c_str
 
-        time_s = time.time()
+        # time_s = time.time()
 
         # 照片 用資料庫取得
         data['images'] = json.loads(data['images']) if data['images'] else []
 
-        print('1', time.time()-time_s)
-        time_s = time.time()
+        # print('1', time.time()-time_s)
+        # time_s = time.time()
 
         # 學名
         if data['rank_id'] == 47:
@@ -328,7 +327,7 @@ def taxon(request, taxon_id):
                 if n:
                     data['sci_name'] = n[0] 
 
-        print('2', time.time()-time_s)
+        # print('2', time.time()-time_s)
         # time_s = time.time()
 
         # NOTE 這邊應該一定是accepted or deleted
@@ -347,7 +346,7 @@ def taxon(request, taxon_id):
         # 整理保育資訊
         data = create_conservation_note(data=data)
 
-        time_s = time.time()
+        # time_s = time.time()
         # 高階層
         data['higher'] = []
         if data['path']:
@@ -416,8 +415,8 @@ def taxon(request, taxon_id):
                             current_h_dict['rank_color'] = 'rank-second-gray'
                         data['higher'].append(current_h_dict)
 
-        print('3', time.time()-time_s)
-        time_s = time.time()
+        # print('3', time.time()-time_s)
+        # time_s = time.time()
 
         # 變更歷史 + 學名變遷
         query = f"""SELECT ath.type, ath.content, ac.short_author, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), usr.name, ath.reference_id, ath.note, r.type
@@ -434,8 +433,8 @@ def taxon(request, taxon_id):
             taxon_history_df = pd.DataFrame(th, columns=['history_type', 'content', 'short_author', 'updated_at', 'editor', 'reference_id', 'note', 'reference_type'])
             name_history_list = taxon_history_df[taxon_history_df.history_type.isin([0,5])][['note','updated_at','reference_id','reference_type','history_type']].drop_duplicates().values
 
-        print('4', time.time()-time_s)
-        time_s = time.time()
+        # print('4', time.time()-time_s)
+        # time_s = time.time()
 
 
         # 取得names的時候要包含taxon_history裡面提到的name
@@ -457,7 +456,7 @@ def taxon(request, taxon_id):
                     LEFT JOIN `references` r ON r.id = ru.reference_id
                     LEFT JOIN api_citations ac ON ac.reference_id = ru.reference_id
                     LEFT JOIN taxon_names tn ON tn.id = atu.taxon_name_id
-                    WHERE atu.taxon_id = %s AND atu.is_deleted = 0
+                    WHERE atu.taxon_id = %s 
                     UNION 
                     SELECT tn.id, an.formatted_name, an.name_author, '', '', '', 
                            tn.nomenclature_id, tn.publish_year, '', NULL,
@@ -474,8 +473,8 @@ def taxon(request, taxon_id):
                                                 'nomenclature_id','publish_year','per_usages','reference_id', 
                                                 'o_reference_id','r_publish_year','rank_id','r_type','original_taxon_name_id','ru_id',
                                                 'name_source'])
-            print('5.6', time.time()-time_s)
-            time_s = time.time()
+            # print('5.6', time.time()-time_s)
+            # time_s = time.time()
 
             names = names.replace({np.nan: None})
 
@@ -527,8 +526,8 @@ def taxon(request, taxon_id):
                             new_refs.append(p.get('reference_id'))
 
                 # TODO 這邊縮排的順序可能會有問題 有一些沒有names的可能會跳過 造成沒有進入到這個區塊嗎 ? 還是一定會有names
-                print('5.7', time.time()-time_s)
-                time_s = time.time()
+                # print('5.7', time.time()-time_s)
+                # time_s = time.time()
 
                 new_refs += names.reference_id.to_list()
                 new_refs += [n[2] for n in name_history_list]
@@ -554,8 +553,8 @@ def taxon(request, taxon_id):
                     usage_refs = cursor.fetchall()
                     usage_refs = pd.DataFrame(usage_refs, columns=['reference_id','full_ref','publish_year','author','ref','r_type'])
 
-                print('5.8', time.time()-time_s)
-                time_s = time.time()
+                # print('5.8', time.time()-time_s)
+                # time_s = time.time()
 
                 # 確認是否為歧異
                 query = """
@@ -570,9 +569,8 @@ def taxon(request, taxon_id):
                     is_ambiguous = cursor.fetchall()
                     is_ambiguous = [i[0] for i in is_ambiguous]
                     
-                print('5.9', time.time()-time_s)
-                time_s = time.time()
-
+                # print('5.9', time.time()-time_s)
+                # time_s = time.time()
 
                 # 只整理目前usage的
                 name_change_df = names[names.name_source=='from_usages'].reset_index(drop=True)
@@ -683,8 +681,8 @@ def taxon(request, taxon_id):
                     name_changes = name_changes.name_str.to_list()
 
 
-                print('6', time.time()-time_s)
-                time_s = time.time()
+                # print('6', time.time()-time_s)
+                # time_s = time.time()
 
         # 文獻
         # 這邊改用 usage_refs 的資料
@@ -697,8 +695,8 @@ def taxon(request, taxon_id):
             short_refs = list(usage_refs[~usage_refs.r_type.isin([4,6])][['reference_id','ref','r_type']].values)
 
         ref_df = pd.DataFrame(short_refs, columns=['reference_id', 'ref', 'type'])
-        print('6.5', time.time()-time_s)
-        time_s = time.time()
+        # print('6.5', time.time()-time_s)
+        # time_s = time.time()
 
 
         # 取得expert
@@ -719,7 +717,7 @@ def taxon(request, taxon_id):
                 
             refs = list(refs[['reference_id','full_ref']].drop_duplicates().values)
 
-        print('7', time.time()-time_s)
+        # print('7', time.time()-time_s)
 
         data['alien_notes'] = []
         alien_notes = []
@@ -738,20 +736,20 @@ def taxon(request, taxon_id):
         if not has_cultured and data['is_cultured']:
             data['alien_notes'].append({'alien_type': attr_map_c['cultured'],'note': None})
 
-        time_s = time.time()
+        # time_s = time.time()
 
         name_history = create_name_history(names=names, name_history_list=name_history_list, ref_df=ref_df)
 
-        print('9', time.time()-time_s)
-        time_s = time.time()
+        # print('9', time.time()-time_s)
+        # time_s = time.time()
 
         # 相關連結
         # ncbi如果超過一個就忽略
 
         links = create_link_display(data=data,taxon_id=taxon_id)
 
-        print('9.2', time.time()-time_s)
-        time_s = time.time()
+        # print('9.2', time.time()-time_s)
+        # time_s = time.time()
 
         # 變更歷史
         if is_deleted:
@@ -766,8 +764,8 @@ def taxon(request, taxon_id):
                 if new_taxon_name:
                     new_taxon_name = new_taxon_name[0]
 
-        print('9.5', time.time()-time_s)
-        time_s = time.time()
+        # print('9.5', time.time()-time_s)
+        # time_s = time.time()
 
         taxon_history = create_history_display(taxon_history_df, get_language(), new_taxon_id, new_taxon_name, names)
         data['self'] = ''
@@ -775,9 +773,9 @@ def taxon(request, taxon_id):
                         'rank_c': rank_map_c[data['rank_id']],
                         'name_c': data['common_name_c']}
         
-        print('10', time.time()-time_s)
+        # print('10', time.time()-time_s)
 
-        time_s = time.time()
+        # time_s = time.time()
 
         # 子階層統計
         rank_map_dict = rank_map if get_language() == 'en-us' else rank_map_c
@@ -816,13 +814,13 @@ def taxon(request, taxon_id):
             data['transfer_taxon'] = new_taxon_id
             data['is_deleted'] = True
             data['new_taxon_name'] = new_taxon_name
-        print('11', time.time()-time_s)
+        # print('11', time.time()-time_s)
 
     elif not has_taxon:
         taxon_id = None
 
 
-    print('total_time', time.time()-total_time)
+    # print('total_time', time.time()-total_time)
 
 
     return render(request, 'taxa/taxon.html', {'taxon_id': taxon_id, 'data': data, 'links': links,
@@ -1113,7 +1111,12 @@ def get_sub_tree_list(request):
         for info in info_list:
             infosss = json.loads(info)
             if len(infosss):
-                infosss = pd.DataFrame(infosss).sort_values(['rank_order', 'name_for_order'], ascending=[False, True]).to_dict('records')
+                # 考慮林奈階層
+                infosss = pd.DataFrame(infosss).sort_values(['rank_order', 'name_for_order'], ascending=[False, True])
+                if lin_rank == 'on':
+                    infosss = infosss[infosss.rank_id.isin(lin_ranks+sub_lin_ranks)]
+                infosss = infosss.to_dict('records')
+
                 for ii in infosss:
                     # 在這步要排除掉比自己高階層的部分
                     if ii['rank_order'] > current_rank_order:
@@ -1128,10 +1131,9 @@ def get_sub_tree_list(request):
                                 with_not_official=with_not_official, 
                                 conn=conn, 
                                 stat_list=stat_list, 
-                                sub_titles=sub_titles):
+                                sub_titles=sub_titles,
+                                lin_rank=lin_rank):
             sub_dict_list.append(x)
-            # print(x)
-            # print(sub_dict_list)
 
 
     return HttpResponse(json.dumps(sub_dict_list), content_type='application/json') 
@@ -1142,7 +1144,7 @@ def Reverse(lst):
     return new_lst
  
 
-def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,with_not_official,conn, stat_list,sub_titles):
+def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,with_not_official,conn, stat_list,sub_titles,lin_rank):
     
     sub_dict = {}
     rank_id = int(rank_id)
@@ -1190,6 +1192,8 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,with_not
 
     sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id','rank_order'])
     sub_stat = sub_stat.sort_values('rank_order')
+    if lin_rank == 'on':
+        sub_stat = sub_stat[sub_stat.rank_id.isin(lin_ranks+sub_lin_ranks)]
     sub_stat = sub_stat.reset_index(drop=True)
 
 
