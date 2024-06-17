@@ -336,7 +336,7 @@ def create_conservation_note(data):
     return data
 
 
-def return_download_file_by_solr(query_list):
+def return_download_file_by_solr(query_list, is_chinese):
     
     # 一次處理一千筆
     taxon = pd.DataFrame()
@@ -347,19 +347,72 @@ def return_download_file_by_solr(query_list):
 
     while has_more_data:
 
-        query = { "query": "*:*",
-                "offset": offset,
-                "limit": 1000,
-                "filter": query_list,
-                "sort": 'search_name asc',
-                }
+        if is_chinese:
 
-        query_req = json.dumps(query)
+            download_limit = 100
 
-        resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
-        resp = resp.json()
-        total_count = resp['response']['numFound']
+            query = { "query": "*:*",
+                    "limit": 0,
+                    "filter": query_list,
+                    # "sort": 'search_name asc',
+                    "facet": { "taxon_id": { 
+                            'type': 'terms',
+                            'field': 'taxon_id',
+                            'mincount': 1,
+                            'limit': download_limit,
+                            'offset': offset,
+                            'sort': 'index',
+                            'allBuckets': False,
+                            'numBuckets': True
+                            }
+                        }
+                    }
 
+            query_req = json.dumps(query)
+
+            resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
+            resp = resp.json()
+
+            # print(resp)
+
+            # 這邊改成facet bucket的數量
+            total_count = resp['facets']['taxon_id']['numBuckets']
+
+            if total_count:
+
+                # 先用facet取得taxon_id 再query 相關data
+                taxon_ids = [t.get('val') for t in resp['facets']['taxon_id']['buckets']]
+
+                now_query_list = [f"taxon_id: ({' OR '.join(taxon_ids)})","is_primary_common_name:true"]
+
+                query = { "query": "*:*",
+                        "filter": now_query_list,
+                        # "sort": 'index asc',
+                        "limit": download_limit
+                        }
+                
+
+                query_req = json.dumps(query)
+
+                resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
+                resp = resp.json()
+
+        else:
+
+            download_limit = 1000
+
+            query = { "query": "*:*",
+                    "offset": offset,
+                    "limit": 1000,
+                    "filter": query_list,
+                    "sort": 'search_name asc',
+                    }
+
+            query_req = json.dumps(query)
+
+            resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
+            resp = resp.json()
+            total_count = resp['response']['numFound']
 
         df = pd.DataFrame(resp['response']['docs'])
 
@@ -409,10 +462,10 @@ def return_download_file_by_solr(query_list):
 
         taxon = pd.concat([taxon,df[cols]],ignore_index=True)
 
-        if offset + 1000 > total_count:
+        if offset + download_limit > total_count:
             has_more_data = False
 
-        offset += 1000
+        offset += download_limit
 
     return taxon
 

@@ -93,8 +93,8 @@ def download_search_results_offline(request):
     req = request.POST
     file_format = req.get('file_format','csv')
 
-    solr_query_list = get_conditioned_solr_search(req)
-    df = return_download_file_by_solr(solr_query_list)
+    solr_query_list, is_chinese = get_conditioned_solr_search(req)
+    df = return_download_file_by_solr(solr_query_list, is_chinese)
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
     if file_format == 'json':
@@ -121,8 +121,8 @@ def download_search_results(request):
     req = request.POST
     file_format = req.get('file_format','csv')
 
-    solr_query_list = get_conditioned_solr_search(req)
-    df = return_download_file_by_solr(solr_query_list)
+    solr_query_list, is_chinese = get_conditioned_solr_search(req)
+    df = return_download_file_by_solr(solr_query_list, is_chinese)
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
 
@@ -162,8 +162,8 @@ def get_autocomplete_taxon_by_solr(request):
         if request.GET.get('with_not_official') == 'off':
             query_list.append('not_official:false')
 
-        if re.search(r'[\u4e00-\u9fff]+', keyword):
-            query_list.append('is_primary_common_name:true')
+        # if re.search(r'[\u4e00-\u9fff]+', keyword):
+        #     query_list.append('is_primary_common_name:true')
 
         keyword = html.unescape(keyword)
         keyword_reg = get_variants(keyword)
@@ -175,21 +175,22 @@ def get_autocomplete_taxon_by_solr(request):
 
     ds = []
     if keyword_reg:
-        response = requests.get(f'{SOLR_PREFIX}taxa/select?q.op=OR&q={taxa_str}&fq={query_str}&rows=20')
-    # else:
-    #     response = requests.get(f'{SOLR_PREFIX}taxa/select?q.op=OR&q=*%3A*&rows=20&fq={query_str}&sort=simple_name%20desc&start=10')
 
+        response = requests.get(f'{SOLR_PREFIX}taxa/select?q.op=OR&q={taxa_str}&fq={query_str}&rows=50')
         taxa_list = response.json()['response']['docs']
 
-
         ds = pd.DataFrame(taxa_list)
+
+
         if len(ds):
+
             lack_cols = [k for k in  ['taxon_id', 'simple_name', 'search_name', 'common_name_c', 'alternative_name_c','status'] if k not in ds.keys()]
 
             for c in lack_cols:
                 ds[c] = ''
             
             ds = ds[['taxon_id', 'simple_name', 'search_name', 'common_name_c', 'alternative_name_c','status']]
+            ds = ds.drop_duplicates().reset_index(drop=True)
 
             ds = ds.replace({None: '', np.nan: ''})
 
@@ -828,49 +829,6 @@ def taxon(request, taxon_id):
                                                 'refs': refs, 'experts': experts, 'name_changes': name_changes,
                                                'taxon_history': taxon_history, 'stat_str': stat_str, 'name_history': name_history, })
                                              #  'current_page': current_page, 'total_page': total_page, 'page_list': page_list
-
-    # print(data.keys())
-
-
-    # ['name', 
-    #  'sci_name', 
-    #  'common_name_c', 
-    #  'name_id', 
-    #  'rank_id', 
-    #  'status', 
-    #  'path', 
-    #  'is_endemic', 
-    #  'is_terrestrial', 
-    #  'is_freshwater', 
-    #  'is_brackish', 
-    #  'is_marine', 
-    #  'is_fossil', 
-    #  'is_in_taiwan', 
-    #  'main_alien_type', 
-    #  'alien_note', 
-    #  'cites_listing', 
-    #  'cites_note', 
-    #  'iucn_category', 
-    #  'iucn_note', 
-    #  'iucn_taxon_id', 
-    #  'red_category', 
-    #  'red_note', 
-    #  'protected_category', 
-    #  'protected_note', 
-    #  'original_taxon_name_id', 
-    #  'links', 
-    #  'namecode', 
-    #  'is_cultured', 
-    #  'taxon_group_str', 
-    #  'rank_order', 
-    #  'images', 
-    #  'rank_d', 
-    #  'is_list', 
-    #  'higher', 
-    #  'alien_types', 
-    #  'self']
-
-
 
 
 # 根據當下的條件判斷
@@ -1807,25 +1765,77 @@ def bk_send_mail(email_body):
     send_mail('[TaiCOL] 網站錯誤回報', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
 
 
-def get_solr_data_search(query_list, offset, response, limit):
+def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
     response['data'] = []
+    count = 0
 
-    query = { "query": "*:*",
-              "offset": offset,
-              "limit": limit,
-              "filter": query_list,
-              "sort": 'search_name asc',
-            }
+    if is_chinese:
 
-    query_req = json.dumps(query)
+        query = { "query": "*:*",
+                  "limit": 0,
+                  "filter": query_list,
+                #   "sort": 'search_name asc',
+                  "facet": { "taxon_id": { 
+                        'type': 'terms',
+                        'field': 'taxon_id',
+                        'mincount': 1,
+                        'limit': limit,
+                        'offset': offset,
+                        'sort': 'index',
+                        'allBuckets': False,
+                        'numBuckets': True
+                        }
+                    }
+                }
 
-    resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
-    resp = resp.json()
+        query_req = json.dumps(query)
 
-    count = resp['response']['numFound']
+        resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
+        resp = resp.json()
+
+        # 這邊改成facet bucket的數量
+        count = resp['facets']['taxon_id']['numBuckets']
+
+        if count:
+
+            # 先用facet取得taxon_id 再query 相關data
+            taxon_ids = [t.get('val') for t in resp['facets']['taxon_id']['buckets']]
+
+            query_list = [f"taxon_id: ({' OR '.join(taxon_ids)})","is_primary_common_name:true"]
+
+            query = { "query": "*:*",
+                      "filter": query_list,
+                      "limit": limit,
+                    #   "sort": 'index asc',
+                    }
+            
+
+            query_req = json.dumps(query)
+
+            resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
+            resp = resp.json()
+    
+    else:
+
+        query = { "query": "*:*",
+          "offset": offset,
+          "limit": limit,
+          "filter": query_list,
+          "sort": 'search_name asc',
+        }
+
+
+        query_req = json.dumps(query)
+
+        resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
+        resp = resp.json()
+
+        # 這邊改成facet bucket的數量
+        count = resp['response']['numFound']
 
     if count:
+
         results = pd.DataFrame(resp['response']['docs'])
         results = results.rename(columns={'common_name': 'common_name_c', 'rank_id': 'rank'})
 
@@ -1894,14 +1904,8 @@ def catalogue_search(request):
 
         offset = limit * (int(req.get('page',1))-1)
 
-        # time_s = time.time()
-        solr_query_list = get_conditioned_solr_search(req)
-        # print(time.time() - s)
-
-        # time_s = time.time()
-        response = get_solr_data_search(solr_query_list, offset, response, limit)
-        # print(time.time() - s)
-
+        solr_query_list, is_chinese = get_conditioned_solr_search(req)
+        response = get_solr_data_search(solr_query_list, offset, response, limit, is_chinese)
 
         response['header'] = f"""
             <tr>
@@ -1935,17 +1939,16 @@ def get_conditioned_solr_search(req):
     # 如果有輸入keyword的話preselect 但是limit offset要加在preselect這邊
     # /.* .*/
 
+    is_chinese = False
+
     if keyword := req.get('keyword','').strip():
 
-        # 如果是查詢中文的話 要加上status 只回傳主要中文名
-
         if re.search(r'[\u4e00-\u9fff]+', keyword):
-            query_list.append('is_primary_common_name:true')
+            is_chinese = True
 
         keyword = get_variants(keyword)
         keyword_type = req.get('name-select','equal')
 
-    
         
         if keyword_type == "equal":
             # 中文名可能有異體字 英文名有大小寫問題 要修改成REGEXP
@@ -2058,7 +2061,7 @@ def get_conditioned_solr_search(req):
         query_list.append(f'path:/.*{higher_taxon_id}.*/')
 
 
-    return query_list
+    return query_list, is_chinese
 
 
 
