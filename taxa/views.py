@@ -1940,6 +1940,7 @@ def catalogue_search(request):
 def get_conditioned_solr_search(req): 
 
     query_list = []
+
     # NOTE 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1  的資料
     query_list.append('is_in_taiwan:true')
     query_list.append('is_deleted:false')
@@ -2006,10 +2007,11 @@ def get_conditioned_solr_search(req):
 
     rank = req.getlist('rank')
     if rank:
+        rr_list = []
         for r in rank:
-            rr_list = []
             rr_list.append(f'rank_id:{int(r)}')
         query_list.append(f"({' OR '.join(rr_list)})")
+
 
     # alien_type
 
