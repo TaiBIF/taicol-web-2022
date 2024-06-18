@@ -1798,10 +1798,14 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
         resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
         resp = resp.json()
 
-        # 這邊改成facet bucket的數量
-        count = resp['facets']['taxon_id']['numBuckets']
+        
+        # print(resp)
+        
+        # 先確認有找到資料
+        if resp['response']['numFound']:
 
-        if count:
+            # 這邊改成facet bucket的數量
+            count = resp['facets']['taxon_id']['numBuckets']
 
             # 先用facet取得taxon_id 再query 相關data
             taxon_ids = [t.get('val') for t in resp['facets']['taxon_id']['buckets']]

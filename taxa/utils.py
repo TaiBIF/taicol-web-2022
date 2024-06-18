@@ -375,10 +375,11 @@ def return_download_file_by_solr(query_list, is_chinese):
 
             # print(resp)
 
-            # 這邊改成facet bucket的數量
-            total_count = resp['facets']['taxon_id']['numBuckets']
+            # 先確認有沒有資料
+            if resp['response']['numFound']:
 
-            if total_count:
+                # 這邊改成facet bucket的數量
+                total_count = resp['facets']['taxon_id']['numBuckets']
 
                 # 先用facet取得taxon_id 再query 相關data
                 taxon_ids = [t.get('val') for t in resp['facets']['taxon_id']['buckets']]
