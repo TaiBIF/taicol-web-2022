@@ -1,10 +1,5 @@
 var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
-/*
-function redirectTaxonPage(taxon_id){
-        event.stopPropagation();
-        window.open(`/taxon/${taxon_id}`);
-}*/
 
 var $getSubListArr = `<div class="arr">
 <svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -16,6 +11,8 @@ var $getSubListArr = `<div class="arr">
 </div>`
 
 function getSubList(item){
+
+
     let with_cultured = 'off';
     if ($('input[name="with_cultured"]').is(':checked')){
         with_cultured = 'on';
@@ -36,7 +33,7 @@ function getSubList(item){
     } else {
         taxon_id = $(item).data('parent_taxon')
     }
-    //$('.main-box .item-box').removeClass('now');
+
     if ($(item).data('fetched')=="0"){
         $('.loadingbox').removeClass('d-none');
         $.ajax({
@@ -86,7 +83,7 @@ function getSubList(item){
                                     <div class="cir-box">
                                         ${j}
                                     </div>
-                                    <h2 class="" data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</h2>
+                                    <h2 data-taxon_id="${results[j]['data'][i]['taxon_id']}">${results[j]['data'][i]['name']}</h2>
                                     <p>${results[j]['data'][i]['stat']}</p>
                                     ${still_has_sub ? $getSubListArr : ''}
                                 </div>
@@ -99,9 +96,8 @@ function getSubList(item){
                     $(item).after(html_str)
                 }
             }
-            $(".getSubList").prop("onclick", null).off("click");
-            // $(".redirectTaxonPage").prop("onclick", null).off("click");
 
+            $(".getSubList").off("click");
             $('.getSubList').on('click', function(){
                 getSubList($(this))
             })   
@@ -110,12 +106,6 @@ function getSubList(item){
             $('.tree-area .item-box h2 a').on('click', function(event){
                 event.stopPropagation();
             })
-        
-            // $('.redirectTaxonPage').on('click', function(event){
-            //     event.stopPropagation();
-            //     //window.open(`/taxon/${$(this).data('taxon_id')}`);
-            //     window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
-            // })   
  
         })
         .fail(function( xhr, status, errorThrown ) {
@@ -128,22 +118,21 @@ function getSubList(item){
 
     $( '.item-box' ).removeClass('now')
 
-    if (($( item ).next('ul').hasClass('d-block'))|( ($( item ).next('ul').length ==0)&($( item ).hasClass('now'))) ) {
-        $( item ).removeClass('now')
-        $( item ).nextAll('ul').removeClass('d-block').addClass('d-none')
-        //$( item ).nextAll('.item-box').removeClass('now')
+    if (($(item).next('ul').hasClass('d-block'))|( ($(item).next('ul').length ==0)&($(item).hasClass('now'))) ) {
+        $(item).removeClass('now')
+        $(item).nextAll('ul').removeClass('d-block').addClass('d-none')
     } else {
-        $( item ).addClass('now');
-        $( item ).nextAll('ul').removeClass('d-none').addClass('d-block')
+        $(item).addClass('now');
+        $(item).nextAll('ul').removeClass('d-none').addClass('d-block')
     }
 
-        
 }
 
 
 
 $(function (){
 
+    $('.getSubList').off('click')
     $('.getSubList').on('click', function(){
         getSubList($(this))
     })
@@ -157,14 +146,9 @@ $(function (){
         event.stopPropagation();
     })
 
-    // $('.redirectTaxonPage').on('click', function(event){
-    //     event.stopPropagation();
-    //     //window.open(`/taxon/${$(this).data('taxon_id')}`);
-    //     window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
-    // })    
-
     // 栽培豢養
     $('input[name="with_cultured"], input[name="lin_rank"], input[name="with_not_official"]').change(function() {
+
         let current_taxon_id;
         if ($('.main-box .item-box.now').length >0){
             // 只選擇最後一個
@@ -206,7 +190,6 @@ $(function (){
 
             for (r of results){
 
-
                 let still_has_sub = r.stat ? true : false;
 
                 $('.tree-area .main-box ul.kingdom').append(
@@ -229,13 +212,6 @@ $(function (){
                 getSubList($(this))
             })
         
-            // $('.redirectTaxonPage').off('click')
-            // $('.redirectTaxonPage').on('click', function(event){
-            //     event.stopPropagation();
-            //     //window.open(`/taxon/${$(this).data('taxon_id')}`);
-            //     window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
-            // })    
-
             $('.tree-area .item-box h2 a').off('click')
             $('.tree-area .item-box h2 a').on('click', function(event){
                 event.stopPropagation();
@@ -246,30 +222,8 @@ $(function (){
             } 
         })
 
-    
-        /*
-        if(this.checked) {
-            // 包含栽培豢養
-            $('.tree-area .main-box ul.kingdom').removeClass('d-none').addClass('d-block')
-            $('.tree-area .main-box ul.kingdom_c').addClass('d-none').removeClass('d-block')
-
-            // 後續
-            if (current_taxon_id){
-                searchClick(current_taxon_id, false)
-            }
-            
-        } else {
-            // 排除栽培豢養
-            $('.tree-area .main-box ul.kingdom_c').removeClass('d-none').addClass('d-block')
-            $('.tree-area .main-box ul.kingdom').addClass('d-none').removeClass('d-block')
-            // 後續
-            if (current_taxon_id){
-                searchClick(current_taxon_id, false)
-            } 
-        }*/
     });
-    
-    
+
 
     // 關鍵字 autocomplete
     $("#keyword").select2({
@@ -345,13 +299,16 @@ $(function (){
     });
 
     $('#keyword').on('select2:select', function (e) {
+        console.log('select2:select')
         var data = e.params.data;
         searchClick(data.id,true)
       });
 
 });
 
+
 function searchClick(keyword_taxon_id, add_stat){
+
     let with_cultured = 'off';
     if ($('input[name="with_cultured"]').is(':checked')){
         with_cultured = 'on';
@@ -389,22 +346,23 @@ function searchClick(keyword_taxon_id, add_stat){
             dataType : 'json',
         })
         .done(function(results) {
+
             fetch_taxon = []
             fetch_rank_id = []
             for (let i = 0; i < results.path.length; i++) {
+
                 if ($(`div[data-taxon="${results.path[i]}"]`).length==0 | $(`div[data-taxon="${results.path[i]}"]`).data('fetched')=="0"){
                     fetch_taxon.push(results.path[i])
                     fetch_rank_id.push(results.rank_id[i])
                 }
-              }
+            }
 
-            // console.log(fetch_taxon, fetch_rank_id)
-            //fetch_taxon.push(keyword_taxon_id)
             if (fetch_taxon.length > 0){
                 fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id)
             } else {
                 $('.loadingbox').addClass('d-none');
             }
+
         })
         .fail(function( xhr, status, errorThrown ) {
             $('.loadingbox').addClass('d-none');
@@ -423,7 +381,7 @@ function searchClick(keyword_taxon_id, add_stat){
             dataType : 'json',
         })
         .done(function(results) {
-            console.log('done')
+            console.log('update_search_stat done')
         })
     }
 }
@@ -461,7 +419,6 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
         dataType : 'json',
     })
     .done(function(results) {
-        $('.loadingbox').addClass('d-none');
         
         for (var r = 0; r < results.length; r++) {
 
@@ -469,7 +426,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
             if (results[r]['has_lack']){
                 j = Object.keys(results[r])[1]
                 // 第一個一定是接在該taxon_id後面沒錯
-                item = $(`div[data-taxon="${results[r][j]['taxon_id']}"]`)
+               item= $(`div[data-taxon="${results[r][j]['taxon_id']}"]`)
                 $(item).data('fetched','1');
                 html_str = "";
                 for (var i = 0; i < results[r][j]['data'].length; i++) {
@@ -498,7 +455,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                                 <div class="cir-box">
                                     ${j}
                                 </div>
-                                <h2 class="" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
+                                <h2 data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
                                 <p>${results[r][j]['data'][i]['stat']}</p>
                                 ${still_has_sub ? $getSubListArr : ''}
                             </div>
@@ -512,7 +469,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                 for (j of Object.keys(results[r])){
                     if (j != Object.keys(results[r])[0]){
                         // 這邊要改成判斷可以接在parent後面
-                        item = $(`div[data-parent_taxon="${results[r][j]['taxon_id']}"][data-rank="${results[r][j]['parent_rank_id']}"]`)
+                       item= $(`div[data-parent_taxon="${results[r][j]['taxon_id']}"][data-rank="${results[r][j]['parent_rank_id']}"]`)
                         $(item).data('fetched','1');
                         html_str = "";
                         for (var i = 0; i < results[r][j]['data'].length; i++) {
@@ -541,7 +498,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                                         <div class="cir-box">
                                             ${j}
                                         </div>
-                                        <h2 class="" data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
+                                        <h2 data-taxon_id="${results[r][j]['data'][i]['taxon_id']}">${results[r][j]['data'][i]['name']}</h2>
                                         <p>${results[r][j]['data'][i]['stat']}</p>
                                         ${still_has_sub ? $getSubListArr : ''}
                                     </div>
@@ -556,7 +513,7 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
             } else {
                 for (j of Object.keys(results[r])){
                     if (j != 'has_lack'){
-                        item = $(`div[data-taxon="${results[r][j]['taxon_id']}"]`)
+                       item= $(`div[data-taxon="${results[r][j]['taxon_id']}"]`)
                         $(item).data('fetched','1');
                         html_str = "";
                         for (var i = 0; i < results[r][j]['data'].length; i++) {
@@ -585,22 +542,17 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
                 }
             }
             
-            $(".getSubList").prop("onclick", null).off("click");
-            // $(".redirectTaxonPage").prop("onclick", null).off("click");
-
-            $('.getSubList').on('click', function(){
-                getSubList($(this))
-            })     
-
-            $('.tree-area .item-box h2 a').off('click')
-            $('.tree-area .item-box h2 a').on('click')
-            // $('.redirectTaxonPage').on('click', function(event){
-            //     event.stopPropagation();
-            //     // window.open(`/taxon/${$(this).data('taxon_id')}`);
-            //     window.location = `/${$lang}/taxon/${$(this).data('taxon_id')}`
-            // })
-            
         }
+
+        $(".getSubList").off("click");
+        $('.getSubList').on('click', function(){
+            getSubList($(this))
+        })
+
+        $('.tree-area .item-box h2 a').off('click')
+        $('.tree-area .item-box h2 a').on('click', function(event){
+            event.stopPropagation();
+        })
 
         // 關閉所有的樹
         $('.main-box .item-box').removeClass('now');
@@ -615,13 +567,19 @@ function fetchSubList(fetch_taxon, keyword_taxon_id, fetch_rank_id){
         $(`div [data-taxon="${keyword_taxon_id}"]`).nextAll('ul').addClass('d-block').removeClass('d-none');
 
         document.location=`#${keyword_taxon_id}`
+
         $('.loadingbox').addClass('d-none');
+
+
     })
     .fail(function( xhr, status, errorThrown ) {
         $('.loadingbox').addClass('d-none');
         $lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
         console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
     }) 
+
+
+
 }
 
 
