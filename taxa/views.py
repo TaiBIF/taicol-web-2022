@@ -8,11 +8,9 @@ import pandas as pd
 import numpy as np
 import math
 import re
-# import glob
 import os
 import datetime
 from taxa.models import SearchStat
-# from django.contrib.postgres.aggregates import StringAgg
 import time
 import requests
 from django.db.models import F
@@ -21,9 +19,6 @@ from django.core.mail import send_mail
 import threading
 from django.template.loader import render_to_string
 import html
-
-# from django.contrib import messages
-
 from django.utils.translation import get_language, gettext
 
 class NpEncoder(json.JSONEncoder):
@@ -1902,13 +1897,10 @@ def catalogue_search(request):
         # 先確認是不是taxonID 若是的話直接跳轉至物種頁
 
         if req.get('keyword'):
-            query = "SELECT id FROM api_taxon WHERE `taxon_id` = %s"
-            conn = pymysql.connect(**db_settings)
-            with conn.cursor() as cursor:
-                cursor.execute(query, (req.get('keyword'),))
-                res = cursor.fetchone()
-                if res:
-                    return HttpResponse(json.dumps({'is_taxon_id': True, 'taxon_id': req.get('keyword')},cls=NpEncoder))
+            taxon_resp = requests.get('{}taxa/select?q=taxon_id:{}'.format(SOLR_PREFIX, req.get('keyword')))
+            taxon_resp = taxon_resp.json()
+            if taxon_resp['response']['numFound']:
+                return HttpResponse(json.dumps({'is_taxon_id': True, 'taxon_id': req.get('keyword')},cls=NpEncoder))
 
         offset = limit * (int(req.get('page',1))-1)
 
