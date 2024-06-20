@@ -6,7 +6,7 @@ const Banner: React.FC = () => {
   const [keyword, setKeyword] = React.useState('');
 
   const handleSearch = () => {
-    window.location.href = `/catalogue?filter=0&keyword=${keyword}`;
+    window.location.href = `/catalogue?filter=0&name-select=contain&keyword=${keyword}`;
   }
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
