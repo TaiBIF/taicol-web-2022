@@ -194,7 +194,7 @@ $(function(){
 			$lang == 'en-us' ? alert("Please enter keywords") : alert("請輸入關鍵字");
 
 		} else {
-			window.location = '/catalogue?filter=0&keyword=' + $('input[name=keyword]').val()
+			window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=keyword]').val()
 		}
 	})
 	// 收和控制
