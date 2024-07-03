@@ -325,8 +325,8 @@ def taxon(request, taxon_id):
         # time_s = time.time()
 
         # NOTE 這邊應該一定是accepted or deleted
-        data['status'] =  status_map_taxon_c['accepted']['en-us'] if get_language() == 'en-us' else f"{status_map_taxon_c['accepted']['zh-tw']} {status_map_taxon_c['accepted']['en-us']}"
-        data['rank_d'] =  rank_map[data['rank_id']]if get_language() == 'en-us' else f"{rank_map_c[data['rank_id']]} {rank_map[data['rank_id']]}"
+        data['status'] = status_map_taxon_c['accepted']['en-us'] if get_language() == 'en-us' else f"{status_map_taxon_c['accepted']['zh-tw']} {status_map_taxon_c['accepted']['en-us']}"
+        data['rank_d'] = rank_map[data['rank_id']]if get_language() == 'en-us' else f"{rank_map_c[data['rank_id']]} {rank_map[data['rank_id']]}"
         is_list = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
         data['is_list'] = []
         for i in is_list:
