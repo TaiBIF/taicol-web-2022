@@ -1349,8 +1349,6 @@ def get_match_result(request):
 				<td>{gettext("臺灣紅皮書")}</td>
 				<td>{gettext("IUCN評估")}</td>
 			</tr>'''
-    				# <td>{gettext("棲地環境")}</td>
-				# <td>{gettext("CITES附錄")}</td>
 
     # 用loop取得name match結果 每頁10筆
     if name:
@@ -1381,7 +1379,6 @@ def get_match_result(request):
                     tmp_dict = {
                         'search_term': dd['search_term'],
                         'matched_clean': dd['matched_clean'], 
-                        # 'score': dd['score']
                     }
                     for d in dd['results']:
                         tmp_dict.update(d)
@@ -1390,14 +1387,13 @@ def get_match_result(request):
                     if not dd['results']:
                         df_flat = pd.concat([df_flat, pd.DataFrame([{'search_term': dd['search_term'], 'namecode': 'no match', 'formatted_name': gettext('無結果')}])], ignore_index=True)
             df = df_flat
-            # print(df, namecode_list)
             # 確認是否有對到多個學名的情況
             matched_count = df[['search_term','namecode']].groupby('search_term', as_index=False).count()
             matched_count = matched_count.rename(columns={'namecode': 'taxon_id'})
 
             #JOIN taxon
             if namecode_list:
-                query = f""" SELECT  at.is_in_taiwan, at.is_endemic, at.alien_type,
+                query = f""" SELECT  at.is_in_taiwan, at.is_endemic, at.main_alien_type,
                              at.taxon_id, ac.protected_category, ac.red_category, ac.iucn_category,
                              at.rank_id, an.formatted_name, acn.name_c
                             FROM api_taxon at
@@ -1412,9 +1408,7 @@ def get_match_result(request):
                     info = cursor.fetchall()
                     conn.close()
                     info = pd.DataFrame(info, columns=['is_in_taiwan', 'is_endemic', 'alien_type', 'taxon_id', 'protected_category', 'red_category', 'iucn_category', 'rank_id', 'formatted_name', 'common_name_c'])
-                    #  'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'cites_listing',
-                    # info = info.astype({'accepted_namecode': 'str'})
-                    # info = info.replace({np.nan: None})
+
                     df = df[['search_term','score','name_status','namecode','family','kingdom','phylum','class','order','genus']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
                     
                     # 如果有多個結果 
@@ -1453,7 +1447,7 @@ def get_match_result(request):
                     df['name_status'] = df['name_status'].replace({'accepted': gettext('有效'), 'not-accepted': gettext('無效'), 'misapplied': gettext('誤用')})
                     df = df.replace({np.nan: '', None: ''})
                     df.loc[(df.namecode=='no match'),'formatted_name']= gettext('無結果')
-                    # df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
+
                     # taxon group
                     for i in df.index:
                         current_rank = df.iloc[i].rank_id
@@ -1467,26 +1461,15 @@ def get_match_result(request):
                                 df.loc[i,'taxon_group'] = df.loc[i,'family'] 
                         else:
                             df.loc[i,'taxon_group'] = ''
-                        alt_list = []
                         if df.iloc[i].alien_type:
-                            for at in json.loads(df.iloc[i].alien_type):
-                                # if at.get('alien_type') not in alt_list:
-                                alt_list.append(at.get('alien_type').capitalize() if get_language() == 'en-us' else attr_map_c[at.get('alien_type')])
-                        alt_list = list(dict.fromkeys(alt_list))
-                        df.loc[i,'alien_type'] = ','.join(alt_list)
-                    # is_list = ['is_endemic','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil']
+                            df.loc[i,'alien_type'] = attr_map_c[df.iloc[i].alien_type]
                     is_list = ['is_endemic','is_in_taiwan']
                     for ii in is_list:
                         if get_language() == 'en-us':
                             df[ii] = df[ii].apply(lambda x: attr_map[ii] if x == 1 else '')
                         else:
                             df[ii] = df[ii].apply(lambda x: attr_map_c[ii] if x == 1 else '')
-                    # data['is_list'] = []
-                    # for i in is_list:
-                    #     if data[i] == 1:
-                    #         data['is_list'].append(attr_map_c[i])
                     df['rank'] = df['rank_id'].apply(lambda x: gettext(rank_map_c[x]) if x else '')
-                    # df['is_endemic'] = df['is_endemic'].apply(lambda x: '臺灣特有' if x == 1 else '')
 
             response['matched_count'] = dict(matched_count.values.tolist())
                     
@@ -1496,7 +1479,6 @@ def get_match_result(request):
             response['more_than_one_str'] = gettext('查詢字串有多個比對結果')
 
             response['data'] = json.loads(df.to_json(orient='records'))
-            # print(df.to_json(orient='records'))
             response['next'] = gettext('下一頁')
             response['prev'] = gettext('上一頁')
             
