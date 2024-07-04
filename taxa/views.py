@@ -1798,7 +1798,6 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
           "sort": 'search_name asc',
         }
 
-
         query_req = json.dumps(query)
 
         resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
@@ -1837,7 +1836,7 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
         results['is_endemic'] = results['is_endemic'].apply(lambda x: gettext('臺灣特有') if x == True else None)
 
-        results = results.drop(columns=['path'],ignore_index=True)
+        results = results.drop(columns=['path'],errors='ignore')
         results = results.replace({np.nan: '', None: ''})
         results = results.to_json(orient='records')
     
