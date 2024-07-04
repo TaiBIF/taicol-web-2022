@@ -21,6 +21,7 @@ from django.template.loader import render_to_string
 import html
 from django.utils.translation import get_language, gettext
 
+
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.integer):
@@ -1836,7 +1837,7 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
         results['is_endemic'] = results['is_endemic'].apply(lambda x: gettext('臺灣特有') if x == True else None)
 
-        results = results.drop(columns=['path'])
+        results = results.drop(columns=['path'],ignore_index=True)
         results = results.replace({np.nan: '', None: ''})
         results = results.to_json(orient='records')
     
