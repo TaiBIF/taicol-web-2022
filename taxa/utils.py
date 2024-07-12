@@ -488,7 +488,8 @@ taxon_history_map = {
     14: 'Taxon merged ',
     15: 'Taxon divided ',
     16: 'Common name deleted: ',
-    17: 'Name deleted: '}
+    17: 'Name deleted: ',
+    18: 'Taxon revived'}
 
 taxon_history_map_c = {
     0: '有效名變更', # v
@@ -507,7 +508,8 @@ taxon_history_map_c = {
     14: '物種合併 ', #v
     15: '物種拆分 ', #v
     16: '刪除中文名 ', #v
-    17: '刪除學名 ' #v
+    17: '刪除學名 ', #v
+    18: '已復原 ', #v
 }
 
 
