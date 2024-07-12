@@ -371,7 +371,6 @@ def taxon(request, taxon_id):
                             now_taxon_group_str += ' ' + name_c_str
                         higher.loc[hi, 'taxon_group_str'] = now_taxon_group_str
                     higher = higher.rename(columns={'formatted_accepted_name':'formatted_name','taxon_rank_id':'rank_id'})
-
                     # 補上階層未定 
                     # 先找出應該要有哪些林奈階層
                     current_rank_orders = higher.rank_order.to_list() + [rank_order_map[data['rank_id']]]
@@ -1780,7 +1779,6 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
             query = { "query": "*:*",
                       "filter": query_list,
                       "limit": limit,
-                    #   "sort": 'index asc',
                     }
             
 
