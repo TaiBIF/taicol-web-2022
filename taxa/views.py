@@ -740,7 +740,7 @@ def taxon(request, taxon_id):
         # 相關連結
         # ncbi如果超過一個就忽略
 
-        links = create_link_display(data=data,taxon_id=taxon_id)
+        links += create_link_display(data=data,taxon_id=taxon_id)
 
         # print('9.2', time.time()-time_s)
         # time_s = time.time()
@@ -812,9 +812,6 @@ def taxon(request, taxon_id):
 
     elif not has_taxon:
         taxon_id = None
-
-
-    # print('total_time', time.time()-total_time)
 
 
     return render(request, 'taxa/taxon.html', {'taxon_id': taxon_id, 'data': data, 'links': links,
