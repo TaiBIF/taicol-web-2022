@@ -524,6 +524,7 @@ def taxon(request, taxon_id):
                 # time_s = time.time()
 
                 new_refs += names.reference_id.to_list()
+                new_refs += names.o_reference_id.to_list()
                 new_refs += [n[2] for n in name_history_list]
                 new_refs = list(dict.fromkeys(new_refs))
 
