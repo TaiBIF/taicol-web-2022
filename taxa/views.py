@@ -230,7 +230,7 @@ def name_match(request):
 
 def taxon(request, taxon_id):
     stat_str, taxon_group_str = '', ''
-    new_taxon_id, new_taxon_name = '', ''
+    # new_taxon_id, new_taxon_name = '', ''
     refs, new_refs, experts, name_changes, taxon_history, name_history, short_refs, links = [], [], [], [], [], [], [], []
     # total_page, current_page, page_list = 0, 1, [] # for taxon_history
     data = {}
@@ -275,6 +275,7 @@ def taxon(request, taxon_id):
 
         # 取有效學名的那筆資料
         response = requests.get(f'{SOLR_PREFIX}taxa/select?fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:{taxon_id}')
+        # print(f'{SOLR_PREFIX}taxa/select?fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:{taxon_id}')
         solr_resp = response.json()
         solr_resp = solr_resp['response']['docs'][0]
 
@@ -747,22 +748,22 @@ def taxon(request, taxon_id):
         # time_s = time.time()
 
         # 變更歷史
-        if is_deleted:
-            new_taxon_name = '', ''
-            query = f"""SELECT tn.name, at.taxon_id FROM api_taxon at
-                    JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
-                    WHERE at.taxon_id = %s
-                    """
-            with conn.cursor() as cursor:
-                cursor.execute(query, (data['new_taxon_id'],))
-                new_taxon_name = cursor.fetchone()
-                if new_taxon_name:
-                    new_taxon_name = new_taxon_name[0]
+        # if is_deleted:
+        #     new_taxon_name = '', ''
+        #     query = f"""SELECT tn.name, at.taxon_id FROM api_taxon at
+        #             JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
+        #             WHERE at.taxon_id = %s
+        #             """
+        #     with conn.cursor() as cursor:
+        #         cursor.execute(query, (data['new_taxon_id'],))
+        #         new_taxon_name = cursor.fetchone()
+        #         if new_taxon_name:
+        #             new_taxon_name = new_taxon_name[0]
 
         # print('9.5', time.time()-time_s)
         # time_s = time.time()
 
-        taxon_history = create_history_display(taxon_history_df, get_language(), new_taxon_id, new_taxon_name, names)
+        taxon_history = create_history_display(taxon_history_df, get_language(), names)
         data['self'] = ''
         data['self'] = {'rank_color': rank_color_map[data['rank_id']] if data['rank_id'] in [3,12,18,22,26,30,34] else 'rank-second-gray',
                         'rank_c': rank_map_c[data['rank_id']],
@@ -806,7 +807,17 @@ def taxon(request, taxon_id):
         
         if is_deleted:
             data['rank_d'] = 'Deleted' if get_language() == 'en-us' else '已刪除 Deleted'
-            data['transfer_taxon'] = new_taxon_id
+            new_taxon_name = '', ''
+            query = f"""SELECT tn.name, at.taxon_id FROM api_taxon at
+                    JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
+                    WHERE at.taxon_id = %s
+                    """
+            with conn.cursor() as cursor:
+                cursor.execute(query, (data['new_taxon_id'],))
+                new_taxon_name = cursor.fetchone()
+                if new_taxon_name:
+                    new_taxon_name = new_taxon_name[0]
+            # data['transfer_taxon'] = data['new_taxon_id']
             data['is_deleted'] = True
             data['new_taxon_name'] = new_taxon_name
         # print('11', time.time()-time_s)

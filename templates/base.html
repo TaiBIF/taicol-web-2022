@@ -24,9 +24,15 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-NRB9ZJPCMN"></script>
 	<script src="{% static 'js/ga.js' %}?v1" ></script>
+	<script src="{% static 'js/gtm.js' %}?v1" ></script>
 </head>
 
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NNZND4GM"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
     <input type="hidden" name="lang" value="{{ LANGUAGE_CODE }}">
 
 	<div class="header">
