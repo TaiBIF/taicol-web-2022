@@ -12,7 +12,7 @@
 			</div>
 			<div class="top-wave"></div>
 			<div class="path">
-				<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "更多資訊" %}</p> > <p>{% trans "資料使用規範" context "BreadCrumb" %}</p>
+				<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "更多資訊" %}</p> > <p>{% trans "資料使用規範與隱私政策宣告" context "BreadCrumb" %}</p>
 			</div>
 			<div class="main-box ">
 				<div class="pic-right1">
@@ -28,25 +28,26 @@
 					<img src="{% static 'image/cir_blue.png' %}">
 				</div>
 				<div class="title-box">
-					<h2>{% trans "資料使用規範" context "title" %} <span></span></h2>
-					<p>{% trans "Data Policy" %}</p>
+					<h2>{% trans "資料使用規範與隱私政策宣告" context "title" %} <span></span></h2>
+					<p>{% trans "Data and Privacy Policy" %}</p>
 				</div>
 			</div>
 		</div>
 		<div class="main-box vivi-cont-top">
 			<div class="data-policy-area">
-				<h2>本網站文字資料採用 Creative Commons (創用CC) 提供的準則與條款 (V4.0) 作為資料使用的依據。
-					</h2>
+				<h2>除另有註明外，本網站文字資料採 CC授權-姓名標示-4.0 (CC-BY-4.0) 發布，使用者依著作人或授權人指定方式表彰其姓名後，得合法重製、散布、傳輸以及修改該文字資料；本網站為靜態資料查詢網站，無登錄及使用行為紀錄之設置，使用者亦得於瀏覽器調校安全層級，或自設資訊自動被讀取之屏蔽機制。</h2>
 				<div class="gray-infbox">
 					<div class="ccflex">
-						<p>使用的授權標章</p>
+						<p>本網站文字資料使用的授權標章</p>
 						<div class="cc-mark">
-							<img src="{% static 'image/ccby.png' %}">
+							<a href="https://creativecommons.org/licenses/by/4.0/deed.zh-hant" target="_blank">
+								<img src="{% static 'image/ccby.png' %}">
+							</a>
 						</div>
 					</div>
 					<div class="link-box">
-						<a target="_blank" href="https://tw.creativecommons.net">
-							<p>創用cc台灣首頁 </p>
+						<a target="_blank" href="https://tw.creativecommons.net/">
+							<p>CC台灣首頁</p>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
 									<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
@@ -56,8 +57,8 @@
 								</svg>
 							</div>
 						</a>
-						<a target="_blank" href="https://tw.creativecommons.net/home-page/">
-							<p>授權詳細條文頁面 </p>
+						<a target="_blank" href="https://creativecommons.org/licenses/by/4.0/legalcode.zh-hant">
+							<p>授權條款法律文字</p>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
 									<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
@@ -69,17 +70,19 @@
 						</a>
 					</div>
 				</div>
-				<h2>Except where otherwise noted, this site is licensed under a Creative Commons Attribution 4.0 License</h2>
+				<h2>Except where otherwise noted, text data on this site is licensed under a Creative Commons Attribution 4.0 International license (CC-BY-4.0). Users are permitted to legally reproduce, distribute, transmit, and modify the text data, on condition that proper attribution is given to the author or licensor as specified. This site functions as a static data retrieval portal without logging or activity tracking mechanisms. Users may adjust their browser security settings or employ their own mechanisms to block automatic information retrieval.</h2>
 				<div class="gray-infbox">
 					<div class="ccflex">
-						<p>Netlabels we used are </p>
+						<p>Creative Commons Badge for the text data</p>
 						<div class="cc-mark">
-							<img src="{% static 'image/ccby.png' %}">
+							<a href="https://creativecommons.org/licenses/by/4.0/deed" target="_blank">
+								<img src="{% static 'image/ccby.png' %}">
+							</a>
 						</div>
 					</div>
 					<div class="link-box">
-						<a target="_blank" href="https://tw.creativecommons.net">
-							<p>Main site for Creative Commons</p>
+						<a target="_blank" href="https://tw.creativecommons.net/">
+							<p>Creative Commons Taiwan Homepage</p>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
 									<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
@@ -89,8 +92,8 @@
 								</svg>
 							</div>
 						</a>
-						<a target="_blank" href="https://tw.creativecommons.net/home-page/">
-							<p>Licenses for Creative Commons</p>
+						<a target="_blank" href="https://creativecommons.org/licenses/by/4.0/legalcode">
+							<p>Legal Text of License</p>
 							<div class="arr">
 								<svg xmlns="http://www.w3.org/2000/svg" width="8.828" height="14.828" viewBox="0 0 8.828 14.828">
 									<g id="Group_7699" data-name="Group 7699" transform="translate(1.449 13.344) rotate(-90)">
