@@ -176,8 +176,8 @@ msgid "資料統計"
 msgstr "Statistics"
 
 #: templates/base.html:98 templates/base.html:195
-msgid "資料使用規範"
-msgstr "Data Policy"
+msgid "資料與隱私政策"
+msgstr "Data & Privacy Policy"
 
 #: templates/base.html:105
 msgid "語言"
@@ -243,21 +243,25 @@ msgstr "Species checklist is important to the conservation of biodiversity resou
 
 #: templates/pages/data_policy.html:15
 msgctxt "BreadCrumb"
-msgid "資料使用規範"
-msgstr "DATA POLICY"
+msgid "資料與隱私政策"
+msgstr "DATA & PRIVACY POLICY"
 
 #: templates/pages/data_policy.html:31
 msgctxt "title"
-msgid "資料使用規範"
-msgstr "DATA POLICY"
+msgid "資料與隱私政策"
+msgstr "DATA & PRIVACY POLICY"
 
 #: templates/pages/data_policy.html:32
-msgid "Data Policy"
+msgid "Data & Privacy Policy"
 msgstr " "
 
 #: templates/pages/data_policy.html:105
 msgid "臺灣物種名錄(TaiCOL)引用格式"
 msgstr "Citation of TaiCOL"
+
+#: templates/pages/data_policy.html:105
+msgid "臺灣物種名錄(TaiCOL)單筆資料引用格式"
+msgstr "Single Record Citation of TaiCOL"
 
 #: templates/taxa/catalogue.html:48
 msgid "下載檔案"

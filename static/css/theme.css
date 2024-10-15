@@ -7070,6 +7070,11 @@ body {
     font-size: 22px
 }
 
+
+.data-policy-area p {
+    text-align: justify;
+}
+
 @media only screen and (max-width: 767px) {
     .data-policy-area h2 {
         font-size: 18px;

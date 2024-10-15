@@ -146,8 +146,9 @@ for i in df.index:
     df.loc[i, 'alien_status_note'] = '|'.join(final_aliens)
     if path := row.path:
         path = path.split('>')
+        # 202407 改成不拿掉自己
         # 拿掉自己
-        path = [p for p in path if p != row.taxon_id]
+        # path = [p for p in path if p != row.taxon_id]
         if path:
             data = []
             higher = df[df.taxon_id.isin(path)&df['rank'].isin([50,49,3,12,18,22,26,30])][['simple_name','common_name_c','rank','taxon_id','rank_order']]
@@ -343,7 +344,8 @@ for i in names.index:
 # 'null' to None
 names = names.replace({np.nan: None, 'null': None})
 
-
+# rank_id to rank
+names['rank'] = names['rank'].apply(lambda x: rank_map[x])
 
 
 name_cols = ['name_id','nomenclature_name','rank','simple_name','name_author','formatted_name','latin_genus','latin_s1','s2_rank','latin_s2',
@@ -363,18 +365,18 @@ compression_options = dict(method='zip', archive_name=f"TaiCOL_name_{last_update
 names.to_csv(f'TaiCOL_name_{last_updated}.zip', compression=compression_options, index=False)
 
 
-# 學名檔案2024-03
+# 學名檔案2024-08
 #  //就學名有幾筆
 # 共XXXX筆
-# 共 165701 筆
+# 共 198275 筆
 
 
-# 物種檔案2024-03
+# 物種檔案2024-06
 # //就Taxon有幾筆，但括號內只統計種rank34
 # 共xxxx筆（其中臺灣存在計??????種）
 # taxon[taxon.is_in_taiwan=='true'].groupby('rank',as_index=False).taxon_id.nunique()
 
-# 共 103482 筆（其中臺灣存在計 63840 種）
+# 共 104471 筆（其中臺灣存在計 63863 種）
 
 
 
@@ -397,5 +399,5 @@ namecode.to_csv(f'TaiCOL_namecode_{last_updated}.zip', compression=compression_o
 
 
 
-# 新舊學名編碼對照2023-12
+# 新舊學名編碼對照2024-12
 # 舊版臺灣物種名錄學名編碼對照新版學名編碼
