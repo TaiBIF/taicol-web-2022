@@ -104,7 +104,7 @@ def download_search_results_offline(request):
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
         compression_options = dict(method='zip', archive_name=df_file_name)
         zip_file_name = df_file_name.replace("csv","zip")
-        df.to_csv(f'/tc-web-volumes/media/download/{zip_file_name}', compression=compression_options, index=False)
+        df.to_csv(f'/tc-web-volumes/media/download/{zip_file_name}', compression=compression_options, index=False, escapechar='\\')
 
     download_url = request.scheme+"://" + request.META['HTTP_HOST']+ MEDIA_URL + os.path.join('download', zip_file_name)
     if env('WEB_ENV') != 'dev':
@@ -130,7 +130,7 @@ def download_search_results(request):
     else:
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] =  f'attachment; filename=taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
-        df.to_csv(response, index=False)
+        df.to_csv(response, index=False, escapechar='\\')
 
     return response
 
@@ -1660,7 +1660,7 @@ def download_match_results(request):
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
         compression_options = dict(method='zip', archive_name=df_file_name)
         zip_file_name = df_file_name.replace("csv","zip")
-        final_df.to_csv(f'/tc-web-volumes/media/match_result/{zip_file_name}', compression=compression_options, index=False)
+        final_df.to_csv(f'/tc-web-volumes/media/match_result/{zip_file_name}', compression=compression_options, index=False, escapechar='\\')
 
 
     download_url = request.scheme+"://" + request.META['HTTP_HOST']+ MEDIA_URL + os.path.join('match_result', zip_file_name)
