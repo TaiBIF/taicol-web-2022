@@ -98,7 +98,7 @@ def download_search_results_offline(request):
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
         compression_options = dict(method='zip', archive_name=df_file_name)
         zip_file_name = df_file_name.replace("json","zip")
-        df.to_json(f'/tc-web-volumes/media/download/{zip_file_name}', orient='records', compression=compression_options, escapechar='\\')
+        df.to_json(f'/tc-web-volumes/media/download/{zip_file_name}', orient='records', compression=compression_options)
 
     else:
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
@@ -126,7 +126,7 @@ def download_search_results(request):
     if file_format == 'json':
         response = HttpResponse(content_type="application/json")
         response['Content-Disposition'] =  f'attachment; filename=taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
-        df.to_json(response, orient='records', escapechar='\\')
+        df.to_json(response, orient='records')
     else:
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] =  f'attachment; filename=taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
@@ -1653,7 +1653,7 @@ def download_match_results(request):
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
         compression_options = dict(method='zip', archive_name=df_file_name)
         zip_file_name = df_file_name.replace("json","zip")
-        final_df.to_json(f'/tc-web-volumes/media/match_result/{zip_file_name}', orient='records', compression=compression_options, escapechar='\\')
+        final_df.to_json(f'/tc-web-volumes/media/match_result/{zip_file_name}', orient='records', compression=compression_options)
     else:
         # 改成字串true false
         final_df[is_list] = final_df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
