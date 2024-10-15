@@ -12,7 +12,7 @@
 			</div>
 			<div class="top-wave"></div>
 			<div class="path">
-				<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "更多資訊" %}</p> > <p>{% trans "資料使用規範與隱私政策宣告" context "BreadCrumb" %}</p>
+				<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "更多資訊" %}</p> > <p>{% trans "資料與隱私政策" context "BreadCrumb" %}</p>
 			</div>
 			<div class="main-box ">
 				<div class="pic-right1">
@@ -28,14 +28,15 @@
 					<img src="{% static 'image/cir_blue.png' %}">
 				</div>
 				<div class="title-box">
-					<h2>{% trans "資料使用規範與隱私政策宣告" context "title" %} <span></span></h2>
-					<p>{% trans "Data and Privacy Policy" %}</p>
+					<h2>{% trans "資料與隱私政策" context "title" %} <span></span></h2>
+					<p>{% trans "Data & Privacy Policy" %}</p>
 				</div>
 			</div>
 		</div>
 		<div class="main-box vivi-cont-top">
 			<div class="data-policy-area">
-				<h2>除另有註明外，本網站文字資料採 CC授權-姓名標示-4.0 (CC-BY-4.0) 發布，使用者依著作人或授權人指定方式表彰其姓名後，得合法重製、散布、傳輸以及修改該文字資料；本網站為靜態資料查詢網站，無登錄及使用行為紀錄之設置，使用者亦得於瀏覽器調校安全層級，或自設資訊自動被讀取之屏蔽機制。</h2>
+				<p>除另有註明外，本網站文字資料採 CC授權-姓名標示-4.0 (CC-BY-4.0) 發布，使用者依著作人或授權人指定方式表彰其姓名後，得合法重製、散布、傳輸以及修改該文字資料；本網站為靜態資料查詢網站，無登錄及使用行為紀錄之設置，所使用之新版Google分析(GA4)，僅透過浮動式、無可回溯驗證的使用者代號，紀錄該代號於本網站上之使用行為，此等數據資訊之收集，僅供管理端分析流量及觀測網站服務之用。本平台亦不透過使用行為的紀錄，識別個別訪客的個人身分或紀錄使用者的真實IP位址。若使用者希望確保相關使用資訊不被收集，亦得於瀏覽器調校安全層級，或自設資訊屏蔽機制(Do Not Track)。</p>
+				<br>
 				<div class="gray-infbox">
 					<div class="ccflex">
 						<p>本網站文字資料使用的授權標章</p>
@@ -70,7 +71,8 @@
 						</a>
 					</div>
 				</div>
-				<h2>Except where otherwise noted, text data on this site is licensed under a Creative Commons Attribution 4.0 International license (CC-BY-4.0). Users are permitted to legally reproduce, distribute, transmit, and modify the text data, on condition that proper attribution is given to the author or licensor as specified. This site functions as a static data retrieval portal without logging or activity tracking mechanisms. Users may adjust their browser security settings or employ their own mechanisms to block automatic information retrieval.</h2>
+				<p>Except where otherwise noted, text data on this site is licensed under a Creative Commons Attribution 4.0 International license (CC-BY-4.0). Users are permitted to legally reproduce, distribute, transmit, and modify the text data, provided proper attribution is given to the author or licensor as specified. This site functions as a static data retrieval portal without logging or activity tracking mechanisms. The new version of Google Analytics (GA4) records visitor behavior on this website using a floating, non-retraceable visitor identifier. The collection of this data is solely for the purpose of management analysis of traffic and monitoring website services. Users may adjust their browser security settings or implement their own mechanisms to block automatic information retrieval.</p>
+				<br>
 				<div class="gray-infbox">
 					<div class="ccflex">
 						<p>Creative Commons Badge for the text data</p>
@@ -107,10 +109,15 @@
 				</div>
 				<h2>{% trans "臺灣物種名錄(TaiCOL)引用格式" %}</h2>
 				<div class="gray-infbox">
-					鍾國芳、邵廣昭 (2022) 臺灣物種名錄 https://taicol.tw (於{{ today }}查詢)
+					鍾國芳、邵廣昭 ({% now "Y" %}) 臺灣物種名錄 https://taicol.tw (於{{ today }}查詢)
 					<br><br>
-
-					K. F. Chung, K. T. Shao (2022) Catalogue of life in Taiwan. Retrieved {{ today }} from https://taicol.tw  
+					Chung, K.-F. & Shao, K.-T. ({% now "Y" %}) Catalogue of life in Taiwan. Retrieved from taicol.tw on {{ today }}
+				</div>
+				<h2>{% trans "臺灣物種名錄(TaiCOL)單筆資料引用格式" %}</h2>
+				<div class="gray-infbox">
+					鍾國芳、邵廣昭 ({% now "Y" %}) 臺灣物種名錄：Corticarina tenuis Ho, Li & Chan, 2024。taicol.tw/taxon/t0105710 (於{{ today }}查詢)
+					<br><br>
+					Chung, K.-F. & Shao, K.-T. ({% now "Y" %}) Catalogue of life in Taiwan: Corticarina tenuis Ho, Li & Chan, {% now "Y" %}. Retrieved from taicol.tw/taxon/t0105710 on {{ today }}
 				</div>
 			</div>
 		</div>
