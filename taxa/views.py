@@ -414,18 +414,18 @@ def taxon(request, taxon_id):
         # time_s = time.time()
 
         # 變更歷史 + 學名變遷
-        query = f"""SELECT ath.type, ath.content, ac.short_author, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), usr.name, ath.reference_id, ath.note, r.type
+        query = f"""SELECT ath.type, ath.content, ac.short_author, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), usr.name, ath.reference_id, ath.note, r.type, ath.is_deleted
                         FROM api_taxon_history ath 
-                        LEFT JOIN import_usage_logs iul ON iul.reference_id = ath.reference_id
-                        LEFT JOIN users usr ON usr.id = iul.user_id
+                        LEFT JOIN users usr ON usr.id = ath.user_id
                         LEFT JOIN api_citations ac ON ac.reference_id = ath.reference_id
                         LEFT JOIN `references` r ON ath.reference_id = r.id
                         WHERE ath.taxon_id = %s ORDER BY ath.updated_at DESC"""
+                        # LEFT JOIN import_usage_logs iul ON iul.reference_id = ath.reference_id
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             cursor.execute(query, (taxon_id, ))
             th = cursor.fetchall()
-            taxon_history_df = pd.DataFrame(th, columns=['history_type', 'content', 'short_author', 'updated_at', 'editor', 'reference_id', 'note', 'reference_type'])
+            taxon_history_df = pd.DataFrame(th, columns=['history_type', 'content', 'short_author', 'updated_at', 'editor', 'reference_id', 'note', 'reference_type','is_deleted'])
             name_history_list = taxon_history_df[taxon_history_df.history_type.isin([0,5])][['note','updated_at','reference_id','reference_type','history_type']].drop_duplicates().values
 
         # print('4', time.time()-time_s)
@@ -763,6 +763,7 @@ def taxon(request, taxon_id):
         # print('9.5', time.time()-time_s)
         # time_s = time.time()
 
+        taxon_history_df = taxon_history_df[taxon_history_df.is_deleted==0].reset_index(drop=True)
         taxon_history = create_history_display(taxon_history_df, get_language(), names)
         data['self'] = ''
         data['self'] = {'rank_color': rank_color_map[data['rank_id']] if data['rank_id'] in [3,12,18,22,26,30,34] else 'rank-second-gray',
