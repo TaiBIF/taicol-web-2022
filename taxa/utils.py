@@ -487,7 +487,10 @@ taxon_history_map = {
     15: 'Taxon divided ',
     16: 'Common name deleted: ',
     17: 'Name deleted: ',
-    18: 'Taxon revived'}
+    18: 'Taxon revived',
+    19: 'Taxon merged ',
+    20: 'Taxon divided ',
+    }
 
 taxon_history_map_c = {
     0: '有效名變更', # v
@@ -508,6 +511,8 @@ taxon_history_map_c = {
     16: '刪除中文名 ', #v
     17: '刪除學名 ', #v
     18: '已復原 ', #v
+    19: '物種合併 ', #v
+    20: '物種拆分 ', #v
 }
 
 
@@ -540,26 +545,11 @@ def create_history_display(taxon_history, lang, names, current_page=1,limit=8):
     # 已刪除 只會是學名使用被刪除 or 過去手動刪除 不會有new_taxon_id
     for i in taxon_history[taxon_history.history_type==6].index:
         row = taxon_history.iloc[i]
-        # if new_taxon_id:
-        #     taxon_history.loc[i,'content'] = f'''{gettext("請參見")} <a class="new_taxon_aa" href="/{"en-us" if lang == "en-us" else "zh-hant"}/taxon/{new_taxon_id}">{new_taxon_name if new_taxon_name else new_taxon_id}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
-        #                                         <defs>
-        #                                             <clipPath id="clip-path">
-        #                                                 <rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"></rect>
-        #                                             </clipPath>
-        #                                         </defs>
-        #                                         <g id="link-icon" transform="translate(0 0.359)">
-        #                                             <g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
-        #                                                 <path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"></path>
-        #                                                 <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
-        #                                             </g>
-        #                                         </g>
-        #                                     </svg></a>'''
-        # else:
         taxon_history.loc[i,'content'] = ''
     # 物種拆分 物種合併
-    for i in taxon_history[taxon_history.history_type.isin([14,15])].index:
+    for i in taxon_history[taxon_history.history_type.isin([14,15,19,20])].index:
         row = taxon_history.iloc[i]
-        new_taxon_id, new_taxon_name = '', ''
+        _taxon_id, _taxon_name = '', ''
         query = """SELECT tn.name, at.taxon_id FROM api_taxon at
                     JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
                     WHERE at.taxon_id = %s
@@ -567,25 +557,37 @@ def create_history_display(taxon_history, lang, names, current_page=1,limit=8):
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             cursor.execute(query, (row.note,))
-            new_taxon_id = cursor.fetchone()
-            if new_taxon_id:
-                new_taxon_name = new_taxon_id[0]
-                new_taxon_id = new_taxon_id[1]
+            _taxon_id = cursor.fetchone()
+            if _taxon_id:
+                _taxon_name = _taxon_id[0]
+                _taxon_id = _taxon_id[1]
             conn.close()
-        if new_taxon_id:
-            taxon_history.loc[i,'content'] = f'''{gettext("請參見")} <a class="new_taxon_aa" href="/{"en-us" if lang == "en-us" else "zh-hant"}/taxon/{new_taxon_id}">{new_taxon_name if new_taxon_name else new_taxon_id}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
-                                                <defs>
-                                                    <clipPath id="clip-path">
-                                                        <rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"></rect>
-                                                    </clipPath>
-                                                </defs>
-                                                <g id="link-icon" transform="translate(0 0.359)">
-                                                    <g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
-                                                        <path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"></path>
-                                                        <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
-                                                    </g>
-                                                </g>
-                                            </svg></a>'''
+        if _taxon_id:
+            _taxon_link = f'''<a class="new_taxon_aa" href="/{"en-us" if lang == "en-us" else "zh-hant"}/taxon/{_taxon_id}">{_taxon_name if _taxon_name else _taxon_id}
+                                <svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
+                                    <defs>
+                                        <clipPath id="clip-path">
+                                            <rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#4c8da7"></rect>
+                                        </clipPath>
+                                    </defs>
+                                    <g id="link-icon" transform="translate(0 0.359)">
+                                        <g id="Group_7678" data-name="Group 7678" clip-path="url(#clip-path)">
+                                            <path id="Path_8148" data-name="Path 8148" d="M136.768,4.994c-.053.253-.094.508-.162.757a5.729,5.729,0,0,1-1.539,2.554q-.923.93-1.85,1.856a.734.734,0,1,1-1.041-1.029c.711-.722,1.44-1.427,2.128-2.169a3.583,3.583,0,0,0,.977-2.125,2.92,2.92,0,0,0-1.291-2.8,3.005,3.005,0,0,0-3.438-.094,4.839,4.839,0,0,0-1,.753c-.916.885-1.811,1.792-2.706,2.7A3.989,3.989,0,0,0,125.7,7.449a3.025,3.025,0,0,0,1.441,3.252.8.8,0,0,1,.445.622.7.7,0,0,1-.337.68.68.68,0,0,1-.757.015,4.51,4.51,0,0,1-2.211-2.954,4.749,4.749,0,0,1,.928-3.99,7.224,7.224,0,0,1,.69-.8c.843-.856,1.7-1.7,2.546-2.55A5.769,5.769,0,0,1,131.3.1a4.578,4.578,0,0,1,5.4,3.612c.021.124.049.247.073.371Z" transform="translate(-118.129 0.001)" fill="#4c8da7"></path>
+                                            <path id="Path_8149" data-name="Path 8149" d="M4.078,146.411c-.264-.059-.532-.1-.793-.178a4.575,4.575,0,0,1-3.251-3.811,4.792,4.792,0,0,1,1.147-3.711c.463-.566,1-1.068,1.515-1.6.287-.3.58-.586.873-.877A.732.732,0,1,1,4.6,137.276c-.632.638-1.27,1.269-1.9,1.909a4.234,4.234,0,0,0-1.151,1.987,3.075,3.075,0,0,0,2.65,3.754,3.526,3.526,0,0,0,2.745-.967c.493-.43.943-.908,1.406-1.372.608-.61,1.227-1.21,1.808-1.844a3.554,3.554,0,0,0,.951-2.059,2.981,2.981,0,0,0-1.117-2.7,4.411,4.411,0,0,0-.461-.323.731.731,0,0,1-.249-1.014.723.723,0,0,1,1.017-.23,4.468,4.468,0,0,1,2.284,4.25,4.415,4.415,0,0,1-1.156,2.824c-1.179,1.27-2.408,2.5-3.667,3.685a4.606,4.606,0,0,1-2.71,1.205.213.213,0,0,0-.063.031Z" transform="translate(0 -127.766)" fill="#4c8da7"></path>
+                                        </g>
+                                    </g>
+                                </svg></a>'''
+
+            # 根據14, 15, 19, 20分別有不同的文字
+            if row.history_type == 14:
+                taxon_history.loc[i,'content'] = f'''{gettext("被併入")} {_taxon_link}'''
+            elif row.history_type == 15:
+                taxon_history.loc[i,'content'] = f'''{gettext("拆出")} {_taxon_link}'''
+            elif row.history_type == 19:
+                taxon_history.loc[i,'content'] = f'''{gettext("將")} {_taxon_link} {gettext("併入")}'''
+            elif row.history_type == 20:
+                taxon_history.loc[i,'content'] = f'''{gettext("由")} {_taxon_link} {gettext("拆出")}'''
+
         else:
             taxon_history.loc[i,'content'] = ''
     # 分類階層更新

@@ -862,8 +862,13 @@
 		
 		 $(document).on('keypress', function(e) {			
 	  
-			if (e.which === 13 && !window.enterPressed)
-			{	
+			if (e.which === 13 && !$('.downloadpop').hasClass('d-none')){	
+				e.preventDefault();
+				if (!$('.download_check').is(':disabled')){
+					$('.download_check').trigger('click')
+				}
+			} else if (e.which === 13 && !window.enterPressed ){	
+
 				e.preventDefault();
 				window.enterPressed = true;
 				getData(page=1, from_url=false);

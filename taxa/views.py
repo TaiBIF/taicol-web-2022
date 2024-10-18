@@ -64,7 +64,7 @@ def redirect_taicol(request):
                 query = '''
                     select distinct(tn.name) from api_namecode anc 
                     JOIN taxon_names tn ON tn.id = anc.taxon_name_id
-                    where anc.namecode = %s and tn.deleted_at is null;
+                    where anc.namecode = %s and tn.deleted_at is null and tn.is_publish = 1;
                 '''
                 with conn.cursor() as cursor:
                     cursor.execute(query, (namecode,))
@@ -459,7 +459,7 @@ def taxon(request, taxon_id):
                            'from_history'
                     FROM taxon_names tn
                     LEFT JOIN api_names an ON an.taxon_name_id = tn.id
-                    WHERE tn.id IN (SELECT taxon_name_id FROM base_name)
+                    WHERE tn.id IN (SELECT taxon_name_id FROM base_name) 
                     """
         with conn.cursor() as cursor:
             cursor.execute(query, (taxon_id, taxon_id, taxon_id, taxon_id))
@@ -534,7 +534,7 @@ def taxon(request, taxon_id):
                             r.publish_year, c.author, c.short_author, r.type 
                             FROM api_citations c 
                             JOIN `references` r ON c.reference_id = r.id 
-                            WHERE c.reference_id IN %s GROUP BY r.id 
+                            WHERE c.reference_id IN %s AND r.is_publish = 1 GROUP BY r.id 
                             UNION  
                             SELECT distinct(tn.reference_id), CONCAT_WS(' ' ,c.author, c.content), 
                             r.publish_year, c.author, c.short_author, r.type 
