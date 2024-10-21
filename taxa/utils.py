@@ -483,13 +483,13 @@ taxon_history_map = {
     11: 'Taxon information added: ',
     12: 'Taxon information removed: ',
     13: 'Taxon information updated: ',
-    14: 'Taxon merged ',
-    15: 'Taxon divided ',
+    14: 'Taxon merged: ',
+    15: 'Taxon divided: ',
     16: 'Common name deleted: ',
     17: 'Name deleted: ',
     18: 'Taxon revived',
-    19: 'Taxon merged ',
-    20: 'Taxon divided ',
+    19: 'Taxon merged: ',
+    20: 'Taxon divided: ',
     }
 
 taxon_history_map_c = {
@@ -506,13 +506,13 @@ taxon_history_map_c = {
     11: '新增保育資訊 ', #v
     12: '移除保育資訊 ', #v
     13: '修改保育資訊 ', #v
-    14: '物種合併 ', #v
-    15: '物種拆分 ', #v
+    14: '物種合併：', #v
+    15: '物種拆分：', #v
     16: '刪除中文名 ', #v
     17: '刪除學名 ', #v
     18: '已復原 ', #v
-    19: '物種合併 ', #v
-    20: '物種拆分 ', #v
+    19: '物種合併：', #v
+    20: '物種拆分：', #v
 }
 
 
@@ -584,9 +584,9 @@ def create_history_display(taxon_history, lang, names, current_page=1,limit=8):
             elif row.history_type == 15:
                 taxon_history.loc[i,'content'] = f'''{gettext("拆出")} {_taxon_link}'''
             elif row.history_type == 19:
-                taxon_history.loc[i,'content'] = f'''{gettext("將")} {_taxon_link} {gettext("併入")}'''
+                taxon_history.loc[i,'content'] = f'''{gettext("將 ")} {_taxon_link} {gettext("併入 ")}'''
             elif row.history_type == 20:
-                taxon_history.loc[i,'content'] = f'''{gettext("由")} {_taxon_link} {gettext("拆出")}'''
+                taxon_history.loc[i,'content'] = f'''{gettext("由 ")} {_taxon_link} {gettext("拆出 ")}'''
 
         else:
             taxon_history.loc[i,'content'] = ''
