@@ -893,3 +893,33 @@ msgstr "Mutiple matching results exist"
 #:  
 msgid "無結果"
 msgstr "No result"
+
+
+#:  
+msgid "被併入"
+msgstr "merge into"
+
+
+#:  
+msgid "拆出"
+msgstr "split out"
+
+
+#:  
+msgid "由 "
+msgstr "split from"
+
+
+#:  
+msgid "拆出 "
+msgstr ""
+
+
+#:  
+msgid "將 "
+msgstr "merge"
+
+
+#:  
+msgid "併入 "
+msgstr ""
