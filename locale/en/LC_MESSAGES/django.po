@@ -911,15 +911,7 @@ msgstr "split from"
 
 
 #:  
-msgid "拆出 "
-msgstr ""
-
-
-#:  
 msgid "將 "
 msgstr "merge"
 
 
-#:  
-msgid "併入 "
-msgstr ""
