@@ -584,9 +584,9 @@ def create_history_display(taxon_history, lang, names, current_page=1,limit=8):
             elif row.history_type == 15:
                 taxon_history.loc[i,'content'] = f'''{gettext("拆出")} {_taxon_link}'''
             elif row.history_type == 19:
-                taxon_history.loc[i,'content'] = f'''{gettext("將 ")} {_taxon_link} {gettext("併入 ")}'''
+                taxon_history.loc[i,'content'] = f'''{gettext("將 ")} {_taxon_link} {"併入" if lang == 'zh-hant' else ''}'''
             elif row.history_type == 20:
-                taxon_history.loc[i,'content'] = f'''{gettext("由 ")} {_taxon_link} {gettext("拆出 ")}'''
+                taxon_history.loc[i,'content'] = f'''{gettext("由 ")} {_taxon_link} {"拆出" if lang == 'zh-hant' else '' }'''
 
         else:
             taxon_history.loc[i,'content'] = ''
