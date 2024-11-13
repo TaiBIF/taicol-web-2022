@@ -915,3 +915,33 @@ msgid "將 "
 msgstr "merge"
 
 
+#:  
+msgid "進階查詢"
+msgstr "Advanced Search"
+
+
+#:  
+msgid "臺灣特有生物"
+msgstr "Taiwan Endemic"
+
+
+#:  
+msgid "外來與入侵種"
+msgstr "Exotic and Invasive"
+
+
+#:  
+msgid "臺灣保育類"
+msgstr "Taiwan Protected"
+
+
+#:  
+msgid "臺灣紅皮書受脅"
+msgstr "Taiwan Red List Threatened"
+
+
+#:  
+msgid "IUCN受脅物種"
+msgstr "IUCN Threatened"
+
+
