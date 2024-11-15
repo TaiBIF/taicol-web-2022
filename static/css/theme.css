@@ -9767,11 +9767,11 @@ body {
 
 
 .chart-box .item-p2 .btn-more p.fs-12 {
-    font-size: 12px
+    font-size: 14px
 }
 
 .chart-box .item-p2 .btn-more p {
-    font-size: 14px;
+    font-size: 16px;
 }
 
 @media only screen and (max-width: 767px) {
@@ -9865,7 +9865,8 @@ body {
     background-size: 10px auto;
     background-color: #F5F8FA;
     color: #4C8DA7;
-    padding: 0px 10px 0px 15px
+    padding: 0px 10px 0px 15px;
+    font-size: 16px;
 }
 
 .chart-box .item-p1 {
