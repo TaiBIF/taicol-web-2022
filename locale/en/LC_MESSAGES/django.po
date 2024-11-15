@@ -514,7 +514,7 @@ msgstr "More"
 
 #: templates/taxa/catalogue.html:271
 msgid "棲地環境"
-msgstr "Environment"
+msgstr "Habitat"
 
 #: templates/taxa/catalogue.html:274
 msgid "陸生"
@@ -943,5 +943,10 @@ msgstr "Taiwan Red List Threatened"
 #:  
 msgid "IUCN受脅物種"
 msgstr "IUCN Threatened"
+
+
+#:  
+msgid "海洋生物"
+msgstr "Marine Species"
 
 
