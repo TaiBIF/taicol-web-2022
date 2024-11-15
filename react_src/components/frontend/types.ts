@@ -91,6 +91,27 @@ export type RankProps = {
   className: string;
 }
 
+export type CITESProps = {
+  zhTWTitle: string;
+  circleTitle: string;
+  count: number;
+  className: string;
+}
+
+export type HabitatProps = {
+  zhTWTitle: string;
+  enTitle: string;
+  count: number;
+  className: string;
+}
+
+export type ProtectedProps = {
+  zhTWTitle: string;
+  circleTitle: string;
+  count: number;
+  className: string;
+}
+
 export type EndemicProps = {
   name: string;
   image: string;
@@ -100,6 +121,18 @@ export type EndemicProps = {
 }
 
 export type SourceProps = {
+  name: string;
+  color: string;
+  count: number;
+}
+
+export type IUCNProps = {
+  name: string;
+  // color: string;
+  count: number;
+}
+
+export type RedlistProps = {
   name: string;
   color: string;
   count: number;

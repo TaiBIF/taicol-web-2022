@@ -10031,6 +10031,20 @@ body {
     color: #B991E2
 }
 
+.chart-box .item-p1 .stsrank-area li.item.rank-second-gray .bg-animate {
+    background: #F7F7F7
+}
+
+.chart-box .item-p1 .stsrank-area li.item.rank-second-gray .cir-box {
+    background: #555;
+    width: 40px;
+    border-radius: 20px;
+}
+
+.chart-box .item-p1 .stsrank-area li.item.rank-second-gray .num {
+    color: #555
+}
+
 .chart-box .for-canvas {
     width: 100%;
     overflow: auto

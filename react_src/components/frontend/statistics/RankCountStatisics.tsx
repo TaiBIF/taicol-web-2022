@@ -15,6 +15,7 @@ const classNames: string[] = [
   'rank-5-blue',
   'rank-6-deepblue',
   'rank-7-purple',
+  'rank-second-gray',
 ]
 
 type zhTWTitles = {
@@ -28,6 +29,7 @@ const zhTWTitles:zhTWTitles = {
   Family: '科',
   Genus: '屬',
   Species: '種',
+  Infraspecies: '種下',
 }
 
 const RankCountStatisics: React.VFC<Props> = (props) => {

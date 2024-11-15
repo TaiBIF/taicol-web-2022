@@ -12,3 +12,51 @@
     float: right;
 }
 
+.item-p-100 {
+    width: 100% !important;
+}
+
+.for-canvas-vh {
+    height: 50vh;
+    position: relative;
+    width: 100%;
+    padding-bottom: 80px;
+    /* overflow: hidden !important; */
+}
+
+
+.chart-box .item-p1 .stsrank-area li.item.cir-blue .bg-animate {
+    background: #EDF5F8;
+}
+
+.chart-box .item-p1 .stsrank-area li.item.cir-blue .cir-box {
+    background: #4C8DA7
+}
+
+.chart-box .item-p1 .stsrank-area li.item.cir-blue .num {
+    color: #4C8DA7
+}
+
+
+
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+
+.mark-title-note {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px
+}
+
+.mark-title-note p {
+    font-size: 14px;
+    color: #888;
+}
+
+@media only screen and (max-width: 767px) {
+    .mark-title-note p {
+        font-size: 12px
+    }
+} 
+

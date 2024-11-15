@@ -11,13 +11,19 @@ const SpeciesCountStatisics: React.FC<Props> = (props) => {
 
   return (
     <div className="item-p2">
-      <div className="mark-title">
+      <div className="mark-title mb-0">
         <img src="/static/image/title-mark.svg"/>
         <Translation>{ t =>
         <p>{t('各界物種數統計')}</p>
       }</Translation>
-        
+      </div>        
+
+      <div className="mark-title-note">
+      <Translation>{ t =>
+        <p>{t('單位：種')}</p>
+      }</Translation>
       </div>
+
       <div className="for-canvas">
         <SpeciesCountBarChart data={data}/>
       </div>

@@ -12,7 +12,7 @@ const taxonCountList:TaxonCountProps[] = [
     count: 0,
     type: 'taxon',
     CircleClassName: 'cir-line1',
-    tooltip: <Translation>{t => <>{t('包含種下分類群')}</>}</Translation>,
+    tooltip: <Translation>{t => <>{t('排除有種下分類群的種階層')}</>}</Translation>,
 
   },
   {
