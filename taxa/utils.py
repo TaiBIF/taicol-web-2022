@@ -598,6 +598,7 @@ def create_history_display(taxon_history, lang, names, current_page=1,limit=8):
         content_str = ''
         if c.get('old'):
             o_path_list = c.get('old').split('>')
+            o_path_list.reverse()
             path_str = ' OR '.join(o_path_list)
             # NOTE 這邊可能會需要query已經刪除的taxon
             path_resp = requests.get(f'{SOLR_PREFIX}taxa/select?fq=taxon_name_id:*&fq=status:accepted&q=taxon_id:({path_str})&fl=taxon_id,formatted_accepted_name&rows=1000')

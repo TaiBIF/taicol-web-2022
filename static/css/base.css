@@ -164,3 +164,7 @@
 .page-num a {
     cursor: pointer;
 }
+
+.fit-content {
+    width: fit-content;
+}

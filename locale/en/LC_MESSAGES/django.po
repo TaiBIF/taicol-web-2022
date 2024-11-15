@@ -514,7 +514,7 @@ msgstr "More"
 
 #: templates/taxa/catalogue.html:271
 msgid "棲地環境"
-msgstr "Environment"
+msgstr "Habitat"
 
 #: templates/taxa/catalogue.html:274
 msgid "陸生"
@@ -913,5 +913,40 @@ msgstr "split from"
 #:  
 msgid "將 "
 msgstr "merge"
+
+
+#:  
+msgid "進階查詢"
+msgstr "Advanced Search"
+
+
+#:  
+msgid "臺灣特有生物"
+msgstr "Taiwan Endemic"
+
+
+#:  
+msgid "外來與入侵種"
+msgstr "Exotic and Invasive"
+
+
+#:  
+msgid "臺灣保育類"
+msgstr "Taiwan Protected"
+
+
+#:  
+msgid "臺灣紅皮書受脅"
+msgstr "Taiwan Red List Threatened"
+
+
+#:  
+msgid "IUCN受脅物種"
+msgstr "IUCN Threatened"
+
+
+#:  
+msgid "海洋生物"
+msgstr "Marine Species"
 
 

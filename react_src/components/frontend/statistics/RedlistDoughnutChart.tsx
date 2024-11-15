@@ -8,6 +8,21 @@ import type { SourceProps } from '../types';
 import { Translation } from 'react-i18next';
 import { useTranslation } from 'react-i18next';
 
+const colors = [
+  "#a6cee3",
+  "#1f78b4",
+  "#b2df8a",
+  "#33a02c",
+  "#fb9a99",
+  "#e31a1c",
+  "#fdbf6f",
+  "#ff7f00",
+  "#cab2d6",
+  "#6a3d9a",
+  "#ffff99",
+  "#d3d3d3"
+];
+
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 // set react chartjs 2 fontsize to 20px
@@ -49,7 +64,7 @@ type Props = {
   data: SourceProps[]
 }
 
-const SourceDoughnutChart: React.FC<Props> = (props) => {
+const RedlistDoughnutChart: React.FC<Props> = (props) => {
   const { data } = props;
   const total = getTotal(data)
   const { t, i18n } = useTranslation();
@@ -59,7 +74,7 @@ const SourceDoughnutChart: React.FC<Props> = (props) => {
     datasets: [
       {
         data: data.map((item) => item.count),
-        backgroundColor: data.map((item) => item.color),
+        backgroundColor: colors,
         borderWidth: 0,
       },
 
@@ -67,11 +82,11 @@ const SourceDoughnutChart: React.FC<Props> = (props) => {
   }
   const options:ChartOptions<'doughnut'> = getOptions(data,total);
   return (
-    <div className="item-p1 m_marb_20">
+    <div className="item-p1">
       <div className="mark-title mb-0">
         <img src="/static/image/title-mark.svg"/>
         <Translation>{ t =>
-        <p>{t('物種來源')}</p>
+        <p>{t('臺灣紅皮書評估統計')}</p>
         }</Translation>
       </div>
       <div className="mark-title-note">
@@ -86,4 +101,4 @@ const SourceDoughnutChart: React.FC<Props> = (props) => {
   )
 };
 
-export default SourceDoughnutChart;
+export default RedlistDoughnutChart;

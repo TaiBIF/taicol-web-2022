@@ -24,6 +24,7 @@ ChartJS.register(
 );
 
 const options = {
+  maintainAspectRatio: false,
   plugins: {
     datalabels: { display: false },
     title: {
@@ -92,7 +93,7 @@ const CompareSpeciesBarChart: React.FC<Props> = (props) => {
   }
 
   return (
-   <Bar data={chartData}  options={options}  />
+   <Bar data={chartData}  options={options}/>
   )
 };
 

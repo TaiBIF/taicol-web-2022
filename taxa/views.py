@@ -1363,15 +1363,16 @@ def get_match_result(request):
     # 用loop取得name match結果 每頁10筆
     if name:
         name = name.splitlines()
-        names = []
-        # 排除重複 & 空值
-        for n in name:
-            if n not in names and n:
-                names.append(n)
+        # names = []
+        # # 排除重複 & 空值
+        # for n in name:
+        #     if n not in names and n:
+        #         names.append(n)
         response['page']['current_page'] = page
-        response['page']['total_page'] = math.ceil(len(names) / 10)
+        response['page']['total_page'] = math.ceil(len(name) / 10)
         response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
-        names = ('|').join(names[(page-1)*10:page*10])
+        name_list = name[(page-1)*10:page*10]
+        names = ('|').join(name_list)
         url = env('NOMENMATCH_ROOT')
         result = requests.post(url, data = {
             'names': names,
@@ -1427,7 +1428,9 @@ def get_match_result(request):
 
                     final_df = []
 
-                    for dd in df.search_term.unique():
+                    # 改成和input names的順序相同
+                    for dd in name_list:
+                    # for dd in df.search_term.unique():
                         if matched_count[matched_count.search_term==dd].taxon_id.values[0] > 1:
                             if best == 'yes':
                                 taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False)
@@ -1520,13 +1523,16 @@ def download_match_results(request):
     # 用loop取得name match結果 每頁30筆
     if name:
         name = name.splitlines()
-        t_names = name
-        t_names = list(set(t_names))
+        # t_names = name
+        # t_names = list(set(t_names))
+        # print('t_names', t_names)
         # t_names = [n for n in name if n not in t_names and n] # 排除重複 & 空值
-        total_page = math.ceil(len(t_names) / 30)
+        # 2024/11 修改: 為了和使用者輸入的順序相同 所以不排除重複了
+        total_page = math.ceil(len(name) / 30)
         for page in range(total_page): 
             # namecode_list = []
-            names = ('|').join(t_names[page*30:(page+1)*30])
+            name_list = name[page*30:(page+1)*30]
+            names = ('|').join(name_list)
             df = pd.DataFrame()
             url = env('NOMENMATCH_ROOT')
             result = requests.post(url, data = {
@@ -1586,7 +1592,8 @@ def download_match_results(request):
                         # 如果有多個結果 
                         custom_dict = {'accepted': 0, 'not-accepted': 1, 'misapplied': 2}
                         tmp_df = []
-                        for dd in df.search_term.unique():
+                        # for dd in df.search_term.unique():
+                        for dd in name_list:
                             if matched_count[matched_count.search_term==dd].taxon_id.values[0] > 1:
                                 if best == 'yes':
                                     taxon_tmp = df[df.search_term==dd].sort_values(by=['name_status'], key=lambda x: x.map(custom_dict)).sort_values(by='is_in_taiwan',ascending=False)

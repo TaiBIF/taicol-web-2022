@@ -22,7 +22,7 @@ const SpeciesAndEndemicRatiosStatisics: React.FC<Props> = (props) => {
         <div className="color-inf">
           <div className="blue-sq"></div>
           <Translation>{ t =>
-            <p>{t('特有種')}</p>
+            <p>{t('特有種 / 種下')}</p>
           }</Translation>
         </div>
       </div>

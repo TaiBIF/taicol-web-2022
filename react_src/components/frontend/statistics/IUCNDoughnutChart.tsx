@@ -1,12 +1,30 @@
 import * as React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import type { ChartData, ChartOptions } from 'chart.js';
-import { Doughnut  } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 import "chartjs-plugin-datalabels";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import type { SourceProps } from '../types';
+import type { IUCNProps } from '../types';
 import { Translation } from 'react-i18next';
 import { useTranslation } from 'react-i18next';
+
+const colors = [
+  "#a6cee3",
+  "#1f78b4",
+  "#b2df8a",
+  "#33a02c",
+  "#fb9a99",
+  "#e31a1c",
+  "#fdbf6f",
+  "#ff7f00",
+  "#cab2d6",
+  "#6a3d9a",
+  "#ffff99",
+  "#b15928",
+  "#d3d3d3"
+];
+
+
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
@@ -17,7 +35,7 @@ ChartJS.defaults.plugins.legend.labels.boxHeight = 6;
 ChartJS.defaults.plugins.legend.labels.boxWidth = 25;
 ChartJS.defaults.plugins.legend.labels.padding = 20;
 
-export const getTotal = (data:SourceProps[]) => {
+export const getTotal = (data:IUCNProps[]) => {
   return data.reduce((a, r): number => {
     const count =r.count as number
     const total = a + count
@@ -25,7 +43,7 @@ export const getTotal = (data:SourceProps[]) => {
   }, 0)
 
 }
-const getOptions = (data: SourceProps[],total:number):ChartOptions<'doughnut'> => {
+const getOptions = (data: IUCNProps[],total:number):ChartOptions<'doughnut'> => {
   return {
     plugins: {
       datalabels: {
@@ -46,20 +64,22 @@ const getOptions = (data: SourceProps[],total:number):ChartOptions<'doughnut'> =
 }
 
 type Props = {
-  data: SourceProps[]
+  data: IUCNProps[]
 }
 
-const SourceDoughnutChart: React.FC<Props> = (props) => {
+const IUCNDoughnutChart: React.FC<Props> = (props) => {
   const { data } = props;
   const total = getTotal(data)
   const { t, i18n } = useTranslation();
+    // console.log(data);
 
   const chartData:ChartData<'doughnut'> = {
     labels: data.map((item) => t(item.name)),
     datasets: [
       {
         data: data.map((item) => item.count),
-        backgroundColor: data.map((item) => item.color),
+        // backgroundColor: data.map((item) => item.color),
+        backgroundColor: colors,
         borderWidth: 0,
       },
 
@@ -67,11 +87,11 @@ const SourceDoughnutChart: React.FC<Props> = (props) => {
   }
   const options:ChartOptions<'doughnut'> = getOptions(data,total);
   return (
-    <div className="item-p1 m_marb_20">
+    <div className="item-p1">
       <div className="mark-title mb-0">
         <img src="/static/image/title-mark.svg"/>
         <Translation>{ t =>
-        <p>{t('物種來源')}</p>
+        <p>{t('IUCN評估統計')}</p>
         }</Translation>
       </div>
       <div className="mark-title-note">
@@ -86,4 +106,4 @@ const SourceDoughnutChart: React.FC<Props> = (props) => {
   )
 };
 
-export default SourceDoughnutChart;
+export default IUCNDoughnutChart;

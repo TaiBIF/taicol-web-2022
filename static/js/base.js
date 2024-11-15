@@ -35,8 +35,10 @@ $(function (){
 
     if ($(window).width() < 960) {
         $('.mbli').addClass('rd_mb_two_menu_li');
+        $('.mbli a.big_title').addClass('fit-content');
     }else{
         $('.mbli').removeClass('rd_mb_two_menu_li');
+        $('.mbli a.big_title').removeClass('fit-content');
     }
 
 

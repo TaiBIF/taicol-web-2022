@@ -39,7 +39,9 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
       {t((item.label||'').toString())}
       </option>)})
   return (
-    <div className="item-p2">
+    // <div className="item-p2">
+  <div className="boxarea-2-1">
+    <div className="item-p2 item-p-100">
       <div className="title-flex-box">
         <div className="left-box">
           <div className="mark-title">
@@ -69,8 +71,8 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
           </select>
         </div>
       </div>
-      <p className='global-stat-updated'>{t('全球物種數更新時間')}: {globalUpdated}</p>
-      <div className="for-canvas ">
+      <p className='global-stat-updated'>{t('全球物種數更新時間')}: {globalUpdated} / {t('單位：種')}</p>
+      <div className="for-canvas-vh">
         <CompareSpeciesBarChart data={filterData} />
         {compareType == 'kingdom_compare' && <div className='more-selection-area'>
           <div className='item-box check-set"'>
@@ -81,7 +83,6 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
                   <span className="checkmark"></span>
                 </label>
               })}
-
             </div>
           </div>
         </div>}
@@ -95,6 +96,7 @@ const TaiwanSpeciesAndEndemicCompareGlobalStatisics: React.FC<Props> = (props) =
           </div>
         </div>
       </a>
+    </div>
     </div>
   )
 };

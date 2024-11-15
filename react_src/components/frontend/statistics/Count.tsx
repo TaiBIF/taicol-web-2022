@@ -32,7 +32,7 @@ const Count: React.FC<Props> = (props) => {
                 </g>
               </svg>
               <div className="hvbubble">
-                <p>包含種下分類群</p>
+                <p>排除有種下分類群的種階層</p>
               </div>
             </div>
           </div>

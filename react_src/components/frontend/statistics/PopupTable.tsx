@@ -33,7 +33,7 @@ const PopupTable: React.FC<Props> = (props) => {
           <div className="title-area">
           <Translation>{ t => <h2>{t('臺灣與全球物種數比較')}<span></span></h2>}</Translation>
           </div>
-          <p className='global-table-updated'>{t('全球物種數更新時間')}: {globalUpdated}</p>
+          <p className='global-table-updated'>{t('全球物種數更新時間')}: {globalUpdated} / {t('單位：種')}</p>
           <Translation>{ t =>
             <p className="pad-note">
               {t('請往右滑動')}&gt;&gt;&gt;

@@ -49,14 +49,19 @@
     "鳥類":"Birds",
     "哺乳類":"Mammals",
     "其他":"Other",
-    "特有種":"Endemic",
+    "特有種":"Endemic species / infraspecies",
     "各階層數量統計":"Statistics of Each Rank",
-    "物種來源比例":"Species Origin",
+    "物種來源":"Species Origin",
     "臺灣與全球物種數比較":"Taiwan and Global Species Comparison",
     "全球物種數更新時間": "Global species updated at",
     "全球現有種數":"Global Species",
     "臺灣現有種數":"Taiwan Species",
     "查看比較總表":"Comparison Summary",
+    "臺灣保育類統計": "Protected Category in Taiwan",
+    "棲地環境統計": "Habitat",
+    "臺灣紅皮書評估統計": "Red List of Taiwan in Category",
+    "IUCN評估統計": "IUCN Category",
+    "CITES附錄統計": "CITES Appendix",
     "SPECIES AND":"",
     "INFRASPECIES":"",
     "SCIENTIFIC NAMES":"",
@@ -78,7 +83,7 @@
     "入侵":"Invasive",
     "栽培豢養":"Cultured",
     "物種數":"Species",
-    "包含種下分類群":"Include infraspecies",
+    "排除有種下分類群的種階層":"Exclude the species with infraspecies",
     "包含種上階層學名":"Include higher taxon rank names",
     "請至少輸入一個搜尋項目，若有輸入日期必須填入完整年月日":"Please fill at least one searching item. Date must include year, month and day.",
     "錯誤描述":"Your feedback",
@@ -152,5 +157,24 @@
     "鳥綱": "Aves",
     "哺乳綱": "Mammalia",
 
-    "合計": "Total"
+    "合計": "Total",
+
+
+    "陸生": "Terrestrial",
+    "淡水": "Freshwater",
+    "半鹹水": "Brackish",
+    "海洋": "Marine",
+
+    "第 I 級 瀕臨絕種野生動物": "Endangered",
+    "第 II 級 珍貴稀有野生動物": "Precious and Rare",
+    "第 III 級 其他應予保育之野生動物": "Other Conserved",
+    "文資法珍貴稀有植物": "Rare and Valuable Plants",
+
+    "單位：種": "Unit: species",
+    "單位：種 / 種下": "Unit: species / infraspecies",
+    "特有種 / 種下": "Endemic species / infraspecies",
+    "附錄一": "Appendix I",
+    "附錄二": "Appendix II",
+    "附錄三": "Appendix III",
+    "無資料": "No data"
 }
