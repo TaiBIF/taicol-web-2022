@@ -1368,18 +1368,37 @@ def get_match_result(request):
         # for n in name:
         #     if n not in names and n:
         #         names.append(n)
+
         response['page']['current_page'] = page
         response['page']['total_page'] = math.ceil(len(name) / 10)
         response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
         name_list = name[(page-1)*10:page*10]
         names = ('|').join(name_list)
         url = env('NOMENMATCH_ROOT')
-        result = requests.post(url, data = {
+
+        query_dict =  {
             'names': names,
             'best': best,
             'format': 'json',
             'source': 'taicol'
-        })
+        }
+
+        if request.POST.get('is_in_taiwan') == 'true':
+            query_dict['is_in_taiwan'] = True
+
+        if request.POST.get('taxon_group') != 'all':
+            query_dict['taxon_group'] = request.POST.get('taxon_group')
+        
+        if kingdoms := request.POST.getlist('kingdom'):
+            if 'all' not in kingdoms:
+                query_dict['kingdom'] = kingdoms
+
+        
+        if ranks := request.POST.getlist('rank'):
+            query_dict['taxon_rank'] = [rank_map[int(r)] for r in ranks]        
+
+        result = requests.post(url, data=query_dict)
+
         if result.status_code == 200:
             result = result.json()
             data = result['data']
@@ -1475,7 +1494,10 @@ def get_match_result(request):
                         else:
                             df.loc[i,'taxon_group'] = ''
                         if df.iloc[i].alien_type:
-                            df.loc[i,'alien_type'] = attr_map_c[df.iloc[i].alien_type]
+                            if get_language() == 'en-us':
+                                df.loc[i,'alien_type'] = attr_map[df.iloc[i].alien_type]
+                            else:
+                                df.loc[i,'alien_type'] = attr_map_c[df.iloc[i].alien_type]
                     is_list = ['is_endemic','is_in_taiwan']
                     for ii in is_list:
                         if get_language() == 'en-us':

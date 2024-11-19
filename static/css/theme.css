@@ -7317,7 +7317,7 @@ body {
     }
 }
 
-.name-checkitem-box button {
+/* .name-checkitem-button {
     color: #FFF;
     background: #4C8DA7;
     width: 180px;
@@ -7332,7 +7332,7 @@ body {
     -webkit-transition: all .3s
 }
 
-.name-checkitem-box button:hover {
+.name-checkitem-button:hover {
     background: #74BDB6;
     transition: all .3s;
     -moz-transition: all .3s;
@@ -7342,7 +7342,37 @@ body {
 }
 
 @media only screen and (max-width: 767px) {
-    .name-checkitem-box button {
+    .name-checkitem-button {
+        height: 50px
+    }
+} */
+
+.name-checkitem-button {
+    color: #FFF;
+    background: #4C8DA7;
+    width: 180px;
+    height: 60px;
+    border-radius: 30px;
+    font-size: 20px;
+    display: block;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s
+}
+
+.name-checkitem-button:hover {
+    background: #74BDB6;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s
+}
+
+@media only screen and (max-width: 767px) {
+    .name-checkitem-button {
         height: 50px
     }
 }
