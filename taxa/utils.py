@@ -668,7 +668,6 @@ def create_history_display(taxon_history, lang, names, current_page=1,limit=8):
     return taxon_history #, current_page, total_page, page_list
 
 
-
 def create_name_history(names, name_history_list, ref_df):
     name_history = []
     # conn = pymysql.connect(**db_settings)
@@ -686,8 +685,8 @@ def create_name_history(names, name_history_list, ref_df):
         #         cursor.execute(query, (current_nid,))
         #         name_ = cursor.fetchone()
         #         name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
-        if n[2] and n[3] not in [4,6]:
-            name_history.append({'name_id': current_nid,'name': name_, 'ref': '',
+        if n[2] and (n[3] not in [4,6]):
+            name_history.append({'name_id': current_nid,'name': name_, 'ref': ref_df[ref_df.reference_id==n[2]].ref.values[0],
                                  'reference_id': n[2], 'updated_at': n[1]})
         else:
             name_history.append({'name_id': current_nid,'name': name_, 'ref':'', 
@@ -715,7 +714,6 @@ def create_name_history(names, name_history_list, ref_df):
     #     conn.close()
 
     if len(ref_df):
-        
         ref_df['reference_id'] = ref_df['reference_id'].astype('object')
         name_history['reference_id'] = name_history['reference_id'].astype('object')
 

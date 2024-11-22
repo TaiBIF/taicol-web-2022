@@ -950,3 +950,91 @@ msgid "海洋生物"
 msgstr "Marine Species"
 
 
+#:  
+msgid "僅比對臺灣物種"
+msgstr "Only Taiwan"
+
+
+#:  
+msgid "比對階層"
+msgstr "Rank"
+
+
+#:  
+msgid "比對生物界"
+msgstr "Kingdom"
+
+
+#:  
+msgid "比對常見類群"
+msgstr "Bio-Group"
+
+
+#:  
+msgid "昆蟲"
+msgstr "Insects"
+
+
+#:  
+msgid "魚類"
+msgstr "Fishes"
+
+
+#:  
+msgid "爬蟲類"
+msgstr "Reptiles"
+
+
+#:  
+msgid "鳥類"
+msgstr "Birds"
+
+
+#:  
+msgid "哺乳類"
+msgstr "Mammals"
+
+
+#:  
+msgid "維管束植物"
+msgstr "Vascular Plants"
+
+
+#:  
+msgid "病毒"
+msgstr "Viruses"
+
+
+#:  
+msgid "細菌"
+msgstr "Bacteria"
+
+
+#:  
+msgid "古菌"
+msgstr "Archaea"
+
+
+#:  
+msgid "原生生物"
+msgstr "Protozoa"
+
+
+#:  
+msgid "原藻"
+msgstr "Chromista"
+
+
+#:  
+msgid "真菌"
+msgstr "Fungi"
+
+
+#:  
+msgid "植物"
+msgstr "Plantae"
+
+
+#:  
+msgid "動物"
+msgstr "Animalia"

@@ -633,7 +633,7 @@
 								</tr>
 								{% for t in name_history %}
 									<tr>
-										<td>{{ t.updated_at|safe }}</td>
+										<td>{{ t.updated_at|safe }} </td>
 										<td>{{ t.name|safe }}</td>
 										<td>{% if t.reference_id %}
 											<a target="_blank" href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/references/{{ t.reference_id }}">{{ t.ref|default_if_none:''|safe }}</a>
