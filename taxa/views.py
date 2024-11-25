@@ -1761,11 +1761,9 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
     count = 0
 
     if is_chinese:
-        
-        query = { "query": "*:*",
-                  "limit": 0,
-                  "filter": query_list,
-                  "facet": { "taxon_id": { 
+
+        now_facet = search_facet
+        now_facet['taxon_id'] = { 
                         'type': 'terms',
                         'field': 'taxon_id',
                         'mincount': 1,
@@ -1775,7 +1773,11 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
                         'allBuckets': False,
                         'numBuckets': True
                         }
-                    }
+        
+        query = { "query": "*:*",
+                  "limit": 0,
+                  "filter": query_list,
+                  "facet": now_facet
                 }
 
         query_req = json.dumps(query)
@@ -1783,9 +1785,8 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
         resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
         resp = resp.json()
 
-        
-        # print(resp)
-        # TODO 這邊要確認facet要放在哪邊
+        response = create_facet_data(resp, response)
+
         # 先確認有找到資料
         if resp['response']['numFound']:
 
@@ -1828,40 +1829,8 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
         # 這邊改成facet bucket的數量
         count = resp['response']['numFound']
-        if 'kingdom' in resp['facets'].keys():
-            # 只列出rank_id=3的 不管地位未定
-            kingdom = resp['facets']['kingdom']['buckets']
-            kingdom = [k for k in kingdom if k['val']  in kingdom_map_c.keys()]
-            if get_language() == 'en-us':
-                kingdom = [{'title': v['val'], 'val': v['val'], 'count': v['count']} for v in kingdom]
-            else:
-                kingdom = [{'title': kingdom_map_c[v['val']], 'val': v['val'], 'count': v['count']} for v in kingdom]
-            response['facet']['kingdom'] = kingdom
 
-        if 'status' in resp['facets'].keys():
-            status = resp['facets']['status']['buckets']
-            status = [{'title': gettext(status_map_c[v['val']]), 'val': v['val'], 'count': v['count']} for v in status]
-            response['facet']['status'] = status
-
-
-        if 'rank_id' in resp['facets'].keys():
-            rank_id = resp['facets']['rank_id']['buckets']
-            if get_language() == 'en-us':
-                rank_id = [{'title': gettext(rank_map[int(v['val'])]), 'val': v['val'], 'count': v['count']} for v in rank_id]
-            else:
-                rank_id = [{'title': gettext(rank_map_c[int(v['val'])]), 'val': v['val'], 'count': v['count']} for v in rank_id]
-            response['facet']['rank'] = rank_id
-
-        if 'is_endemic' in resp['facets'].keys():
-            is_endemic = resp['facets']['is_endemic']['buckets']
-            is_endemic = sorted(is_endemic, key=lambda d: d['val'], reverse=True)
-            is_endemic = [{'title': gettext('是') if  v['val'] == True else gettext('否'), 'val': v['val'], 'count': v['count']} for v in is_endemic]
-            response['facet']['is_endemic'] = is_endemic
-
-        if 'alien_type' in resp['facets'].keys():
-            alien_type = resp['facets']['alien_type']['buckets']
-            alien_type = [{'title': gettext(attr_map_c[v['val']]), 'val': v['val'], 'count': v['count']} for v in alien_type]
-            response['facet']['alien_type'] = alien_type
+        response = create_facet_data(resp, response)
 
     if count:
 
@@ -1915,6 +1884,45 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
     return response
 
+
+def create_facet_data(resp, response):
+
+    if 'kingdom' in resp['facets'].keys():
+        # 只列出rank_id=3的 不管地位未定
+        kingdom = resp['facets']['kingdom']['buckets']
+        kingdom = [k for k in kingdom if k['val']  in kingdom_map_c.keys()]
+        if get_language() == 'en-us':
+            kingdom = [{'title': v['val'], 'val': v['val'], 'count': v['count']} for v in kingdom]
+        else:
+            kingdom = [{'title': kingdom_map_c[v['val']], 'val': v['val'], 'count': v['count']} for v in kingdom]
+        response['facet']['kingdom'] = kingdom
+
+    if 'status' in resp['facets'].keys():
+        status = resp['facets']['status']['buckets']
+        status = [{'title': gettext(status_map_c[v['val']]), 'val': v['val'], 'count': v['count']} for v in status]
+        response['facet']['status'] = status
+
+
+    if 'rank_id' in resp['facets'].keys():
+        rank_id = resp['facets']['rank_id']['buckets']
+        if get_language() == 'en-us':
+            rank_id = [{'title': gettext(rank_map[int(v['val'])]), 'val': v['val'], 'count': v['count']} for v in rank_id]
+        else:
+            rank_id = [{'title': gettext(rank_map_c[int(v['val'])]), 'val': v['val'], 'count': v['count']} for v in rank_id]
+        response['facet']['rank'] = rank_id
+
+    if 'is_endemic' in resp['facets'].keys():
+        is_endemic = resp['facets']['is_endemic']['buckets']
+        is_endemic = sorted(is_endemic, key=lambda d: d['val'], reverse=True)
+        is_endemic = [{'title': gettext('是') if  v['val'] == True else gettext('否'), 'val': v['val'], 'count': v['count']} for v in is_endemic]
+        response['facet']['is_endemic'] = is_endemic
+
+    if 'alien_type' in resp['facets'].keys():
+        alien_type = resp['facets']['alien_type']['buckets']
+        alien_type = [{'title': gettext(attr_map_c[v['val']]), 'val': v['val'], 'count': v['count']} for v in alien_type]
+        response['facet']['alien_type'] = alien_type
+    
+    return response
 
 def catalogue_search(request):
     response = {}
