@@ -21,6 +21,43 @@ from django.template.loader import render_to_string
 import html
 from django.utils.translation import get_language, gettext
 
+search_facet = { "kingdom": { 
+                'type': 'terms',
+                'field': 'kingdom',
+                'mincount': 1,
+                'limit': -1,
+                'offset': 0,
+                },
+                "status": { 
+                'type': 'terms',
+                'field': 'status',
+                'mincount': 1,
+                'limit': -1,
+                'offset': 0,
+                },
+                "rank_id": { 
+                'type': 'terms',
+                'field': 'rank_id',
+                'mincount': 1,
+                'limit': -1,
+                'offset': 0,
+                },
+                "is_endemic": { 
+                'type': 'terms',
+                'field': 'is_endemic',
+                'mincount': 1,
+                'limit': -1,
+                'offset': 0,
+                },
+                "alien_type": { 
+                'type': 'terms',
+                'field': 'alien_type',
+                'mincount': 1,
+                'limit': -1,
+                'offset': 0,
+                },
+            }
+
 
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -119,6 +156,9 @@ def download_search_results(request):
     file_format = req.get('file_format','csv')
 
     solr_query_list, is_chinese = get_conditioned_solr_search(req)
+    print(req)
+    print('-----')
+    print(solr_query_list)
     df = return_download_file_by_solr(solr_query_list, is_chinese)
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
@@ -810,7 +850,7 @@ def get_root_tree(request):
         if lin_rank == 'on':
             total_stats = total_stats[total_stats.rank_id.isin(lin_ranks+sub_lin_ranks)]
 
-    for k in kingdom_map.keys():
+    for k in kingdom_taxon_map.keys():
         stats = total_stats[total_stats.kingdom_taxon==k]
         spp = 0
         stat_str = ''
@@ -834,7 +874,7 @@ def get_root_tree(request):
                 stat_str += infra_count_str
 
         kingdom_dict.append({'taxon_id': k, 
-                             'name': f"Kingdom {kingdom_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",
+                             'name': f"Kingdom {kingdom_taxon_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_taxon_map[k]['common_name_c']} Kingdom {kingdom_taxon_map[k]['name']}",
                              'stat': stat_str.strip()})
     
     return JsonResponse(kingdom_dict, safe=False)
@@ -869,7 +909,7 @@ def taxon_tree(request):
         # 預設僅顯示林奈階層
         total_stats = total_stats[total_stats.rank_id.isin(lin_ranks+sub_lin_ranks)]
 
-    for k in kingdom_map.keys():
+    for k in kingdom_taxon_map.keys():
         stats = total_stats[total_stats.kingdom_taxon==k]
         spp = 0
         stat_str = ''
@@ -893,7 +933,7 @@ def taxon_tree(request):
                 stat_str += infra_count_str
         
         kingdom_dict.append({'taxon_id': k, 
-                             'name': f"{'Kingdom ' if kingdom_map[k]['name'] != 'Viruses' else ''}{kingdom_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_map[k]['common_name_c']} {'Kingdom ' if kingdom_map[k]['name'] != 'Viruses' else ''}{kingdom_map[k]['name']}",
+                             'name': f"{'Kingdom ' if kingdom_taxon_map[k]['name'] != 'Viruses' else ''}{kingdom_taxon_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_taxon_map[k]['common_name_c']} {'Kingdom ' if kingdom_taxon_map[k]['name'] != 'Viruses' else ''}{kingdom_taxon_map[k]['name']}",
                              'stat': stat_str.strip()})
     
     search_stat = SearchStat.objects.all().order_by('-count')[:100]
@@ -1717,14 +1757,14 @@ def bk_send_mail(email_body):
 def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
     response['data'] = []
+    response['facet'] = {}
     count = 0
 
     if is_chinese:
-
+        
         query = { "query": "*:*",
                   "limit": 0,
                   "filter": query_list,
-                #   "sort": 'search_name asc',
                   "facet": { "taxon_id": { 
                         'type': 'terms',
                         'field': 'taxon_id',
@@ -1745,7 +1785,7 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
         
         # print(resp)
-        
+        # TODO 這邊要確認facet要放在哪邊
         # 先確認有找到資料
         if resp['response']['numFound']:
 
@@ -1775,7 +1815,11 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
           "limit": limit,
           "filter": query_list,
           "sort": 'search_name asc',
+          "facet": search_facet
         }
+
+
+        # print(query)
 
         query_req = json.dumps(query)
 
@@ -1784,6 +1828,40 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
         # 這邊改成facet bucket的數量
         count = resp['response']['numFound']
+        if 'kingdom' in resp['facets'].keys():
+            # 只列出rank_id=3的 不管地位未定
+            kingdom = resp['facets']['kingdom']['buckets']
+            kingdom = [k for k in kingdom if k['val']  in kingdom_map_c.keys()]
+            if get_language() == 'en-us':
+                kingdom = [{'title': v['val'], 'val': v['val'], 'count': v['count']} for v in kingdom]
+            else:
+                kingdom = [{'title': kingdom_map_c[v['val']], 'val': v['val'], 'count': v['count']} for v in kingdom]
+            response['facet']['kingdom'] = kingdom
+
+        if 'status' in resp['facets'].keys():
+            status = resp['facets']['status']['buckets']
+            status = [{'title': gettext(status_map_c[v['val']]), 'val': v['val'], 'count': v['count']} for v in status]
+            response['facet']['status'] = status
+
+
+        if 'rank_id' in resp['facets'].keys():
+            rank_id = resp['facets']['rank_id']['buckets']
+            if get_language() == 'en-us':
+                rank_id = [{'title': gettext(rank_map[int(v['val'])]), 'val': v['val'], 'count': v['count']} for v in rank_id]
+            else:
+                rank_id = [{'title': gettext(rank_map_c[int(v['val'])]), 'val': v['val'], 'count': v['count']} for v in rank_id]
+            response['facet']['rank'] = rank_id
+
+        if 'is_endemic' in resp['facets'].keys():
+            is_endemic = resp['facets']['is_endemic']['buckets']
+            is_endemic = sorted(is_endemic, key=lambda d: d['val'], reverse=True)
+            is_endemic = [{'title': gettext('是') if  v['val'] == True else gettext('否'), 'val': v['val'], 'count': v['count']} for v in is_endemic]
+            response['facet']['is_endemic'] = is_endemic
+
+        if 'alien_type' in resp['facets'].keys():
+            alien_type = resp['facets']['alien_type']['buckets']
+            alien_type = [{'title': gettext(attr_map_c[v['val']]), 'val': v['val'], 'count': v['count']} for v in alien_type]
+            response['facet']['alien_type'] = alien_type
 
     if count:
 
@@ -1828,6 +1906,12 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
     response['page']['total_page'] = int(math.ceil((response['count']['total'][0]['count']) / limit))
     response['page']['current_page'] = int(offset / limit + 1)
     response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
+
+    response['kingdom_title'] = gettext('界')
+    response['rank_title'] = gettext('階層')
+    response['endemic_title'] = gettext('特有性')
+    response['alien_type_title'] = gettext('原生/外來性')
+    response['status_title'] = gettext('地位') 
 
     return response
 
@@ -1880,6 +1964,18 @@ def catalogue_search(request):
 def get_conditioned_solr_search(req): 
 
     query_list = []
+
+    # 如果有facet的話
+
+    if req.get('facet') and req.get('facet_value'):
+        if req.get('facet') == 'rank':
+            facet = 'rank_id'
+        elif req.get('facet') == 'endemic':
+            facet = 'is_endemic'
+        else:
+            facet = req.get('facet') 
+            
+        query_list.append('{}:{}'.format(facet, req.get('facet_value')))
 
     # NOTE 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1  的資料
     query_list.append('is_in_taiwan:true')
@@ -2009,6 +2105,5 @@ def get_conditioned_solr_search(req):
 
     if higher_taxon_id := req.get('taxon_group'):
         query_list.append(f'path:/.*{higher_taxon_id}.*/')
-
 
     return query_list, is_chinese

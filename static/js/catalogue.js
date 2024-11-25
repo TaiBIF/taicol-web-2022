@@ -111,196 +111,34 @@
 		}
 	}
 
-	// function changeFacet(facet,value,from_url=false,page=1,from_mb_select=false){
+	function changeFacet(facet,value,from_url=false,page=1,from_mb_select=false){
 
-	// 	// 如果是本來就active的facet則改為沒有facet
-	// 	if ($(`button.facet-${facet}-${value}`).hasClass('now')){
-	// 		// 改回沒有facet
-	// 		$(".facet-btn").removeClass('now');
-	// 		$('input[name=hidden-value]').val('');
-	// 		$('input[name=hidden-facet]').val('');
-	// 		getData(page=1, from_url=false);
-	// 	} else {
-	// 		$(".facet-btn").removeClass('now');
-	// 		$(`button.facet-${facet}-${value}`).addClass('now');
-	// 		$('input[name=hidden-value]').val(value);
-	// 		$('input[name=hidden-facet]').val(facet);
+		// 如果是本來就active的facet則改為沒有facet
+		if ($(`button.facet-${facet}-${value}`).hasClass('now')){
+			// 改回沒有facet
+			$(".facet-btn").removeClass('now');
+			$('input[name=hidden-value]').val('');
+			$('input[name=hidden-facet]').val('');
+			updateData(page=1, from_url=false);
+		} else {
+			$(".facet-btn").removeClass('now');
+			$(`button.facet-${facet}-${value}`).addClass('now');
+			$('input[name=hidden-value]').val(value);
+			$('input[name=hidden-facet]').val(facet);
 
-	// 		// 手機選單但不要cause onchange
-	// 		if (!from_mb_select){
-	// 			$('select[name=mb-select]').val(facet);
-	// 			$('select[name=mb-select]').niceSelect('update');
-	// 			$('select[name=mb-select]').trigger('change')
-	// 			$('select[name=mb-select-sub]').val($(`option.facet-${facet}-${value}`).text().trim());
-	// 			$('select[name=mb-select-sub]').niceSelect('update');
-	// 		}
-	// 		updateData(page, from_url);
-	// 	}
+			// 手機選單但不要cause onchange
+			if (!from_mb_select){
+				$('select[name=mb-select]').val(facet);
+				$('select[name=mb-select]').niceSelect('update');
+				$('select[name=mb-select]').trigger('change')
+				$('select[name=mb-select-sub]').val($(`option.facet-${facet}-${value}`).text().trim());
+				$('select[name=mb-select-sub]').niceSelect('update');
+			}
+			updateData(page, from_url);
+		}
 		
-	// }
+	}
 
-	// function updateData(page, from_url=false){
-	
-	// 	let total_page = $('input[name=total_page]').val();
-	// 	if (($('input[name=date]').val()!='')&(!isValidDate($('input[name=date]').val()))){
-	// 		alert('日期格式錯誤')
-	// 	} else {
-
-	// 		// 從facet或頁碼點選
-	// 		// 只修改表格內容，不修改facet
-	// 		$('.loadingbox').removeClass('d-none');
-
-	// 		$([document.documentElement, document.body]).animate({
-	// 			scrollTop: $(".result-area").offset().top - 80
-	// 		}, 200);
-
-			
-	// 		let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
-	// 				'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() +
-	// 				'&page=' + page + '&total_page=' + total_page + '&facet=' + $('input[name=hidden-facet]').val() + 
-	// 				'&value=' + $('input[name=hidden-value]').val()  
-					
-	// 		if ( $('#taxon_group').select2('data').length > 0 ){
-	// 			query_str = query_str
-	// 				+ "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
-	// 				"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
-	// 		}
-
-	// 		// 如果不是從url來的話 代表是第一次查詢 加上 page =1
-	// 		if (!from_url){
-	// 			var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
-	// 			history.pushState(null, '', newRelativePathQuery);
-	// 		}
-
-	// 		$.ajax({
-	// 			url: `/${$lang}/catalogue`,
-	// 			// url: "/update_catalogue_table",
-	// 			data: query_str + '&csrfmiddlewaretoken=' + $csrf_token,		
-	// 			type: 'POST',
-	// 			dataType : 'json',
-	// 		})
-	// 		.done(function(results) {
-
-	// 			$('.loadingbox').addClass('d-none');
-
-	// 			$([document.documentElement, document.body]).animate({
-	// 				scrollTop: $(".result-area").offset().top - 80
-	// 			}, 200);
-
-	// 			// 修改共幾筆
-	// 			$('#total-count').html(results['total_count']);
-
-	// 			if (results['total_count'] > 1000){
-	// 				$('.downloadData').off('click')
-	// 				$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
-
-	// 				$('.offlineDownloadData').on('click', function(){
-	// 					offlineDownloadData()
-	// 					$('button.download_check').data('type', $(this).data('type'))
-	// 				})
-	// 			} else {
-	// 				$('.offlineDownloadData').off('click')
-	// 				$('.offlineDownloadData').removeClass('offlineDownloadData').addClass('downloadData')
-	// 				$('.downloadData').on('click', function(){
-	// 					downloadData($(this).data('type'))
-	// 				})
-	// 			}
-
-
-	// 			// 清空頁碼
-	// 			$('.page-num').remove()
-	// 			$('.table-style1').html(results.header)
-	// 			for (let i = 0; i < results.data.length; i++) {
-	// 				let tag = '';
-	// 				if (results.data[i]['is_endemic'] != ''){
-	// 					tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
-	// 				}
-	// 				if (results.data[i]['alien_type'] != ''){
-	// 					let alt_list = results.data[i]['alien_type'].split(',')
-	// 					alt_list = [...new Set(alt_list)];
-	// 					for (let a = 0; a < alt_list.length; a++) {
-	// 						tag += '<div class="item">' + alt_list[a] + '</div>'
-	// 					}
-	// 				}
-	// 				// `<tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}">
-	// 				$('.table-style1').append(
-	// 					`<tr>
-	// 						<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['name']}</a></td>
-	// 						<td>${results.data[i]['common_name_c']}</td>
-	// 						<td>${results.data[i]['status']}</td>
-	// 						<td>
-	// 							<div class="tag-green">
-	// 								${tag}
-	// 							</div>
-	// 						</td>							
-	// 						<td>${results.data[i]['rank']}</td>
-	// 						<td>${results.data[i]['taxon_group']}</td>
-	// 						<td>${results.data[i]['kingdom']}</td>
-	// 					</tr>`)
-	// 			}
-					
-	// 			$('.open_taxon').on('click', function(){
-	// 				window.open($(this).data('href'),"_self");
-	// 			})
-	// 			$('.page-num').remove()
-
-	// 				// 頁碼
-	// 				if (results.page.total_page > 1){  // 判斷超過一頁，有才加分頁按鈕
-	// 					$('.scro-m').after(
-	// 					`	<div class="page-num">
-	// 						<!--現在位置加now-->
-	// 						<a data-page="1" class="num page-start updateData">1</a>
-	// 						<a data-page="${results.page.current_page - 1}" class="back updateData">
-	// 							<img src="/static/image/pagear1.svg">
-	// 							<p>${results.prev}</p>
-	// 						</a>
-	// 						<a data-page="${results.page.current_page + 1}" class="next updateData">
-	// 							<p>${results.next}</p>
-	// 							<img src="/static/image/pagear2.svg">
-	// 						</a>
-	// 						<a data-page="${results.page.total_page}" class="num updateData" id="page-end">${results.page.total_page}</a>
-	// 					</div>
-	// 					`)
-	// 					$('.page-num').append(`
-	// 						<input type="hidden" name="total_page" value="${results.page.total_page}">
-	// 					`)
-	// 				}
-
-	// 				if (results.page.current_page==1){
-    //                     $('.back').removeClass('updateData')
-	// 				} else if (results.page.current_page==results.page.total_page){
-    //                     $('.next').removeClass('updateData')
-	// 				}
-						
-	// 				let html = ''
-	// 				for (let i = 0; i < results.page.page_list.length; i++) {
-	// 					if (results.page.page_list[i] == results.page.current_page){
-	// 					html += `<a class="num now updateData" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a> `;
-	// 					} else {
-	// 					html += `<a class="num updateData" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a>  `
-	// 					}
-	// 				}
-	// 				$('.back').after(html)
-
-	// 				$(".updateData").prop("onclick", null).off("click");
-    //                 $('.updateData').on('click', function(){
-    //                     updateData(parseInt($(this).data('page')))
-    //                 })
-
-	// 		})
-	// 		.fail(function( xhr, status, errorThrown ) {
-	// 		$('.loadingbox').addClass('d-none');
-	// 		//alert('發生未知錯誤！請聯絡管理員')
-	// 		$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
-	// 		//condition ? true_expression : false_expression
-
-	// 		console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
-	// 		}) 
-			
-	// 	}
-
-	// }
-	  
 
 	function downloadData(format){
 		var input1 = $("<input>").attr("name", "keyword").attr("type", "hidden").val($('input[name=keyword]').val());
@@ -316,7 +154,11 @@
 			var input6 = $("<input>").attr("name", "taxon_group_str").attr("type", "hidden").val('');
 		}
 
-		$('form#moreForm').append(input1).append(input2).append(input3).append(input4).append(input5).append(input6);
+		// facet
+		var input7 = $("<input>").attr("name", "facet").attr("type", "hidden").val($('input[name=hidden-facet]').val());
+		var input8 = $("<input>").attr("name", "facet_value").attr("type", "hidden").val($('input[name=hidden-value]').val());
+
+		$('form#moreForm').append(input1).append(input2).append(input3).append(input4).append(input5).append(input6).append(input7).append(input8);
 		$('form#moreForm').attr('action','/download_search_results')
 		$('form#moreForm').submit()
 		$('form#moreForm input[name=keyword]').remove()
@@ -325,6 +167,8 @@
 		$('form#moreForm input[name=date-select]').remove()
 		$('form#moreForm input[name=taxon_group]').remove()
 		$('form#moreForm input[name=taxon_group_str]').remove()
+		$('form#moreForm input[name=facet]').remove()
+		$('form#moreForm input[name=facet_value]').remove()
 	}
 
 	function getData(page, from_url){
@@ -340,8 +184,15 @@
 
 			let urlParams = new URLSearchParams(query_str);
 			facet = urlParams.get('facet');
-			value = urlParams.get('value');
+			value = urlParams.get('facet_value');
 			page = urlParams.get('page');
+
+			// 要先把facet拿掉 後面再搜尋一次
+
+			urlParams.delete('facet')
+			urlParams.delete('facet_value')
+
+			query_str = urlParams.toString()
 
 			// 多選系列
 			let mt = ['rank','alien_type','protected','redlist','iucn','cites','status']
@@ -463,18 +314,20 @@
 				dataType : 'json',
 			})
 			.done(function(results) {
-				// console.log(results)
 
 				if (results.is_taxon_id==true){
 					window.location = `/${$lang}/taxon/${results.taxon_id}`
 				} else {
 					window.enterPressed = false;
+
+
 					// 清空頁碼 & facet
 					$('.page-num').remove()
-					//$('.mb-cataselect').remove()
 					$('.table-style1').html('')
 					$('.button-two').addClass('d-none')
 					$('.result-flexbox').addClass('d-none')
+
+					$('.mb-cataselect').remove()
 					$('.kingdom-box, .rank-box, .endemic-box, .status-box, .alien_type-box').html('')
 
 					$('#total-count').parent('p').removeClass('d-none');
@@ -507,7 +360,6 @@
 						$('.right-table').removeClass('d-none')
 
 
-						/*
 						$('.top-infbox').after(
 						`<!--手機版左側篩選改成下拉選單-->
 						<div class="mb-cataselect">
@@ -526,11 +378,15 @@
 								$('select[name=mb-select-sub]').append(opt_str)
 								$('select[name=mb-select-sub]').niceSelect('update');
 							} else {
+
 								if ($(".facet-btn").hasClass('now')){
+									$('select[name=mb-select-sub]').html('')
+									$('select[name=mb-select-sub]').niceSelect('update');
+
 									$(".facet-btn").removeClass('now');
 									$('input[name=hidden-value]').val('');
 									$('input[name=hidden-facet]').val('');
-									getData(false);
+									getData(page=1, from_url=false);
 								}
 							}
 						});
@@ -546,66 +402,68 @@
 									$(".facet-btn").removeClass('now');
 									$('input[name=hidden-value]').val('');
 									$('input[name=hidden-facet]').val('');
-									getData(false);
+									getData(page=1, from_url=false);
 								}
 							}
 						})
 
-						if (results.count.kingdom.length > 0) {
+						if (results.facet.kingdom.length>0){
 							$('.kingdom-box').parent('li').removeClass('d-none')
-							for (let i = 0; i < results.count.kingdom.length; i++) {
-								$('.kingdom-box').append(`<button class="changeFacet facet-btn facet-kingdom-${results.count.kingdom[i]['category']}" data-facet="kingdom" data-value="${results.count.kingdom[i]['category']}">
-														${results.count.kingdom[i]['category_c']}(${results.count.kingdom[i]['count']})</button>`)
+							for (let i = 0; i < results.facet.kingdom.length; i++) {
+								$('.kingdom-box').append(`<button class="changeFacet facet-btn facet-kingdom-${results.facet.kingdom[i]['val']}" data-facet="kingdom" data-value="${results.facet.kingdom[i]['val']}">
+														${results.facet.kingdom[i]['title']} (${results.facet.kingdom[i]['count']})</button>`)
 							}
-							// 手機選單
 							$('select[name=mb-select]').append(`<option value="kingdom">${results.kingdom_title}</option>`)
 						} else {
 							$('.kingdom-box').parent('li').addClass('d-none')
 						}
 
-						if (results.count.rank.length>0){
+
+						if (results.facet.rank.length>0){
 							$('.rank-box').parent('li').removeClass('d-none')
-							for (let i = 0; i < results.count.rank.length; i++) {
-								$('.rank-box').append(`<button class="changeFacet facet-btn  facet-rank-${results.count.rank[i]['category']}" data-facet="rank" data-value="${results.count.rank[i]['category']}">
-														${results.count.rank[i]['category_c']}(${results.count.rank[i]['count']})</button>`)
+							for (let i = 0; i < results.facet.rank.length; i++) {
+								$('.rank-box').append(`<button class="changeFacet facet-btn facet-rank-${results.facet.rank[i]['val']}" data-facet="rank" data-value="${results.facet.rank[i]['val']}">
+														${results.facet.rank[i]['title']} (${results.facet.rank[i]['count']})</button>`)
 							}
 							$('select[name=mb-select]').append(`<option value="rank">${results.rank_title}</option>`)
 						} else {
 							$('.rank-box').parent('li').addClass('d-none')
 						}
 
-						if (results.count.is_endemic.length>0){
+						if (results.facet.is_endemic.length>0){
 							$('.endemic-box').parent('li').removeClass('d-none')
-							for (let i = 0; i < results.count.is_endemic.length; i++) {
-								$('.endemic-box').append(`<button class="changeFacet facet-btn facet-endemic-${results.count.is_endemic[i]['category']}" data-facet="endemic" data-value="${results.count.is_endemic[i]['category']}">
-														${results.count.is_endemic[i]['category_c']}(${results.count.is_endemic[i]['count']})</button>`)
+							for (let i = 0; i < results.facet.is_endemic.length; i++) {
+								$('.endemic-box').append(`<button class="changeFacet facet-btn facet-endemic-${results.facet.is_endemic[i]['val']}" data-facet="endemic" data-value="${results.facet.is_endemic[i]['val']}">
+														${results.facet.is_endemic[i]['title']} (${results.facet.is_endemic[i]['count']})</button>`)
 							}
 							$('select[name=mb-select]').append(`<option value="endemic">${results.endemic_title}</option>`)
 						} else {
 							$('.endemic-box').parent('li').addClass('d-none')
 						}
 
-						if (results.count.alien_type.length>0){
+						if (results.facet.alien_type.length>0){
 							$('.alien_type-box').parent('li').removeClass('d-none')
-							for (let i = 0; i < results.count.alien_type.length; i++) {
-								$('.alien_type-box').append(`<button class="changeFacet facet-btn facet-alien_type-${results.count.alien_type[i]['category']}" data-facet="alien_type" data-value="${results.count.alien_type[i]['category']}">
-														${results.count.alien_type[i]['category_c']}(${results.count.alien_type[i]['count']})</button>`)
+							for (let i = 0; i < results.facet.alien_type.length; i++) {
+								$('.alien_type-box').append(`<button class="changeFacet facet-btn facet-alien_type-${results.facet.alien_type[i]['val']}" data-facet="alien_type" data-value="${results.facet.alien_type[i]['val']}">
+														${results.facet.alien_type[i]['title']} (${results.facet.alien_type[i]['count']})</button>`)
 							}
-							$('select[name=mb-select]').append(`<option value="alien_type">${results.native_title}</option>`)
+							$('select[name=mb-select]').append(`<option value="alien_type">${results.alien_type_title}</option>`)
 						} else {
 							$('.alien_type-box').parent('li').addClass('d-none')
 						}
 
-						if (results.count.status.length>0){
+
+						if (results.facet.status.length>0){
 							$('.status-box').parent('li').removeClass('d-none')
-							for (let i = 0; i < results.count.status.length; i++) {
-								$('.status-box').append(`<button class="changeFacet facet-btn facet-status-${results.count.status[i]['category']}" data-facet="status" data-value="${results.count.status[i]['category']}">
-														${results.count.status[i]['category_c']}(${results.count.status[i]['count']})</button>`)
+							for (let i = 0; i < results.facet.status.length; i++) {
+								$('.status-box').append(`<button class="changeFacet facet-btn facet-status-${results.facet.status[i]['val']}" data-facet="status" data-value="${results.facet.status[i]['val']}">
+														${results.facet.status[i]['title']} (${results.facet.status[i]['count']})</button>`)
 							}
 							$('select[name=mb-select]').append(`<option value="status">${results.status_title}</option>`)
 						} else {
-							$('.status-box').parent('li').addClass('d-none')
-						}*/
+							$('.alien_type-box').parent('li').addClass('d-none')
+						}
+
 
 						$('.table-style1').html(results['header'])
 
@@ -615,13 +473,8 @@
 								tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
 							}
 							if (results.data[i]['alien_type'] != '' && results.data[i]['alien_type'] != undefined ){
-							// 	let alt_list = results.data[i]['alien_type'].split(',')
-							// 	alt_list = [...new Set(alt_list)];
-							// 	for (let a = 0; a < alt_list.length; a++) {
-									tag += '<div class="item">' + results.data[i]['alien_type'] + '</div>'
-							// 	}
+								tag += '<div class="item">' + results.data[i]['alien_type'] + '</div>'
 							}
-							// <tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}"></tr>
 							$('.table-style1').append(
 								`
 								<tr>
@@ -666,10 +519,8 @@
 
 						if (results.page.current_page==1){
 							$('.back').removeClass('getData')
-							//$('.back').attr("onclick","");
 						} else if (results.page.current_page==results.page.total_page){
 							$('.next').removeClass('getData')
-							//$('.next').attr("onclick","");
 						}
 							
 						let html = ''
@@ -692,7 +543,6 @@
 							} else {
 								page = $(this).data('page')
 							}
-							console.log(page)
 				
 							$('input[name=hidden-facet]').val('');
 							getData(page=page, from_url=false)
@@ -700,11 +550,12 @@
 						})
 
 						// nice select
-						/*
+						
 						$('select[name=mb-select]').niceSelect();
 						$('select[name=mb-select-sub]').niceSelect();
 
 						// 從網址進入如果有facet
+
 						if((facet != '') & (value != '') & (facet != null) & (value != null)){
 							changeFacet(facet, value, true, page, false)
 						}
@@ -716,10 +567,10 @@
 						})
 				
 						$('.mb-cataselect').removeClass('d-none')
-						*/
-					//} else {
 						
-						//$('.mb-cataselect').addClass('d-none')
+					} else {
+						
+						$('.mb-cataselect').addClass('d-none')
 					}
 				}
 			})
@@ -731,6 +582,173 @@
 			}) 
 		}
 	}
+
+
+
+	function updateData(page, from_url=false){
+	
+		// let total_page = $('input[name=total_page]').val();
+		if (($('input[name=date]').val()!='')&(!isValidDate($('input[name=date]').val()))){
+			alert('日期格式錯誤')
+		} else {
+
+			// 從facet或頁碼點選
+			// 只修改表格內容，不修改facet
+			$('.loadingbox').removeClass('d-none');
+
+			$([document.documentElement, document.body]).animate({
+				scrollTop: $(".result-area").offset().top - 80
+			}, 200);
+
+			
+			let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
+					'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() +
+					'&page=' + page + '&facet=' + $('input[name=hidden-facet]').val() + 
+					'&facet_value=' + $('input[name=hidden-value]').val()  
+					
+			if ( $('#taxon_group').select2('data').length > 0 ){
+				query_str = query_str
+					+ "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
+					"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
+			}
+
+			// 如果不是從url來的話 代表是第一次查詢 加上 page =1
+			if (!from_url){
+				var newRelativePathQuery = window.location.pathname + '?' + query_str + '&page=1';
+				history.pushState(null, '', newRelativePathQuery);
+			}
+
+			$.ajax({
+				url: `/${$lang}/catalogue`,
+				data: query_str + '&csrfmiddlewaretoken=' + $csrf_token,		
+				type: 'POST',
+				dataType : 'json',
+			})
+			.done(function(results) {
+
+				$('.loadingbox').addClass('d-none');
+
+				$([document.documentElement, document.body]).animate({
+					scrollTop: $(".result-area").offset().top - 80
+				}, 200);
+
+				// 修改共幾筆
+				// $('#total-count').html(results['total_count']);
+				$('#total-count').html(results['count']['total'][0]['count']);
+
+				if (results['count']['total'][0]['count'] > 1000){
+					$('.downloadData').off('click')
+					$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
+
+					$('.offlineDownloadData').on('click', function(){
+						offlineDownloadData()
+						$('button.download_check').data('type', $(this).data('type'))
+					})
+				} else {
+					$('.offlineDownloadData').off('click')
+					$('.offlineDownloadData').removeClass('offlineDownloadData').addClass('downloadData')
+					$('.downloadData').on('click', function(){
+						downloadData($(this).data('type'))
+					})
+				}
+
+
+				// 清空頁碼
+				$('.page-num').remove()
+				$('.table-style1').html(results.header)
+				for (let i = 0; i < results.data.length; i++) {
+					let tag = '';
+					if (results.data[i]['is_endemic'] != ''){
+						tag += '<div class="item">' + results.data[i]['is_endemic'] + '</div>'
+					}
+					if (results.data[i]['alien_type'] != ''){
+						let alt_list = results.data[i]['alien_type'].split(',')
+						alt_list = [...new Set(alt_list)];
+						for (let a = 0; a < alt_list.length; a++) {
+							tag += '<div class="item">' + alt_list[a] + '</div>'
+						}
+					}
+					// `<tr class="open_taxon" data-href="/${$lang}/taxon/${results.data[i]['taxon_id']}">
+					$('.table-style1').append(
+						`<tr>
+							<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['name']}</a></td>
+							<td>${results.data[i]['common_name_c']}</td>
+							<td>${results.data[i]['status']}</td>
+							<td>
+								<div class="tag-green">
+									${tag}
+								</div>
+							</td>							
+							<td>${results.data[i]['rank']}</td>
+							<td>${results.data[i]['taxon_group']}</td>
+							<td>${results.data[i]['kingdom']}</td>
+						</tr>`)
+				}
+					
+				$('.open_taxon').on('click', function(){
+					window.open($(this).data('href'),"_self");
+				})
+				$('.page-num').remove()
+
+					// 頁碼
+					if (results.page.total_page > 1){  // 判斷超過一頁，有才加分頁按鈕
+						$('.scro-m').after(
+						`	<div class="page-num">
+							<!--現在位置加now-->
+							<a data-page="1" class="num page-start updateData">1</a>
+							<a data-page="${results.page.current_page - 1}" class="back updateData">
+								<img src="/static/image/pagear1.svg">
+								<p>${results.prev}</p>
+							</a>
+							<a data-page="${results.page.current_page + 1}" class="next updateData">
+								<p>${results.next}</p>
+								<img src="/static/image/pagear2.svg">
+							</a>
+							<a data-page="${results.page.total_page}" class="num updateData" id="page-end">${results.page.total_page}</a>
+						</div>
+						`)
+						$('.page-num').append(`
+							<input type="hidden" name="total_page" value="${results.page.total_page}">
+						`)
+					}
+
+					if (results.page.current_page==1){
+                        $('.back').removeClass('updateData')
+					} else if (results.page.current_page==results.page.total_page){
+                        $('.next').removeClass('updateData')
+					}
+						
+					let html = ''
+					for (let i = 0; i < results.page.page_list.length; i++) {
+						if (results.page.page_list[i] == results.page.current_page){
+						html += `<a class="num now updateData" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a> `;
+						} else {
+						html += `<a class="num updateData" data-page="${results.page.page_list[i]}">${results.page.page_list[i]}</a>  `
+						}
+					}
+					$('.back').after(html)
+
+					$(".updateData").prop("onclick", null).off("click");
+                    $('.updateData').on('click', function(){
+                        updateData(parseInt($(this).data('page')))
+                    })
+
+			})
+			.fail(function( xhr, status, errorThrown ) {
+			$('.loadingbox').addClass('d-none');
+			//alert('發生未知錯誤！請聯絡管理員')
+			$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
+			//condition ? true_expression : false_expression
+
+			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
+			}) 
+			
+		}
+
+	}
+	  
+
+
 
 	$(function(){		
 
@@ -760,9 +778,9 @@
 
 		let date_picker = new AirDatepicker('#updated_at', {locale: date_locale});
 
-        // $('.changeFacet').on('click',function(){
-        //     changeFacet($(this).data('facet'), $(this).data('value'))
-        // })
+        $('.changeFacet').on('click',function(){
+            changeFacet($(this).data('facet'), $(this).data('value'))
+        })
 
         $('.removeRankItem').on('click',function(){
             removeRankItem($(this))
@@ -773,7 +791,7 @@
         // })
 
         $('.getData').on('click',function(){
-			// console.log($(this).data('page'))
+
 			// 如果是從搜尋 要把facet拿掉
 			
 			if ($(this).data('page') == undefined){
@@ -973,6 +991,8 @@
 				+ "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
 				"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
 		}
+
+		query_str += '&facet=' + $('input[name=hidden-facet]').val() + '&facet_value=' + $('input[name=hidden-value]').val();
 
 		$.ajax({
 			url: "/send_download_request",

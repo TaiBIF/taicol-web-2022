@@ -38,7 +38,7 @@ with conn.cursor() as cursor:
         link_map[l[0]] = {'title': l[1], 'url_prefix': l[2], 'category': l[3]}
 
 
-kingdom_map = {}
+kingdom_taxon_map, kingdom_map, kingdom_map_c = {}, {}, {}
 conn = pymysql.connect(**db_settings)
 query = '''SELECT tn.name, at.taxon_id, acn.name_c FROM taxon_names tn 
             JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id 
@@ -54,7 +54,8 @@ with conn.cursor() as cursor:
     cursor.execute(query)
     kingdom = cursor.fetchall()
     for k in kingdom:
-        kingdom_map[k[1]] = {'name': k[0], 'common_name_c': k[2]}
+        kingdom_taxon_map[k[1]] = {'name': k[0], 'common_name_c': k[2]}
+        kingdom_map_c[k[0]] = k[2]
 
 
 rank_map, rank_map_c,rank_map_c_reverse, rank_order_map = {}, {}, {}, {}
