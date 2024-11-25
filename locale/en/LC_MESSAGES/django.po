@@ -22,6 +22,10 @@ msgstr ""
 msgid "臺灣特有"
 msgstr "Endemic to Taiwan"
 
+#: taxa/views.py:392 taxa/views.py:474 templates/taxa/catalogue.html:211
+msgid "非臺灣特有"
+msgstr "Not Endemic to Taiwan"
+
 # templates/taxa/catalogue.html: 
 #: taxa/views.py:440 taxa/views.py:524 taxa/views.py:1765
 msgid "下一頁"

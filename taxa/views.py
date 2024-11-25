@@ -1914,7 +1914,7 @@ def create_facet_data(resp, response):
     if 'is_endemic' in resp['facets'].keys():
         is_endemic = resp['facets']['is_endemic']['buckets']
         is_endemic = sorted(is_endemic, key=lambda d: d['val'], reverse=True)
-        is_endemic = [{'title': gettext('是') if  v['val'] == True else gettext('否'), 'val': v['val'], 'count': v['count']} for v in is_endemic]
+        is_endemic = [{'title': gettext('臺灣特有') if  v['val'] == True else gettext('非臺灣特有'), 'val': v['val'], 'count': v['count']} for v in is_endemic]
         response['facet']['is_endemic'] = is_endemic
 
     if 'alien_type' in resp['facets'].keys():
