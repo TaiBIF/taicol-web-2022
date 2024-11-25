@@ -2,7 +2,9 @@
 {% load static %}
 {% load i18n %}
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/name_match.css' %}?v3">
+<script src="{% static 'js/jquery.nice-select.js' %}?v1"></script>
+<link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}?v1">
+<link rel=stylesheet type="text/css" href="{% static 'css/name_match.css' %}?v4">
 {% endblock style %}
 
 {% block body %}
@@ -103,15 +105,6 @@
 			<div class="name-checkitem-box">
 				<form id="matchForm" method="POST">
 				{% csrf_token %}		
-				<!--
-				<div class="flex-item">
-					<div class="left-title">格式選擇</div>
-					<div class="select-item">
-						<select name="format" id="">
-							<option value="">網頁檢視</option>
-						</select>
-					</div>
-				</div>-->
 				<div class="flex-item">
 					<div class="left-title">{% trans "最佳結果" %}</div>
 					<div class="radiobox">
@@ -125,12 +118,183 @@
 						</div>
 					</div>
 				</div>
+				<div class="flex-item">
+					<div class="left-title">{% trans "僅比對臺灣物種" %}</div>
+					<div class="radiobox">
+						<div class="flex">
+							<input type="radio" name="is_in_taiwan" value="true" checked>
+							<p>{% trans "是" %}</p>
+						</div>
+						<div class="flex">
+							<input type="radio" name="is_in_taiwan" value="false">
+							<p>{% trans "否" %}</p>
+						</div>
+					</div>
+				</div>
+				<div class="flex-item">
+					<div class="left-title">
+						<p>{% trans "比對階層" %}</p>
+					</div>
+					<div class="right-option">
+						<div class="input-item select-170">
+							<select class="wide" name="rank-select">
+								<option value="none"></option>
+								<option value="34">{% trans "種" %}</option>
+								<option value="35">{% trans "亞種" %}</option>
+								<option value="37">{% trans "變種" %}</option>
+								<option value="40">{% trans "型" %}</option>
+								<option value="41">{% trans "亞型" %}</option>
+								<option value="38">{% trans "亞變種" %}</option>
+								<option value="36">{% trans "雜交亞種" %}</option>
+								<option value="39">{% trans "雜交變種" %}</option>
+								<option value="42">{% trans "特別品型" %}</option>
+								<option value="47">{% trans "雜交組合" %}</option>
+								<option value="30">{% trans "屬" %}</option>
+								<option value="31">{% trans "亞屬" %}</option>
+								<option value="32">{% trans "組|節" %}</option>
+								<option value="33">{% trans "亞組|亞節" %}</option>
+								<option value="26">{% trans "科" %}</option>
+								<option value="27">{% trans "亞科" %}</option>
+								<option value="28">{% trans "族" %}</option>
+								<option value="29">{% trans "亞族" %}</option>
+								<option value="22">{% trans "目" %}</option>
+								<option value="23">{% trans "亞目" %}</option>
+								<option value="24">{% trans "下目" %}</option>
+								<option value="25">{% trans "超科|總科" %}</option>
+								<!--<option value="">系</option>-->
+								<!--<option value="">組</option>-->
+								<option value="18">{% trans "綱" %}</option>
+								<option value="19">{% trans "亞綱" %}</option>
+								<option value="20">{% trans "下綱" %}</option>
+								<option value="21">{% trans "超目|總目" %}</option>
+								<option value="12">{% trans "門" %}</option>
+								<option value="13">{% trans "亞門" %}</option>
+								<option value="14">{% trans "下門" %}</option>
+								<option value="15">{% trans "微門" %}</option>
+								<option value="16">{% trans "小門" %}</option>
+								<option value="17">{% trans "超綱|總綱" %}</option>
+								<option value="7">{% trans "部|類" %}</option>
+								<option value="8">{% trans "亞部|亞類" %}</option>
+								<option value="9">{% trans "下部|下類" %}</option>
+								<option value="10">{% trans "小部|小類" %}</option>
+								<option value="11">{% trans "超門|總門" %}</option>
+								<option value="3">{% trans "界" %}</option>
+								<option value="4">{% trans "亞界" %}</option>
+								<!--<option value="">支</option>-->
+								<option value="5">{% trans "下界" %}</option>
+								<option value="6">{% trans "超部|總部" %}</option>
+								<option value="1">{% trans "域" %}</option>
+								<option value="2">{% trans "總界" %}</option>
+								<!--<option value="">亞域</option>-->					
+								<option value="49">{% trans '病毒域' %}</option>	
+							</select>
+						</div>							
+						<div class="alread-select">
+						</div>
+					</div>
+				</div>
+
+				<div class="flex-item check-set">
+					<div class="left-title">
+						<p>{% trans "比對生物界" %}</p>
+					</div>
+					<div class="radiobox">
+					<div class="right-check">
+						<label class="check-item">{% trans "全部" %}
+							<input type="checkbox" id="checkAllKingdom" name="kingdom" value="all">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+					<div class="right-check">
+						<label class="check-item">{% trans "細菌" %}
+							<input type="checkbox" name="kingdom" value="Bacteria">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+					<div class="right-check">
+						<label class="check-item">{% trans "古菌" %}
+							<input type="checkbox" name="kingdom" value="Archaea">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+					<div class="right-check">
+						<label class="check-item">{% trans "原生生物" %}
+							<input type="checkbox" name="kingdom" value="Protozoa">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+					<div class="right-check">
+						<label class="check-item">{% trans "原藻" %}
+							<input type="checkbox" name="kingdom" value="Chromista">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+					<div class="right-check">
+						<label class="check-item">{% trans "真菌" %}
+							<input type="checkbox" name="kingdom" value="Fungi">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+					<div class="right-check">
+						<label class="check-item">{% trans "植物" %}
+							<input type="checkbox" name="kingdom" value="Plantae">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+					<div class="right-check">
+						<label class="check-item">{% trans "動物" %}
+							<input type="checkbox" name="kingdom" value="Animalia">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+					</div>
+				</div>
+
+
+				<div class="flex-item">
+					<div class="left-title">{% trans "比對常見類群" %}</div>
+					<div class="radiobox">
+						<div class="flex">
+							<input type="radio" name="taxon_group" value="all" checked>
+							<p>{% trans "全部" %}</p>
+						</div>
+						<div class="flex">
+							<input type="radio" name="taxon_group" value="昆蟲">
+							<p>{% trans "昆蟲" %}</p>
+						</div>
+						<div class="flex">
+							<input type="radio" name="taxon_group" value="魚類">
+							<p>{% trans "魚類" %}</p>
+						</div>
+						<div class="flex">
+							<input type="radio" name="taxon_group" value="爬蟲類">
+							<p>{% trans "爬蟲類" %}</p>
+						</div>
+						<div class="flex">
+							<input type="radio" name="taxon_group" value="鳥類">
+							<p>{% trans "鳥類" %}</p>
+						</div>
+						<div class="flex">
+							<input type="radio" name="taxon_group" value="哺乳類">
+							<p>{% trans "哺乳類" %}</p>
+						</div>
+						<div class="flex">
+							<input type="radio" name="taxon_group" value="維管束植物">
+							<p>{% trans "維管束植物" %}</p>
+						</div>
+						<div class="flex">
+							<input type="radio" name="taxon_group" value="病毒">
+							<p>{% trans "病毒" %}</p>
+						</div>
+					</div>
+				</div>
+
 				<div class="text-areabox">
 					<p>{% trans "學名/中文名" %}</p>
 					<textarea class="fs-14" name="name" id=""></textarea>
 				</div>
 				</form>
-				<button class="search">{% trans "搜尋" %}</button>
+				<button class="name-checkitem-button search">{% trans "搜尋" %}</button>
 			</div>
 		</div>
 		<div class="check-result-box d-none">
@@ -143,8 +307,8 @@
 					<div class="top-infbox mb-20">
 						<p></p>
 						<div class="button-two d-flex">
-							<button class="downloadData" data-type="csv">{% trans "下載CSV" %}</button>
-							<button class="downloadData" data-type="json">{% trans "下載JSON" %}</button>
+							<button class="name-checkitem-button downloadData" data-type="csv">{% trans "下載CSV" %}</button>
+							<button class="name-checkitem-button downloadData" data-type="json">{% trans "下載JSON" %}</button>
 						</div>
 					</div>
 					<div class="right-table">
@@ -160,5 +324,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/name_match.js' %}?v8"></script>
+<script src="{% static 'js/name_match.js' %}?v9"></script>
 {% endblock script %}

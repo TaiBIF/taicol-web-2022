@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="qvqNFLc3zq0aH7Q1x-UW-68Pe8owLafRLowGUDF4YqQ" />
 	<title>臺灣物種名錄 Catalogue of Life in Taiwan</title>
-	<link rel=stylesheet type="text/css" href="{% static 'css/theme.css' %}?v11">
+	<link rel=stylesheet type="text/css" href="{% static 'css/theme.css' %}?v12">
     <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
 	<script src="{% static 'js/gsap.min.js' %}?v1" ></script>
 	<script src="{% static 'js/ScrollTrigger.min.js' %}?v1" ></script>
@@ -76,7 +76,7 @@
                         </a>
                         <div class="menu_2">
                             <div class="w_bg">
-                                <a href="{% url 'catalogue' %}?filter=2">{% trans "進階搜尋" %}</a>
+                                <a href="{% url 'catalogue' %}?filter=2">{% trans "進階查詢" %}</a>
                                 <a href="{% url 'catalogue' %}?rank=34&rank=35&rank=37&rank=40&rank=41&rank=38&rank=36&rank=42&rank=39&status=accepted&is_endemic=on">{% trans "臺灣特有生物" %}</a>
                                 <a href="{% url 'catalogue' %}?rank=34&rank=35&rank=37&rank=40&rank=41&rank=38&rank=36&rank=42&rank=39&status=accepted&alien_type=naturalized&alien_type=invasive&alien_type=cultured">{% trans "外來與入侵種" %}</a>
                                 <a href="{% url 'catalogue' %}?rank=34&rank=35&rank=37&rank=40&rank=41&rank=38&rank=36&rank=42&rank=39&status=accepted&protected=I&protected=II&protected=III&protected=1">{% trans "臺灣保育類" %}</a>

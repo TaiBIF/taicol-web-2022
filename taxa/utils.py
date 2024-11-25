@@ -38,7 +38,7 @@ with conn.cursor() as cursor:
         link_map[l[0]] = {'title': l[1], 'url_prefix': l[2], 'category': l[3]}
 
 
-kingdom_map = {}
+kingdom_taxon_map, kingdom_map, kingdom_map_c = {}, {}, {}
 conn = pymysql.connect(**db_settings)
 query = '''SELECT tn.name, at.taxon_id, acn.name_c FROM taxon_names tn 
             JOIN api_taxon at ON at.accepted_taxon_name_id = tn.id 
@@ -54,7 +54,8 @@ with conn.cursor() as cursor:
     cursor.execute(query)
     kingdom = cursor.fetchall()
     for k in kingdom:
-        kingdom_map[k[1]] = {'name': k[0], 'common_name_c': k[2]}
+        kingdom_taxon_map[k[1]] = {'name': k[0], 'common_name_c': k[2]}
+        kingdom_map_c[k[0]] = k[2]
 
 
 rank_map, rank_map_c,rank_map_c_reverse, rank_order_map = {}, {}, {}, {}
@@ -668,7 +669,6 @@ def create_history_display(taxon_history, lang, names, current_page=1,limit=8):
     return taxon_history #, current_page, total_page, page_list
 
 
-
 def create_name_history(names, name_history_list, ref_df):
     name_history = []
     # conn = pymysql.connect(**db_settings)
@@ -686,8 +686,8 @@ def create_name_history(names, name_history_list, ref_df):
         #         cursor.execute(query, (current_nid,))
         #         name_ = cursor.fetchone()
         #         name_ = f'''<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/taxon-names/{int(current_nid)}" target="_blank">{name_[0]}</a>'''
-        if n[2] and n[3] not in [4,6]:
-            name_history.append({'name_id': current_nid,'name': name_, 'ref': '',
+        if n[2] and (n[3] not in [4,6]):
+            name_history.append({'name_id': current_nid,'name': name_, 'ref': ref_df[ref_df.reference_id==n[2]].ref.values[0],
                                  'reference_id': n[2], 'updated_at': n[1]})
         else:
             name_history.append({'name_id': current_nid,'name': name_, 'ref':'', 
@@ -715,7 +715,6 @@ def create_name_history(names, name_history_list, ref_df):
     #     conn.close()
 
     if len(ref_df):
-        
         ref_df['reference_id'] = ref_df['reference_id'].astype('object')
         name_history['reference_id'] = name_history['reference_id'].astype('object')
 

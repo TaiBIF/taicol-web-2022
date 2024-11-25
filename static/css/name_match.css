@@ -101,3 +101,208 @@
 button.download_check:disabled {
 	background-color: grey !important;
 }
+
+
+/* checkbox */
+
+
+.flex-item.check-set {
+    margin-bottom: 0
+}
+
+@media only screen and (max-width: 767px) {
+    .flex-item.check-set {
+        margin-bottom: 5px
+    }
+}
+
+/* .flex-item.check-set .left-title {
+    height: 30px
+} */
+/* 
+@media only screen and (max-width: 767px) {
+    .flex-item.check-set .left-title {
+        margin-bottom: 10px;
+        color: #333
+    }
+} */
+
+.flex-item.check-set .right-check {
+    margin-top: 5px
+}
+
+
+.flex-item .check-item {
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 20px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin-right: 20px;
+    color: #555;
+    margin-bottom: 10px
+}
+
+@media only screen and (max-width: 767px) {
+    .flex-item .check-item {
+        margin-right: 15px;
+        padding-left: 25px
+    }
+}
+
+.flex-item .check-item input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0
+}
+
+.flex-item .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 19px;
+    width: 19px;
+    background-color: #FFF;
+    border-radius: 3px;
+    border: 1px solid #555
+}
+
+.flex-item .check-item:hover input~.checkmark {
+    border: 1px solid #4C8DA7
+}
+
+.flex-item .check-item input:checked~.checkmark {
+    background-color: #4C8DA7
+}
+
+.flex-item .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none
+}
+
+.flex-item .check-item input:checked~.checkmark:after {
+    display: block
+}
+
+.flex-item .check-item .checkmark:after {
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg)
+}
+
+
+
+
+.flex-item .right-option {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap
+}
+
+.flex-item .right-option .alread-select {
+    display: flex;
+    flex-wrap: wrap
+}
+
+@media only screen and (max-width: 767px) {
+    .flex-item .right-option .alread-select {
+        width: 100%
+    }
+}
+
+.flex-item .right-option .alread-select .item {
+    margin-left: 10px;
+    min-width: 90px;
+    /* width: 100% !important; */
+    height: 35px;
+    padding: 5px 15px;
+    display: flex;
+    background: #BED368;
+    border-radius: 17px;
+    color: #FFF;
+    justify-content: space-between;
+    align-items: center;
+    /* margin-bottom: 5px; */
+    margin-top: 3px
+}
+
+@media only screen and (max-width: 767px) {
+    .flex-item .right-option .alread-select .item {
+        margin-left: 0;
+        margin-right: 10px;
+        padding: 5px 10px;
+        min-width: 60px
+    }
+}
+
+.flex-item .right-option .alread-select .item p {
+    font-size: 16px;
+    margin-right: 10px
+}
+
+@media only screen and (max-width: 767px) {
+    .flex-item .right-option .alread-select .item p {
+        font-size: 14px
+    }
+}
+
+.flex-item .right-option .alread-select .item button {
+    background: none
+}
+
+.flex-item .right-option .alread-select .item button img {
+    display: block
+}
+
+
+.flex-item .input-item.select-170 {
+    max-width: 170px;
+    width: 100% !important;
+}
+
+@media only screen and (max-width: 767px) {
+    .flex-item .input-item.select-170 {
+        max-width: 100%;
+        margin-bottom: 10px
+    }
+}
+
+
+.nice-select {
+    width: 100% !important;
+}
+
+.nice-select.wide {
+    width: 100% !important;
+    padding: 0px 15px !important;
+    font-size: 16px !important;
+    height: 40px !important;
+    max-width: 460px !important;
+    background: url('/static/image/ard01.svg') center right 15px no-repeat;
+    background-size: 16px auto !important;
+    background-color: #FFF !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+.f-bold {
+	font-weight: bold !important;
+}
+

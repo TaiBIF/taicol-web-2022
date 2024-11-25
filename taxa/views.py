@@ -21,6 +21,43 @@ from django.template.loader import render_to_string
 import html
 from django.utils.translation import get_language, gettext
 
+search_facet = { "kingdom": { 
+                'type': 'terms',
+                'field': 'kingdom',
+                'mincount': 1,
+                'limit': -1,
+                'offset': 0,
+                },
+                "status": { 
+                'type': 'terms',
+                'field': 'status',
+                'mincount': 1,
+                'limit': -1,
+                'offset': 0,
+                },
+                "rank_id": { 
+                'type': 'terms',
+                'field': 'rank_id',
+                'mincount': 1,
+                'limit': -1,
+                'offset': 0,
+                },
+                "is_endemic": { 
+                'type': 'terms',
+                'field': 'is_endemic',
+                'mincount': 1,
+                'limit': -1,
+                'offset': 0,
+                },
+                "alien_type": { 
+                'type': 'terms',
+                'field': 'alien_type',
+                'mincount': 1,
+                'limit': -1,
+                'offset': 0,
+                },
+            }
+
 
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -119,6 +156,9 @@ def download_search_results(request):
     file_format = req.get('file_format','csv')
 
     solr_query_list, is_chinese = get_conditioned_solr_search(req)
+    print(req)
+    print('-----')
+    print(solr_query_list)
     df = return_download_file_by_solr(solr_query_list, is_chinese)
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
@@ -230,9 +270,7 @@ def name_match(request):
 
 def taxon(request, taxon_id):
     stat_str, taxon_group_str = '', ''
-    # new_taxon_id, new_taxon_name = '', ''
-    refs, new_refs, experts, name_changes, taxon_history, name_history, short_refs, links = [], [], [], [], [], [], [], []
-    # total_page, current_page, page_list = 0, 1, [] # for taxon_history
+    refs, new_refs, experts, name_changes, taxon_history, name_history, links, per_usage_refs = [], [], [], [], [], [], [], []
     data = {}
     # 確認是否已刪除 & 如果是國外物種不顯示
     is_deleted = 0
@@ -240,7 +278,6 @@ def taxon(request, taxon_id):
     not_official = 0
     has_taxon = False
 
-    # total_time = time.time()
 
     conn = pymysql.connect(**db_settings)
 
@@ -267,7 +304,6 @@ def taxon(request, taxon_id):
             not_official = data['not_official']
             if not_official:
                 data['not_official'] = gettext('未經正式記錄')
-            # if not is_deleted:
             has_taxon = True
 
 
@@ -275,7 +311,6 @@ def taxon(request, taxon_id):
 
         # 取有效學名的那筆資料
         response = requests.get(f'{SOLR_PREFIX}taxa/select?fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:{taxon_id}')
-        # print(f'{SOLR_PREFIX}taxa/select?fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:{taxon_id}')
         solr_resp = response.json()
         solr_resp = solr_resp['response']['docs'][0]
 
@@ -298,13 +333,8 @@ def taxon(request, taxon_id):
         if name_c_str:
             taxon_group_str += ' ' + name_c_str
 
-        # time_s = time.time()
-
         # 照片 用資料庫取得
         data['images'] = json.loads(data['images']) if data['images'] else []
-
-        # print('1', time.time()-time_s)
-        # time_s = time.time()
 
         # 學名
         if data['rank_id'] == 47:
@@ -316,15 +346,12 @@ def taxon(request, taxon_id):
                                     ORDER BY tnhp.order) 
                         SELECT group_concat(sci_name SEPARATOR ' × ') FROM view 
                         GROUP BY taxon_name_id """
-            # conn = pymysql.connect(**db_settings)
             with conn.cursor() as cursor:
                 cursor.execute(query, (data['name_id'],))
                 n = cursor.fetchone()
                 if n:
                     data['sci_name'] = n[0] 
 
-        # print('2', time.time()-time_s)
-        # time_s = time.time()
 
         # NOTE 這邊應該一定是accepted or deleted
         data['status'] = status_map_taxon_c['accepted']['en-us'] if get_language() == 'en-us' else f"{status_map_taxon_c['accepted']['zh-tw']} {status_map_taxon_c['accepted']['en-us']}"
@@ -342,7 +369,6 @@ def taxon(request, taxon_id):
         # 整理保育資訊
         data = create_conservation_note(data=data)
 
-        # time_s = time.time()
         # 高階層
         data['higher'] = []
         if data['path']:
@@ -358,7 +384,6 @@ def taxon(request, taxon_id):
                     for cc in ['common_name_c','alternative_name_c','taxon_group_str']:
                         if cc not in higher.keys():
                             higher[cc] = ''
-                    # print(path_resp.json()['response']['docs'])
                     higher['taxon_rank_id'] = higher['taxon_rank_id'].apply(lambda x: int(str(x).replace('.0','')) if x else '')
                     higher['rank_order'] = higher['taxon_rank_id'].apply(lambda x: rank_order_map[x])
                     higher = higher.replace({np.nan: '', None: ''})
@@ -410,8 +435,6 @@ def taxon(request, taxon_id):
                             current_h_dict['rank_color'] = 'rank-second-gray'
                         data['higher'].append(current_h_dict)
 
-        # print('3', time.time()-time_s)
-        # time_s = time.time()
 
         # 變更歷史 + 學名變遷
         query = f"""SELECT ath.type, ath.content, ac.short_author, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), usr.name, ath.reference_id, ath.note, r.type, ath.is_deleted
@@ -420,17 +443,12 @@ def taxon(request, taxon_id):
                         LEFT JOIN api_citations ac ON ac.reference_id = ath.reference_id
                         LEFT JOIN `references` r ON ath.reference_id = r.id
                         WHERE ath.taxon_id = %s ORDER BY ath.updated_at DESC"""
-                        # LEFT JOIN import_usage_logs iul ON iul.reference_id = ath.reference_id
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             cursor.execute(query, (taxon_id, ))
             th = cursor.fetchall()
             taxon_history_df = pd.DataFrame(th, columns=['history_type', 'content', 'short_author', 'updated_at', 'editor', 'reference_id', 'note', 'reference_type','is_deleted'])
             name_history_list = taxon_history_df[taxon_history_df.history_type.isin([0,5])][['note','updated_at','reference_id','reference_type','history_type']].drop_duplicates().values
-
-        # print('4', time.time()-time_s)
-        # time_s = time.time()
-
 
         # 取得names的時候要包含taxon_history裡面提到的name
 
@@ -468,12 +486,7 @@ def taxon(request, taxon_id):
                                                 'nomenclature_id','publish_year','per_usages','reference_id', 
                                                 'o_reference_id','r_publish_year','rank_id','r_type','original_taxon_name_id','ru_id',
                                                 'name_source'])
-            # print('5.6', time.time()-time_s)
-            # time_s = time.time()
-
             names = names.replace({np.nan: None})
-
-            # print(names)
 
             # author 學名作者
             # ref 學名使用文獻
@@ -517,18 +530,16 @@ def taxon(request, taxon_id):
                 # 如果per_usages中有其他ref則補上
                 for pp in names['per_usages']:
                     for p in pp:
+                        per_usage_refs.append(p.get('reference_id'))
                         if p.get('reference_id') not in new_refs:
                             new_refs.append(p.get('reference_id'))
 
                 # TODO 這邊縮排的順序可能會有問題 有一些沒有names的可能會跳過 造成沒有進入到這個區塊嗎 ? 還是一定會有names
-                # print('5.7', time.time()-time_s)
-                # time_s = time.time()
 
                 new_refs += names.reference_id.to_list()
                 new_refs += names.o_reference_id.to_list()
                 new_refs += [n[2] for n in name_history_list]
                 new_refs = list(dict.fromkeys(new_refs))
-
                 
                 query = f"""(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), 
                             r.publish_year, c.author, c.short_author, r.type 
@@ -549,9 +560,6 @@ def taxon(request, taxon_id):
                     usage_refs = cursor.fetchall()
                     usage_refs = pd.DataFrame(usage_refs, columns=['reference_id','full_ref','publish_year','author','ref','r_type'])
 
-                # print('5.8', time.time()-time_s)
-                # time_s = time.time()
-
                 # 確認是否為歧異
                 query = """
                         select taxon_name_id from api_taxon_usages 
@@ -565,9 +573,6 @@ def taxon(request, taxon_id):
                     is_ambiguous = cursor.fetchall()
                     is_ambiguous = [i[0] for i in is_ambiguous]
                     
-                # print('5.9', time.time()-time_s)
-                # time_s = time.time()
-
                 # 只整理目前usage的
                 name_change_df = names[names.name_source=='from_usages'].reset_index(drop=True)
                 for n in name_change_df.taxon_name_id.unique():
@@ -602,7 +607,7 @@ def taxon(request, taxon_id):
                         ref_list = [f"<a href='https://nametool.taicol.tw/{'en-us' if get_language() == 'en-us' else 'zh-tw'}/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                         ref_str = ('; ').join(ref_list)
                         if ref_str:
-                            name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('誤用')}): {ref_str}",min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                            name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('誤用')}): {ref_str}", min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                         else:
                             name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('誤用')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                     # 歧異名
@@ -677,23 +682,26 @@ def taxon(request, taxon_id):
                     name_changes = name_changes.name_str.to_list()
 
 
-                # print('6', time.time()-time_s)
-                # time_s = time.time()
-
         # 文獻
         # 這邊改用 usage_refs 的資料
-        #  這邊要確定是不是這個文獻已經被移出分類群中了
+        # 1 學名本身的發表文獻(taxon_names資料表的reference_id)
+        # names.o_reference_id.to_list()
+        # 2 有效學名使用的發布文獻(reference_usages資料表的reference_id)(可能會包含(1))
+        # names[names.taxon_status=='accepted'].reference_id.to_list()
+        # 3 學名使用的相同引用文獻(reference_usages資料表的per_usages裡的reference_id) (彙整不同篇文獻後，(3)可能會和(2)有重複)
+        # 4 誤用學名使用的誤用文獻(reference_usages資料表的per_usages裡的reference_id)
+        # per_usage_refs
+
+        ref_id_list = []
+        ref_id_list += list(names.o_reference_id.unique())
+        ref_id_list += list(per_usage_refs)
+        ref_id_list += list(names[names.taxon_status=='accepted'].reference_id.unique())
+
         if len(usage_refs):
-            if len(name_change_df):
-                used_refs = new_refs + name_change_df.reference_id.to_list()
-            used_refs = [int(str(u).replace('.0','')) for u in used_refs if u]
+            used_refs = [int(str(u).replace('.0','')) for u in ref_id_list if u]
             refs = usage_refs[(~usage_refs.r_type.isin([4,6]))&(usage_refs.reference_id.isin(used_refs))]
-            short_refs = list(usage_refs[~usage_refs.r_type.isin([4,6])][['reference_id','ref','r_type']].values)
 
-        ref_df = pd.DataFrame(short_refs, columns=['reference_id', 'ref', 'type'])
-        # print('6.5', time.time()-time_s)
-        # time_s = time.time()
-
+        # refs 文獻區塊
 
         # 取得expert
         if len(refs):
@@ -703,8 +711,6 @@ def taxon(request, taxon_id):
                 cursor.execute(query, (list(refs.reference_id.unique()),))
                 person_ids = cursor.fetchall()
                 person_ids = [str(p[0]) for p in person_ids]
-                # print('6.8', time.time()-time_s)
-                # time_s = time.time()
                 if len(person_ids):
                     url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/expert/?person_id={(',').join(person_ids)}"
                     person_resp = requests.get(url)
@@ -713,7 +719,6 @@ def taxon(request, taxon_id):
                 
             refs = list(refs[['reference_id','full_ref']].drop_duplicates().values)
 
-        # print('7', time.time()-time_s)
 
         data['alien_notes'] = []
         alien_notes = []
@@ -732,36 +737,12 @@ def taxon(request, taxon_id):
         if not has_cultured and data['is_cultured']:
             data['alien_notes'].append({'alien_type': attr_map_c['cultured'],'note': None})
 
-        # time_s = time.time()
-
-        name_history = create_name_history(names=names, name_history_list=name_history_list, ref_df=ref_df)
-
-        # print('9', time.time()-time_s)
-        # time_s = time.time()
+        name_history = create_name_history(names=names, name_history_list=name_history_list, ref_df=usage_refs)
 
         # 相關連結
         # ncbi如果超過一個就忽略
 
         links += create_link_display(data=data,taxon_id=taxon_id)
-
-        # print('9.2', time.time()-time_s)
-        # time_s = time.time()
-
-        # 變更歷史
-        # if is_deleted:
-        #     new_taxon_name = '', ''
-        #     query = f"""SELECT tn.name, at.taxon_id FROM api_taxon at
-        #             JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
-        #             WHERE at.taxon_id = %s
-        #             """
-        #     with conn.cursor() as cursor:
-        #         cursor.execute(query, (data['new_taxon_id'],))
-        #         new_taxon_name = cursor.fetchone()
-        #         if new_taxon_name:
-        #             new_taxon_name = new_taxon_name[0]
-
-        # print('9.5', time.time()-time_s)
-        # time_s = time.time()
 
         taxon_history_df = taxon_history_df[taxon_history_df.is_deleted==0].reset_index(drop=True)
         taxon_history = create_history_display(taxon_history_df, get_language(), names)
@@ -769,10 +750,6 @@ def taxon(request, taxon_id):
         data['self'] = {'rank_color': rank_color_map[data['rank_id']] if data['rank_id'] in [3,12,18,22,26,30,34] else 'rank-second-gray',
                         'rank_c': rank_map_c[data['rank_id']],
                         'name_c': data['common_name_c']}
-        
-        # print('10', time.time()-time_s)
-
-        # time_s = time.time()
 
         # 子階層統計
         rank_map_dict = rank_map if get_language() == 'en-us' else rank_map_c
@@ -818,19 +795,15 @@ def taxon(request, taxon_id):
                 new_taxon_name = cursor.fetchone()
                 if new_taxon_name:
                     new_taxon_name = new_taxon_name[0]
-            # data['transfer_taxon'] = data['new_taxon_id']
             data['is_deleted'] = True
             data['new_taxon_name'] = new_taxon_name
-        # print('11', time.time()-time_s)
 
     elif not has_taxon:
         taxon_id = None
 
-
     return render(request, 'taxa/taxon.html', {'taxon_id': taxon_id, 'data': data, 'links': links,
                                                 'refs': refs, 'experts': experts, 'name_changes': name_changes,
                                                'taxon_history': taxon_history, 'stat_str': stat_str, 'name_history': name_history, })
-                                             #  'current_page': current_page, 'total_page': total_page, 'page_list': page_list
 
 
 # 根據當下的條件判斷
@@ -877,7 +850,7 @@ def get_root_tree(request):
         if lin_rank == 'on':
             total_stats = total_stats[total_stats.rank_id.isin(lin_ranks+sub_lin_ranks)]
 
-    for k in kingdom_map.keys():
+    for k in kingdom_taxon_map.keys():
         stats = total_stats[total_stats.kingdom_taxon==k]
         spp = 0
         stat_str = ''
@@ -901,7 +874,7 @@ def get_root_tree(request):
                 stat_str += infra_count_str
 
         kingdom_dict.append({'taxon_id': k, 
-                             'name': f"Kingdom {kingdom_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_map[k]['common_name_c']} Kingdom {kingdom_map[k]['name']}",
+                             'name': f"Kingdom {kingdom_taxon_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_taxon_map[k]['common_name_c']} Kingdom {kingdom_taxon_map[k]['name']}",
                              'stat': stat_str.strip()})
     
     return JsonResponse(kingdom_dict, safe=False)
@@ -936,7 +909,7 @@ def taxon_tree(request):
         # 預設僅顯示林奈階層
         total_stats = total_stats[total_stats.rank_id.isin(lin_ranks+sub_lin_ranks)]
 
-    for k in kingdom_map.keys():
+    for k in kingdom_taxon_map.keys():
         stats = total_stats[total_stats.kingdom_taxon==k]
         spp = 0
         stat_str = ''
@@ -960,7 +933,7 @@ def taxon_tree(request):
                 stat_str += infra_count_str
         
         kingdom_dict.append({'taxon_id': k, 
-                             'name': f"{'Kingdom ' if kingdom_map[k]['name'] != 'Viruses' else ''}{kingdom_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_map[k]['common_name_c']} {'Kingdom ' if kingdom_map[k]['name'] != 'Viruses' else ''}{kingdom_map[k]['name']}",
+                             'name': f"{'Kingdom ' if kingdom_taxon_map[k]['name'] != 'Viruses' else ''}{kingdom_taxon_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_taxon_map[k]['common_name_c']} {'Kingdom ' if kingdom_taxon_map[k]['name'] != 'Viruses' else ''}{kingdom_taxon_map[k]['name']}",
                              'stat': stat_str.strip()})
     
     search_stat = SearchStat.objects.all().order_by('-count')[:100]
@@ -1363,23 +1336,43 @@ def get_match_result(request):
     # 用loop取得name match結果 每頁10筆
     if name:
         name = name.splitlines()
-        # names = []
-        # # 排除重複 & 空值
-        # for n in name:
-        #     if n not in names and n:
-        #         names.append(n)
+        name = [n for n in name if n]
+        name_list = []
+        # 排除重複 & 空值
+        for n in name:
+            if n not in name_list:
+                name_list.append(n)
+
         response['page']['current_page'] = page
         response['page']['total_page'] = math.ceil(len(name) / 10)
         response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
-        name_list = name[(page-1)*10:page*10]
+        name_list = name_list[(page-1)*10:page*10]
         names = ('|').join(name_list)
         url = env('NOMENMATCH_ROOT')
-        result = requests.post(url, data = {
+
+        query_dict =  {
             'names': names,
             'best': best,
             'format': 'json',
             'source': 'taicol'
-        })
+        }
+
+        if request.POST.get('is_in_taiwan') == 'true':
+            query_dict['is_in_taiwan'] = True
+
+        if request.POST.get('taxon_group') != 'all':
+            query_dict['taxon_group'] = request.POST.get('taxon_group')
+        
+        if kingdoms := request.POST.getlist('kingdom'):
+            if 'all' not in kingdoms:
+                query_dict['kingdom'] = ",".join([f'"{k}"' for k in kingdoms])
+
+        
+        if ranks := request.POST.getlist('rank'):
+            query_dict['taxon_rank'] = ",".join([f'"{rank_map[int(r)]}"' for r in ranks])
+
+        result = requests.post(url, data=query_dict)
+
         if result.status_code == 200:
             result = result.json()
             data = result['data']
@@ -1475,7 +1468,10 @@ def get_match_result(request):
                         else:
                             df.loc[i,'taxon_group'] = ''
                         if df.iloc[i].alien_type:
-                            df.loc[i,'alien_type'] = attr_map_c[df.iloc[i].alien_type]
+                            if get_language() == 'en-us':
+                                df.loc[i,'alien_type'] = attr_map[df.iloc[i].alien_type]
+                            else:
+                                df.loc[i,'alien_type'] = attr_map_c[df.iloc[i].alien_type]
                     is_list = ['is_endemic','is_in_taiwan']
                     for ii in is_list:
                         if get_language() == 'en-us':
@@ -1523,6 +1519,14 @@ def download_match_results(request):
     # 用loop取得name match結果 每頁30筆
     if name:
         name = name.splitlines()
+        name = [n for n in name if n]
+
+        name_list = []
+        # 排除重複 & 空值
+        for n in name:
+            if n not in name_list:
+                name_list.append(n)
+
         # t_names = name
         # t_names = list(set(t_names))
         # print('t_names', t_names)
@@ -1531,7 +1535,7 @@ def download_match_results(request):
         total_page = math.ceil(len(name) / 30)
         for page in range(total_page): 
             # namecode_list = []
-            name_list = name[page*30:(page+1)*30]
+            name_list = name_list[page*30:(page+1)*30]
             names = ('|').join(name_list)
             df = pd.DataFrame()
             url = env('NOMENMATCH_ROOT')
@@ -1753,15 +1757,13 @@ def bk_send_mail(email_body):
 def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
     response['data'] = []
+    response['facet'] = {}
     count = 0
 
     if is_chinese:
 
-        query = { "query": "*:*",
-                  "limit": 0,
-                  "filter": query_list,
-                #   "sort": 'search_name asc',
-                  "facet": { "taxon_id": { 
+        now_facet = search_facet
+        now_facet['taxon_id'] = { 
                         'type': 'terms',
                         'field': 'taxon_id',
                         'mincount': 1,
@@ -1771,7 +1773,11 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
                         'allBuckets': False,
                         'numBuckets': True
                         }
-                    }
+        
+        query = { "query": "*:*",
+                  "limit": 0,
+                  "filter": query_list,
+                  "facet": now_facet
                 }
 
         query_req = json.dumps(query)
@@ -1779,9 +1785,8 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
         resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
         resp = resp.json()
 
-        
-        # print(resp)
-        
+        response = create_facet_data(resp, response)
+
         # 先確認有找到資料
         if resp['response']['numFound']:
 
@@ -1811,7 +1816,11 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
           "limit": limit,
           "filter": query_list,
           "sort": 'search_name asc',
+          "facet": search_facet
         }
+
+
+        # print(query)
 
         query_req = json.dumps(query)
 
@@ -1820,6 +1829,8 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
         # 這邊改成facet bucket的數量
         count = resp['response']['numFound']
+
+        response = create_facet_data(resp, response)
 
     if count:
 
@@ -1865,8 +1876,53 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
     response['page']['current_page'] = int(offset / limit + 1)
     response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
 
+    response['kingdom_title'] = gettext('界')
+    response['rank_title'] = gettext('階層')
+    response['endemic_title'] = gettext('特有性')
+    response['alien_type_title'] = gettext('原生/外來性')
+    response['status_title'] = gettext('地位') 
+
     return response
 
+
+def create_facet_data(resp, response):
+
+    if 'kingdom' in resp['facets'].keys():
+        # 只列出rank_id=3的 不管地位未定
+        kingdom = resp['facets']['kingdom']['buckets']
+        kingdom = [k for k in kingdom if k['val']  in kingdom_map_c.keys()]
+        if get_language() == 'en-us':
+            kingdom = [{'title': v['val'], 'val': v['val'], 'count': v['count']} for v in kingdom]
+        else:
+            kingdom = [{'title': kingdom_map_c[v['val']], 'val': v['val'], 'count': v['count']} for v in kingdom]
+        response['facet']['kingdom'] = kingdom
+
+    if 'status' in resp['facets'].keys():
+        status = resp['facets']['status']['buckets']
+        status = [{'title': gettext(status_map_c[v['val']]), 'val': v['val'], 'count': v['count']} for v in status]
+        response['facet']['status'] = status
+
+
+    if 'rank_id' in resp['facets'].keys():
+        rank_id = resp['facets']['rank_id']['buckets']
+        if get_language() == 'en-us':
+            rank_id = [{'title': gettext(rank_map[int(v['val'])]), 'val': v['val'], 'count': v['count']} for v in rank_id]
+        else:
+            rank_id = [{'title': gettext(rank_map_c[int(v['val'])]), 'val': v['val'], 'count': v['count']} for v in rank_id]
+        response['facet']['rank'] = rank_id
+
+    if 'is_endemic' in resp['facets'].keys():
+        is_endemic = resp['facets']['is_endemic']['buckets']
+        is_endemic = sorted(is_endemic, key=lambda d: d['val'], reverse=True)
+        is_endemic = [{'title': gettext('臺灣特有') if  v['val'] == True else gettext('非臺灣特有'), 'val': v['val'], 'count': v['count']} for v in is_endemic]
+        response['facet']['is_endemic'] = is_endemic
+
+    if 'alien_type' in resp['facets'].keys():
+        alien_type = resp['facets']['alien_type']['buckets']
+        alien_type = [{'title': gettext(attr_map_c[v['val']]), 'val': v['val'], 'count': v['count']} for v in alien_type]
+        response['facet']['alien_type'] = alien_type
+    
+    return response
 
 def catalogue_search(request):
     response = {}
@@ -1916,6 +1972,18 @@ def catalogue_search(request):
 def get_conditioned_solr_search(req): 
 
     query_list = []
+
+    # 如果有facet的話
+
+    if req.get('facet') and req.get('facet_value'):
+        if req.get('facet') == 'rank':
+            facet = 'rank_id'
+        elif req.get('facet') == 'endemic':
+            facet = 'is_endemic'
+        else:
+            facet = req.get('facet') 
+            
+        query_list.append('{}:{}'.format(facet, req.get('facet_value')))
 
     # NOTE 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1  的資料
     query_list.append('is_in_taiwan:true')
@@ -2045,6 +2113,5 @@ def get_conditioned_solr_search(req):
 
     if higher_taxon_id := req.get('taxon_group'):
         query_list.append(f'path:/.*{higher_taxon_id}.*/')
-
 
     return query_list, is_chinese

@@ -36,13 +36,7 @@ function getData(page){
 	$('.loadingbox').removeClass('d-none');
 	$.ajax({
 		url: "/get_match_result",
-		data:  {'csrfmiddlewaretoken' : $csrf_token,
-				'best': $('input[name=best]:checked').val(),
-				'name': $('textarea[name=name]').val(),
-				'page': page,
-				'lang': $lang
-			},
-				
+		data: $('form#matchForm').serialize() + '&page=' + page + '&lang=' + $lang,
 		type: 'POST',
 		dataType : 'json',
 	})
@@ -196,10 +190,50 @@ function getData(page){
 }
 
 
+function removeRankItem(obj){
+	obj.parent('.item').remove()
+	// 如果全部選項都沒有的話，select換成reset
+	if ($('.alread-select .item').length == 0) {
+		$("li.option.selected").removeClass('selected');
+		$(".select-170 span.current").html('');
+	}
+}
 
 
 $(function(){
 
+	$('select[name=rank-select]').niceSelect();
+	// bold
+	r_array = [1,3,7,12,18,22,26,30,34]
+	for( r of r_array){
+		$(`.list li[data-value=${r}]`).addClass('f-bold')
+	}
+
+	$('select[name=rank-select]').on('change', function(){
+		// 確認沒有重複
+		if (($('select[name=rank-select] option:selected').text() != '')&($(`.item input[name=rank][value="${$('select[name=rank-select] option:selected').val()}"]`).length == 0)){
+			$('.alread-select').append(
+				`<div class="item">
+					<p>${$('select[name=rank-select] option:selected').text()}</p>
+					<input type="hidden" name="rank" value="${$('select[name=rank-select] option:selected').val()}">
+					<button type="button" class="remove-alread-select removeRankItem">
+						<img src="/static/image/w-xx.svg">
+					</button>
+				</div>`)
+		}
+
+		$(".removeRankItem").prop("onclick", null).off("click");
+
+		$('.removeRankItem').on('click',function(){
+			removeRankItem($(this))
+		})		
+
+	})
+
+	$("#checkAllKingdom").click(function(){
+		$('input[name=kingdom]:checkbox').not(this).prop('checked', this.checked);
+	});
+	
 	// $(document).keydown(function(e) {
 	// 		if ($('.downloadpop').hasClass('d-none')){
 	// 			e.stopPropagation();
