@@ -1826,7 +1826,7 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
         resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
         resp = resp.json()
 
-        response = create_facet_data(resp, response)
+        response = create_facet_data(resp, response, is_chinese)
 
         # 先確認有找到資料
         if resp['response']['numFound']:
@@ -1867,7 +1867,9 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
         # 這邊改成facet bucket的數量
         count = resp['response']['numFound']
 
-        response = create_facet_data(resp, response)
+
+
+        response = create_facet_data(resp, response, is_chinese)
 
     if count:
 
@@ -1922,40 +1924,61 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
     return response
 
 
-def create_facet_data(resp, response):
+def create_facet_data(resp, response, is_chinese):
 
     if 'kingdom' in resp['facets'].keys():
         kingdom = resp['facets']['kingdom']['buckets']
         kingdom = [k for k in kingdom if k['val']  in kingdom_map_c.keys()]
-        if get_language() == 'en-us':
-            kingdom = [{'title': v['val'], 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in kingdom]
+        if is_chinese:
+            if get_language() == 'en-us':
+                kingdom = [{'title': v['val'], 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in kingdom]
+            else:
+                kingdom = [{'title': kingdom_map_c[v['val']], 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in kingdom]
         else:
-            kingdom = [{'title': kingdom_map_c[v['val']], 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in kingdom]
+            if get_language() == 'en-us':
+                kingdom = [{'title': v['val'], 'val': v['val'], 'count': v['count']} for v in kingdom]
+            else:
+                kingdom = [{'title': kingdom_map_c[v['val']], 'val': v['val'], 'count': v['count']} for v in kingdom]
         response['facet']['kingdom'] = kingdom
 
     if 'status' in resp['facets'].keys():
         status = resp['facets']['status']['buckets']
-        status = [{'title': gettext(status_map_c[v['val']]), 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in status]
+        if is_chinese:
+            status = [{'title': gettext(status_map_c[v['val']]), 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in status]
+        else:
+            status = [{'title': gettext(status_map_c[v['val']]), 'val': v['val'], 'count': v['count']} for v in status]
         response['facet']['status'] = status
 
 
     if 'rank_id' in resp['facets'].keys():
         rank_id = resp['facets']['rank_id']['buckets']
         rank_id = sorted(rank_id, key=lambda x: rank_order_map.get(int(x["val"]), float("inf")))
-        if get_language() == 'en-us':
-            rank_id = [{'title': gettext(rank_map[int(v['val'])]), 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in rank_id]
+        if is_chinese:
+            if get_language() == 'en-us':
+                rank_id = [{'title': gettext(rank_map[int(v['val'])]), 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in rank_id]
+            else:
+                rank_id = [{'title': gettext(rank_map_c[int(v['val'])]), 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in rank_id]
         else:
-            rank_id = [{'title': gettext(rank_map_c[int(v['val'])]), 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in rank_id]
+            if get_language() == 'en-us':
+                rank_id = [{'title': gettext(rank_map[int(v['val'])]), 'val': v['val'], 'count': v['count']} for v in rank_id]
+            else:
+                rank_id = [{'title': gettext(rank_map_c[int(v['val'])]), 'val': v['val'], 'count': v['count']} for v in rank_id]
         response['facet']['rank'] = rank_id
 
     if 'is_endemic' in resp['facets'].keys():
         is_endemic = resp['facets']['is_endemic']['buckets']
-        is_endemic = [{'title': gettext('臺灣特有'), 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in is_endemic if v['val'] == True ]
+        if is_chinese:
+            is_endemic = [{'title': gettext('臺灣特有'), 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in is_endemic if v['val'] == True ]
+        else:
+            is_endemic = [{'title': gettext('臺灣特有'), 'val': v['val'], 'count': v['count']} for v in is_endemic if v['val'] == True ]
         response['facet']['is_endemic'] = is_endemic
 
     if 'alien_type' in resp['facets'].keys():
         alien_type = resp['facets']['alien_type']['buckets']
-        alien_type = [{'title': gettext(attr_map_c[v['val']]), 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in alien_type]
+        if is_chinese:
+            alien_type = [{'title': gettext(attr_map_c[v['val']]), 'val': v['val'], 'count': v['taxon_id']['numBuckets']} for v in alien_type]
+        else:
+            alien_type = [{'title': gettext(attr_map_c[v['val']]), 'val': v['val'], 'count': v['count']} for v in alien_type]
         response['facet']['alien_type'] = alien_type
 
     return response
