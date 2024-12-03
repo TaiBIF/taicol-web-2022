@@ -800,10 +800,13 @@ def create_link_display(data,taxon_id):
             links += [{'href': link_map['algaebase']['url_prefix'], 'title': link_map['algaebase']['title'], 'suffix': data['name'], 'category': link_map['algaebase']['category'], 'hidden_name': True}]
     
     # 全部都接 wikispecies,discoverlife,taibif,inat,irmng
-    for s in ['wikispecies','discoverlife','inat','irmng','gisd','ncbi']:
+    for s in ['wikispecies','discoverlife','inat','irmng','ncbi']:
         links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'], 'hidden_name': True, 'category': link_map[s]['category']}]
     
-    
+    for s in ['gisd']:
+        links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'].replace(' ', '+'), 'hidden_name': True, 'category': link_map[s]['category']}]
+
+
     links = pd.DataFrame(links).drop_duplicates()
     links['category'] = links['category'].apply(lambda x: '; '.join([ gettext(xx) for xx in x.split(';')]))
     
