@@ -14,6 +14,8 @@ function ValidateEmail(inputText){
 }
 
 function downloadData(format){
+	// 把之前的移除
+	$('input[name=file_format]').remove();
 	var input1 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
 
 	$('form#matchForm').append(input1);
@@ -47,8 +49,6 @@ function getData(page){
 		$('.table-style1').html(results.header)
 		//console.log(results.data)
 		for (let i = 0; i < results.data.length; i++) {
-
-			// console.log(results.data)
 
 			let alert_str = '';
 
