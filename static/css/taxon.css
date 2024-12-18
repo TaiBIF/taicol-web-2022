@@ -536,6 +536,11 @@ ul.link-left li p {
     background: lightgray !important;
 }
 
+
+.green-tag-box .orange-tag-item {
+    background: #EE8773 !important;
+}
+
 /* 
 .history-show-more td {
     background-color: white;

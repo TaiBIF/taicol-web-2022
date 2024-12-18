@@ -406,7 +406,7 @@ def taxon(request, taxon_id):
                 if i in ['is_marine','is_brackish']:
                     links += [{'href': link_map['worms']['url_prefix'], 'title': link_map['worms']['title'], 'suffix': data['name'], 'category': link_map['worms']['category'], 'hidden_name': True}]
         if not is_in_taiwan:
-            data['is_list'].append(gettext('不存在於臺灣'))
+            data['is_in_taiwan_text'] = gettext('不存在於臺灣')
 
         # 整理保育資訊
         data = create_conservation_note(data=data)
@@ -1552,41 +1552,53 @@ def download_match_results(request):
     cols = ["search_term","score","simple_name","name_status","accepted_namecode","accepted_name","common_name_c","kingdom","phylum","class","order","family","genus","rank","is_endemic","alien_type",
             "is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","protected_category","red_category","iucn_category","cites_listing",
             "is_in_taiwan","not_official", "match_type"]
+    
 
     best = request.POST.get('best','yes')
     name = request.POST.get('name')
     file_format = request.POST.get('file_format','csv')
     download_email = request.POST.get('download_email')
     final_df = pd.DataFrame()
-    # 用loop取得name match結果 每頁30筆
+
     if name:
         name = name.splitlines()
         name = [n for n in name if n]
-
-        name_list = []
+        all_name_list = []
         # 排除重複 & 空值
         for n in name:
-            if n not in name_list:
-                name_list.append(n)
+            if n not in all_name_list:
+                all_name_list.append(n)
 
-        # t_names = name
-        # t_names = list(set(t_names))
-        # print('t_names', t_names)
-        # t_names = [n for n in name if n not in t_names and n] # 排除重複 & 空值
-        # 2024/11 修改: 為了和使用者輸入的順序相同 所以不排除重複了
         total_page = math.ceil(len(name) / 30)
         for page in range(total_page): 
-            # namecode_list = []
-            name_list = name_list[page*30:(page+1)*30]
+
+            name_list = all_name_list[page*30:(page+1)*30]
             names = ('|').join(name_list)
-            df = pd.DataFrame()
             url = env('NOMENMATCH_ROOT')
-            result = requests.post(url, data = {
+
+            query_dict =  {
                 'names': names,
                 'best': best,
                 'format': 'json',
                 'source': 'taicol'
-            })
+            }
+
+            if request.POST.get('is_in_taiwan') == 'true':
+                query_dict['is_in_taiwan'] = True
+
+            if request.POST.get('taxon_group') != 'all':
+                query_dict['taxon_group'] = request.POST.get('taxon_group')
+            
+            if kingdoms := request.POST.getlist('kingdom'):
+                if 'all' not in kingdoms:
+                    query_dict['kingdom'] = ",".join([f'"{k}"' for k in kingdoms])
+
+            
+            if ranks := request.POST.getlist('rank'):
+                query_dict['taxon_rank'] = ",".join([f'"{rank_map[int(r)]}"' for r in ranks])
+
+            result = requests.post(url, data=query_dict)
+
             if result.status_code == 200:
                 result = result.json()
                 data = result['data']
@@ -1597,7 +1609,6 @@ def download_match_results(request):
                         tmp_dict = {
                             'search_term': dd['search_term'],
                             'matched_clean': dd['matched_clean'], 
-                            # 'score': dd['score']
                         }
                         for d in dd['results']:
                             tmp_dict.update(d)
@@ -1609,9 +1620,8 @@ def download_match_results(request):
                 # 確認是否有對到多個學名的情況
                 matched_count = df[['search_term','namecode']].groupby('search_term', as_index=False).count()
                 matched_count = matched_count.rename(columns={'namecode': 'taxon_id'})
-                namecode_list = list(set(namecode_list))
+                # namecode_list = list(set(namecode_list))
 
-                # namecode_list = list(df[(df.namecode.notnull())&(df.namecode!='no match')].namecode.unique())
                 #JOIN taxon
                 if namecode_list:
                     query = f""" SELECT at.is_endemic, at.alien_type, at.is_terrestrial, 

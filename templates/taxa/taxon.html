@@ -9,7 +9,7 @@
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v4">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v5">
 {% endblock style %}
 
 {% block body %}
@@ -400,11 +400,17 @@
 												</div>
 											{% endif %}
 										{% endif %}
+
 										{% for i in data.is_list  %}
 											<div class="item">{% trans i %}</div>
 										{% endfor %}
+
+										{% if data.is_in_taiwan_text  %}
+										<div class="item orange-tag-item">{% trans data.is_in_taiwan_text %}</div>
+										{% endif %}
+
 										{% if data.not_official %}
-											<div class="item grey-tag-item">{% trans data.not_official %}</div>
+										<div class="item grey-tag-item">{% trans data.not_official %}</div>
 										{% endif %}
 									</div>
 									<div class="inf-short">
