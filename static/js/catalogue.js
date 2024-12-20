@@ -4,7 +4,7 @@
     var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
     // 要有其中之一存在才送出
-	let params = ['keyword','taxon_group','rank','is_endemic',
+	let params = ['keyword','higherTaxa','rank','is_endemic',
 				  'alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil',
 				  'protected','redlist','iucn','cites','date','status']
 
@@ -89,8 +89,8 @@
 		$('select[name=date-select]').val('gl');
 		$('select[name=date-select]').niceSelect('update'); 
 		$('.alread-select').html('')
-		$('#taxon_group').val('');
-		$('#taxon_group').trigger('change');
+		$('#higherTaxa').val('');
+		$('#higherTaxa').trigger('change');
 	}
 
 	function isValidDate(dateString) {
@@ -105,9 +105,18 @@
 	function removeRankItem(obj){
 		obj.parent('.item').remove()
 		// 如果全部選項都沒有的話，select換成reset
-		if ($('.alread-select .item').length == 0) {
-			$("li.option.selected").removeClass('selected');
-			$(".select-170 span.current").html('');
+		if ($('.rank-alread-select .item').length == 0) {
+			$(".rank-select-div li.option.selected").removeClass('selected');
+			$(".rank-select-div.select-170 span.current").html('');
+		}
+	}
+
+	function removeHigherTaxaItem(obj){
+		obj.parent('.item').remove()
+		// 如果全部選項都沒有的話，select換成reset
+		if ($('.higherTaxa-alread-select .item').length == 0) {
+			$('#higherTaxa').val('');
+			$('#higherTaxa').trigger('change');	
 		}
 	}
 
@@ -146,27 +155,17 @@
 		var input3 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
 		var input4 = $("<input>").attr("name", "date-select").attr("type", "hidden").val($('select[name=date-select] option:selected').val());
 
-		if ($('#taxon_group').select2('data').length > 0){
-			var input5 = $("<input>").attr("name", "taxon_group").attr("type", "hidden").val($('#taxon_group').select2('data')[0]['id']);
-			var input6 = $("<input>").attr("name", "taxon_group_str").attr("type", "hidden").val($('#taxon_group').select2('data')[0]['text']);
-		} else {
-			var input5 = $("<input>").attr("name", "taxon_group").attr("type", "hidden").val('');
-			var input6 = $("<input>").attr("name", "taxon_group_str").attr("type", "hidden").val('');
-		}
-
 		// facet
 		var input7 = $("<input>").attr("name", "facet").attr("type", "hidden").val($('input[name=hidden-facet]').val());
 		var input8 = $("<input>").attr("name", "facet_value").attr("type", "hidden").val($('input[name=hidden-value]').val());
 
-		$('form#moreForm').append(input1).append(input2).append(input3).append(input4).append(input5).append(input6).append(input7).append(input8);
+		$('form#moreForm').append(input1).append(input2).append(input3).append(input4).append(input7).append(input8);
 		$('form#moreForm').attr('action','/download_search_results')
 		$('form#moreForm').submit()
 		$('form#moreForm input[name=keyword]').remove()
 		$('form#moreForm input[name=name-select]').remove()
 		$('form#moreForm input[name=file_format]').remove()
 		$('form#moreForm input[name=date-select]').remove()
-		$('form#moreForm input[name=taxon_group]').remove()
-		$('form#moreForm input[name=taxon_group_str]').remove()
 		$('form#moreForm input[name=facet]').remove()
 		$('form#moreForm input[name=facet_value]').remove()
 	}
@@ -202,11 +201,11 @@
 						urlParams.getAll(m).forEach(function(me){
 							// 先確認是不是存在
 							if (!$(`input[name=rank][value="${me}"]`).length){
-								$('.alread-select').append(
+								$('.rank-alread-select').append(
 								`<div class="item">
 									<p>${$(`option[value="${me}"]`).html()}</p>
 									<input type="hidden" name="rank" value="${me}">
-									<button type="button" class="remove-alread-select removeRankItem">
+									<button type="button" class="removeRankItem">
 										<img src="/static/image/w-xx.svg">
 									</button>
 								</div>`)
@@ -227,6 +226,12 @@
                 removeRankItem($(this))
             })
 
+            $(".removeHigherTaxaItem").prop("onclick", null).off("click");
+
+            $('.removeHigherTaxaItem').on('click',function(){
+                removeHigherTaxaItem($(this))
+            })
+
 			// val 系列
 			let vs = ['keyword','date']
 			vs.forEach(function(v) {
@@ -236,9 +241,33 @@
 			});
 
 			// taxon group
-			if (urlParams.get('taxon_group')){
-				$('#taxon_group').append(`<option value="${urlParams.get('taxon_group')}">${urlParams.get('taxon_group_str')}</option>`)
-				$('[name=taxon_group]').val(urlParams.get('taxon_group'));
+			if (urlParams.getAll('higherTaxa').length > 0){
+				higherTaxa_list = urlParams.getAll('higherTaxa')
+				higherTaxa_str_list = urlParams.getAll('higherTaxa_str')
+
+				for (let i = 0; i < higherTaxa_list.length; i++) {
+
+					if ($(`input[name=higherTaxa][value=${higherTaxa_list[i]}]`).length == 0){
+						$('.higherTaxa-alread-select').append(
+		
+							`<div class="item">
+								<p>${higherTaxa_str_list[i]}</p>
+								<input type="hidden" name="higherTaxa" value="${higherTaxa_list[i]}">
+								<input type="hidden" name="higherTaxa_str" value="${higherTaxa_str_list[i]}">
+								<button type="button" class="removeHigherTaxaItem">
+									<img src="/static/image/w-xx.svg">
+								</button>
+							</div>`)
+		
+					}
+
+				}	
+				
+				$(".removeHigherTaxaItem").prop("onclick", null).off("click");
+
+				$('.removeHigherTaxaItem').on('click',function(){
+					removeHigherTaxaItem($(this))
+				})
 			}
 
 			// is 系列
@@ -263,10 +292,7 @@
 			// 如果不是從url進入的話 在這邊整理查詢項目成 query string
 			query_str = $('form#moreForm').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
 			'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() + '&page=' + page;
-			if ($('#taxon_group').select2('data').length > 0){
-				query_str = query_str + "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
-						"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
-			}
+
 			var newRelativePathQuery = window.location.pathname + '?' + query_str ;
 			history.pushState(null, '', newRelativePathQuery);
 		
@@ -343,6 +369,7 @@
 						if (results['count']['total'][0]['count'] > 1000){
 							$('.downloadData').off('click')
 							$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
+							$('.offlineDownloadData').off('click')
 							$('.offlineDownloadData').on('click', function(){
 								offlineDownloadData()
 								$('button.download_check').data('type', $(this).data('type'))
@@ -350,6 +377,7 @@
 						} else {
 							$('.offlineDownloadData').off('click')
 							$('.offlineDownloadData').removeClass('offlineDownloadData').addClass('downloadData')
+							$('.downloadData').off('click')
 							$('.downloadData').on('click', function(){
 								downloadData($(this).data('type'))
 							})
@@ -487,7 +515,7 @@
 										</div>
 									</td>								
 									<td>${results.data[i]['rank']}</td>
-									<td>${results.data[i]['taxon_group']}</td>
+									<td>${results.data[i]['higherTaxa']}</td>
 									<td>${results.data[i]['kingdom']}</td>
 								</tr>`)
 
@@ -605,12 +633,6 @@
 					'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() +
 					'&page=' + page + '&facet=' + $('input[name=hidden-facet]').val() + 
 					'&facet_value=' + $('input[name=hidden-value]').val()  
-					
-			if ( $('#taxon_group').select2('data').length > 0 ){
-				query_str = query_str
-					+ "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
-					"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
-			}
 
 			// 如果不是從url來的話 代表是第一次查詢 加上 page =1
 			if (!from_url){
@@ -639,7 +661,7 @@
 				if (results['count']['total'][0]['count'] > 1000){
 					$('.downloadData').off('click')
 					$('.downloadData').removeClass('downloadData').addClass('offlineDownloadData')
-
+					$('.offlineDownloadData').off('click')
 					$('.offlineDownloadData').on('click', function(){
 						offlineDownloadData()
 						$('button.download_check').data('type', $(this).data('type'))
@@ -647,6 +669,7 @@
 				} else {
 					$('.offlineDownloadData').off('click')
 					$('.offlineDownloadData').removeClass('offlineDownloadData').addClass('downloadData')
+					$('.downloadData').off('click')
 					$('.downloadData').on('click', function(){
 						downloadData($(this).data('type'))
 					})
@@ -680,7 +703,7 @@
 								</div>
 							</td>							
 							<td>${results.data[i]['rank']}</td>
-							<td>${results.data[i]['taxon_group']}</td>
+							<td>${results.data[i]['higherTaxa']}</td>
 							<td>${results.data[i]['kingdom']}</td>
 						</tr>`)
 				}
@@ -785,6 +808,9 @@
         $('.removeRankItem').on('click',function(){
             removeRankItem($(this))
         })
+        $('.removeHigherTaxaItem').on('click',function(){
+            removeHigherTaxaItem($(this))
+        })
 
         // $('.updateData').on('click', function(){
         //     updateData(parseInt($(this).data('page')))
@@ -813,7 +839,7 @@
         })
 
 		// 較高分類群 autocomplete
-		$("#taxon_group").select2({
+		$("#higherTaxa").select2({
 			placeholder: $lang == 'en-us' ? "Enter keywords" : "請輸入查詢字串" ,
 			language: {
 				"noResults": function(params){
@@ -841,9 +867,6 @@
 							return {
 							   keyword: params.term,
 							   from_tree: 'false',
-							//    with_cultured: with_cultured,
-							//    lin_rank: lin_rank,
-							//    with_not_official: with_not_official,
 							   lang: $lang
 							};
 		
@@ -869,7 +892,7 @@
 			}
 		});
 
-		$('#taxon_group').on('select2:open', function (e) {
+		$('#higherTaxa').on('select2:open', function (e) {
 			$('.select2-search__field').get(0).focus()
 		});
 		  
@@ -913,24 +936,21 @@
 		$('select[name=date-select]').niceSelect();
 
 		// 階層選項控制
-		/*
-		$('.remove-alread-select').on('click', function(){
-			$(this).parent('.item').remove()
-		})*/
 
 		$('select[name=rank-select]').on('change', function(){
 			// 確認沒有重複
 			if (($('select[name=rank-select] option:selected').text() != '')&($(`.item input[name=rank][value="${$('select[name=rank-select] option:selected').val()}"]`).length == 0)){
-				$('.alread-select').append(
+				$('.rank-alread-select').append(
 					`<div class="item">
 						<p>${$('select[name=rank-select] option:selected').text()}</p>
 						<input type="hidden" name="rank" value="${$('select[name=rank-select] option:selected').val()}">
-						<button type="button" class="remove-alread-select removeRankItem">
+						<button type="button" class="removeRankItem">
 							<img src="/static/image/w-xx.svg">
 						</button>
 					</div>`)
 			}
 
+			// tag上面的xx
 			$(".removeRankItem").prop("onclick", null).off("click");
 
 			$('.removeRankItem').on('click',function(){
@@ -940,26 +960,53 @@
 		})
 
 
-	});
+		$('.select-button').on('click',function (event) {
+			if( $(this).hasClass('now')){
+				$(this).removeClass('now');
+				$('.selection-box').slideUp();
+			}else{
+				$(this).addClass('now');
+				$('.selection-box').slideDown();
+			}
+		});
+		$('.more-option-button').on('click',function (event) {
+			if( $(this).hasClass('now')){
+				$(this).removeClass('now');
+				$('.option-box2').slideUp();
+			}else{
+				$(this).addClass('now');
+				$('.option-box2').slideDown();
+			}
+		});
+
+		$('#higherTaxa').on('select2:select', function (e) {
+			// Do something
+			var data = e.params.data;
+
+			if ($(`input[name=higherTaxa][value=${data.id}]`).length == 0){
+				$('.higherTaxa-alread-select').append(
+
+					`<div class="item">
+						<p>${data.text}</p>
+						<input type="hidden" name="higherTaxa" value="${data.id}">
+						<input type="hidden" name="higherTaxa_str" value="${data.text}">
+						<button type="button" class="removeHigherTaxaItem">
+							<img src="/static/image/w-xx.svg">
+						</button>
+					</div>`)
+
+					$(".removeHigherTaxaItem").prop("onclick", null).off("click");
+
+					$('.removeHigherTaxaItem').on('click',function(){
+						removeHigherTaxaItem($(this))
+					})		
+			}
+
+	
+		  });
+		  
 
 
-	$('.select-button').on('click',function (event) {
-		if( $(this).hasClass('now')){
-			$(this).removeClass('now');
-			$('.selection-box').slideUp();
-		}else{
-			$(this).addClass('now');
-			$('.selection-box').slideDown();
-		}
-	});
-	$('.more-option-button').on('click',function (event) {
-		if( $(this).hasClass('now')){
-			$(this).removeClass('now');
-			$('.option-box2').slideUp();
-		}else{
-			$(this).addClass('now');
-			$('.option-box2').slideDown();
-		}
 	});
 
 
@@ -971,26 +1018,10 @@
 
 
 	function sendOfflineDownloadData(format){
-		/*
-		var input1 = $("<input>").attr("name", "keyword").attr("type", "hidden").val($('input[name=keyword]').val());
-		var input2 = $("<input>").attr("name", "name-select").attr("type", "hidden").val($('select[name=name-select] option:selected').val());
-		var input3 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
-		var input4 = $("<input>").attr("name", "date-select").attr("type", "hidden").val($('select[name=date-select] option:selected').val());
-		var input5 = $("<input>").attr("name", "download_email").attr("type", "hidden").val($('input[name=download_email]').val());
-
-		$('form#moreForm').append(input1).append(input2).append(input3).append(input4).append(input5);
-		*/
 
 		let query_str = "&keyword=" + $('input[name=keyword]').val() + '&name-select=' + $('select[name=name-select] option:selected').val() +
 					"&file_format=" + format + "&date-select=" + $('select[name=date-select] option:selected').val() +
 					"&download_email=" + $('input[name=download_email]').val()
-
-
-		if ( $('#taxon_group').select2('data').length > 0 ){
-			query_str = query_str
-				+ "&taxon_group=" +  $('#taxon_group').select2('data')[0]['id'] +
-				"&taxon_group_str=" + $('#taxon_group').select2('data')[0]['text'] 
-		}
 
 		query_str += '&facet=' + $('input[name=hidden-facet]').val() + '&facet_value=' + $('input[name=hidden-value]').val();
 

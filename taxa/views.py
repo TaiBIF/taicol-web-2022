@@ -312,7 +312,7 @@ def name_match(request):
 
 def taxon(request, taxon_id):
     stat_str, taxon_group_str = '', ''
-    refs, new_refs, experts, name_changes, taxon_history, name_history, links, per_usage_refs = [], [], [], [], [], [], [], []
+    refs, new_refs, experts, name_changes, taxon_history, name_history, links, per_usage_refs, taxon_views = [], [], [], [], [], [], [], [], []
     data = {}
     # 確認是否已刪除 & 如果是國外物種不顯示
     is_deleted = 0
@@ -361,6 +361,7 @@ def taxon(request, taxon_id):
         data['sci_name'] = sci_name.strip()
         data['name_id'] = int(solr_resp.get('accepted_taxon_name_id').replace('.0',''))
         data['rank_id'] = int(solr_resp.get('taxon_rank_id').replace('.0',''))
+
 
         solr_get = ['common_name_c', 'alternative_name_c', 'path','is_endemic', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'alien_type',
                     'cites', 'iucn', 'redlist', 'protected', 'is_cultured', 'alien_status_note']
@@ -840,12 +841,15 @@ def taxon(request, taxon_id):
             data['is_deleted'] = True
             data['new_taxon_name'] = new_taxon_name
 
+        taxon_views = create_view_display(taxon_id=taxon_id, accepted_taxon_name_id=data['name_id'], misapplied_names=list(name_change_df[name_change_df.taxon_status=='misapplied'].taxon_name_id.unique()))
+
     elif not has_taxon:
         taxon_id = None
 
     return render(request, 'taxa/taxon.html', {'taxon_id': taxon_id, 'data': data, 'links': links,
-                                                'refs': refs, 'experts': experts, 'name_changes': name_changes,
-                                               'taxon_history': taxon_history, 'stat_str': stat_str, 'name_history': name_history, })
+                                               'refs': refs, 'experts': experts, 'name_changes': name_changes,
+                                               'taxon_history': taxon_history, 'stat_str': stat_str, 'name_history': name_history, 
+                                               'taxon_views': taxon_views})
 
 
 # 根據當下的條件判斷
@@ -1514,12 +1518,16 @@ def get_match_result(request):
                                 df.loc[i,'alien_type'] = attr_map[df.iloc[i].alien_type]
                             else:
                                 df.loc[i,'alien_type'] = attr_map_c[df.iloc[i].alien_type]
-                    is_list = ['is_endemic','is_in_taiwan']
+                    is_list = ['is_endemic']
                     for ii in is_list:
                         if get_language() == 'en-us':
                             df[ii] = df[ii].apply(lambda x: attr_map[ii] if x == 1 else '')
                         else:
                             df[ii] = df[ii].apply(lambda x: attr_map_c[ii] if x == 1 else '')
+
+                    df['is_in_taiwan'] = df['is_in_taiwan'].apply(lambda x: gettext('不存在於臺灣') if x == 0 else '')
+
+
                     df['rank'] = df['rank_id'].apply(lambda x: gettext(rank_map_c[x]) if x else '')
 
             response['matched_count'] = dict(matched_count.values.tolist())
@@ -2180,7 +2188,12 @@ def get_conditioned_solr_search(req):
 
     # 較高分類群
 
-    if higher_taxon_id := req.get('taxon_group'):
-        query_list.append(f'path:/.*{higher_taxon_id}.*/')
+    if higher_taxon_ids := req.getlist('higherTaxa'):
+        higher_list = []
+        for h in higher_taxon_ids:
+            higher_list.append(f'path:/.*{h}.*/')
+
+        query_list.append(f"({' OR '.join(higher_list)})")
+
 
     return query_list, is_chinese

@@ -13,7 +13,7 @@
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/catalogue.css' %}?v2">
+<link rel=stylesheet type="text/css" href="{% static 'css/catalogue.css' %}?v3">
 {% endblock style %}
 
 {% block body %}
@@ -138,8 +138,12 @@
 							<div class="left-title">
 								<p>{% trans "較高分類群" %}</p>
 							</div>
-							<div class="input-item">
-								<select class="taxon_group" id="taxon_group"></select>
+							<div class="right-option">
+								<div class="input-item">
+									<select class="higherTaxa" id="higherTaxa"></select>
+									<div class="higherTaxa-alread-select alread-select">
+									</div>
+								</div>
 							</div>
 						</div>
 						<div class="item-box">
@@ -147,7 +151,7 @@
 								<p>{% trans "分類階層" %}</p>
 							</div>
 							<div class="right-option">
-								<div class="input-item select-170">
+								<div class="rank-select-div input-item select-170">
 									<select class="wide" name="rank-select">
 										<option value="none"></option>
 										<option value="34">{% trans "種" %}</option>
@@ -200,7 +204,7 @@
 										<option value="49">{% trans '病毒域' %}</option>	
 									</select>
 								</div>							
-								<div class="alread-select">
+								<div class="rank-alread-select alread-select">
 								</div>
 							</div>
 						</div>
@@ -584,5 +588,5 @@
 </div>
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/catalogue.js' %}?v7"></script>
+<script src="{% static 'js/catalogue.js' %}?v8"></script>
 {% endblock script %}
