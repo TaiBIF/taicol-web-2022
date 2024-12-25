@@ -117,6 +117,21 @@ conserv_map = {'iucn_category': 'IUCN', 'cites_listing': 'CITES',
                'protected_category': '保育類', 'red_category': '臺灣紅皮書', 'sensitive_suggest': '敏感物種建議模糊層級'}
 
 
+bio_group_map = {
+    '昆蟲': ['t0000512'],
+    '蜘蛛': ['t0001697'],
+    '魚類': ['t0000203','t0000204','t0000522'],
+    '兩棲類': ['t0000464'],
+    '爬蟲類': ['t0000545'],
+    '鳥類': ['t0002889'],
+    '哺乳類': ['t0000517'],
+    '維管束植物': ['t0000043'],
+    '蕨類植物': ['t0000445','t0000452'],
+    '苔蘚植物': ['t0000090','t0000091','t0000095'],
+    '藻類': ['t0000007','t0000092','t0000093','t0000096']
+}
+
+
 # 林奈階層
 
 lin_map = {
@@ -863,7 +878,6 @@ def create_view_display(taxon_id, accepted_taxon_name_id, misapplied_names):
 
     # 2. 誤用名還有活著、台灣存在的taxon (誤用名為該接受名)
 
-    misapplied_names = [79876, 164343]
     if len(misapplied_names):
         query = """
                 WITH base_query AS (SELECT distinct at.taxon_id, at.accepted_taxon_name_id, atu.reference_id
