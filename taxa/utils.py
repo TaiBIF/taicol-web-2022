@@ -854,8 +854,9 @@ custom_reference_type_order = {
 
 # # 其他分類觀點
 def create_view_display(taxon_id, accepted_taxon_name_id, misapplied_names):
-    # print(misapplied_names)
+    
     taxon_views = []
+    other_misapplied = []
     conn = pymysql.connect(**db_settings)
  
     # 1. 接受學名為其他台灣存在的Taxon 同物異名 / 誤用名 的觀點 -> 從 reference_usages 找
@@ -866,17 +867,36 @@ def create_view_display(taxon_id, accepted_taxon_name_id, misapplied_names):
         acp_names = cursor.fetchall()
         acp_names = [a[0] for a in acp_names]
 
-    if len(acp_names):
+    # 這邊只能抓到誤用的
+    # if len(acp_names):
+    query = """WITH base_query AS (SELECT distinct at.taxon_id, at.accepted_taxon_name_id, atu.reference_id
+                FROM api_taxon_usages atu
+                JOIN api_taxon at ON atu.taxon_id = at.taxon_id AND at.taxon_id != %s AND at.is_in_taiwan = 1 AND at.is_deleted = 0
+                WHERE atu.accepted_taxon_name_id IN %s AND atu.taxon_name_id = %s AND atu.status = 'misapplied')
+                SELECT an.taxon_name_id, an.formatted_name, ac.short_author, ac.reference_id, base_query.taxon_id, r.type, r.publish_year
+                FROM base_query 
+                JOIN `references` r ON r.id = base_query.reference_id
+                JOIN api_names an ON an.taxon_name_id = base_query.accepted_taxon_name_id
+                JOIN api_citations ac ON ac.reference_id = base_query.reference_id;
+            """
+    with conn.cursor() as cursor:
+        cursor.execute(query, (taxon_id, acp_names, accepted_taxon_name_id))
+        results = cursor.fetchall()
+        other_misapplied = [r[0] for r in results]
+        taxon_views += list(results)
 
-        query = """WITH base_query AS (SELECT distinct at.taxon_id, at.accepted_taxon_name_id, atu.reference_id
-                    FROM api_taxon_usages atu
-                    JOIN api_taxon at ON atu.taxon_id = at.taxon_id AND at.taxon_id != %s AND at.is_in_taiwan = 1 AND at.is_deleted = 0
-                    WHERE atu.accepted_taxon_name_id IN %s AND atu.taxon_name_id = %s)
+    # 同物異名要直接用accepted抓 但 taxon_id & reference 要分開query
+    acp_names = [a for a in acp_names if a not in other_misapplied]
+    if len(acp_names):
+        query = """WITH base_query AS (SELECT at.taxon_id, at.accepted_taxon_name_id
+                    FROM api_taxon at WHERE at.taxon_id != %s AND at.is_in_taiwan = 1 AND at.is_deleted = 0
+                    AND at.accepted_taxon_name_id IN %s)
                     SELECT an.taxon_name_id, an.formatted_name, ac.short_author, ac.reference_id, base_query.taxon_id, r.type, r.publish_year
-                    FROM base_query 
-                    JOIN `references` r ON r.id = base_query.reference_id
+                    FROM reference_usages ru
+                    JOIN base_query ON base_query.accepted_taxon_name_id = ru.accepted_taxon_name_id AND ru.taxon_name_id = %s
+                    JOIN `references` r ON r.id = ru.reference_id
                     JOIN api_names an ON an.taxon_name_id = base_query.accepted_taxon_name_id
-                    JOIN api_citations ac ON ac.reference_id = base_query.reference_id;
+                    JOIN api_citations ac ON ac.reference_id = ru.reference_id;
                 """
         with conn.cursor() as cursor:
             cursor.execute(query, (taxon_id, acp_names, accepted_taxon_name_id))
@@ -914,7 +934,7 @@ def create_view_display(taxon_id, accepted_taxon_name_id, misapplied_names):
         # 先處理排序 先排year再排type
         # taxon_views = taxon_views.sort_values('publish_year', ascending=False).sort_values('reference_order')
         # 多筆文獻 改成單純用年份排序
-        taxon_views = taxon_views.sort_values('publish_year')
+        taxon_views = taxon_views.sort_values(['taxon_id','publish_year'])
         taxon_views.loc[taxon_views.reference_type==4, 'reference_id'] = 0
         taxon_views.loc[taxon_views.reference_type==4, 'citation'] = ''
         taxon_views = taxon_views.drop(columns=['publish_year','reference_type']) #,'reference_order'])
