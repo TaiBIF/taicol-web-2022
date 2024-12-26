@@ -563,13 +563,14 @@
 											<td><a href="/taxon/{{ t.taxon_id }} ">{{ t.taxon_id }}</a></td>
 											<td><a target="_blank" href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/taxon-names/{{ t.name_id }}">{{ t.formatted_name|default_if_none:''|safe }}</a>
 											</td>
-											<td>{% if t.citation %}
-												<a target="_blank" href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/references/{{ t.reference_id }}">{{ t.citation|default_if_none:''|safe }}</a>
+											<td>{% if t.refs %}
+												{{ t.refs|safe }}
+												{% comment %} <a target="_blank" href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/references/{{ t.reference_id }}">{{ t.citation|default_if_none:''|safe }}</a> {% endcomment %}
 											{% endif %}</td>
 										</tr>
 									{% endfor %}
 								</table>
-								{% endif %}							
+								{% endif %}
 							</div>
 						</div>
 					</div>
