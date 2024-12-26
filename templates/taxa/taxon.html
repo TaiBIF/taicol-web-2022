@@ -9,7 +9,7 @@
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v5">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v6">
 {% endblock style %}
 
 {% block body %}
@@ -78,6 +78,7 @@
 								<option value="5">{% trans "物種資訊" %}</option>
 								<option value="6">{% trans "學名變遷" %}</option>
 								<option value="7">{% trans "文獻" %}</option>
+								<option value="12">{% trans "其他分類觀點" %}</option>
 								<option value="8">{% trans "專家" %}</option>
 								<option value="9">{% trans "相關連結" %}</option>
 								<option value="11">{% trans "有效名版本紀錄" %}</option>
@@ -221,6 +222,7 @@
 					<button class="sticky_btn" data-hash="#taxon-info">- {% trans "物種資訊" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-change">- {% trans "學名變遷" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-ref">- {% trans "文獻" %}</button>
+					<button class="sticky_btn" data-hash="#taxon-view">- {% trans "其他分類觀點" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-expert">- {% trans "專家" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-link">- {% trans "相關連結" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-version">- {% trans "有效名版本" %}</button>
@@ -532,6 +534,49 @@
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
+							<a class="anchor" id="taxon-view"></a>
+							<div class="mark-title">
+								<img src="{% static 'image/title-mark.svg' %}">
+								<p>{% trans "其他分類觀點" %}</p>
+							</div>
+							<div class="arr">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+									</g>
+								</svg>
+							</div>
+						</div>
+
+						<div class="w-content">
+							<div class="scro-m">
+								{% if taxon_views|length > 0 %}
+								<table class="history-edit" cellspacing="0" cellpadding="0" border="0">
+									<tr>
+										<td>{% trans "物種編號" %}</td>
+										<td>{% trans "採用學名" %}</td>
+										<td>{% trans "文獻" %}</td>
+									</tr>
+									{% for t in taxon_views %}
+										<tr>
+											<td><a href="/taxon/{{ t.taxon_id }} ">{{ t.taxon_id }}</a></td>
+											<td><a target="_blank" href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/taxon-names/{{ t.name_id }}">{{ t.formatted_name|default_if_none:''|safe }}</a>
+											</td>
+											<td>{% if t.refs %}
+												{{ t.refs|safe }}
+												{% comment %} <a target="_blank" href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/references/{{ t.reference_id }}">{{ t.citation|default_if_none:''|safe }}</a> {% endcomment %}
+											{% endif %}</td>
+										</tr>
+									{% endfor %}
+								</table>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					<!--展開時加上now-->
+					<div class="w-box marb_20 now">
+						<div class="title-click">
 							<a class="anchor" id="taxon-expert"></a>
 							<div class="mark-title">
 								<img src="{% static 'image/title-mark.svg' %}">
@@ -648,7 +693,7 @@
 								{% endfor %}
 							</table>
 							{% endif %}
-						</div>
+							</div>
 						</div>
 					</div>
 					<!--展開時加上now-->

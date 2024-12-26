@@ -4,7 +4,7 @@
 {% block style %}
 <script src="{% static 'js/jquery.nice-select.js' %}?v1"></script>
 <link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}?v1">
-<link rel=stylesheet type="text/css" href="{% static 'css/name_match.css' %}?v4">
+<link rel=stylesheet type="text/css" href="{% static 'css/name_match.css' %}?v6">
 {% endblock style %}
 
 {% block body %}
@@ -255,35 +255,35 @@
 					<div class="left-title">{% trans "比對常見類群" %}</div>
 					<div class="radiobox">
 						<div class="flex">
-							<input type="radio" name="taxon_group" value="all" checked>
+							<input type="radio" name="bio_group" value="all" checked>
 							<p>{% trans "全部" %}</p>
 						</div>
 						<div class="flex">
-							<input type="radio" name="taxon_group" value="昆蟲">
+							<input type="radio" name="bio_group" value="昆蟲">
 							<p>{% trans "昆蟲" %}</p>
 						</div>
 						<div class="flex">
-							<input type="radio" name="taxon_group" value="魚類">
+							<input type="radio" name="bio_group" value="魚類">
 							<p>{% trans "魚類" %}</p>
 						</div>
 						<div class="flex">
-							<input type="radio" name="taxon_group" value="爬蟲類">
+							<input type="radio" name="bio_group" value="爬蟲類">
 							<p>{% trans "爬蟲類" %}</p>
 						</div>
 						<div class="flex">
-							<input type="radio" name="taxon_group" value="鳥類">
+							<input type="radio" name="bio_group" value="鳥類">
 							<p>{% trans "鳥類" %}</p>
 						</div>
 						<div class="flex">
-							<input type="radio" name="taxon_group" value="哺乳類">
+							<input type="radio" name="bio_group" value="哺乳類">
 							<p>{% trans "哺乳類" %}</p>
 						</div>
 						<div class="flex">
-							<input type="radio" name="taxon_group" value="維管束植物">
+							<input type="radio" name="bio_group" value="維管束植物">
 							<p>{% trans "維管束植物" %}</p>
 						</div>
 						<div class="flex">
-							<input type="radio" name="taxon_group" value="病毒">
+							<input type="radio" name="bio_group" value="病毒">
 							<p>{% trans "病毒" %}</p>
 						</div>
 					</div>
@@ -324,5 +324,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/name_match.js' %}?v10"></script>
+<script src="{% static 'js/name_match.js' %}?v11"></script>
 {% endblock script %}

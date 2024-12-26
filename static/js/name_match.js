@@ -47,7 +47,7 @@ function getData(page){
 		$('.check-result-box').removeClass('d-none');
 		//清空表格
 		$('.table-style1').html(results.header)
-		//console.log(results.data)
+
 		for (let i = 0; i < results.data.length; i++) {
 
 			let alert_str = '';
@@ -88,9 +88,13 @@ function getData(page){
 				let tag = '';
 				for (ii of ['is_endemic','is_in_taiwan','alien_type']){
 					if (results.data[i][ii] !=''){
-						split_arr = results.data[i][ii].split(',')
-						for (iii of split_arr){
-							tag += `<div class="item">${iii}</div>`
+						if (ii == 'is_in_taiwan') {
+							tag += `<div class="item orange-tag-item">${results.data[i][ii]}</div>`
+						} else {
+							split_arr = results.data[i][ii].split(',')
+							for (iii of split_arr){
+								tag += `<div class="item">${iii}</div>`
+							}
 						}
 					}
 				}

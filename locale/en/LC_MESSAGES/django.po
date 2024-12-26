@@ -781,6 +781,14 @@ msgstr "Accepted Name History"
 msgid "物種編號"
 msgstr "Taxon ID"
 
+#: templates/taxa/taxon.html:234
+msgid "採用學名"
+msgstr "Accepted Name"
+
+#: templates/taxa/taxon.html:234
+msgid "其他分類觀點"
+msgstr "Alternative Taxonomy"
+
 # templates/taxa/taxon.html: 
 #: templates/taxa/taxon.html:247
 msgid "請參見"
@@ -972,6 +980,36 @@ msgstr "Kingdom"
 #:  
 msgid "比對常見類群"
 msgstr "Bio-Group"
+
+
+#:  
+msgid "常見類群"
+msgstr "Bio-Group"
+
+
+#:  
+msgid "蜘蛛"
+msgstr "Spiders"
+
+
+#:  
+msgid "兩棲類"
+msgstr "Amphibians"
+
+
+#:  
+msgid "蕨類植物"
+msgstr "Ferns"
+
+
+#:  
+msgid "苔蘚植物"
+msgstr "Mosses"
+
+
+#:  
+msgid "藻類"
+msgstr "Algae"
 
 
 #:  

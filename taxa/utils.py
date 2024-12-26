@@ -117,6 +117,21 @@ conserv_map = {'iucn_category': 'IUCN', 'cites_listing': 'CITES',
                'protected_category': '保育類', 'red_category': '臺灣紅皮書', 'sensitive_suggest': '敏感物種建議模糊層級'}
 
 
+bio_group_map = {
+    '昆蟲': ['t0000512'],
+    '蜘蛛': ['t0001697'],
+    '魚類': ['t0000203','t0000204','t0000522'],
+    '兩棲類': ['t0000464'],
+    '爬蟲類': ['t0000545'],
+    '鳥類': ['t0002889'],
+    '哺乳類': ['t0000517'],
+    '維管束植物': ['t0000043'],
+    '蕨類植物': ['t0000445','t0000452'],
+    '苔蘚植物': ['t0000090','t0000091','t0000095'],
+    '藻類': ['t0000007','t0000092','t0000093','t0000096']
+}
+
+
 # 林奈階層
 
 lin_map = {
@@ -225,8 +240,6 @@ var_df = pd.DataFrame([
 ('䳭','(䳭|即鳥)'),
 ('鱼','[魚鱼]'),
 ('魚','[魚鱼]'),
-('万','[萬万]'),
-('萬','[萬万]'),
 ('鹨','[鷚鹨]'),
 ('鷚','[鷚鹨]'),
 ('蓟','[薊蓟]'),
@@ -826,3 +839,128 @@ def escape_solr_query(string):
         else:
             final_string += s
     return final_string
+
+
+
+# type= 1 or 2 or 3 地位是相同的 
+custom_reference_type_order = {
+    1: 1,
+    2: 1,
+    3: 1,
+    4: 3,
+    5: 2,
+}
+
+
+# # 其他分類觀點
+def create_view_display(taxon_id, accepted_taxon_name_id, misapplied_names):
+    
+    taxon_views = []
+    other_misapplied = []
+    conn = pymysql.connect(**db_settings)
+ 
+    # 1. 接受學名為其他台灣存在的Taxon 同物異名 / 誤用名 的觀點 -> 從 reference_usages 找
+    # 先找出對應的有效學名有哪些
+    query = "SELECT distinct accepted_taxon_name_id FROM reference_usages WHERE taxon_name_id = %s AND accepted_taxon_name_id != %s AND deleted_at IS NULL;"
+    with conn.cursor() as cursor:
+        cursor.execute(query, (accepted_taxon_name_id,accepted_taxon_name_id))
+        acp_names = cursor.fetchall()
+        acp_names = [a[0] for a in acp_names]
+
+    # 這邊只能抓到誤用的
+    if len(acp_names):
+        query = """WITH base_query AS (SELECT distinct at.taxon_id, at.accepted_taxon_name_id, atu.reference_id
+                    FROM api_taxon_usages atu
+                    JOIN api_taxon at ON atu.taxon_id = at.taxon_id AND at.taxon_id != %s AND at.is_in_taiwan = 1 AND at.is_deleted = 0
+                    WHERE atu.accepted_taxon_name_id IN %s AND atu.taxon_name_id = %s AND atu.status = 'misapplied')
+                    SELECT an.taxon_name_id, an.formatted_name, ac.short_author, ac.reference_id, base_query.taxon_id, r.type, r.publish_year
+                    FROM base_query 
+                    JOIN `references` r ON r.id = base_query.reference_id
+                    JOIN api_names an ON an.taxon_name_id = base_query.accepted_taxon_name_id
+                    JOIN api_citations ac ON ac.reference_id = base_query.reference_id;
+                """
+        with conn.cursor() as cursor:
+            cursor.execute(query, (taxon_id, acp_names, accepted_taxon_name_id))
+            results = cursor.fetchall()
+            other_misapplied = [r[0] for r in results]
+            taxon_views += list(results)
+
+    # 同物異名要直接用accepted抓 但 taxon_id & reference 要分開query
+    acp_names = [a for a in acp_names if a not in other_misapplied]
+    if len(acp_names):
+        query = """WITH base_query AS (SELECT at.taxon_id, at.accepted_taxon_name_id
+                    FROM api_taxon at WHERE at.taxon_id != %s AND at.is_in_taiwan = 1 AND at.is_deleted = 0
+                    AND at.accepted_taxon_name_id IN %s)
+                    SELECT an.taxon_name_id, an.formatted_name, ac.short_author, ac.reference_id, base_query.taxon_id, r.type, r.publish_year
+                    FROM reference_usages ru
+                    JOIN base_query ON base_query.accepted_taxon_name_id = ru.accepted_taxon_name_id AND ru.taxon_name_id = %s
+                    JOIN `references` r ON r.id = ru.reference_id
+                    JOIN api_names an ON an.taxon_name_id = base_query.accepted_taxon_name_id
+                    JOIN api_citations ac ON ac.reference_id = ru.reference_id;
+                """
+        with conn.cursor() as cursor:
+            cursor.execute(query, (taxon_id, acp_names, accepted_taxon_name_id))
+            results = cursor.fetchall()
+            taxon_views += list(results)
+
+    # 2. 誤用名還有活著、台灣存在的taxon (誤用名為該接受名)
+    # 不需調整
+
+    if len(misapplied_names):
+        query = """
+                WITH base_query AS (SELECT distinct at.taxon_id, at.accepted_taxon_name_id, atu.reference_id
+                FROM api_taxon_usages atu
+                JOIN api_taxon at ON atu.taxon_id = at.taxon_id AND at.is_in_taiwan = 1 AND at.is_deleted = 0
+                WHERE atu.taxon_name_id IN %s AND atu.status = 'accepted' AND atu.is_latest = 1)
+                SELECT an.taxon_name_id, an.formatted_name, ac.short_author, ac.reference_id, base_query.taxon_id, r.type, r.publish_year
+                FROM base_query 
+                JOIN `references` r ON r.id = base_query.reference_id
+                JOIN api_names an ON an.taxon_name_id = base_query.accepted_taxon_name_id
+                JOIN api_citations ac ON ac.reference_id = base_query.reference_id;
+                """
+        with conn.cursor() as cursor:
+            cursor.execute(query, (misapplied_names, ))
+            results = cursor.fetchall()
+            taxon_views += list(results)
+
+
+    # 這邊會有重複的usage 要按照優先序排序 並只取第一筆
+    # 要改成顯示多筆
+    final_taxon_views = []
+    if len(taxon_views):
+        taxon_views = pd.DataFrame(taxon_views, columns=['name_id','formatted_name','citation','reference_id','taxon_id','reference_type','publish_year'])
+        # taxon_views['reference_order'] = taxon_views['reference_type'].apply(lambda x: custom_reference_type_order[x])
+        taxon_views['reference_id'] = taxon_views['reference_id'].astype('int')
+        # 先處理排序 先排year再排type
+        # taxon_views = taxon_views.sort_values('publish_year', ascending=False).sort_values('reference_order')
+        # 多筆文獻 改成單純用年份排序
+        taxon_views = taxon_views.sort_values(['taxon_id','publish_year'])
+        taxon_views.loc[taxon_views.reference_type==4, 'reference_id'] = 0
+        taxon_views.loc[taxon_views.reference_type==4, 'citation'] = ''
+        taxon_views = taxon_views.drop(columns=['publish_year','reference_type']) #,'reference_order'])
+
+        for t in taxon_views.taxon_id.unique():
+            rows = taxon_views[taxon_views.taxon_id==t]
+            if len(rows[rows.reference_id!=0]):
+                rows = rows[rows.reference_id!=0]
+            refs = []
+            for row in rows[['citation','reference_id']].to_dict('records'):
+                if row.get('reference_id'):
+                    refs.append(f'<a target="_blank" href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/references/{row.get("reference_id")}">{row.get("citation")}</a>')
+            final_taxon_views.append({
+                'taxon_id': rows.taxon_id.values[0],
+                'name_id': int(rows.name_id.values[0]),
+                'formatted_name': rows.formatted_name.values[0],
+                'refs': '; '.join(refs)
+            })
+            
+        # 只取第一個
+        # taxon_views = taxon_views.groupby(['name_id', 'formatted_name','taxon_id'],as_index=False).first()
+        # taxon_views = taxon_views.to_dict('records')
+
+
+
+    conn.close() 
+
+
+    return final_taxon_views

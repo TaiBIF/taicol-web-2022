@@ -311,8 +311,8 @@ def name_match(request):
 
 
 def taxon(request, taxon_id):
-    stat_str, taxon_group_str = '', ''
-    refs, new_refs, experts, name_changes, taxon_history, name_history, links, per_usage_refs = [], [], [], [], [], [], [], []
+    stat_str, higherTaxa_str = '', ''
+    refs, new_refs, experts, name_changes, taxon_history, name_history, links, per_usage_refs, taxon_views = [], [], [], [], [], [], [], [], []
     data = {}
     # 確認是否已刪除 & 如果是國外物種不顯示
     is_deleted = 0
@@ -362,6 +362,7 @@ def taxon(request, taxon_id):
         data['name_id'] = int(solr_resp.get('accepted_taxon_name_id').replace('.0',''))
         data['rank_id'] = int(solr_resp.get('taxon_rank_id').replace('.0',''))
 
+
         solr_get = ['common_name_c', 'alternative_name_c', 'path','is_endemic', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'alien_type',
                     'cites', 'iucn', 'redlist', 'protected', 'is_cultured', 'alien_status_note']
         
@@ -369,11 +370,11 @@ def taxon(request, taxon_id):
             data[ss] = solr_resp.get(ss)
 
         name_c_str = solr_resp.get('common_name_c')
-        taxon_group_str = solr_resp.get('simple_name')
+        higherTaxa_str = solr_resp.get('simple_name')
         if solr_resp.get('alternative_name_c'):
             name_c_str += ',' + solr_resp.get('alternative_name_c')
         if name_c_str:
-            taxon_group_str += ' ' + name_c_str
+            higherTaxa_str += ' ' + name_c_str
 
         # 照片 用資料庫取得
         data['images'] = json.loads(data['images']) if data['images'] else []
@@ -423,7 +424,7 @@ def taxon(request, taxon_id):
                 path_resp = requests.get(f'{SOLR_PREFIX}taxa/select?fq=is_deleted:false&fq=taxon_name_id:*&fq=status:accepted&q=taxon_id:({path_str})&fl=taxon_rank_id,taxon_id,formatted_accepted_name,common_name_c,alternative_name_c,simple_name&rows=1000')
                 if path_resp.status_code == 200:
                     higher = pd.DataFrame(path_resp.json()['response']['docs'])
-                    for cc in ['common_name_c','alternative_name_c','taxon_group_str']:
+                    for cc in ['common_name_c','alternative_name_c','higherTaxa_str']:
                         if cc not in higher.keys():
                             higher[cc] = ''
                     higher['taxon_rank_id'] = higher['taxon_rank_id'].apply(lambda x: int(str(x).replace('.0','')) if x else '')
@@ -432,12 +433,12 @@ def taxon(request, taxon_id):
                     for hi in higher.index:
                         higher_row = higher.iloc[hi]
                         name_c_str = higher_row.common_name_c
-                        now_taxon_group_str = higher_row.simple_name
+                        now_higherTaxa_str = higher_row.simple_name
                         if higher_row.alternative_name_c:
                             name_c_str += ',' + higher_row.alternative_name_c
                         if name_c_str:
-                            now_taxon_group_str += ' ' + name_c_str
-                        higher.loc[hi, 'taxon_group_str'] = now_taxon_group_str
+                            now_higherTaxa_str += ' ' + name_c_str
+                        higher.loc[hi, 'higherTaxa_str'] = now_higherTaxa_str
                     higher = higher.rename(columns={'formatted_accepted_name':'formatted_name','taxon_rank_id':'rank_id'})
                     # 補上階層未定 
                     # 先找出應該要有哪些林奈階層
@@ -466,7 +467,7 @@ def taxon(request, taxon_id):
                         if current_h_row.taxon_id:
                             taxon_href = f'/{"en-us" if get_language() == "en-us" else "zh-hant"}/taxon/' + current_h_row.taxon_id
                             current_h_dict['a_href'] = taxon_href
-                            current_h_dict['search_href'] = f'/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&taxon_group={current_h_row.taxon_id}&taxon_group_str={current_h_row.taxon_group_str}'
+                            current_h_dict['search_href'] = f'/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&higherTaxa={current_h_row.taxon_id}&higherTaxa_str={current_h_row.higherTaxa_str}'
                         else:
                             current_h_dict['a_href'] = None
                             current_h_dict['search_href'] = None
@@ -816,14 +817,14 @@ def taxon(request, taxon_id):
                     elif sr == 47:
                         if spp > 0:
                             infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-                            stat_str += f"""<a href='{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str} </a>"""
-                        stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"""
+                            stat_str += f"""<a href='{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&higherTaxa={taxon_id}&higherTaxa_str={higherTaxa_str}'>{infra_count_str} </a>"""
+                        stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&higherTaxa={taxon_id}&higherTaxa_str={higherTaxa_str}'>{count_str} </a>"""
                     else:
-                        stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{count_str} </a>"""
+                        stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&higherTaxa={taxon_id}&higherTaxa_str={higherTaxa_str}'>{count_str} </a>"""
                 if spp > 0 and infra_str not in stat_str:
                     # 如果沒有47 最後要把種下加回去
                     infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-                    stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&taxon_group={taxon_id}&taxon_group_str={taxon_group_str}'>{infra_count_str}</a>"""
+                    stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&higherTaxa={taxon_id}&higherTaxa_str={higherTaxa_str}'>{infra_count_str}</a>"""
         
         if is_deleted:
             data['rank_d'] = 'Deleted' if get_language() == 'en-us' else '已刪除 Deleted'
@@ -840,12 +841,15 @@ def taxon(request, taxon_id):
             data['is_deleted'] = True
             data['new_taxon_name'] = new_taxon_name
 
+        taxon_views = create_view_display(taxon_id=taxon_id, accepted_taxon_name_id=data['name_id'], misapplied_names=list(name_change_df[name_change_df.taxon_status=='misapplied'].taxon_name_id.unique()))
+
     elif not has_taxon:
         taxon_id = None
 
     return render(request, 'taxa/taxon.html', {'taxon_id': taxon_id, 'data': data, 'links': links,
-                                                'refs': refs, 'experts': experts, 'name_changes': name_changes,
-                                               'taxon_history': taxon_history, 'stat_str': stat_str, 'name_history': name_history, })
+                                               'refs': refs, 'experts': experts, 'name_changes': name_changes,
+                                               'taxon_history': taxon_history, 'stat_str': stat_str, 'name_history': name_history, 
+                                               'taxon_views': taxon_views})
 
 
 # 根據當下的條件判斷
@@ -1402,8 +1406,9 @@ def get_match_result(request):
         if request.POST.get('is_in_taiwan') == 'true':
             query_dict['is_in_taiwan'] = True
 
-        if request.POST.get('taxon_group') != 'all':
-            query_dict['taxon_group'] = request.POST.get('taxon_group')
+        if request.POST.get('bio_group') != 'all':
+            # taxon_group是在NomenaMatch的欄位
+            query_dict['taxon_group'] = request.POST.get('bio_group')
         
         if kingdoms := request.POST.getlist('kingdom'):
             if 'all' not in kingdoms:
@@ -1514,12 +1519,16 @@ def get_match_result(request):
                                 df.loc[i,'alien_type'] = attr_map[df.iloc[i].alien_type]
                             else:
                                 df.loc[i,'alien_type'] = attr_map_c[df.iloc[i].alien_type]
-                    is_list = ['is_endemic','is_in_taiwan']
+                    is_list = ['is_endemic']
                     for ii in is_list:
                         if get_language() == 'en-us':
                             df[ii] = df[ii].apply(lambda x: attr_map[ii] if x == 1 else '')
                         else:
                             df[ii] = df[ii].apply(lambda x: attr_map_c[ii] if x == 1 else '')
+
+                    df['is_in_taiwan'] = df['is_in_taiwan'].apply(lambda x: gettext('不存在於臺灣') if x == 0 else '')
+
+
                     df['rank'] = df['rank_id'].apply(lambda x: gettext(rank_map_c[x]) if x else '')
 
             response['matched_count'] = dict(matched_count.values.tolist())
@@ -1586,8 +1595,9 @@ def download_match_results(request):
             if request.POST.get('is_in_taiwan') == 'true':
                 query_dict['is_in_taiwan'] = True
 
-            if request.POST.get('taxon_group') != 'all':
-                query_dict['taxon_group'] = request.POST.get('taxon_group')
+            if request.POST.get('bio_group') != 'all':
+                # taxon_group是在NomenaMatch的欄位
+                query_dict['taxon_group'] = request.POST.get('bio_group')
             
             if kingdoms := request.POST.getlist('kingdom'):
                 if 'all' not in kingdoms:
@@ -2180,7 +2190,22 @@ def get_conditioned_solr_search(req):
 
     # 較高分類群
 
-    if higher_taxon_id := req.get('taxon_group'):
-        query_list.append(f'path:/.*{higher_taxon_id}.*/')
+    if higher_taxon_ids := req.getlist('higherTaxa'):
+        higher_list = []
+        for h in higher_taxon_ids:
+            higher_list.append(f'path:/.*{h}.*/')
+
+        query_list.append(f"({' OR '.join(higher_list)})")
+
+
+    # 常見類群
+    if bio_group := req.get('bio_group-select'):
+        if bio_group in bio_group_map.keys():
+            bio_group_list = []
+            bio_groups = bio_group_map[bio_group]
+            for b in bio_groups:
+                bio_group_list.append(f'path:/.*{b}.*/')
+            query_list.append(f"({' OR '.join(bio_group_list)})")
+
 
     return query_list, is_chinese
