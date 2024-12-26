@@ -983,6 +983,36 @@ msgstr "Bio-Group"
 
 
 #:  
+msgid "常見類群"
+msgstr "Bio-Group"
+
+
+#:  
+msgid "蜘蛛"
+msgstr "Spiders"
+
+
+#:  
+msgid "兩棲類"
+msgstr "Amphibians"
+
+
+#:  
+msgid "蕨類植物"
+msgstr "Ferns"
+
+
+#:  
+msgid "苔蘚植物"
+msgstr "Mosses"
+
+
+#:  
+msgid "藻類"
+msgstr "Algae"
+
+
+#:  
 msgid "昆蟲"
 msgstr "Insects"
 
