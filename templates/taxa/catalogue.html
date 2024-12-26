@@ -208,6 +208,33 @@
 								</div>
 							</div>
 						</div>
+						<div class="item-box">
+							<div class="left-title">
+								<p>{% trans "常見類群" %}</p>
+							</div>
+							<div class="right-option">
+								<div class="bio_group-select-div input-item select-170">
+									<select class="wide" name="bio_group-select">
+										<option value=""></option>
+										<option value="昆蟲">{% trans "昆蟲" %}</option>
+										<option value="蜘蛛">{% trans "蜘蛛" %}</option>
+										<option value="魚類">{% trans "魚類" %}</option>
+										<option value="兩棲類">{% trans "兩棲類" %}</option>
+										<option value="爬蟲類">{% trans "爬蟲類" %}</option>
+										<option value="鳥類">{% trans "鳥類" %}</option>
+										<option value="哺乳類">{% trans "哺乳類" %}</option>
+										<option value="維管束植物">{% trans "維管束植物" %}</option>
+										<option value="蕨類植物">{% trans "蕨類植物" %}</option>
+										<option value="苔蘚植物">{% trans "苔蘚植物" %}</option>
+										<option value="藻類">{% trans "藻類" %}</option>
+									</select>
+								</div>							
+								<div class="bio_group-alread-select alread-select">
+								</div>
+							</div>
+						</div>
+
+
 						<div class="item-box check-set">
 							<div class="left-title">
 								<p>{% trans "地位" %}</p>
@@ -588,5 +615,5 @@
 </div>
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/catalogue.js' %}?v8"></script>
+<script src="{% static 'js/catalogue.js' %}?v9"></script>
 {% endblock script %}
