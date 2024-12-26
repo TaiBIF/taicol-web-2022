@@ -4,7 +4,7 @@
     var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
     // 要有其中之一存在才送出
-	let params = ['keyword','higherTaxa','rank','is_endemic',
+	let params = ['keyword','higherTaxa','bio_group-select','rank','is_endemic',
 				  'alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil',
 				  'protected','redlist','iucn','cites','date','status']
 
@@ -82,6 +82,8 @@
 		$('select[name=name-select]').niceSelect('update'); 
 		$('select[name=rank-select]').val('');
 		$('select[name=rank-select]').niceSelect('update'); 
+		$('select[name=bio_group-select]').val('');
+		$('select[name=bio_group-select]').niceSelect('update'); 
 		r_array = [1,3,7,12,18,22,26,30,34]
 		for( r of r_array){
 			$(`.list li[data-value=${r}]`).addClass('f-bold')
@@ -110,6 +112,15 @@
 			$(".rank-select-div.select-170 span.current").html('');
 		}
 	}
+
+	// function removeBioGroupItem(obj){
+	// 	obj.parent('.item').remove()
+	// 	// 如果全部選項都沒有的話，select換成reset
+	// 	if ($('.bio_group-alread-select .item').length == 0) {
+	// 		$(".bio_group-select-div li.option.selected").removeClass('selected');
+	// 		$(".bio_group-select-div.select-170 span.current").html('');
+	// 	}
+	// }
 
 	function removeHigherTaxaItem(obj){
 		obj.parent('.item').remove()
@@ -154,6 +165,7 @@
 		var input2 = $("<input>").attr("name", "name-select").attr("type", "hidden").val($('select[name=name-select] option:selected').val());
 		var input3 = $("<input>").attr("name", "file_format").attr("type", "hidden").val(format);
 		var input4 = $("<input>").attr("name", "date-select").attr("type", "hidden").val($('select[name=date-select] option:selected').val());
+		var input4 = $("<input>").attr("name", "bio_group-select").attr("type", "hidden").val($('select[name=bio_group-select] option:selected').val());
 
 		// facet
 		var input7 = $("<input>").attr("name", "facet").attr("type", "hidden").val($('input[name=hidden-facet]').val());
@@ -164,6 +176,7 @@
 		$('form#moreForm').submit()
 		$('form#moreForm input[name=keyword]').remove()
 		$('form#moreForm input[name=name-select]').remove()
+		$('form#moreForm input[name=bio_group-select]').remove()
 		$('form#moreForm input[name=file_format]').remove()
 		$('form#moreForm input[name=date-select]').remove()
 		$('form#moreForm input[name=facet]').remove()
@@ -211,6 +224,20 @@
 								</div>`)
 							}
 						})
+					// } else if (m=='bio_group'){
+					// 	urlParams.getAll(m).forEach(function(me){
+					// 		// 先確認是不是存在
+					// 		if (!$(`input[name=bio_group][value="${me}"]`).length){
+					// 			$('.bio_group-alread-select').append(
+					// 			`<div class="item">
+					// 				<p>${$(`option[value="${me}"]`).html()}</p>
+					// 				<input type="hidden" name="bio_group" value="${me}">
+					// 				<button type="button" class="removeBioGroupItem">
+					// 					<img src="/static/image/w-xx.svg">
+					// 				</button>
+					// 			</div>`)
+					// 		}
+					// 	})
 					} else {
 						urlParams.getAll(m).forEach(function(me){
 							$(`input[name=${m}][value="${me}"]`).prop('checked', true)
@@ -226,11 +253,13 @@
                 removeRankItem($(this))
             })
 
-            $(".removeHigherTaxaItem").prop("onclick", null).off("click");
 
-            $('.removeHigherTaxaItem').on('click',function(){
-                removeHigherTaxaItem($(this))
-            })
+            // $(".removeBioGroupItem").prop("onclick", null).off("click");
+
+            // $('.removeBioGroupItem').on('click',function(){
+            //     removeBioGroupItem($(this))
+            // })
+
 
 			// val 系列
 			let vs = ['keyword','date']
@@ -279,7 +308,7 @@
 			});
 		
 			// nice select 系列
-			let ns = ['name-select','date-select']
+			let ns = ['name-select','date-select','bio_group-select']
 			ns.forEach(function(n) {
 				if (urlParams.get(n)){
 					$(`select[name=${n}]`).val(urlParams.get(n));
@@ -291,7 +320,8 @@
 
 			// 如果不是從url進入的話 在這邊整理查詢項目成 query string
 			query_str = $('form#moreForm').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
-			'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() + '&page=' + page;
+			'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() + 
+			'&bio_group-select=' + $('select[name=bio_group-select] option:selected').val() + '&page=' + page;
 
 			var newRelativePathQuery = window.location.pathname + '?' + query_str ;
 			history.pushState(null, '', newRelativePathQuery);
@@ -515,7 +545,7 @@
 										</div>
 									</td>								
 									<td>${results.data[i]['rank']}</td>
-									<td>${results.data[i]['higherTaxa']}</td>
+									<td>${results.data[i]['taxon_group']}</td>
 									<td>${results.data[i]['kingdom']}</td>
 								</tr>`)
 
@@ -631,6 +661,7 @@
 			
 			let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
 					'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() +
+					'&bio_group-select=' + $('select[name=bio_group-select] option:selected').val()
 					'&page=' + page + '&facet=' + $('input[name=hidden-facet]').val() + 
 					'&facet_value=' + $('input[name=hidden-value]').val()  
 
@@ -703,7 +734,7 @@
 								</div>
 							</td>							
 							<td>${results.data[i]['rank']}</td>
-							<td>${results.data[i]['higherTaxa']}</td>
+							<td>${results.data[i]['taxon_group']}</td>
 							<td>${results.data[i]['kingdom']}</td>
 						</tr>`)
 				}
@@ -934,6 +965,7 @@
 		}
 		$('select[name=name-select]').niceSelect();
 		$('select[name=date-select]').niceSelect();
+		$('select[name=bio_group-select]').niceSelect();
 
 		// 階層選項控制
 
@@ -958,6 +990,28 @@
 			})		
 	
 		})
+
+		// $('select[name=bio_group-select]').on('change', function(){
+		// 	// 確認沒有重複
+		// 	if (($('select[name=bio_group-select] option:selected').text() != '')&($(`.item input[name=bio_group][value="${$('select[name=bio_group-select] option:selected').val()}"]`).length == 0)){
+		// 		$('.bio_group-alread-select').append(
+		// 			`<div class="item">
+		// 				<p>${$('select[name=bio_group-select] option:selected').text()}</p>
+		// 				<input type="hidden" name="bio_group" value="${$('select[name=bio_group-select] option:selected').val()}">
+		// 				<button type="button" class="removeBioGroupItem">
+		// 					<img src="/static/image/w-xx.svg">
+		// 				</button>
+		// 			</div>`)
+		// 	}
+
+		// 	// tag上面的xx
+		// 	$(".removeBioGroupItem").prop("onclick", null).off("click");
+
+		// 	$('.removeBioGroupItem').on('click',function(){
+		// 		removeBioGroupItem($(this))
+		// 	})		
+	
+		// })
 
 
 		$('.select-button').on('click',function (event) {
@@ -1021,6 +1075,7 @@
 
 		let query_str = "&keyword=" + $('input[name=keyword]').val() + '&name-select=' + $('select[name=name-select] option:selected').val() +
 					"&file_format=" + format + "&date-select=" + $('select[name=date-select] option:selected').val() +
+					"&bio_group-select=" + $('select[name=bio_group-select] option:selected').val() +
 					"&download_email=" + $('input[name=download_email]').val()
 
 		query_str += '&facet=' + $('input[name=hidden-facet]').val() + '&facet_value=' + $('input[name=hidden-value]').val();
