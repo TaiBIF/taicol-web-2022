@@ -644,6 +644,7 @@
 
 
 	function updateData(page, from_url=false){
+
 	
 		// let total_page = $('input[name=total_page]').val();
 		if (($('input[name=date]').val()!='')&(!isValidDate($('input[name=date]').val()))){
@@ -659,11 +660,12 @@
 			}, 200);
 
 			
-			let query_str = $('form').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
+			let query_str = $('form#moreForm').find('input[name!=csrfmiddlewaretoken]').serialize() + "&keyword=" +  $('input[name=keyword]').val() +
 					'&name-select=' + $('select[name=name-select] option:selected').val() + '&date-select=' + $('select[name=date-select] option:selected').val() +
-					'&bio_group-select=' + $('select[name=bio_group-select] option:selected').val()
+					'&bio_group-select=' + $('select[name=bio_group-select] option:selected').val() +
 					'&page=' + page + '&facet=' + $('input[name=hidden-facet]').val() + 
 					'&facet_value=' + $('input[name=hidden-value]').val()  
+
 
 			// 如果不是從url來的話 代表是第一次查詢 加上 page =1
 			if (!from_url){
