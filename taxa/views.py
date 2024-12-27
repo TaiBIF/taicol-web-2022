@@ -1634,7 +1634,7 @@ def download_match_results(request):
 
                 #JOIN taxon
                 if namecode_list:
-                    query = f""" SELECT at.is_endemic, at.alien_type, at.is_terrestrial, 
+                    query = f""" SELECT at.is_endemic, at.main_alien_type, at.is_terrestrial, 
                                 at.is_freshwater, at.is_brackish, at.is_marine, at.is_fossil,
                                 at.taxon_id, ac.protected_category, ac.red_category, ac.iucn_category, ac.cites_listing,
                                 at.rank_id, tn.name, acn.name_c, at.is_in_taiwan, at.not_official
@@ -1691,14 +1691,14 @@ def download_match_results(request):
                                                             'not_official'])
                         df = df.replace({np.nan: '', None: ''})
                         df.loc[(df.namecode=='no match'),'match_type']= 'No match'
-                        for i in df.index:
-                            alt_list = []
-                            if df.iloc[i].alien_type:
-                                for at in json.loads(df.iloc[i].alien_type):
-                                    # if at.get('alien_type') not in alt_list:
-                                    alt_list.append(attr_map_c[at.get('alien_type')])
-                            alt_list = list(dict.fromkeys(alt_list))
-                            df.loc[i,'alien_type'] = ','.join(alt_list)
+                        # for i in df.index:
+                        #     alt_list = []
+                        #     if df.iloc[i].alien_type:
+                        #         for at in json.loads(df.iloc[i].alien_type):
+                        #             # if at.get('alien_type') not in alt_list:
+                        #             alt_list.append(attr_map_c[at.get('alien_type')])
+                        #     alt_list = list(dict.fromkeys(alt_list))
+                        #     df.loc[i,'alien_type'] = ','.join(alt_list)
                         df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
                         df['rank'] = df['rank_id'].apply(lambda x: rank_map[x] if x else '')
                         df.loc[df.taxon_id!='','is_endemic'] = df.loc[df.taxon_id.notnull(),'is_endemic'].apply(lambda x: 1 if x == 1 else 0)
