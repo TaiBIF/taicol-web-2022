@@ -1407,8 +1407,8 @@ def get_match_result(request):
             query_dict['is_in_taiwan'] = True
 
         if request.POST.get('bio_group') != 'all':
-            # taxon_group是在NomenaMatch的欄位
-            query_dict['taxon_group'] = request.POST.get('bio_group')
+            # taxon_group是在NomenaMatch的欄位 -> 改為 bio_group
+            query_dict['bio_group'] = request.POST.get('bio_group')
         
         if kingdoms := request.POST.getlist('kingdom'):
             if 'all' not in kingdoms:
@@ -1596,8 +1596,8 @@ def download_match_results(request):
                 query_dict['is_in_taiwan'] = True
 
             if request.POST.get('bio_group') != 'all':
-                # taxon_group是在NomenaMatch的欄位
-                query_dict['taxon_group'] = request.POST.get('bio_group')
+                # taxon_group是在NomenaMatch的欄位 -> 改為 bio_group
+                query_dict['bio_group'] = request.POST.get('bio_group')
             
             if kingdoms := request.POST.getlist('kingdom'):
                 if 'all' not in kingdoms:
