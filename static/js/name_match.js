@@ -197,14 +197,15 @@ function getData(page){
 function removeRankItem(obj){
 	obj.parent('.item').remove()
 	// 如果全部選項都沒有的話，select換成reset
-	if ($('.alread-select .item').length == 0) {
-		$("li.option.selected").removeClass('selected');
-		$(".select-170 span.current").html('');
+	if ($('.rank-alread-select.alread-select .item').length == 0) {
+		$(".rank-select-170 li.option.selected").removeClass('selected');
+		$(".rank-select-170.select-170 span.current").html('');
 	}
 }
 
 
 $(function(){
+	$('select[name=bio_group-select]').niceSelect();
 
 	$('select[name=rank-select]').niceSelect();
 	// bold
