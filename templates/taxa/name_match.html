@@ -136,7 +136,7 @@
 						<p>{% trans "比對階層" %}</p>
 					</div>
 					<div class="right-option">
-						<div class="input-item select-170">
+						<div class="input-item rank-select-170 select-170">
 							<select class="wide" name="rank-select">
 								<option value="none"></option>
 								<option value="34">{% trans "種" %}</option>
@@ -189,7 +189,7 @@
 								<option value="49">{% trans '病毒域' %}</option>	
 							</select>
 						</div>							
-						<div class="alread-select">
+						<div class="rank-alread-select alread-select">
 						</div>
 					</div>
 				</div>
@@ -253,7 +253,27 @@
 
 				<div class="flex-item">
 					<div class="left-title">{% trans "比對常見類群" %}</div>
-					<div class="radiobox">
+					<div class="right-option">
+						<div class="input-item select-170">
+						<select class="wide" name="bio_group-select">
+							<option value=""></option>
+							<option value="昆蟲">{% trans "昆蟲" %}</option>
+							<option value="蜘蛛">{% trans "蜘蛛" %}</option>
+							<option value="魚類">{% trans "魚類" %}</option>
+							<option value="兩棲類">{% trans "兩棲類" %}</option>
+							<option value="爬蟲類">{% trans "爬蟲類" %}</option>
+							<option value="鳥類">{% trans "鳥類" %}</option>
+							<option value="哺乳類">{% trans "哺乳類" %}</option>
+							<option value="維管束植物">{% trans "維管束植物" %}</option>
+							<option value="蕨類植物">{% trans "蕨類植物" %}</option>
+							<option value="苔蘚植物">{% trans "苔蘚植物" %}</option>
+							<option value="藻類">{% trans "藻類" %}</option>
+							<option value="病毒">{% trans "病毒" %}</option>
+						</select>
+					</div>
+					</div>
+
+					{% comment %} <div class="radiobox">
 						<div class="flex">
 							<input type="radio" name="bio_group" value="all" checked>
 							<p>{% trans "全部" %}</p>
@@ -263,8 +283,16 @@
 							<p>{% trans "昆蟲" %}</p>
 						</div>
 						<div class="flex">
+							<input type="radio" name="bio_group" value="蜘蛛">
+							<p>{% trans "蜘蛛" %}</p>
+						</div>
+						<div class="flex">
 							<input type="radio" name="bio_group" value="魚類">
 							<p>{% trans "魚類" %}</p>
+						</div>
+						<div class="flex">
+							<input type="radio" name="bio_group" value="兩棲類">
+							<p>{% trans "兩棲類" %}</p>
 						</div>
 						<div class="flex">
 							<input type="radio" name="bio_group" value="爬蟲類">
@@ -283,10 +311,22 @@
 							<p>{% trans "維管束植物" %}</p>
 						</div>
 						<div class="flex">
+							<input type="radio" name="bio_group" value="蕨類植物">
+							<p>{% trans "蕨類植物" %}</p>
+						</div>
+						<div class="flex">
+							<input type="radio" name="bio_group" value="苔蘚植物">
+							<p>{% trans "苔蘚植物" %}</p>
+						</div>
+						<div class="flex">
+							<input type="radio" name="bio_group" value="藻類">
+							<p>{% trans "藻類" %}</p>
+						</div>
+						<div class="flex">
 							<input type="radio" name="bio_group" value="病毒">
 							<p>{% trans "病毒" %}</p>
 						</div>
-					</div>
+					</div> {% endcomment %}
 				</div>
 
 				<div class="text-areabox">
@@ -324,5 +364,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/name_match.js' %}?v11"></script>
+<script src="{% static 'js/name_match.js' %}?v12"></script>
 {% endblock script %}

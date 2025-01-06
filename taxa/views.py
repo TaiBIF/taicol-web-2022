@@ -485,7 +485,7 @@ def taxon(request, taxon_id):
                         LEFT JOIN users usr ON usr.id = ath.user_id
                         LEFT JOIN api_citations ac ON ac.reference_id = ath.reference_id
                         LEFT JOIN `references` r ON ath.reference_id = r.id
-                        WHERE ath.taxon_id = %s ORDER BY ath.updated_at DESC"""
+                        WHERE ath.taxon_id = %s ORDER BY ath.id DESC"""
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
             cursor.execute(query, (taxon_id, ))
@@ -1406,9 +1406,9 @@ def get_match_result(request):
         if request.POST.get('is_in_taiwan') == 'true':
             query_dict['is_in_taiwan'] = True
 
-        if request.POST.get('bio_group') != 'all':
+        if request.POST.get('bio_group-select') != 'all':
             # taxon_group是在NomenaMatch的欄位 -> 改為 bio_group
-            query_dict['bio_group'] = request.POST.get('bio_group')
+            query_dict['bio_group'] = request.POST.get('bio_group-select')
         
         if kingdoms := request.POST.getlist('kingdom'):
             if 'all' not in kingdoms:
@@ -1595,9 +1595,9 @@ def download_match_results(request):
             if request.POST.get('is_in_taiwan') == 'true':
                 query_dict['is_in_taiwan'] = True
 
-            if request.POST.get('bio_group') != 'all':
+            if request.POST.get('bio_group-select') != 'all':
                 # taxon_group是在NomenaMatch的欄位 -> 改為 bio_group
-                query_dict['bio_group'] = request.POST.get('bio_group')
+                query_dict['bio_group'] = request.POST.get('bio_group-select')
             
             if kingdoms := request.POST.getlist('kingdom'):
                 if 'all' not in kingdoms:
