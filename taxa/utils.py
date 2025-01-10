@@ -749,7 +749,7 @@ def create_alien_type_display(alien_types):
 
     if alien_types:
 
-        alien_rows = alien_types.split('|')
+        alien_rows = alien_types.split('||')
 
         for aa in alien_rows:
 
