@@ -23,6 +23,8 @@ db_settings = {
 
 # JSON_EXTRACT(t.alien_type, '$[*].alien_type'), 
 
+# 2024-12 改成只給is_in_taiwan=1
+
 # 名錄檔案（物種）
 # 已改成新的common_name寫法
 query = """
@@ -39,7 +41,7 @@ query = """
         JOIN api_names an ON t.accepted_taxon_name_id = an.taxon_name_id 
         LEFT JOIN api_conservation ac ON t.taxon_id = ac.taxon_id 
         LEFT JOIN api_taxon_tree att ON t.taxon_id = att.taxon_id 
-        WHERE t.is_deleted = 0"""
+        WHERE t.is_deleted = 0 AND t.is_in_taiwan=1"""
 
 conn = pymysql.connect(**db_settings)
 with conn.cursor() as cursor:
@@ -103,7 +105,7 @@ df = df.merge(misapplied, on='taxon_id', how='left')
 query = f"SELECT r.id, c.short_author, r.type \
             FROM `references` r  \
             LEFT JOIN api_citations c ON r.id = c.reference_id \
-            WHERE r.deleted_at is null "  
+            WHERE r.deleted_at is null AND r.is_publish = 1"  
 conn = pymysql.connect(**db_settings)
 with conn.cursor() as cursor:
     cursor.execute(query)
@@ -112,6 +114,8 @@ with conn.cursor() as cursor:
 
 
 df = df.drop_duplicates().reset_index(drop=True)
+
+
 # higher taxa
 # 要補上地位未定
 for i in df.index:
@@ -230,7 +234,11 @@ taxon_for_name = df[taxa_cols]
 
 conn = pymysql.connect(**db_settings)
 
-query = """SELECT distinct taxon_id, taxon_name_id, `status` FROM api_taxon_usages WHERE is_deleted != 1; """
+query = """SELECT distinct atu.taxon_id, atu.taxon_name_id, atu.status
+            FROM api_taxon_usages atu 
+            JOIN api_taxon at ON at.taxon_id = atu.taxon_id
+            WHERE atu.is_deleted != 1 AND at.is_in_taiwan = 1; 
+        """
 conn = pymysql.connect(**db_settings)
 with conn.cursor() as cursor:
     cursor.execute(query)
@@ -258,7 +266,7 @@ query = """SELECT distinct(tn.id), n.name, tn.rank_id, tn.name, an.name_author, 
            LEFT JOIN api_names an ON an.taxon_name_id = tn.id
            LEFT JOIN api_namecode anc ON anc.taxon_name_id = tn.id
            LEFT JOIN api_citations c ON tn.reference_id = c.reference_id
-           WHERE tn.deleted_at IS NULL GROUP BY tn.id 
+           WHERE tn.deleted_at IS NULL AND tn.is_publish = 1 GROUP BY tn.id 
         """
 conn = pymysql.connect(**db_settings)
 with conn.cursor() as cursor:
@@ -365,10 +373,10 @@ compression_options = dict(method='zip', archive_name=f"TaiCOL_name_{last_update
 names.to_csv(f'TaiCOL_name_{last_updated}.zip', compression=compression_options, index=False)
 
 
-# 學名檔案2024-08
+# 學名檔案2024-10
 #  //就學名有幾筆
 # 共XXXX筆
-# 共 198275 筆
+# 共 228348 筆
 
 
 # 物種檔案2024-06
@@ -376,7 +384,7 @@ names.to_csv(f'TaiCOL_name_{last_updated}.zip', compression=compression_options,
 # 共xxxx筆（其中臺灣存在計??????種）
 # taxon[taxon.is_in_taiwan=='true'].groupby('rank',as_index=False).taxon_id.nunique()
 
-# 共 104471 筆（其中臺灣存在計 63863 種）
+# 共 95068 筆（其中臺灣存在計 64040 種）
 
 
 
@@ -401,3 +409,4 @@ namecode.to_csv(f'TaiCOL_namecode_{last_updated}.zip', compression=compression_o
 
 # 新舊學名編碼對照2024-12
 # 舊版臺灣物種名錄學名編碼對照新版學名編碼
+
