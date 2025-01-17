@@ -94,14 +94,13 @@
 				<img src="{% static 'image/title-mark.svg' %}">
 				<p>{% trans "查詢設定" %}</p>
 			</div>
-			<p class="name-match-note">
+			{% comment %} <p class="name-match-note">
 				{% if LANGUAGE_CODE == 'en-us' %}
 					*Source：Latest version of TaiCOL Download Checklist ({{ taxon_updated_at }}). May differ from the real-time checklist on website.
 				{% else %}
 					*比對來源名錄為最近一版（{{ taxon_updated_at }}）的版本下載名錄，與網站名錄可能不同步。
 				{% endif %}
-
-			</p>
+			</p> {% endcomment %}
 			<div class="name-checkitem-box">
 				<form id="matchForm" method="POST">
 				{% csrf_token %}		
