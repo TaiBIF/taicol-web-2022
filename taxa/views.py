@@ -1382,12 +1382,14 @@ def get_match_result(request):
     # 用loop取得name match結果 每頁10筆
     if name:
         name = name.splitlines()
-        name = [n for n in name if n]
+        name = [n.strip() for n in name if n]
         name_list = []
         # 排除重複 & 空值
         for n in name:
             if n not in name_list:
                 name_list.append(n)
+        
+        # print(name_list)
 
         response['page']['current_page'] = page
         response['page']['total_page'] = math.ceil(len(name) / 10)
@@ -1444,16 +1446,13 @@ def get_match_result(request):
 
 
             if namecode_list:
-                    
                 solr_cols = ['is_in_taiwan', 'is_endemic', 'alien_type', 'taxon_id','protected_category', 'red_category', 'iucn_category', 'rank_id', 'formatted_name', 'common_name_c']
                 taxon_ids_str = ' OR '.join(namecode_list)
                 # 取有效學名的那筆資料
-                resp = requests.get(f'{SOLR_PREFIX}taxa/select?fl=is_in_taiwan,is_endemic,alien_type,taxon_id,protected,redlist,iucn,taxon_rank_id,formatted_accepted_name,common_name_c,taxon_id&fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:({taxon_ids_str})')
+                resp = requests.get(f'{SOLR_PREFIX}taxa/select?fl=is_in_taiwan,is_endemic,alien_type,taxon_id,protected,redlist,iucn,taxon_rank_id,formatted_accepted_name,common_name_c,taxon_id&fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:({taxon_ids_str})&rows=10000000')
                 solr_resp = resp.json()
                 solr_resp = solr_resp['response']['docs']
-                
                 info = pd.DataFrame(solr_resp)
-
                 info = info.rename(columns={
                     'protected': 'protected_category',
                     'redlist': 'red_category',
@@ -1461,15 +1460,11 @@ def get_match_result(request):
                     'taxon_rank_id': 'rank_id',
                     'formatted_accepted_name': 'formatted_name',
                 })
-
                 for kk in solr_cols:
                     if kk not in info.keys():
                         info[kk] = None
-
-
                 info = info[solr_cols]
                 info['rank_id'] = info['rank_id'].apply(lambda x: int(x) if x else x)
-
                 df = df[['search_term','score','name_status','namecode','family','kingdom','phylum','class','order','genus']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
                 
                 # 如果有多個結果 
@@ -1570,8 +1565,8 @@ def download_match_results_offline(request):
 def download_match_results(request):
 
     # 下載的欄位
-    cols = ["search_term","score","simple_name","name_status","accepted_namecode","accepted_name","common_name_c","kingdom","phylum","class","order","family","genus","rank","is_endemic","alien_type",
-            "is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","protected_category","red_category","iucn_category","cites_listing",
+    cols = ["search_term","score","simple_name","name_status","accepted_namecode","accepted_name","common_name_c","kingdom","phylum","class","order","family","genus","rank",
+            "is_endemic","alien_type","is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","protected_category","red_category","iucn_category","cites_listing",
             "is_in_taiwan","not_official", "match_type"]
     
 
@@ -1582,8 +1577,9 @@ def download_match_results(request):
     final_df = pd.DataFrame()
 
     if name:
+        # 去除空白
         name = name.splitlines()
-        name = [n for n in name if n]
+        name = [n.strip() for n in name if n]
         all_name_list = []
         # 排除重複 & 空值
         for n in name:
@@ -1642,27 +1638,28 @@ def download_match_results(request):
                 # 確認是否有對到多個學名的情況
                 matched_count = df[['search_term','namecode']].groupby('search_term', as_index=False).count()
                 matched_count = matched_count.rename(columns={'namecode': 'taxon_id'})
-                # namecode_list = list(set(namecode_list))
 
                 #JOIN taxon
                 if namecode_list:
-
-                    solr_cols = ['is_in_taiwan', 'is_endemic', 'alien_type', 'taxon_id','protected_category', 'red_category', 'iucn_category', 'rank_id', 'formatted_name', 'common_name_c']
+                    solr_cols = ['is_in_taiwan', 'not_official', 'is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 
+                                 'taxon_id','protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c', 'accepted_name']
                     taxon_ids_str = ' OR '.join(namecode_list)
                     # 取有效學名的那筆資料
-                    resp = requests.get(f'{SOLR_PREFIX}taxa/select?fl=is_in_taiwan,is_endemic,alien_type,taxon_id,protected,redlist,iucn,taxon_rank_id,formatted_accepted_name,common_name_c,taxon_id&fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:({taxon_ids_str})')
+                    resp = requests.get(f'{SOLR_PREFIX}taxa/select?fl=is_terrestrial,is_freshwater,is_brackish,is_marine,is_fossil,not_official,is_in_taiwan,is_endemic,alien_type,taxon_id,protected,redlist,iucn,cites,taxon_rank_id,formatted_accepted_name,common_name_c,taxon_id&fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:({taxon_ids_str})&rows=10000000')
                     solr_resp = resp.json()
                     solr_resp = solr_resp['response']['docs']
-                    
                     info = pd.DataFrame(solr_resp)
-
                     info = info.rename(columns={
                         'protected': 'protected_category',
                         'redlist': 'red_category',
                         'iucn': 'iucn_category',
+                        'cites': 'cites_listing',
                         'taxon_rank_id': 'rank_id',
-                        'formatted_accepted_name': 'formatted_name',
+                        'formatted_accepted_name': 'accepted_name',
                     })
+
+                    info['accepted_name'] = info.accepted_name.str.replace('<i>','')
+                    info['accepted_name'] = info.accepted_name.str.replace('</i>','')
 
                     for kk in solr_cols:
                         if kk not in info.keys():
@@ -1702,27 +1699,28 @@ def download_match_results(request):
                                     tmp_df.append(now_record)
                         else:
                             tmp_df.append(df[df.search_term==dd].to_dict('records')[0])
-                    df = pd.DataFrame(tmp_df, columns =['matched', 'simple_name', 'common_name', 'accepted_namecode',
-                                                        'namecode', 'name_status', 'source', 'kingdom', 'phylum', 'class',
-                                                        'order', 'family', 'genus', 'taxon_rank', 'match_type', 'search_term',
-                                                        'matched_clean', 'score', 'is_endemic', 'alien_type', 'is_terrestrial',
-                                                        'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'taxon_id',
-                                                        'protected_category', 'red_category', 'iucn_category', 'cites_listing',
-                                                        'rank_id', 'accepted_name', 'common_name_c', 'is_in_taiwan',
-                                                        'not_official'])
+                    df = pd.DataFrame(tmp_df)
+                    # df = pd.DataFrame(tmp_df, columns =['matched', 'simple_name', 'common_name', 'accepted_namecode',
+                    #                                     'namecode', 'name_status', 'source', 'kingdom', 'phylum', 'class',
+                    #                                     'order', 'family', 'genus', 'taxon_rank', 'match_type', 'search_term',
+                    #                                     'matched_clean', 'score', 'is_endemic', 'alien_type', 'is_terrestrial',
+                    #                                     'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'taxon_id',
+                    #                                     'protected_category', 'red_category', 'iucn_category', 'cites_listing',
+                    #                                     'rank_id', 'accepted_name', 'common_name_c', 'is_in_taiwan',
+                    #                                     'not_official'])
                     df = df.replace({np.nan: '', None: ''})
                     df.loc[(df.namecode=='no match'),'match_type']= 'No match'
                     df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
                     df['rank'] = df['rank_id'].apply(lambda x: rank_map[x] if x else '')
                     df.loc[df.taxon_id!='','is_endemic'] = df.loc[df.taxon_id.notnull(),'is_endemic'].apply(lambda x: 1 if x == 1 else 0)
                 df = df.replace({np.nan: '', None: '', 'no match': ''})
-                # final_df = final_df.append(df)
                 final_df = pd.concat([final_df,df],ignore_index=True)
-    
-    # [c for c in cols if c in final_df.keys()]
+
+
     for c in cols:
         if c not in final_df.keys():
             final_df[c] = ''
+    
     final_df = final_df[[c for c in cols if c in final_df.keys()]]
 
     final_df = final_df.rename(columns={"protected_category": "protected", "red_category": "redlist", "iucn_category": "iucn",
