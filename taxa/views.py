@@ -1383,18 +1383,18 @@ def get_match_result(request):
     if name:
         name = name.splitlines()
         name = [n.strip() for n in name if n]
-        name_list = []
+
         # 排除重複 & 空值
+        name_list = []
         for n in name:
-            if n not in name_list:
+            if n not in name_list and n:
                 name_list.append(n)
-        
-        # print(name_list)
 
         response['page']['current_page'] = page
-        response['page']['total_page'] = math.ceil(len(name) / 10)
+        response['page']['total_page'] = math.ceil(len(name_list) / 10)
         response['page']['page_list'] = get_page_list(response['page']['current_page'], response['page']['total_page'])
         name_list = name_list[(page-1)*10:page*10]
+
         names = ('|').join(name_list)
         url = env('NOMENMATCH_ROOT')
 
@@ -1465,6 +1465,7 @@ def get_match_result(request):
                         info[kk] = None
                 info = info[solr_cols]
                 info['rank_id'] = info['rank_id'].apply(lambda x: int(x) if x else x)
+
                 df = df[['search_term','score','name_status','namecode','family','kingdom','phylum','class','order','genus']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
                 
                 # 如果有多個結果 
@@ -1497,6 +1498,7 @@ def get_match_result(request):
                                 final_df.append(now_record)
                     else:
                         final_df.append(df[df.search_term==dd].to_dict('records')[0])
+
 
                 df = pd.DataFrame(final_df, columns=['search_term', 'score', 'name_status', 'namecode', 'family', 'kingdom',
                                                     'phylum', 'class', 'order', 'genus', 'is_in_taiwan', 'is_endemic',
@@ -1586,7 +1588,7 @@ def download_match_results(request):
             if n not in all_name_list:
                 all_name_list.append(n)
 
-        total_page = math.ceil(len(name) / 30)
+        total_page = math.ceil(len(all_name_list) / 30)
         for page in range(total_page): 
 
             name_list = all_name_list[page*30:(page+1)*30]
