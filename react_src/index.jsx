@@ -1,13 +1,16 @@
 
 import * as React from 'react'
 import * as ReactDOM from 'react-dom';    
-// import HomePage from './components/frontend/home'
+import Home from './components/frontend/home/index'
 import HomeBannerSection from './components/frontend/home/Banner'
-import HomeTaxonCountSection from './components/frontend/home/TaxonCountSection'
-import LatestNewsListSection from './components/frontend/home/LatestNewsListSection'
+// import HomeTaxonCountSection from './components/frontend/home/TaxonCountSection'
+// import LatestNewsListSection from './components/frontend/home/LatestNewsListSection'
 import "./i18n";
 import i18n from "i18next";
 import Cookies from 'js-cookie';
+// import { createRoot } from 'react-dom/client';
+
+// createRoot(document.getElementById("container")).render( <Component/>)
 
 let lang = Cookies.get('django_language')
 
@@ -21,20 +24,21 @@ if (window.location.pathname.includes('zh-hant')){
 i18n.changeLanguage(lang)
 
 const homeElement = document.querySelector('#section-1-kv');
-const homeCountElement = document.querySelector('#section-2-statistics');
-const homeNewsElement = document.querySelector('#section-3-news');
+const homeOtherElement = document.querySelector('#home-other');
+// const homeNewsElement = document.querySelector('#section-3-news');
 
 if(homeElement){
 
     ReactDOM.render(React.createElement(HomeBannerSection), homeElement);
 
+
 }
+ReactDOM.render(React.createElement(Home), homeOtherElement);
+// if(homeCountElement)
+//     ReactDOM.render(React.createElement(HomeTaxonCountSection), homeCountElement);
 
-if(homeCountElement)
-    ReactDOM.render(React.createElement(HomeTaxonCountSection), homeCountElement);
-
-if(homeNewsElement)
-    ReactDOM.render(React.createElement(LatestNewsListSection), homeNewsElement);
+// if(homeNewsElement)
+//     ReactDOM.render(React.createElement(LatestNewsListSection), homeNewsElement);
 
 
 

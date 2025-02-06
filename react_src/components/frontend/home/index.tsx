@@ -37,13 +37,6 @@ const Home:React.FC = () => {
 
   return (
     <div>
-      {/* <Banner /> */}
-      {/* <TaxonCountSection />
-      <LatestNewsListSection/> */}
-            {/* <Suspense fallback={<div>loading...</div>}>
-        <Banner />
-      </Suspense> */}
-
       <Suspense fallback={<div>loading...</div>}>
         <TaxonCountSection />
       </Suspense>
