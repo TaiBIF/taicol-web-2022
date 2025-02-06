@@ -5,17 +5,6 @@ import * as ReactDOM from 'react-dom';
 import HomeBannerSection from './components/frontend/home/Banner'
 import HomeTaxonCountSection from './components/frontend/home/TaxonCountSection'
 import LatestNewsListSection from './components/frontend/home/LatestNewsListSection'
-
-// const HomeTaxonCountSection = lazy(() => import("./TaxonCountSection"));
-// const LatestNewsListSection = lazy(() => import('./LatestNewsListSection'));
-
-// import NewsPage from './components/frontend/news';
-// import NewsDetailPage from './components/frontend/news/detail';
-// import ArticlePage from './components/frontend/article';
-// import ArticleDetailPage from './components/frontend/article/detail';
-// import DownloadPage from './components/frontend/download';
-// import StatisticsPage from './components/frontend/statistics';
-// import ApiPage from './components/frontend/apidoc';
 import "./i18n";
 import i18n from "i18next";
 import Cookies from 'js-cookie';
@@ -32,21 +21,21 @@ if (window.location.pathname.includes('zh-hant')){
 i18n.changeLanguage(lang)
 
 const homeElement = document.querySelector('#section-1-kv');
+const homeCountElement = document.querySelector('#section-2-statistics');
+const homeNewsElement = document.querySelector('#section-3-news');
 
 if(homeElement){
 
     ReactDOM.render(React.createElement(HomeBannerSection), homeElement);
 
-    const homeCountElement = document.querySelector('#section-2-statistics');
-
-    if(homeCountElement)
-        ReactDOM.render(React.createElement(HomeTaxonCountSection), homeCountElement);
-
-    const homeNewsElement = document.querySelector('#section-3-news');
-
-    if(homeNewsElement)
-        ReactDOM.render(React.createElement(LatestNewsListSection), homeNewsElement);
 }
+
+if(homeCountElement)
+    ReactDOM.render(React.createElement(HomeTaxonCountSection), homeCountElement);
+
+if(homeNewsElement)
+    ReactDOM.render(React.createElement(LatestNewsListSection), homeNewsElement);
+
 
 
 // const newsListElement = document.querySelector('#news-list-container');
