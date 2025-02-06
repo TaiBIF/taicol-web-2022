@@ -4,3 +4,7 @@
 {% block body %}
 <div data-slug="{{ slug }}" id="article-list-container"></div>
 {% endblock %}
+
+{% block script %}
+<script src="{% static 'react_component/article_list.bundle.js' %}?"></script>
+{% endblock script %}

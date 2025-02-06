@@ -19,25 +19,25 @@ const Banner: React.FC = () => {
   return (
     <section className="section-1-kv">
 			<div className="bg">
-				<img src="/static/image/index-sechtion-1-bg.png"/>
+				<img loading="lazy" src="/static/image/index-sechtion-1-bg.png"/>
 			</div>
 			<div className="bg-top-let">
-				<img src="/static/image/index-sechtion-1-item1.png"/>
+				<img loading="lazy" src="/static/image/index-sechtion-1-item1.png"/>
 			</div>
 			<div className="bg-top-right">
-				<img src="/static/image/index-sechtion-1-item2.png"/>
+				<img loading="lazy" src="/static/image/index-sechtion-1-item2.png"/>
 			</div>
 			<div className="cir-yel">
-				<img src="/static/image/cir_yel.png"/>
+				<img loading="lazy" src="/static/image/cir_yel.png"/>
 			</div>
 			<div className="cir-blue">
-				<img src="/static/image/cir_blue.png"/>
+				<img loading="lazy" src="/static/image/cir_blue.png"/>
 			</div>
 			<div className="float-ite01">
-				<img src="/static/image/float_ite01.png"/>
+				<img loading="lazy" src="/static/image/float_ite01.png"/>
 			</div>
 			<div className="float-ite02">
-				<img src="/static/image/float_ite02.png"/>
+				<img loading="lazy" src="/static/image/float_ite02.png"/>
 			</div>
 			<div className="flex-box">
 				<div className="left-box">
@@ -73,19 +73,19 @@ const Banner: React.FC = () => {
 				<div className="right-box">
 					<div className="bn-kvbox">
 						<div className="base1">
-							<img src="/static/image/bn-img02.png"/>
+							<img loading="lazy" src="/static/image/bn-img02.png"/>
 						</div>
 						<div className="base2">
-							<img src="/static/image/bn-img01.png"/>
+							<img loading="lazy" src="/static/image/bn-img01.png"/>
 						</div>
 						<div className="base3">
-							<img src="/static/image/bn-img03.png"/>
+							<img loading="lazy" src="/static/image/bn-img03.png"/>
 						</div>
 						<div className="animal1">
-							<img src="/static/image/bn-img04.png"/>
+							<img loading="lazy" src="/static/image/bn-img04.png"/>
 						</div>
 						<div className="animal2">
-							<img src="/static/image/bn-img05.png"/>
+							<img loading="lazy" src="/static/image/bn-img05.png"/>
 						</div>
 					</div>
 				</div>

@@ -1,10 +1,18 @@
 
-import Banner from './Banner'
-import TaxonCountSection from './TaxonCountSection'
-import LatestNewsListSection from './LatestNewsListSection'
+// import Banner from './Banner'
+// import TaxonCountSection from './TaxonCountSection'
+// import LatestNewsListSection from './LatestNewsListSection'
 import * as React from 'react';
+import { Suspense, lazy } from "react";
+
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+
+
+// const Banner = lazy(() => import("./Banner"));
+const TaxonCountSection = lazy(() => import("./TaxonCountSection"));
+const LatestNewsListSection = lazy(() => import('./LatestNewsListSection'));
+
 
 gsap.registerPlugin(ScrollTrigger);
 const Home:React.FC = () => {
@@ -28,10 +36,21 @@ const Home:React.FC = () => {
 
 
   return (
-    <div className="ovh">
-      <Banner />
-      <TaxonCountSection />
-      <LatestNewsListSection/>
+    <div>
+      {/* <Banner /> */}
+      {/* <TaxonCountSection />
+      <LatestNewsListSection/> */}
+            {/* <Suspense fallback={<div>loading...</div>}>
+        <Banner />
+      </Suspense> */}
+
+      <Suspense fallback={<div>loading...</div>}>
+        <TaxonCountSection />
+      </Suspense>
+      <Suspense fallback={<div>loading...</div>}>
+        <LatestNewsListSection />
+      </Suspense>
+
     </div>
   )
 }

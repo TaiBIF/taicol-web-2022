@@ -237,7 +237,8 @@
 	</div>
 
 </body>
-<script src="{% static 'react_component/bundle.js' %}?v4"></script>
+{% comment %} <script src="{% static 'react_component/index.bundle.js' %}?v4"></script> {% endcomment %}
+{% comment %} <script src="{% static 'react_component/others.bundle.js' %}?v4"></script> {% endcomment %}
 <script src="{% static 'js/base.js' %}?v2"></script>
 {% block script %}{% endblock script %}
 </html>
