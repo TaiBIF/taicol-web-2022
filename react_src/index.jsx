@@ -13,6 +13,7 @@ const homeElement = document.querySelector('#section-1-kv');
 const homeOtherElement = document.querySelector('#home-other');
 
 function component() {
+    console.log('time')
     import('./components/frontend/home/index').then(module => {
         const Home = module.default;
 
@@ -36,7 +37,7 @@ i18n.changeLanguage(lang)
 
 if(homeElement){
     ReactDOM.render(React.createElement(HomeBannerSection), homeElement);
-    setTimeout()
+    setTimeout(component(), 1000)
     // component();
     // document.querySelector('.ovh').appendChild(component());
 }
