@@ -55,24 +55,24 @@ $(function (){
     });
 
 
-    gsap.registerPlugin(ScrollTrigger);
+    // gsap.registerPlugin(ScrollTrigger);
 
-    ScrollTrigger.create({
-        trigger: ".section-2-statistics",
-        start: "top-=60% top",
-        // markers: true,
-        onEnter:function () {
-            $('.section-2-statistics').addClass('vivi')
-        }
-    });
-    ScrollTrigger.create({
-        trigger: ".section-3-news",
-        start: "top-=40% top",
-        // markers: true,
-        onEnter:function () {
-            $('.section-3-news').addClass('vivi')
-        }
-    });
+    // ScrollTrigger.create({
+    //     trigger: ".section-2-statistics",
+    //     start: "top-=60% top",
+    //     // markers: true,
+    //     onEnter:function () {
+    //         $('.section-2-statistics').addClass('vivi')
+    //     }
+    // });
+    // ScrollTrigger.create({
+    //     trigger: ".section-3-news",
+    //     start: "top-=40% top",
+    //     // markers: true,
+    //     onEnter:function () {
+    //         $('.section-3-news').addClass('vivi')
+    //     }
+    // });
 
     $('.language-item').on('click',function (event) {
         document.getElementById("language").setAttribute("value",event.target.getAttribute("value"));

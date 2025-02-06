@@ -2,7 +2,7 @@ import * as React from 'react';
 import TaxonCount from './TaxonCount'
 import type {TaxonCountProps} from '../types'
 import MoreButton from '../common/MoreButton'
-import useSWR from 'swr';
+// import useSWR from 'swr';
 import { Translation, useTranslation } from 'react-i18next';
 
 const taxonCountList:TaxonCountProps[] = [
@@ -59,7 +59,7 @@ const TaxonCountSection: React.FC = () => {
   }, [])
 
   return (
-    <section className="section-2-statistics" >
+    <section className="section-2-statistics vivi" >
 			<div className="maq-area">
 				<div className="marquee" style={marqueeStyle}>
           <span>STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS STATISTICS

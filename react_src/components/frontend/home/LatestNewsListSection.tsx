@@ -3,7 +3,7 @@ import * as React from 'react';
 
 const LatestNewsListSection: React.FC = () => {
   return (
-      <section className='section-3-news'>
+      <section className='section-3-news vivi'>
         <div className="bg-wave">
 				<img src="/static/image/bg-wave2.svg"/>
         </div>

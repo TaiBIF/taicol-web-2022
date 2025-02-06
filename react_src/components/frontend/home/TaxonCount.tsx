@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {formatNumber} from '../utils/helper';
 import type {TaxonCountProps} from '../types'
-import { Translation } from 'react-i18next';
+// import { Translation } from 'react-i18next';
 import { Trans, useTranslation } from 'react-i18next';
 
 const TaxonCount: React.FC<TaxonCountProps> = (props) => {
