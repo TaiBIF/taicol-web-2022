@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Translation } from 'react-i18next';
+// import { Translation } from 'react-i18next';
 import { useTranslation } from 'react-i18next';
 
 const Banner: React.FC = () => {

@@ -2,8 +2,7 @@ import * as React from 'react';
 import TaxonCount from './TaxonCount'
 import type {TaxonCountProps} from '../types'
 import MoreButton from '../common/MoreButton'
-// import useSWR from 'swr';
-import { Translation, useTranslation } from 'react-i18next';
+import { Translation } from 'react-i18next';
 
 const taxonCountList:TaxonCountProps[] = [
   {
@@ -74,12 +73,12 @@ const TaxonCountSection: React.FC = () => {
 			<div className="flex-box">
 				<div className="left-box">
 					<div className="picbox">
-						<img src="/static/image/index-sechtion-2-island.png"/>
+						<img loading="lazy" src="/static/image/index-sechtion-2-island.png"/>
 						<div className="cbig-hand">
-							<img src="/static/image/cancer01.png"/>
+							<img loading="lazy" src="/static/image/cancer01.png"/>
 						</div>
 						<div className="cbig-hand2">
-							<img src="/static/image/cancer02.png"/>
+							<img loading="lazy" src="/static/image/cancer02.png"/>
 						</div>
 					</div>
 

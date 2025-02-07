@@ -1,5 +1,4 @@
 import * as React from 'react';
-// import React, { Suspense, lazy } from "react";
 
 
 const TaxonCountSection = React.lazy(() => import("./TaxonCountSection"));
