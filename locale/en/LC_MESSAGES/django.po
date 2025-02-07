@@ -658,6 +658,14 @@ msgstr "Yes"
 msgid "否"
 msgstr "No"
 
+#: 
+msgid "是（快速而簡單）"
+msgstr "Yes (fast and simple)"
+
+#:
+msgid "否（緩慢而較多資訊）"
+msgstr "No (slow and informative)"
+
 #: templates/taxa/name_match.html:89
 msgid "比對結果"
 msgstr "Matching Result"

@@ -1,37 +1,22 @@
-
-import Banner from './Banner'
-import TaxonCountSection from './TaxonCountSection'
-import LatestNewsListSection from './LatestNewsListSection'
 import * as React from 'react';
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+
+const TaxonCountSection = React.lazy(() => import("./TaxonCountSection"));
+const LatestNewsListSection = React.lazy(() => import('./LatestNewsListSection'));
+
+
 const Home:React.FC = () => {
-
-  React.useEffect(() => {
-
-    ScrollTrigger.create({
-      trigger: '.section-2-statistics',
-			start: "top-=60%",
-      toggleClass: "vivi",
-      once: true,
-    });
-
-    ScrollTrigger.create({
-      trigger: '.section-3-news',
-			start: "top-=40% top",
-      toggleClass: "vivi",
-      once: true,
-    });
-  }, [])
 
 
   return (
-    <div className="ovh">
-      <Banner />
-      <TaxonCountSection />
-      <LatestNewsListSection/>
+    <div>
+      <React.Suspense fallback={<div>loading...</div>}>
+        <TaxonCountSection />
+      </React.Suspense>
+      <React.Suspense fallback={<div>loading...</div>}>
+        <LatestNewsListSection />
+      </React.Suspense>
+
     </div>
   )
 }

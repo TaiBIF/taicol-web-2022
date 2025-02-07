@@ -4,7 +4,6 @@
 {% load i18n %}
 
 {% block body %}
-
 <!-- shortcut begin -->
 <div class="shortcut-menu-wrapper">
 <a class="btn" href="https://forms.gle/wPBoH6w5LLRAeT5S8" target="_blank">
@@ -13,5 +12,15 @@
 </a>
 </div>
 
-<div id="home-container"></div>
+<div id="home-container">
+    <div class="ovh">
+        <div id="section-1-kv"></div>
+        <div id="home-other"></div>
+        {% comment %} <div id="section-3-news"></div> {% endcomment %}
+    </div>
+</div>
 {% endblock %}
+
+{% block script %}
+<script src="{% static 'react_component/index.bundle.js' %}?"></script>
+{% endblock script %}
