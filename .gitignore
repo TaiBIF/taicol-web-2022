@@ -46,4 +46,14 @@ upload
 
 # react backend docker db folder
 react-backend/db/*
-static/react_component/bundle.js
+static/react_component/*
+# static/react_component/*.LICENSE.txt
+
+
+*.zip
+*.csv
+
+nginx-log/
+
+staging.env
+
