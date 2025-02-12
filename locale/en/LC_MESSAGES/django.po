@@ -1088,3 +1088,8 @@ msgstr "Plantae"
 #:  
 msgid "動物"
 msgstr "Animalia"
+
+
+#:  
+msgid "接受學名"
+msgstr "Accepted Name"

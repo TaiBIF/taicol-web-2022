@@ -1369,6 +1369,7 @@ def get_match_result(request):
 				<td>{gettext("比對結果")}</td>
 				<td>{gettext("分數")}</td>
 				<td>{gettext("地位")}</td>
+				<td>{gettext("接受學名")}</td>
 				<td>{gettext("中文名")}</td>
 				<td>{gettext("界")}</td>
 				<td>{gettext("所屬類群")}</td>
@@ -1466,7 +1467,7 @@ def get_match_result(request):
                 info = info[solr_cols]
                 info['rank_id'] = info['rank_id'].apply(lambda x: int(x) if x else x)
 
-                df = df[['search_term','score','name_status','namecode','family','kingdom','phylum','class','order','genus']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
+                df = df[['search_term','simple_name','score','name_status','namecode','family','kingdom','phylum','class','order','genus']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
                 
                 # 如果有多個結果 
                 
@@ -1500,7 +1501,7 @@ def get_match_result(request):
                         final_df.append(df[df.search_term==dd].to_dict('records')[0])
 
 
-                df = pd.DataFrame(final_df, columns=['search_term', 'score', 'name_status', 'namecode', 'family', 'kingdom',
+                df = pd.DataFrame(final_df, columns=['search_term', 'simple_name', 'score', 'name_status', 'namecode', 'family', 'kingdom',
                                                     'phylum', 'class', 'order', 'genus', 'is_in_taiwan', 'is_endemic',
                                                     'alien_type', 'taxon_id', 'protected_category', 'red_category',
                                                     'iucn_category', 'rank_id', 'formatted_name', 'common_name_c'])
@@ -1702,14 +1703,6 @@ def download_match_results(request):
                         else:
                             tmp_df.append(df[df.search_term==dd].to_dict('records')[0])
                     df = pd.DataFrame(tmp_df)
-                    # df = pd.DataFrame(tmp_df, columns =['matched', 'simple_name', 'common_name', 'accepted_namecode',
-                    #                                     'namecode', 'name_status', 'source', 'kingdom', 'phylum', 'class',
-                    #                                     'order', 'family', 'genus', 'taxon_rank', 'match_type', 'search_term',
-                    #                                     'matched_clean', 'score', 'is_endemic', 'alien_type', 'is_terrestrial',
-                    #                                     'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'taxon_id',
-                    #                                     'protected_category', 'red_category', 'iucn_category', 'cites_listing',
-                    #                                     'rank_id', 'accepted_name', 'common_name_c', 'is_in_taiwan',
-                    #                                     'not_official'])
                     df = df.replace({np.nan: '', None: ''})
                     df.loc[(df.namecode=='no match'),'match_type']= 'No match'
                     df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))

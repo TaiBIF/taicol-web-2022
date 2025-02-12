@@ -313,3 +313,8 @@ button.download_check:disabled {
     background: #943a28 !important;
 }
 
+
+
+.result-area .right-table table td {
+    font-size: 16px !important;
+}
