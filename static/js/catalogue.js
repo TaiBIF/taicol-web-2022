@@ -922,7 +922,8 @@
 						})
 					};
 				}
-			}
+			},
+			escapeMarkup: function(markup) { return markup; }, // Allows HTML rendering
 		});
 
 		$('#higherTaxa').on('select2:open', function (e) {

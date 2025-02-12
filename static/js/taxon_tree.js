@@ -291,7 +291,8 @@ $(function (){
                     })
                 };
             },
-        }
+        },
+        escapeMarkup: function(markup) { return markup; }, // Allows HTML rendering
     });
 
     $('#keyword').on('select2:open', function (e) {

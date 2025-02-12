@@ -9,7 +9,8 @@ import numpy as np
 from  django.utils.translation import get_language, gettext
 import time 
 import requests
-
+import unicodedata
+import re
 
 db_settings = {
     "host": env('DB_HOST'),
@@ -18,6 +19,35 @@ db_settings = {
     "password": env('DB_PASSWORD'),
     "db": env('DB_DBNAME'),
 }
+
+
+def remove_rank_char(text):
+    replace_words = [' subsp. ',' nothosubsp.',' var. ',' subvar. ',' nothovar. ',' fo. ',' subf. ',' f.sp. ',' race ',' strip ',' m. ',' ab. ',' × ']
+    pattern = '|'.join(map(re.escape, replace_words))
+    text = re.sub(pattern, ' ', text)
+    return text
+
+
+def unicode_to_plain(text):
+    plain_text = []
+    for char in text:
+        try:
+            name = unicodedata.name(char)
+            if "MATHEMATICAL" in name:
+                # 取得名稱的最後一個單字（對應的普通字母）
+                letter = name.split()[-1]
+                # 保持大小寫
+                if "CAPITAL" in name:
+                    plain_text.append(letter.upper())
+                else:
+                    plain_text.append(letter.lower())
+            else:
+                plain_text.append(char)
+        except ValueError:
+            plain_text.append(char)
+    
+    return ''.join(plain_text)
+
 
 def get_page_list(current_page, total_page, window=5):
     list_index = math.ceil(current_page/window)
@@ -570,6 +600,10 @@ def return_download_file_by_solr(query_list, is_chinese):
         for m in musthave_cols:
             if m not in df.keys():
                 df[m] = None
+
+        target_ranks = ['30','34','35','36','37','38','39','40','41','42','43','44','45','46','47']
+        
+        df[df['rank'].isin(target_ranks)]['search_name'] = df[df['rank'].isin(target_ranks)]['formatted_search_name'].replace({'<i>','</i>'},regex=True)
 
         # rank_id to rank
         df['rank'] = df['rank'].apply(lambda x: rank_map[int(x)])

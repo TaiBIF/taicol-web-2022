@@ -263,12 +263,12 @@ def get_autocomplete_taxon_by_solr(request):
 
         if len(ds):
 
-            lack_cols = [k for k in  ['taxon_id', 'simple_name', 'search_name', 'common_name_c', 'alternative_name_c','status'] if k not in ds.keys()]
+            lack_cols = [k for k in  ['taxon_id', 'simple_name', 'formatted_search_name', 'common_name_c', 'alternative_name_c','status'] if k not in ds.keys()]
 
             for c in lack_cols:
                 ds[c] = ''
             
-            ds = ds[['taxon_id', 'simple_name', 'search_name', 'common_name_c', 'alternative_name_c','status']]
+            ds = ds[['taxon_id', 'simple_name', 'formatted_search_name', 'common_name_c', 'alternative_name_c','status']]
             ds = ds.drop_duplicates().reset_index(drop=True)
 
             ds = ds.replace({None: '', np.nan: ''})
@@ -285,9 +285,9 @@ def get_autocomplete_taxon_by_solr(request):
                     ds.loc[i, 'text'] = row.simple_name 
 
             if get_language() == 'en-us':
-                ds['text'] = ds.apply(lambda x: x['search_name'] + f" ({name_status_map[x['status']]} {x['text']})" if x['status'] != 'accepted' else x['text'], axis=1)
+                ds['text'] = ds.apply(lambda x: x['formatted_search_name'] + f" ({name_status_map[x['status']]} {x['text']})" if x['status'] != 'accepted' else x['text'], axis=1)
             else:
-                ds['text'] = ds.apply(lambda x: x['search_name'] + f" ({x['text']} {name_status_map_c[x['status']]})" if x['status'] != 'accepted' else x['text'], axis=1)
+                ds['text'] = ds.apply(lambda x: x['formatted_search_name'] + f" ({x['text']} {name_status_map_c[x['status']]})" if x['status'] != 'accepted' else x['text'], axis=1)
             
             ds = ds.rename(columns={'taxon_id': 'id'})
             names = ds[['text','id']].to_json(orient='records')
@@ -2091,7 +2091,10 @@ def get_conditioned_solr_search(req):
         if re.search(r'[\u4e00-\u9fff]+', keyword):
             is_chinese = True
 
+        keyword = unicode_to_plain(keyword)
+        keyword = remove_rank_char(keyword)
         keyword = get_variants(keyword)
+
         keyword_type = req.get('name-select','equal')
 
         
