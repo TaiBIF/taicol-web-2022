@@ -133,7 +133,7 @@ function getSubList(item){
 $(function (){
 
     // 如果進入時 帶有hash 打開樹
-    if (window.location.hash != null | window.location.hash != '') {
+    if (window.location.hash != null && window.location.hash != '') {
         searchClick(window.location.hash.substring(1),true)
 
     };
