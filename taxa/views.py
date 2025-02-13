@@ -244,13 +244,24 @@ def get_autocomplete_taxon_by_solr(request):
         # if re.search(r'[\u4e00-\u9fff]+', keyword):
         #     query_list.append('is_primary_common_name:true')
 
+        # keyword = html.unescape(keyword)
+        # keyword_reg = get_variants(keyword)
+
+        keyword = unicode_to_plain(keyword)
+
+        keyword_wo_rank = remove_rank_char(keyword)
+        keyword_wo_rank_reg = get_variants(keyword_wo_rank)
+
         keyword = html.unescape(keyword)
-        keyword_reg = get_variants(keyword)
+
+        keyword_reg = escape_solr_query(keyword)
+        keyword_reg = get_variants(keyword_reg)
+
 
 
     query_str = '&fq='.join(query_list)
 
-    taxa_str = f'search_name:"{keyword}"^5 OR search_name_wo_rank:"{keyword}"^5 OR search_name:/{escape_solr_query(keyword)}.*/^4 OR search_name_wo_rank:/{escape_solr_query(keyword)}.*/^4 OR search_name:/{keyword_reg}/^3 OR search_name_wo_rank:/{keyword_reg}/^3 OR search_name:/{keyword_reg}.*/^2 OR search_name_wo_rank:/{keyword_reg}.*/^2 OR search_name:/.*{escape_solr_query(keyword)}.*/^1 OR search_name_wo_rank:/.*{escape_solr_query(keyword)}.*/^1 OR search_name:/.*{keyword_reg}.*/ OR search_name_wo_rank:/.*{keyword_reg}.*/'
+    taxa_str = f'search_name:"{keyword}"^5 OR search_name_wo_rank:"{keyword_wo_rank}"^5 OR search_name:/{keyword_reg}.*/^4 OR search_name_wo_rank:/{keyword_wo_rank_reg}.*/^4 OR search_name:/{keyword_reg}/^3 OR search_name_wo_rank:/{keyword_wo_rank_reg}/^3 OR search_name:/{keyword_reg}.*/^2 OR search_name_wo_rank:/{keyword_wo_rank_reg}.*/^2 OR search_name:/.*{keyword_reg}.*/^1 OR search_name_wo_rank:/.*{keyword_wo_rank_reg}.*/^1 OR search_name:/.*{keyword_reg}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank_reg}.*/'
 
 
     ds = []
@@ -264,12 +275,12 @@ def get_autocomplete_taxon_by_solr(request):
 
         if len(ds):
 
-            lack_cols = [k for k in  ['taxon_id', 'simple_name', 'formatted_search_name', 'common_name_c', 'alternative_name_c','status'] if k not in ds.keys()]
+            lack_cols = [k for k in  ['taxon_id', 'simple_name','formatted_accepted_name' , 'formatted_search_name', 'common_name_c', 'alternative_name_c','status'] if k not in ds.keys()]
 
             for c in lack_cols:
                 ds[c] = ''
             
-            ds = ds[['taxon_id', 'simple_name', 'formatted_search_name', 'common_name_c', 'alternative_name_c','status']]
+            ds = ds[['taxon_id', 'simple_name', 'formatted_search_name', 'formatted_accepted_name', 'common_name_c', 'alternative_name_c','status']]
             ds = ds.drop_duplicates().reset_index(drop=True)
 
             ds = ds.replace({None: '', np.nan: ''})
@@ -281,9 +292,9 @@ def get_autocomplete_taxon_by_solr(request):
                     name_c_str += ',' + row.alternative_name_c
 
                 if name_c_str:
-                    ds.loc[i, 'text'] = row.simple_name + ' ' + name_c_str
+                    ds.loc[i, 'text'] = row.formatted_accepted_name + ' ' + name_c_str
                 else:
-                    ds.loc[i, 'text'] = row.simple_name 
+                    ds.loc[i, 'text'] = row.formatted_accepted_name 
 
             if get_language() == 'en-us':
                 ds['text'] = ds.apply(lambda x: x['formatted_search_name'] + f" ({name_status_map[x['status']]} {x['text']})" if x['status'] != 'accepted' else x['text'], axis=1)
@@ -2088,22 +2099,22 @@ def get_conditioned_solr_search(req):
 
         keyword = unicode_to_plain(keyword)
 
-        keyword_w_rank = remove_rank_char(keyword)
+        keyword_wo_rank = remove_rank_char(keyword)
+        keyword_wo_rank = get_variants(keyword_wo_rank)
 
         keyword = escape_solr_query(keyword)
         keyword = get_variants(keyword)
 
-        keyword_w_rank = get_variants(keyword_w_rank)
         keyword_type = req.get('name-select','equal')
 
         
         if keyword_type == "equal":
             # 中文名可能有異體字 英文名有大小寫問題 要修改成REGEXP
-            keyword_str = f"search_name:/{keyword}/ OR search_name_wo_rank:/{keyword}/"
+            keyword_str = f"search_name:/{keyword}/ OR search_name_wo_rank:/{keyword_wo_rank}/"
         elif keyword_type == "startwith":
-            keyword_str = f"search_name:/{keyword}.*/ OR search_name_wo_rank:/{keyword}.*/"
+            keyword_str = f"search_name:/{keyword}.*/ OR search_name_wo_rank:/{keyword_wo_rank}.*/"
         else: # contain
-            keyword_str = f"search_name:/.*{keyword}.*/ OR search_name_wo_rank:/.*{keyword}.*/"
+            keyword_str = f"search_name:/.*{keyword}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank}.*/"
 
         query_list.append(keyword_str)
 
