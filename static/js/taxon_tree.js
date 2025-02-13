@@ -133,7 +133,7 @@ function getSubList(item){
 $(function (){
 
     // 如果進入時 帶有hash 打開樹
-    if (window.location.hash != null) {
+    if (window.location.hash != null | window.location.hash != '') {
         searchClick(window.location.hash.substring(1),true)
 
     };
@@ -315,8 +315,6 @@ $(function (){
 
 
 function searchClick(keyword_taxon_id, add_stat){
-
-    console.log(keyword_taxon_id);
 
     let with_cultured = 'off';
     if ($('input[name="with_cultured"]').is(':checked')){
