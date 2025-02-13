@@ -1091,5 +1091,15 @@ msgstr "Animalia"
 
 
 #:  
-msgid "接受學名"
-msgstr "Accepted Name"
+msgid "連回物種樹"
+msgstr "Taxon tree"
+
+
+#:  
+msgid "顯示完整階層"
+msgstr "Full hierarchy"
+
+
+#:  
+msgid "顯示林奈階層"
+msgstr "Linnaean hierarchy"

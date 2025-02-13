@@ -13,12 +13,14 @@
 	<script src="{% static 'js/ScrollTrigger.min.js' %}?v1" ></script>
     <link rel="icon" sizes="32x32" type="image/png" href="{% static 'image/logo.png' %}" />
     {% block head %}{% endblock head %}
-	<link rel=stylesheet type="text/css" href="{% static 'css/base.css' %}?v5">
+	<link rel=stylesheet type="text/css" href="{% static 'css/base.css' %}?v6">
     {% block style %}{% endblock style %}
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-NRB9ZJPCMN"></script>
 	<script src="{% static 'js/ga.js' %}?v1" ></script>
 	<script src="{% static 'js/gtm.js' %}?v1" ></script>
+    <script src="{% url 'javascript-catalog' %}"></script>
+
 </head>
 
 <body>
