@@ -250,7 +250,8 @@ def get_autocomplete_taxon_by_solr(request):
 
     query_str = '&fq='.join(query_list)
 
-    taxa_str = f'search_name:"{keyword}"^5 OR search_name:/{escape_solr_query(keyword)}.*/^4 OR search_name:/{keyword_reg}/^3 OR search_name:/{keyword_reg}.*/^2 OR search_name:/.*{escape_solr_query(keyword)}.*/^1 OR search_name:/.*{keyword_reg}.*/'
+    taxa_str = f'search_name:"{keyword}"^5 OR search_name_wo_rank:"{keyword}"^5 OR search_name:/{escape_solr_query(keyword)}.*/^4 OR search_name_wo_rank:/{escape_solr_query(keyword)}.*/^4 OR search_name:/{keyword_reg}/^3 OR search_name_wo_rank:/{keyword_reg}/^3 OR search_name:/{keyword_reg}.*/^2 OR search_name_wo_rank:/{keyword_reg}.*/^2 OR search_name:/.*{escape_solr_query(keyword)}.*/^1 OR search_name_wo_rank:/.*{escape_solr_query(keyword)}.*/^1 OR search_name:/.*{keyword_reg}.*/ OR search_name_wo_rank:/.*{keyword_reg}.*/'
+
 
     ds = []
     if keyword_reg:
@@ -1467,6 +1468,7 @@ def get_match_result(request):
                 info = info[solr_cols]
                 info['rank_id'] = info['rank_id'].apply(lambda x: int(x) if x else x)
 
+                # 這邊的simple name是從nomen match來的 是比對到學名本身的simple name
                 df = df[['search_term','simple_name','score','name_status','namecode','family','kingdom','phylum','class','order','genus']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
                 
                 # 如果有多個結果 
@@ -2085,28 +2087,30 @@ def get_conditioned_solr_search(req):
             is_chinese = True
 
         keyword = unicode_to_plain(keyword)
-        keyword = remove_rank_char(keyword)
+
+        keyword_w_rank = remove_rank_char(keyword)
+
+        keyword = escape_solr_query(keyword)
         keyword = get_variants(keyword)
 
+        keyword_w_rank = get_variants(keyword_w_rank)
         keyword_type = req.get('name-select','equal')
 
         
         if keyword_type == "equal":
             # 中文名可能有異體字 英文名有大小寫問題 要修改成REGEXP
-            keyword_str = f"search_name:/{keyword}/"
+            keyword_str = f"search_name:/{keyword}/ OR search_name_wo_rank:/{keyword}/"
         elif keyword_type == "startwith":
-            keyword_str = f"search_name:/{keyword}.*/"
+            keyword_str = f"search_name:/{keyword}.*/ OR search_name_wo_rank:/{keyword}.*/"
         else: # contain
-            keyword_str = f"search_name:/.*{keyword}.*/"
+            keyword_str = f"search_name:/.*{keyword}.*/ OR search_name_wo_rank:/.*{keyword}.*/"
 
         query_list.append(keyword_str)
 
     # 如果沒有keyword的話 要排除掉搜尋中文名的資料 不然會有重複的問題
 
-    else:
-
+    if not is_chinese:
         query_list.append('taxon_name_id:*') # 確保不是中文名
-
 
     # 地位
     if status := req.getlist('status'):

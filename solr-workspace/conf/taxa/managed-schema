@@ -454,6 +454,7 @@
 
   <field name="id" type="string" multiValued="false" indexed="true" required="true" stored="true"/>
  <field name="search_name" type="string"/>
+ <field name="search_name_wo_rank" type="string"/>
  <field name="formatted_search_name" type="string"/>
   <!-- <field name="accepted_name" type="string"/> -->
  <field name="taxon_name_id" type="string"/> <!-- 這邊是search name的taxon_name_id 若是中文名則為空值 -->

@@ -22,7 +22,7 @@ db_settings = {
 
 
 def remove_rank_char(text):
-    replace_words = [' subsp. ',' nothosubsp.',' var. ',' subvar. ',' nothovar. ',' fo. ',' subf. ',' f.sp. ',' race ',' strip ',' m. ',' ab. ',' × ']
+    replace_words = [' subsp. ',' nothosubsp.',' var. ',' subvar. ',' nothovar. ',' fo. ',' subf. ',' f.sp. ',' race ',' strip ',' m. ',' ab. ',' × ', '× ']
     pattern = '|'.join(map(re.escape, replace_words))
     text = re.sub(pattern, ' ', text)
     return text
@@ -601,9 +601,6 @@ def return_download_file_by_solr(query_list, is_chinese):
             if m not in df.keys():
                 df[m] = None
 
-        target_ranks = ['30','34','35','36','37','38','39','40','41','42','43','44','45','46','47']
-        
-        df[df['rank'].isin(target_ranks)]['search_name'] = df[df['rank'].isin(target_ranks)]['formatted_search_name'].replace({'<i>','</i>'},regex=True)
 
         # rank_id to rank
         df['rank'] = df['rank'].apply(lambda x: rank_map[int(x)])
@@ -984,7 +981,7 @@ def create_link_display(data,taxon_id):
 
 
 
-spe_chars = ['+','-', '&','&&', '||', '!','(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '/']
+spe_chars = ['+','-', '&','&&', '||', '!','(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '/', '.']
 
 def escape_solr_query(string):
     final_string = ''
