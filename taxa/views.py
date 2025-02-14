@@ -2248,6 +2248,7 @@ def get_taxon_higher(request):
     rank_id = int(request.GET.get('rank_id'))
     path_str = ''
 
+    conn = pymysql.connect(**db_settings)
     query = "SELECT {} FROM api_taxon_tree WHERE taxon_id = %s".format(selected_path)
 
     with conn.cursor() as cursor:
