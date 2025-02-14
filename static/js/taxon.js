@@ -325,10 +325,10 @@ $(function(){
 
 		if ($(this).data('path') == 'lin_path'){
 			$(this).data('path', 'path')
-			$(this).html(`<a>${gettext('顯示完整階層')}</a>`)
+			$(this).html(`<a>${gettext('完整階層')}</a>`)
 		} else {
 			$(this).data('path', 'lin_path')
-			$(this).html(`<a>${gettext('顯示林奈階層')}</a>`)
+			$(this).html(`<a>${gettext('林奈階層')}</a>`)
 
 		}
 

@@ -1091,15 +1091,10 @@ msgstr "Animalia"
 
 
 #:  
-msgid "連回物種樹"
-msgstr "Taxon tree"
-
-
-#:  
-msgid "顯示完整階層"
+msgid "完整階層"
 msgstr "Full hierarchy"
 
 
 #:  
-msgid "顯示林奈階層"
+msgid "林奈階層"
 msgstr "Linnaean hierarchy"

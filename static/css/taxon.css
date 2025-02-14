@@ -543,8 +543,17 @@ ul.link-left li p {
 
 
 
+ p.rank-p-area-not-taiwan {
+    width: calc(100% - 140px) !important;
+}
+
+
+ p.rank-p-area-en-not-taiwan {
+    width: calc(100% - 180px) !important;
+}
+
  p.rank-p-area {
-    width: calc(100% - 270px) !important;
+    width: calc(100% - 220px) !important;
 }
 
  p.rank-p-area-en {

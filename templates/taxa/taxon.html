@@ -12,7 +12,7 @@
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v8">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v9">
 {% endblock style %}
 
 {% block body %}
@@ -339,10 +339,28 @@
 									<a class="anchor" id="taxon-rank"></a>
 									<div class="mark-title">
 										<img src="{% static 'image/title-mark.svg' %}">
-										<p class="{% if LANGUAGE_CODE == 'en-us' %}rank-p-area-en{% else %}rank-p-area{% endif %}">{% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}</p>
+										<p class="
+										{% if data.is_in_taiwan != 1 %}
+										{% if LANGUAGE_CODE == 'en-us' %}
+											rank-p-area-en-not-taiwan
+										{% else %}
+											rank-p-area-not-taiwan
+										{% endif %}
+
+									{%  else %}
+										{% if LANGUAGE_CODE == 'en-us' %}
+											rank-p-area-en
+										{% else %}
+											rank-p-area
+										{% endif %}
+										
+
+									{% endif %}">{% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}</p>
 										<div class="grey-tag-box">
-											<div class="item tree-button"> <a href="/taxon/tree#{{ taxon_id }}" target="_blank">{% trans '連回物種樹' %}</a> </div>
-											<div class="item tree-button show-higher-button" data-path="path"><a>{% trans '顯示完整階層' %}</a></div>
+											{% if data.is_in_taiwan == 1 %}
+											<div class="item tree-button"> <a href="/taxon/tree#{{ taxon_id }}" target="_blank">{% trans '物種樹' %}</a> </div>
+											{% endif %}
+											<div class="item tree-button show-higher-button" data-path="path"><a>{% trans '完整階層' %}</a></div>
 										</div>
 									</div>
 									<div class="arr">
@@ -787,5 +805,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon.js' %}?v9"></script>
+<script src="{% static 'js/taxon.js' %}?v10"></script>
 {% endblock script %}
