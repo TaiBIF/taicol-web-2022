@@ -12,7 +12,7 @@
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v9">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v10">
 {% endblock style %}
 
 {% block body %}
@@ -353,14 +353,12 @@
 										{% else %}
 											rank-p-area
 										{% endif %}
-										
-
 									{% endif %}">{% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}</p>
 										<div class="grey-tag-box">
-											{% if data.is_in_taiwan == 1 %}
-											<div class="item tree-button"> <a href="/taxon/tree#{{ taxon_id }}" target="_blank">{% trans '物種樹' %}</a> </div>
-											{% endif %}
 											<div class="item tree-button show-higher-button" data-path="path"><a>{% trans '完整階層' %}</a></div>
+											{% if data.is_in_taiwan == 1 %}
+											<div class="item tree-button"> <a href="/taxon/tree#{{ taxon_id }}" target="_blank">{% blocktrans context "分類階層區塊"%}物種樹{% endblocktrans %}</a> </div>
+											{% endif %}
 										</div>
 									</div>
 									<div class="arr">

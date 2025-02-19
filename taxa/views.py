@@ -2324,7 +2324,6 @@ def get_taxon_higher(request):
                         current_h_dict['rank_color'] = rank_color_map[current_h_row.rank_id]
                     else:
                         current_h_dict['rank_color'] = 'rank-second-gray'
-                    # data['higher'].append(current_h_dict)
                     final_path.append(current_h_dict)
 
 
