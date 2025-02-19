@@ -4189,7 +4189,7 @@ body {
 
 @media only screen and (max-width: 767px) {
     .tree-area ul {
-        margin-left: 0
+        margin-left: 0 !important;
     }
 }
 
