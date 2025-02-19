@@ -12,7 +12,7 @@
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v6">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v10">
 {% endblock style %}
 
 {% block body %}
@@ -20,6 +20,7 @@
 
 {% csrf_token %}
 <input type="hidden" id="name_id" value="{{ data.name_id }}">
+<input type="hidden" name="rank_id" value="{{ data.rank_id }}">
 <div class="loadingbox d-none">
 	<img class="center-logo" src="{% static 'image/logo-img.svg' %}" alt="臺灣物種名錄">
 	<div id="loader-wrapper">
@@ -338,7 +339,27 @@
 									<a class="anchor" id="taxon-rank"></a>
 									<div class="mark-title">
 										<img src="{% static 'image/title-mark.svg' %}">
-										<p>{% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}
+										<p class="
+										{% if data.is_in_taiwan != 1 %}
+										{% if LANGUAGE_CODE == 'en-us' %}
+											rank-p-area-en-not-taiwan
+										{% else %}
+											rank-p-area-not-taiwan
+										{% endif %}
+
+									{%  else %}
+										{% if LANGUAGE_CODE == 'en-us' %}
+											rank-p-area-en
+										{% else %}
+											rank-p-area
+										{% endif %}
+									{% endif %}">{% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}</p>
+										<div class="grey-tag-box">
+											<div class="item tree-button show-higher-button" data-path="path"><a>{% trans '完整階層' %}</a></div>
+											{% if data.is_in_taiwan == 1 %}
+											<div class="item tree-button"> <a href="/taxon/tree#{{ taxon_id }}" target="_blank">{% blocktrans context "分類階層區塊"%}物種樹{% endblocktrans %}</a> </div>
+											{% endif %}
+										</div>
 									</div>
 									<div class="arr">
 										<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
@@ -363,7 +384,7 @@
 												<a class="search-rank d-none" href="{{ i.search_href }}">
 												<i class="ml-5 fa-solid fa-magnifying-glass"></i></a>
 											{% endif %}
-											</div>
+										</div>
 										{% endfor %}
 									</div>
 								</div>
@@ -630,13 +651,6 @@
 							{% for l in links %}
 							<li><p>
 									{{ l.title }}
-									{% comment %} {% if l.title == "自然攝影中心" %}
-										{{ l.title }}：{{ l.id }}
-									{% elif l.hidden_name == True %}
-										{{ l.title }}
-									{% else %}
-										{{ l.title }}：{{ l.suffix }}
-									{% endif %} {% endcomment %}
 									<span class="link-tag">/ {% trans l.category %}</span>
 								</p>
 								<a href="{{ l.href }}{{ l.suffix }}" target="_blank">
@@ -789,5 +803,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon.js' %}?v8"></script>
+<script src="{% static 'js/taxon.js' %}?v10"></script>
 {% endblock script %}

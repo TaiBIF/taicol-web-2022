@@ -198,11 +198,29 @@ $(function(){
 		}
 	})
 	// 收和控制
-	$('.w-box .title-click').click(function(){
-		if ($(this).parent('.w-box').hasClass('now')){
-			$(this).parent('.w-box').removeClass('now')
+
+
+	// #content-wrapper > div.page-top > div.species-de-content > div > div.right-de-box > div.box-2.column.ai-none > div.leftbox > div > div.title-click > div.mark-title > p
+	$('.w-box .title-click .mark-title p' ).click(function(){
+
+		if ($(this).parent().parent().parent('.w-box').hasClass('now')){
+			$(this).parent().parent().parent('.w-box').removeClass('now')
 		} else {
-			$(this).parent('.w-box').addClass('now')
+			$(this).parent().parent().parent('.w-box').addClass('now')
+		}
+		if ($('.w-box-2.now').length==1){
+			$('.box-2.column').addClass('flex-start')
+		} else {
+			$('.box-2.column').removeClass('flex-start')
+		}
+	})
+
+	$('.w-box .title-click .arr' ).click(function(){
+
+		if ($(this).parent().parent('.w-box').hasClass('now')){
+			$(this).parent().parent('.w-box').removeClass('now')
+		} else {
+			$(this).parent().parent('.w-box').addClass('now')
 		}
 		if ($('.w-box-2.now').length==1){
 			$('.box-2.column').addClass('flex-start')
@@ -253,6 +271,71 @@ $(function(){
 	$('.taxon-history-edit .updateData').on('click', function(){
 		updateData(parseInt($(this).data('page')))
 	})*/
+
+	$('.show-higher-button').on('click', function(){		
+
+
+		$.ajax({
+			url: `/get_taxon_higher?taxon_id=${$('input[name=taxon_id]').val()}&path=${$(this).data('path')}&rank_id=${$('input[name=rank_id]').val()}`,
+		})
+		.done(function(results) {
+
+			$('.rank-area').html('')
+
+			for (r of results){
+				$('.rank-area').append(
+					`
+					<div class="item">
+						<div class="cir-box ${ r['rank_color'] }">
+							${ r['rank_c']  }
+						</div>
+						<a ${ r['a_href'] ? `class="rank-p" href="${ r['a_href'] }"` : `class="rank-p a-disabled" `}>
+						${ r['a_content']  }
+						</a>
+						${ r['search_href'] ? `<a class="search-rank d-none" href="${ r['search_href'] }">
+							<i class="ml-5 fa-solid fa-magnifying-glass"></i></a>` : '' }
+					</div>
+					`
+				)
+
+			}
+
+			$('.rank-area .item').off('mouseenter')
+
+			$('.rank-area .item').on('mouseenter',(function(){
+				$(this).find('.search-rank').removeClass('d-none')
+			}))
+		
+			$('.rank-area .item').off('mouseleave')
+			$('.rank-area .item').on('mouseleave',(function(){
+				$(this).find('.search-rank').addClass('d-none')
+			}))
+		
+		
+		})
+		.fail(function( xhr, status, errorThrown ) {
+		$('.loadingbox').addClass('d-none');
+			//alert('發生未知錯誤！請聯絡管理員')
+			$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
+			console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
+		}) 
+		
+		
+
+
+		if ($(this).data('path') == 'lin_path'){
+			$(this).data('path', 'path')
+			$(this).html(`<a>${gettext('完整階層')}</a>`)
+		} else {
+			$(this).data('path', 'lin_path')
+			$(this).html(`<a>${gettext('林奈階層')}</a>`)
+
+		}
+
+	
+
+
+	})
 	
 })
 

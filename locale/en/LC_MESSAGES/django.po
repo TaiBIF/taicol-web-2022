@@ -134,6 +134,13 @@ msgstr "ABOUT"
 msgid "物種樹"
 msgstr "TAXON"
 
+#
+msgctxt "分類階層區塊"
+msgid "物種樹"
+msgstr "View Tree"
+
+
+
 #: templates/base.html:70 templates/base.html:159
 #: templates/taxa/catalogue.html:75 templates/taxa/catalogue.html:85
 msgctxt "物種名錄-title"
@@ -1088,3 +1095,13 @@ msgstr "Plantae"
 #:  
 msgid "動物"
 msgstr "Animalia"
+
+
+#:  
+msgid "完整階層"
+msgstr "Full"
+
+
+#:  
+msgid "林奈階層"
+msgstr "Linnaean"

@@ -7988,7 +7988,7 @@ body {
 .species-de-content .right-de-box .w-box .title-click {
     position: relative;
     padding: 15px 0px 15px 0px;
-    cursor: pointer
+    /* cursor: pointer */
 }
 
 .species-de-content .right-de-box .w-box .title-click .mark-title {
@@ -8001,7 +8001,8 @@ body {
 
 .species-de-content .right-de-box .w-box .title-click .mark-title p {
     font-size: 20px;
-    margin-left: 5px
+    margin-left: 5px;
+    cursor: pointer;
 }
 
 .species-de-content .right-de-box .w-box .title-click .arr {
@@ -8013,7 +8014,8 @@ body {
     -moz-transition: all .3s;
     -o-transition: all .3s;
     -ms-transition: all .3s;
-    -webkit-transition: all .3s
+    -webkit-transition: all .3s;
+    cursor: pointer;
 }
 
 .species-de-content .right-de-box .w-box .title-click .arr svg {
@@ -8109,6 +8111,7 @@ body {
     border-radius: 5px;
     padding: 5px 10px
 }
+
 
 .species-de-content .right-de-box .box-2 .w-box .rank-area {
     margin-left: -10px

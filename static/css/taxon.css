@@ -541,13 +541,43 @@ ul.link-left li p {
     background: #943a28 !important;
 }
 
-/* 
-.history-show-more td {
-    background-color: white;
-} */
 
 
+ p.rank-p-area-not-taiwan {
+    width: calc(100% - 140px) !important;
+    
+}
 
+
+ p.rank-p-area-en-not-taiwan {
+    width: calc(100% - 100px) !important;
+}
+
+ p.rank-p-area {
+    width: calc(100% - 190px) !important;
+}
+
+ p.rank-p-area-en {
+    width: calc(100% - 180px) !important;
+    font-size: 18px;
+}
+
+
+.species-de-content .right-de-box .box-2 .w-box .grey-tag-box {
+    display: flex;
+    flex-wrap: wrap;
+    /* margin-left: calc(100% - 15px), */
+}
+
+.species-de-content .right-de-box .box-2 .w-box .grey-tag-box .item {
+    margin-right: 4px;
+    background: #F7F7F7;
+    border-radius: 5px;
+    padding: 5px 5px;
+    font-size: 14px;
+    cursor: pointer;
+    line-height: 20px;
+}
 
  .more-option-button {
     cursor: pointer;

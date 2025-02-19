@@ -132,6 +132,12 @@ function getSubList(item){
 
 $(function (){
 
+    // 如果進入時 帶有hash 打開樹
+    if (window.location.hash != null && window.location.hash != '') {
+        searchClick(window.location.hash.substring(1),true)
+
+    };
+
     $('.getSubList').off('click')
     $('.getSubList').on('click', function(){
         getSubList($(this))
@@ -291,7 +297,8 @@ $(function (){
                     })
                 };
             },
-        }
+        },
+        escapeMarkup: function(markup) { return markup; }, // Allows HTML rendering
     });
 
     $('#keyword').on('select2:open', function (e) {

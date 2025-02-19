@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from taxa.utils import *
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse, JsonResponse
 import json
 from conf.settings import env, MEDIA_URL, SOLR_PREFIX
 import pymysql
@@ -244,13 +244,25 @@ def get_autocomplete_taxon_by_solr(request):
         # if re.search(r'[\u4e00-\u9fff]+', keyword):
         #     query_list.append('is_primary_common_name:true')
 
+        # keyword = html.unescape(keyword)
+        # keyword_reg = get_variants(keyword)
+
+        keyword = unicode_to_plain(keyword)
+
+        keyword_wo_rank = remove_rank_char(keyword)
+        keyword_wo_rank_reg = get_variants(keyword_wo_rank)
+
         keyword = html.unescape(keyword)
-        keyword_reg = get_variants(keyword)
+
+        keyword_reg = escape_solr_query(keyword)
+        keyword_reg = get_variants(keyword_reg)
+
 
 
     query_str = '&fq='.join(query_list)
 
-    taxa_str = f'search_name:"{keyword}"^5 OR search_name:/{escape_solr_query(keyword)}.*/^4 OR search_name:/{keyword_reg}/^3 OR search_name:/{keyword_reg}.*/^2 OR search_name:/.*{escape_solr_query(keyword)}.*/^1 OR search_name:/.*{keyword_reg}.*/'
+    taxa_str = f'search_name:"{keyword}"^5 OR search_name_wo_rank:"{keyword_wo_rank}"^5 OR search_name:/{keyword_reg}.*/^4 OR search_name_wo_rank:/{keyword_wo_rank_reg}.*/^4 OR search_name:/{keyword_reg}/^3 OR search_name_wo_rank:/{keyword_wo_rank_reg}/^3 OR search_name:/{keyword_reg}.*/^2 OR search_name_wo_rank:/{keyword_wo_rank_reg}.*/^2 OR search_name:/.*{keyword_reg}.*/^1 OR search_name_wo_rank:/.*{keyword_wo_rank_reg}.*/^1 OR search_name:/.*{keyword_reg}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank_reg}.*/'
+
 
     ds = []
     if keyword_reg:
@@ -263,12 +275,12 @@ def get_autocomplete_taxon_by_solr(request):
 
         if len(ds):
 
-            lack_cols = [k for k in  ['taxon_id', 'simple_name', 'search_name', 'common_name_c', 'alternative_name_c','status'] if k not in ds.keys()]
+            lack_cols = [k for k in  ['taxon_id', 'simple_name','formatted_accepted_name' , 'formatted_search_name', 'common_name_c', 'alternative_name_c','status'] if k not in ds.keys()]
 
             for c in lack_cols:
                 ds[c] = ''
             
-            ds = ds[['taxon_id', 'simple_name', 'search_name', 'common_name_c', 'alternative_name_c','status']]
+            ds = ds[['taxon_id', 'simple_name', 'formatted_search_name', 'formatted_accepted_name', 'common_name_c', 'alternative_name_c','status']]
             ds = ds.drop_duplicates().reset_index(drop=True)
 
             ds = ds.replace({None: '', np.nan: ''})
@@ -280,14 +292,14 @@ def get_autocomplete_taxon_by_solr(request):
                     name_c_str += ',' + row.alternative_name_c
 
                 if name_c_str:
-                    ds.loc[i, 'text'] = row.simple_name + ' ' + name_c_str
+                    ds.loc[i, 'text'] = row.formatted_accepted_name + ' ' + name_c_str
                 else:
-                    ds.loc[i, 'text'] = row.simple_name 
+                    ds.loc[i, 'text'] = row.formatted_accepted_name 
 
             if get_language() == 'en-us':
-                ds['text'] = ds.apply(lambda x: x['search_name'] + f" ({name_status_map[x['status']]} {x['text']})" if x['status'] != 'accepted' else x['text'], axis=1)
+                ds['text'] = ds.apply(lambda x: x['formatted_search_name'] + f" ({name_status_map[x['status']]} {x['text']})" if x['status'] != 'accepted' else x['text'], axis=1)
             else:
-                ds['text'] = ds.apply(lambda x: x['search_name'] + f" ({x['text']} {name_status_map_c[x['status']]})" if x['status'] != 'accepted' else x['text'], axis=1)
+                ds['text'] = ds.apply(lambda x: x['formatted_search_name'] + f" ({x['text']} {name_status_map_c[x['status']]})" if x['status'] != 'accepted' else x['text'], axis=1)
             
             ds = ds.rename(columns={'taxon_id': 'id'})
             names = ds[['text','id']].to_json(orient='records')
@@ -363,7 +375,7 @@ def taxon(request, taxon_id):
         data['rank_id'] = int(solr_resp.get('taxon_rank_id').replace('.0',''))
 
 
-        solr_get = ['common_name_c', 'alternative_name_c', 'path','is_endemic', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'alien_type',
+        solr_get = ['common_name_c', 'alternative_name_c','lin_path', 'path','is_endemic', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'alien_type',
                     'cites', 'iucn', 'redlist', 'protected', 'is_cultured', 'alien_status_note']
         
         for ss in solr_get:
@@ -414,8 +426,9 @@ def taxon(request, taxon_id):
 
         # 高階層
         data['higher'] = []
-        if data['path']:
-            path = data['path'].split('>')
+        # 改為預設林奈階層
+        if data['lin_path']:
+            path = data['lin_path'].split('>')
             # 專家列表
             # 如果同一個專家有多個taxon_group要concat
             path = [p for p in path if p != taxon_id]
@@ -1041,6 +1054,9 @@ def get_taxon_path(request):
                     conn.close()
                     resp['path'] = Reverse([t[0] for t in t_ids])
                     resp['rank_id'] = Reverse([t[1] for t in t_ids])
+            else:
+                resp['path'] = []
+                resp['rank_id'] = []
 
     return HttpResponse(json.dumps(resp), content_type='application/json') 
 
@@ -1369,6 +1385,7 @@ def get_match_result(request):
 				<td>{gettext("比對結果")}</td>
 				<td>{gettext("分數")}</td>
 				<td>{gettext("地位")}</td>
+				<td>{gettext("接受學名")}</td>
 				<td>{gettext("中文名")}</td>
 				<td>{gettext("界")}</td>
 				<td>{gettext("所屬類群")}</td>
@@ -1466,7 +1483,8 @@ def get_match_result(request):
                 info = info[solr_cols]
                 info['rank_id'] = info['rank_id'].apply(lambda x: int(x) if x else x)
 
-                df = df[['search_term','score','name_status','namecode','family','kingdom','phylum','class','order','genus']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
+                # 這邊的simple name是從nomen match來的 是比對到學名本身的simple name
+                df = df[['search_term','simple_name','score','name_status','namecode','family','kingdom','phylum','class','order','genus']].merge(info,how='left',left_on='namecode',right_on='taxon_id')
                 
                 # 如果有多個結果 
                 
@@ -1500,7 +1518,7 @@ def get_match_result(request):
                         final_df.append(df[df.search_term==dd].to_dict('records')[0])
 
 
-                df = pd.DataFrame(final_df, columns=['search_term', 'score', 'name_status', 'namecode', 'family', 'kingdom',
+                df = pd.DataFrame(final_df, columns=['search_term', 'simple_name', 'score', 'name_status', 'namecode', 'family', 'kingdom',
                                                     'phylum', 'class', 'order', 'genus', 'is_in_taiwan', 'is_endemic',
                                                     'alien_type', 'taxon_id', 'protected_category', 'red_category',
                                                     'iucn_category', 'rank_id', 'formatted_name', 'common_name_c'])
@@ -1702,14 +1720,6 @@ def download_match_results(request):
                         else:
                             tmp_df.append(df[df.search_term==dd].to_dict('records')[0])
                     df = pd.DataFrame(tmp_df)
-                    # df = pd.DataFrame(tmp_df, columns =['matched', 'simple_name', 'common_name', 'accepted_namecode',
-                    #                                     'namecode', 'name_status', 'source', 'kingdom', 'phylum', 'class',
-                    #                                     'order', 'family', 'genus', 'taxon_rank', 'match_type', 'search_term',
-                    #                                     'matched_clean', 'score', 'is_endemic', 'alien_type', 'is_terrestrial',
-                    #                                     'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 'taxon_id',
-                    #                                     'protected_category', 'red_category', 'iucn_category', 'cites_listing',
-                    #                                     'rank_id', 'accepted_name', 'common_name_c', 'is_in_taiwan',
-                    #                                     'not_official'])
                     df = df.replace({np.nan: '', None: ''})
                     df.loc[(df.namecode=='no match'),'match_type']= 'No match'
                     df['cites_listing'] = df['cites_listing'].apply(lambda x: x.replace('1','I').replace('2','II').replace('3','III'))
@@ -2091,26 +2101,31 @@ def get_conditioned_solr_search(req):
         if re.search(r'[\u4e00-\u9fff]+', keyword):
             is_chinese = True
 
+        keyword = unicode_to_plain(keyword)
+
+        keyword_wo_rank = remove_rank_char(keyword)
+        keyword_wo_rank = get_variants(keyword_wo_rank)
+
+        keyword = escape_solr_query(keyword)
         keyword = get_variants(keyword)
+
         keyword_type = req.get('name-select','equal')
 
         
         if keyword_type == "equal":
             # 中文名可能有異體字 英文名有大小寫問題 要修改成REGEXP
-            keyword_str = f"search_name:/{keyword}/"
+            keyword_str = f"search_name:/{keyword}/ OR search_name_wo_rank:/{keyword_wo_rank}/"
         elif keyword_type == "startwith":
-            keyword_str = f"search_name:/{keyword}.*/"
+            keyword_str = f"search_name:/{keyword}.*/ OR search_name_wo_rank:/{keyword_wo_rank}.*/"
         else: # contain
-            keyword_str = f"search_name:/.*{keyword}.*/"
+            keyword_str = f"search_name:/.*{keyword}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank}.*/"
 
         query_list.append(keyword_str)
 
     # 如果沒有keyword的話 要排除掉搜尋中文名的資料 不然會有重複的問題
 
-    else:
-
+    if not is_chinese:
         query_list.append('taxon_name_id:*') # 確保不是中文名
-
 
     # 地位
     if status := req.getlist('status'):
@@ -2222,3 +2237,94 @@ def get_conditioned_solr_search(req):
 
 
     return query_list, is_chinese
+
+
+# 物種頁階層切換
+def get_taxon_higher(request):
+
+    final_path = []
+    taxon_id = request.GET.get('taxon_id')
+    selected_path = request.GET.get('path')
+    rank_id = int(request.GET.get('rank_id'))
+    path_str = ''
+
+    conn = pymysql.connect(**db_settings)
+    query = "SELECT {} FROM api_taxon_tree WHERE taxon_id = %s".format(selected_path)
+
+    with conn.cursor() as cursor:
+        cursor.execute(query, (taxon_id,))
+        path_str = cursor.fetchone()
+
+    # print(path_str)
+
+    # data['higher'] = []
+    # 改為預設林奈階層
+    # higher = []
+    if path_str:
+        path = path_str[0].split('>')
+        # print(path)
+        # 專家列表
+        # 如果同一個專家有多個taxon_group要concat
+        path = [p for p in path if p != taxon_id]
+        if len(path):
+            path_str = ' OR '.join(path)
+            path_resp = requests.get(f'{SOLR_PREFIX}taxa/select?fq=is_deleted:false&fq=taxon_name_id:*&fq=status:accepted&q=taxon_id:({path_str})&fl=taxon_rank_id,taxon_id,formatted_accepted_name,common_name_c,alternative_name_c,simple_name&rows=1000')
+            if path_resp.status_code == 200:
+                higher = pd.DataFrame(path_resp.json()['response']['docs'])
+                # print(path_resp.json())
+                for cc in ['common_name_c','alternative_name_c','higherTaxa_str']:
+                    if cc not in higher.keys():
+                        higher[cc] = ''
+                higher['taxon_rank_id'] = higher['taxon_rank_id'].apply(lambda x: int(str(x).replace('.0','')) if x else '')
+                higher['rank_order'] = higher['taxon_rank_id'].apply(lambda x: rank_order_map[x])
+                higher = higher.replace({np.nan: '', None: ''})
+                for hi in higher.index:
+                    higher_row = higher.iloc[hi]
+                    name_c_str = higher_row.common_name_c
+                    now_higherTaxa_str = higher_row.simple_name
+                    if higher_row.alternative_name_c:
+                        name_c_str += ',' + higher_row.alternative_name_c
+                    if name_c_str:
+                        now_higherTaxa_str += ' ' + name_c_str
+                    higher.loc[hi, 'higherTaxa_str'] = now_higherTaxa_str
+                higher = higher.rename(columns={'formatted_accepted_name':'formatted_name','taxon_rank_id':'rank_id'})
+                # 補上階層未定 
+                # 先找出應該要有哪些林奈階層
+                current_rank_orders = higher.rank_order.to_list() + [rank_order_map[rank_id]]
+                for x in lin_map.keys():
+                    now_order = lin_map_w_order[x]['rank_order']
+                    if now_order not in current_rank_orders and now_order < max(current_rank_orders) and now_order > min(current_rank_orders):
+                        higher = pd.concat([higher, pd.Series({'rank_id': x, 'common_name_c': '地位未定', 'taxon_id': None, 'rank_order': lin_map_w_order[x]['rank_order']}).to_frame().T], ignore_index=True)
+                # 從最大的rank開始補
+                higher = higher.sort_values('rank_order', ignore_index=True, ascending=False)
+                for hi in higher[higher.taxon_id.isnull()].index:
+                    found_hi = hi + 1
+                    if found_hi < len(higher):
+                        while not higher.loc[found_hi].taxon_id:
+                            found_hi += 1
+                    higher.loc[hi, 'formatted_name'] = f'{higher.loc[found_hi].formatted_name} {lin_map[higher.loc[hi].rank_id]} incertae sedis'
+                higher = higher.replace({None: '', np.nan: ''})
+                higher = higher.sort_values('rank_order', ignore_index=True)
+                for h in higher.index:
+                    current_h_row = higher.loc[h]
+                    current_h_dict = {}
+                    if get_language() == 'en-us':
+                        current_h_dict['a_content'] = f'{rank_map[current_h_row.rank_id]} {current_h_row.formatted_name}'
+                    else:
+                        current_h_dict['a_content'] = f'{current_h_row.formatted_name} {current_h_row.common_name_c}'
+                    if current_h_row.taxon_id:
+                        taxon_href = f'/{"en-us" if get_language() == "en-us" else "zh-hant"}/taxon/' + current_h_row.taxon_id
+                        current_h_dict['a_href'] = taxon_href
+                        current_h_dict['search_href'] = f'/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&higherTaxa={current_h_row.taxon_id}&higherTaxa_str={current_h_row.higherTaxa_str}'
+                    else:
+                        current_h_dict['a_href'] = None
+                        current_h_dict['search_href'] = None
+                    current_h_dict['rank_c'] = rank_map_c[current_h_row.rank_id]
+                    if higher.loc[h].rank_id in lin_ranks: # 林奈階層
+                        current_h_dict['rank_color'] = rank_color_map[current_h_row.rank_id]
+                    else:
+                        current_h_dict['rank_color'] = 'rank-second-gray'
+                    final_path.append(current_h_dict)
+
+
+    return HttpResponse(json.dumps(final_path), content_type='application/json')
