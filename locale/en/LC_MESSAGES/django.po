@@ -1105,3 +1105,8 @@ msgstr "Full"
 #:  
 msgid "林奈階層"
 msgstr "Linnaean"
+
+
+#:  
+msgid "接受學名"
+msgstr "Accepted Name"
