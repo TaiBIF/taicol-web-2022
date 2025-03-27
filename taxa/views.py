@@ -518,7 +518,7 @@ def taxon(request, taxon_id):
                     SELECT atu.taxon_name_id, an.formatted_name, an.name_author, ac.short_author, atu.status,
                             ru.status, tn.nomenclature_id, tn.publish_year, ru.per_usages, ru.reference_id, 
                             tn.reference_id, r.publish_year, tn.rank_id, r.type, tn.original_taxon_name_id, ru.id,
-                            'from_usages'
+                            'from_usages', tn.object_group, tn.autonym_group
                     FROM api_taxon_usages atu 
                     LEFT JOIN reference_usages ru ON atu.reference_id = ru.reference_id and atu.accepted_taxon_name_id = ru.accepted_taxon_name_id and atu.taxon_name_id = ru.taxon_name_id
                     LEFT JOIN api_names an ON an.taxon_name_id = atu.taxon_name_id
@@ -530,7 +530,7 @@ def taxon(request, taxon_id):
                     SELECT tn.id, an.formatted_name, an.name_author, '', '', '', 
                            tn.nomenclature_id, tn.publish_year, '', NULL,
                            tn.reference_id, NULL, tn.rank_id, NULL, tn.original_taxon_name_id, NULL, 
-                           'from_history'
+                           'from_history', tn.object_group, tn.autonym_group
                     FROM taxon_names tn
                     LEFT JOIN api_names an ON an.taxon_name_id = tn.id
                     WHERE tn.id IN (SELECT taxon_name_id FROM base_name) 
@@ -541,7 +541,7 @@ def taxon(request, taxon_id):
             names = pd.DataFrame(names, columns=['taxon_name_id','sci_name','author','ref','taxon_status','ru_status',
                                                 'nomenclature_id','publish_year','per_usages','reference_id', 
                                                 'o_reference_id','r_publish_year','rank_id','r_type','original_taxon_name_id','ru_id',
-                                                'name_source'])
+                                                'name_source', 'object_group','autonym_group'])
             names = names.replace({np.nan: None})
 
             # author 學名作者
@@ -616,18 +616,22 @@ def taxon(request, taxon_id):
                     usage_refs = cursor.fetchall()
                     usage_refs = pd.DataFrame(usage_refs, columns=['reference_id','full_ref','publish_year','author','ref','r_type'])
 
-                # 確認是否為歧異
-                query = """
-                        select taxon_name_id from api_taxon_usages 
-                        where `status` = 'not-accepted' and is_deleted != 1 and taxon_name_id IN %s 
-                        group by taxon_name_id having count(distinct(taxon_id)) > 1;
-                        """
+                names = mark_ambiguous_or_part(names=names)
+                is_ambiguous = list(names[names.marked==True].taxon_name_id.unique())
 
-                is_ambiguous = []
-                with conn.cursor() as cursor:
-                    cursor.execute(query, (list(names.taxon_name_id.unique()), ))
-                    is_ambiguous = cursor.fetchall()
-                    is_ambiguous = [i[0] for i in is_ambiguous]
+                # 確認是否為歧異
+                # query = """
+                #         select taxon_name_id from api_taxon_usages 
+                #         where `status` = 'not-accepted' and is_deleted != 1 and taxon_name_id IN %s 
+                #         group by taxon_name_id having count(distinct(taxon_id)) > 1;
+                #         """
+            
+
+                # is_ambiguous = []
+                # with conn.cursor() as cursor:
+                #     cursor.execute(query, (list(names.taxon_name_id.unique()), ))
+                #     is_ambiguous = cursor.fetchall()
+                #     is_ambiguous = [i[0] for i in is_ambiguous]
                     
                 # 只整理目前usage的
                 name_change_df = names[names.name_source=='from_usages'].reset_index(drop=True)
@@ -691,10 +695,16 @@ def taxon(request, taxon_id):
                         # 決定排序的publish_year
                         ref_list = [f"<a href='https://nametool.taicol.tw/{'en-us' if get_language() == 'en-us' else 'zh-tw'}/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
                         ref_str = ('; ').join(ref_list)
-                        if ref_str:
-                            name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('歧異')}): {ref_str}",min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                        if len(names[(names.taxon_name_id==n)&(names.pro_parte==True)]):
+                            if ref_str:
+                                name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('部分')}): {ref_str}",min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                            else:
+                                name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('部分')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                         else:
-                            name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('歧異')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                            if ref_str:
+                                name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('歧異')}): {ref_str}",min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                            else:
+                                name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('歧異')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                     # 非誤用名
                     elif len(name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.taxon_status!='misapplied')]):
                         # 有效學名使用的發布文獻
