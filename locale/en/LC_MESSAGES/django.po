@@ -860,11 +860,15 @@ msgstr "Show Linnaean ranks only"
 
 #: templates/taxa/taxon.html: 
 msgid "誤用"
-msgstr "misapplied"
+msgstr "Misapplied"
 
 #: templates/taxa/taxon.html: 
 msgid "歧異"
-msgstr "ambiguous"
+msgstr "Ambiguous"
+
+#: templates/taxa/taxon.html: 
+msgid "部分"
+msgstr "Part"
 
 #: templates/taxa/name_match.html: 
 msgid "原生/外來/特有性"

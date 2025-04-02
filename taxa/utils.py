@@ -1110,9 +1110,66 @@ def create_view_display(taxon_id, accepted_taxon_name_id, misapplied_names):
         # taxon_views = taxon_views.groupby(['name_id', 'formatted_name','taxon_id'],as_index=False).first()
         # taxon_views = taxon_views.to_dict('records')
 
-
-
     conn.close() 
 
-
     return final_taxon_views
+
+
+
+def mark_ambiguous_or_part(names):
+
+    names['marked'] = False
+    names['pro_parte'] = False
+
+    # 先處理同模學名
+    conn = pymysql.connect(**db_settings)
+    object_groups = list(names[names.object_group.notnull()].object_group.unique())
+    if len(object_groups):
+        query = """select distinct at.taxon_id, at.parent_taxon_id, atu.taxon_name_id, tn.object_group, tn.autonym_group 
+                    from api_taxon_usages atu
+                    join taxon_names tn ON tn.id = atu.taxon_name_id
+                    join api_taxon at ON at.taxon_id = atu.taxon_id
+                    where atu.is_deleted = 0 AND atu.status != 'misapplied' AND tn.object_group in %s;"""
+        with conn.cursor() as cursor:
+            cursor.execute(query, (object_groups, ))
+            df = pd.DataFrame(cursor.fetchall(), columns=['taxon_id','parent_taxon_id','taxon_name_id','object_group','autonym_group'])
+        for object_group in object_groups:
+            rows = df[df.object_group==object_group]
+            rows_taxon_ids = rows.taxon_id.unique()
+            rows_parent_taxon_ids = rows.parent_taxon_id.unique()
+            # 排除掉互為上下階層的taxon_id
+            excluded_taxon_ids = [r for r in rows_taxon_ids if r not in rows_parent_taxon_ids]
+            if len(excluded_taxon_ids) > 1:
+                name_ids = list(rows.taxon_name_id.unique())
+                names.loc[names.taxon_name_id.isin(name_ids),'marked'] = True
+                # per_usages = names[names.taxon_name_id.isin(name_ids)].per_usages.values()
+
+
+        # 找單純重複的學名 
+        # 這邊就不會有互為上下階層的問題了
+
+        query = """
+                select taxon_name_id from api_taxon_usages 
+                where `status` = 'not-accepted' and is_deleted != 1 and taxon_name_id IN %s 
+                group by taxon_name_id having count(distinct(taxon_id)) > 1;
+                """
+    
+        with conn.cursor() as cursor:
+            cursor.execute(query, (list(names.taxon_name_id.unique()), ))
+            is_ambiguous = cursor.fetchall()
+            is_ambiguous = [i[0] for i in is_ambiguous]
+            names.loc[names.taxon_name_id.isin(is_ambiguous),'marked'] = True
+            
+
+        # 最後再一起標註
+        # 確認per_usages是否有標註pro parte
+        for name_id in names[names.marked==True].taxon_name_id.unique():
+            for pp in names[names.taxon_name_id==name_id].per_usages.values:
+                try:
+                    for ppp in pp:
+                        if ppp.get('pro_parte') == True:
+                            names.loc[names.taxon_name_id==name_id,'pro_parte'] = True
+                            break
+                except:
+                    pass
+    return names

@@ -16,13 +16,13 @@ const SpeciesAndEndemicRatiosStatisics: React.FC<Props> = (props) => {
         <div className="mark-title">
           <img src="/static/image/title-mark.svg"/>
           <Translation>{ t =>
-            <p>{t('臺灣各類生物種數與特有比例')}</p>
+            <p>{t('臺灣各類生物原生種數與特有比例')}</p>
           }</Translation>
         </div>
         <div className="color-inf">
           <div className="blue-sq"></div>
           <Translation>{ t =>
-            <p>{t('特有種 / 種下')}</p>
+            <p>{t('特有種')}</p>
           }</Translation>
         </div>
       </div>

@@ -40,7 +40,7 @@
     "回列表":"Back to List",
 
     "各界物種數統計":"Statistics of Species of Each Kingdom",
-    "臺灣各類生物種數與特有比例":"Endemic Ratio of Biological Groups in Taiwan",
+    "臺灣各類生物原生種數與特有比例":"Endemic Ratio of Biological Groups in Taiwan",
     "昆蟲":"Insects",
     "魚類":"Fishes",
     "爬蟲類":"Reptiles",
@@ -49,7 +49,7 @@
     "鳥類":"Birds",
     "哺乳類":"Mammals",
     "其他":"Other",
-    "特有種":"Endemic species / infraspecies",
+    // "特有種":"Endemic species / infraspecies",
     "各階層數量統計":"Statistics of Each Rank",
     "物種來源":"Species Origin",
     "臺灣與全球物種數比較":"Taiwan and Global Species Comparison",
@@ -172,7 +172,7 @@
 
     "單位：種": "Unit: species",
     "單位：種 / 種下": "Unit: species / infraspecies",
-    "特有種 / 種下": "Endemic species / infraspecies",
+    "特有種": "Endemic species",
     "附錄一": "Appendix I",
     "附錄二": "Appendix II",
     "附錄三": "Appendix III",
