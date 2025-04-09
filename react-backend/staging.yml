@@ -1,4 +1,6 @@
-version: "3.7"
+networks:
+  gateway:
+    external: true
 
 services:
   react_app:
@@ -21,6 +23,8 @@ services:
       - ./app/public/upload:/app/public/upload
     env_file:
       - ./app/.env
+    networks:
+      - gateway
   # nginx:
   #   container_name: taicol-react-nginx
   #   image: nginx:latest
