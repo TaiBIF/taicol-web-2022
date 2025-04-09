@@ -12,9 +12,6 @@ services:
     depends_on:
       - postgres
       - mysql
-    links:
-      - postgres:postgres
-      - mysql:mysql
     volumes:
       - .:/code
       - ../tc-web-volumes/static:/tc-web-volumes/static
@@ -40,7 +37,9 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     env_file:
      - .env
-  mysql:
+    networks:
+      - gateway
+  mysql-web:
     build: ./scripts/mysql
     container_name: tc-web-mysql-container
     ports:
@@ -58,6 +57,8 @@ services:
         "--character-set-server=utf8mb4",
         "--collation-server=utf8mb4_unicode_ci",
       ]
+    networks:
+      - gateway
   solr:
     build: ./solr-workspace
     image: taicol-solr-image

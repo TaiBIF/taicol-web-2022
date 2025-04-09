@@ -4,10 +4,7 @@ networks:
 
 services:
   react_app:
-    links:
-      - mysql
     depends_on:
-      # - nginx
       - mysql
     container_name: taicol-react-app
     restart: always
@@ -54,3 +51,5 @@ services:
         "--character-set-server=utf8mb4",
         "--collation-server=utf8mb4_unicode_ci",
       ]
+    networks:
+      - gateway
