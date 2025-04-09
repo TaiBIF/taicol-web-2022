@@ -1,11 +1,10 @@
-version: "3.7"
+networks:
+  gateway:
+    external: true
 
 services:
   react_app:
-    links:
-      - mysql
     depends_on:
-      # - nginx
       - mysql
     container_name: taicol-react-app
     restart: always
@@ -21,6 +20,8 @@ services:
       - ./app/public/upload:/app/public/upload
     env_file:
       - ./app/.env
+    networks:
+      - gateway
   # nginx:
   #   container_name: taicol-react-nginx
   #   image: nginx:latest
@@ -50,3 +51,5 @@ services:
         "--character-set-server=utf8mb4",
         "--collation-server=utf8mb4_unicode_ci",
       ]
+    networks:
+      - gateway

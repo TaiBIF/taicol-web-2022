@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   django:
     platform: linux/amd64
@@ -29,7 +27,6 @@ services:
     volumes:
       - ../tc-web-volumes/pgdata:/var/lib/postgresql/data/pgdata
       - ../tc-web-volumes/bucket:/bucket
-      # - ../tc-web-volumes/media/archive:/archive
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
     env_file:
@@ -42,14 +39,9 @@ services:
       - "3307:3306"
     image: tc-web-mysql-image
     restart: always
-    # environment:
-    #   MYSQL_ALLOW_EMPTY_PASSWORD: "true"
-    # env_file:
-      # - ./app/.env
     volumes:
       - ../tc-web-volumes/mysql:/var/lib/mysql:rw
       - ../tc-web-volumes/bucket:/bucket
-      # - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:rw
     command:
       [
         "mysqld",
@@ -67,8 +59,5 @@ services:
       - ../tc-web-volumes/solr:/var/solr
       - ../tc-web-volumes/bucket:/bucket
       - ./solr-workspace/:/workspace
-    # command:
-      # - solr-precreate
-      # - tbia_records
     environment:
       - SOLR_JAVA_MEM=-Xms4g -Xmx4g

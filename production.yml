@@ -1,4 +1,6 @@
-version: '3.7'
+networks:
+  gateway:
+    external: true
 
 services:
   django:
@@ -9,8 +11,6 @@ services:
       - 8001:8001
     depends_on:
       - postgres
-    links:
-      - postgres:postgres
     volumes:
       - .:/code
       - ../tc-web-volumes/static:/tc-web-volumes/static
@@ -28,11 +28,12 @@ services:
     volumes:
       - ../tc-web-volumes/pgdata:/var/lib/postgresql/data/pgdata
       - ../tc-web-volumes/bucket:/bucket
-      # - ../tc-web-volumes/media/archive:/archive
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
     env_file:
      - .env
+    networks:
+      - gateway
   solr:
     build: ./solr-workspace
     image: taicol-solr-image
@@ -44,6 +45,8 @@ services:
       - ../tc-web-volumes/solr:/var/solr
       - ../tc-web-volumes/bucket:/bucket
       - ./solr-workspace/:/workspace
+    networks:
+      - gateway
     # environment:
     #   - SOLR_JAVA_MEM=-Xms4g -Xmx4g
   # nginx:
