@@ -13,21 +13,17 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - "./letsencrypt:/letsencrypt"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"      
-      - "./nametool.yml:/etc/traefik/nametool.yml"  # 工具測試站設定檔
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     command:
       - "--api.insecure=false"
       - "--providers.docker=true"
-      - "--providers.file.filename=/etc/traefik/nametool.yml"  # 工具測試站設定檔
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=catalogueoflife.taiwan@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
       - traefik-admin
       - traefik-web

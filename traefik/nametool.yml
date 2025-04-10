@@ -1,0 +1,15 @@
+http:
+  routers:
+    php-service:
+      rule: "Host(`staging.taicol.tw`)"
+      entrypoints:
+        - websecure
+      service: php-service
+      tls:
+        certResolver: myresolver
+
+  services:
+    php-service:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8000"
