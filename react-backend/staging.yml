@@ -34,6 +34,11 @@ services:
       - ./app/public/upload:/upload
     networks:
       - traefik-admin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx-admin.rule=Host(`web-admin.taicol.tw`)"
+      - "traefik.http.routers.nginx-admin.entrypoints=websecure"
+      - "traefik.http.routers.nginx-admin.tls.certresolver=myresolver"
   mysql:
     container_name: taicol-react-mysql
     ports:

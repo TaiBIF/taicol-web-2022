@@ -88,3 +88,8 @@ services:
       - ../tc-web-volumes/logs/nginx:/var/log/nginx
     networks:
       - traefik-web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx-web.rule=Host(`web-staging.taicol.tw`)"
+      - "traefik.http.routers.nginx-web.entrypoints=websecure"
+      - "traefik.http.routers.nginx-web.tls.certresolver=myresolver"
