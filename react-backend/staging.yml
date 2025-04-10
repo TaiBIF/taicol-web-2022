@@ -1,6 +1,8 @@
 networks:
   gateway:
     external: true
+  traefik-admin:
+    external: true
 
 services:
   react_app:
@@ -8,8 +10,8 @@ services:
       - mysql
     container_name: taicol-react-app
     restart: always
-    ports:
-      - 3000:3000
+    expose:
+      - 3000
     build:
       context: app
       dockerfile: Dockerfile
@@ -22,15 +24,16 @@ services:
       - ./app/.env
     networks:
       - gateway
-  # nginx:
-  #   container_name: taicol-react-nginx
-  #   image: nginx:latest
-  #   restart: always
-  #   volumes:
-  #     - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
-  #     - ./app/public/upload:/upload
-  #   ports:
-  #     - 4000:80
+      - traefik-admin
+  nginx-admin:
+    container_name: nginx-admin
+    image: nginx:latest
+    restart: always
+    volumes:
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+      - ./app/public/upload:/upload
+    networks:
+      - traefik-admin
   mysql:
     container_name: taicol-react-mysql
     ports:
@@ -43,7 +46,6 @@ services:
       - ./app/.env
     volumes:
       - ./db:/var/lib/mysql:rw
-      # - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:rw
       - ../../tc-web-volumes/bucket:/bucket
     command:
       [

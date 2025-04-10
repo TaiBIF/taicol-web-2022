@@ -1,14 +1,16 @@
 networks:
   gateway:
     external: true
+  traefik-web:
+    external: true
 
 services:
   django:
     build: .
     container_name: tc-web-django-stag-container
     image: tc-web-django-stag-image
-    ports:
-      - 8001:8001
+    expose:
+      - 8001
     depends_on:
       - postgres
       - mysql-web
@@ -25,6 +27,7 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - gateway
+      - traefik-web
   postgres:
     image: postgres:14-alpine
     shm_size: '1g'
@@ -74,23 +77,14 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - gateway
-
-    # environment:
-    #   - SOLR_JAVA_MEM=-Xms4g -Xmx4g
-  # nginx:
-  #   image: nginx:1.19.10-alpine
-  #   restart: always
-  #   ports:
-  #     - 80:80
-  #   volumes:
-  #     - ./scripts/nginx/staging:/etc/nginx/conf.d
-  #     - ../tc-web-volumes/static:/tc-web-volumes/static
-  #     - ../tc-web-volumes/media:/tc-web-volumes/media
-  #     - ../tc-web-volumes/logs/nginx:/var/log/nginx
-  #   links:
-  #     - django:django
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "1m"
-  #       max-file: "3"
+  nginx-web:
+    image: nginx:1.19.10-alpine
+    container_name: nginx-web
+    restart: always
+    volumes:
+      - ./scripts/nginx/staging:/etc/nginx/conf.d
+      - ../tc-web-volumes/static:/tc-web-volumes/static
+      - ../tc-web-volumes/media:/tc-web-volumes/media
+      - ../tc-web-volumes/logs/nginx:/var/log/nginx
+    networks:
+      - traefik-web
