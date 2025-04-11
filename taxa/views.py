@@ -241,21 +241,15 @@ def get_autocomplete_taxon_by_solr(request):
         if request.GET.get('with_not_official') == 'off':
             query_list.append('not_official:false')
 
-        # if re.search(r'[\u4e00-\u9fff]+', keyword):
-        #     query_list.append('is_primary_common_name:true')
-
-        # keyword = html.unescape(keyword)
-        # keyword_reg = get_variants(keyword)
-
         keyword = unicode_to_plain(keyword)
 
         keyword_wo_rank = remove_rank_char(keyword)
-        keyword_wo_rank_reg = get_variants(keyword_wo_rank)
+        keyword_wo_rank_reg = process_text_variants(keyword_wo_rank)
 
         keyword = html.unescape(keyword)
 
         keyword_reg = escape_solr_query(keyword)
-        keyword_reg = get_variants(keyword_reg)
+        keyword_reg = process_text_variants(keyword_reg)
 
 
 
@@ -2114,10 +2108,10 @@ def get_conditioned_solr_search(req):
         keyword = unicode_to_plain(keyword)
 
         keyword_wo_rank = remove_rank_char(keyword)
-        keyword_wo_rank = get_variants(keyword_wo_rank)
+        keyword_wo_rank = process_text_variants(keyword_wo_rank)
 
         keyword = escape_solr_query(keyword)
-        keyword = get_variants(keyword)
+        keyword = process_text_variants(keyword)
 
         keyword_type = req.get('name-select','equal')
 
