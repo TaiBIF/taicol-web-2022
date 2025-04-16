@@ -188,9 +188,10 @@ def download_search_results_offline(request):
         zip_file_name = df_file_name.replace("csv","zip")
         df.to_csv(f'/tc-web-volumes/media/download/{zip_file_name}', compression=compression_options, index=False, escapechar='\\')
 
-    download_url = request.scheme+"://" + request.META['HTTP_HOST']+ MEDIA_URL + os.path.join('download', zip_file_name)
-    if env('WEB_ENV') != 'dev':
-        download_url = download_url.replace('http', 'https')
+    scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
+    download_url = scheme + "://" + request.META['HTTP_HOST']+ MEDIA_URL + os.path.join('download', zip_file_name)
+    # if env('WEB_ENV') != 'dev':
+    #     download_url = download_url.replace('http', 'https')
 
     email_body = render_to_string('taxa/download.html', {'download_url': download_url, })
     send_mail('[TaiCOL] 下載資料', email_body, 'no-reply@taicol.tw', [req.get('download_email')])
@@ -1763,10 +1764,9 @@ def download_match_results(request):
         zip_file_name = df_file_name.replace("csv","zip")
         final_df.to_csv(f'/tc-web-volumes/media/match_result/{zip_file_name}', compression=compression_options, index=False, escapechar='\\')
 
-
-    download_url = request.scheme+"://" + request.META['HTTP_HOST']+ MEDIA_URL + os.path.join('match_result', zip_file_name)
-    if env('WEB_ENV') != 'dev':
-        download_url = download_url.replace('http', 'https')
+    # if env('WEB_ENV') != 'dev':
+    scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
+    download_url = scheme + "://" + request.META['HTTP_HOST']+ MEDIA_URL + os.path.join('match_result', zip_file_name)
 
     email_body = render_to_string('taxa/download.html', {'download_url': download_url, })
     send_mail('[TaiCOL] 下載比對結果', email_body, 'no-reply@taicol.tw', [download_email])
@@ -1797,13 +1797,14 @@ def send_feedback(request):
     #     email = req.get('email'),
     #     response = f"<p>{req.get('name')} 先生/小姐您好，</p><p>收到您{date_str}於TaiCOL的留言：</p><p>『{req.get('description')}』</p><p>回覆如下：</p>",
     # )
+    scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
 
     url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/feedback/save/"
     req['response'] = f"""
     
         <p>{name} 先生/小姐您好，</p>
         <br>
-        <p>收到您 {date_str} 於TaiCOL針對物種編號 <a href="{request.scheme}://{request.META["HTTP_HOST"]}/taxon/{taxon_id}">{taxon_id}</a> 的留言：</p>
+        <p>收到您 {date_str} 於TaiCOL針對物種編號 <a href="{scheme}://{request.META["HTTP_HOST"]}/taxon/{taxon_id}">{taxon_id}</a> 的留言：</p>
         <p>『{description}』</p>
         <br>
         <p>回覆如下：</p>
