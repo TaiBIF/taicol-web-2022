@@ -101,6 +101,10 @@ with conn.cursor() as cursor:
     rank_order_map = dict(zip([r[0] for r in ranks], [r[2] for r in ranks]))
 
 
+# 科以上的階層
+family_order = rank_order_map[26]
+lower_than_family = [k for k, v in rank_order_map.items() if v >= family_order]
+
 
 name_status_map_c = {
     'not-accepted': '的無效名',
@@ -278,12 +282,15 @@ def create_conservation_note(data):
 
     if c_iucn := data.get('iucn'):
         data['iucn'] = c_iucn if get_language() == 'en-us' else iucn_map_c[c_iucn] + ' ' + c_iucn
-        data['iucn_url'] = "https://apiv3.iucnredlist.org/api/v3/taxonredirect/" + str(data['iucn_taxon_id'])
+        # data['iucn_url'] = "https://apiv3.iucnredlist.org/api/v3/taxonredirect/" + str(data['iucn_taxon_id'])
+        # data['iucn_url'] = data['iucn_url']
         if data['iucn_note']:
             c_str = ''
-            for c in json.loads(data['iucn_note']):
+            iucn_json = json.loads(data['iucn_note'])
+            for c in iucn_json:
                 c_str += f"{c['category']}, {c['name']}; "
             data['iucn_note'] = c_str.rstrip(';')
+            data['iucn_url'] = iucn_json['url']
 
     if c_red := data.get('redlist'):
         data['redlist'] =  c_red if get_language() == 'en-us' else redlist_map_c[c_red] + ' ' + c_red
