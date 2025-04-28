@@ -22,7 +22,7 @@ services:
       - ./app/public/upload:/app/public/upload
     env_file:
       - ./app/.env
-      networks:
+    networks:
       - gateway
       - traefik-admin
   nginx-admin:

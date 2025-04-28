@@ -16,6 +16,7 @@ services:
     volumes:
       - .:/code
       - ../tc-web-volumes/static:/tc-web-volumes/static
+      - ./react-backend/app/public/upload:/tc-web-volumes/static/upload
       - ../tc-web-volumes/media:/tc-web-volumes/media
       - ../tc-web-volumes/bucket:/bucket
     command: /srv/start
@@ -59,6 +60,7 @@ services:
     volumes:
       - ./scripts/nginx/production:/etc/nginx/conf.d
       - ../tc-web-volumes/static:/tc-web-volumes/static
+      - ./react-backend/app/public/upload:/tc-web-volumes/static/upload
       - ../tc-web-volumes/media:/tc-web-volumes/media
       - ../tc-web-volumes/logs/nginx:/var/log/nginx
     networks:
