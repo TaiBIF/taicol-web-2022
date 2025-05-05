@@ -190,8 +190,6 @@ def download_search_results_offline(request):
 
     scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
     download_url = scheme + "://" + request.META['HTTP_HOST']+ MEDIA_URL + os.path.join('download', zip_file_name)
-    # if env('WEB_ENV') != 'dev':
-    #     download_url = download_url.replace('http', 'https')
 
     email_body = render_to_string('taxa/download.html', {'download_url': download_url, })
     send_mail('[TaiCOL] 下載資料', email_body, 'no-reply@taicol.tw', [req.get('download_email')])
@@ -224,12 +222,16 @@ def get_autocomplete_taxon_by_solr(request):
 
     names = '[]'
     keyword_reg = ''
-    query_list = []
 
-    # 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1  的資料
-    query_list.append('is_in_taiwan:true')
+    query_list = []
     query_list.append('is_deleted:false')
 
+    # 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1 的資料
+    if not request.GET.get('from') == 'nametool':
+        query_list.append('is_in_taiwan:true')
+    else:
+        # 工具最高分類群只提供到科
+        query_list.append('rank_id:({})'.format((' OR ').join([str(f) for f in lower_than_family])))
 
     if keyword := request.GET.get('keyword','').strip():
 
@@ -667,6 +669,12 @@ def taxon(request, taxon_id):
                             name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('誤用')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                     # 歧異名
                     elif n in is_ambiguous:
+                        # 有效學名使用的發布文獻
+                        if len(name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.ru_status=='accepted')].ref):
+                            for r in name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.ru_status=='accepted')].index:
+                                if name_change_df.loc[r].ref:
+                                    ref_list += [[name_change_df.loc[r].ref, name_change_df.loc[r].reference_id, name_change_df.loc[r].r_publish_year, name_change_df.loc[r].r_type]]
+                        # 學名使用的相同引用文獻
                         for pu in name_change_df[(name_change_df.taxon_name_id==n)].per_usages:
                             for ppu in pu:
                                 # 排除學名本身發表文獻
@@ -1578,12 +1586,10 @@ def get_match_result(request):
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 
-
 def download_match_results_offline(request):
     task = threading.Thread(target=download_match_results, args=(request,))
     task.start()
     return JsonResponse({"status": 'success'}, safe=False)
-
 
 
 # 統一改成離線產生
@@ -1764,15 +1770,11 @@ def download_match_results(request):
         zip_file_name = df_file_name.replace("csv","zip")
         final_df.to_csv(f'/tc-web-volumes/media/match_result/{zip_file_name}', compression=compression_options, index=False, escapechar='\\')
 
-    # if env('WEB_ENV') != 'dev':
     scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
     download_url = scheme + "://" + request.META['HTTP_HOST']+ MEDIA_URL + os.path.join('match_result', zip_file_name)
 
     email_body = render_to_string('taxa/download.html', {'download_url': download_url, })
     send_mail('[TaiCOL] 下載比對結果', email_body, 'no-reply@taicol.tw', [download_email])
-
-
-    # return response
 
 
 
@@ -1786,17 +1788,6 @@ def send_feedback(request):
 
     req = dict(req)
 
-    # Feedback.objects.create(
-    #     taxon_id = req.get('taxon_id'),
-    #     type = int(req.get('type',1)),
-    #     title = req.get('title'),
-    #     description = req.get('description'),
-    #     reference = req.get('reference'),
-    #     notify = True if req.get('notify') == 'yes' else False,
-    #     name = req.get('name'),
-    #     email = req.get('email'),
-    #     response = f"<p>{req.get('name')} 先生/小姐您好，</p><p>收到您{date_str}於TaiCOL的留言：</p><p>『{req.get('description')}』</p><p>回覆如下：</p>",
-    # )
     scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
 
     url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/feedback/save/"
@@ -1835,7 +1826,6 @@ def send_feedback(request):
 
 def trigger_send_mail(email_body):
     task = threading.Thread(target=bk_send_mail, args=(email_body,))
-    # task.daemon = True
     task.start()
     return JsonResponse({"status": 'success'}, safe=False)
 
@@ -1914,9 +1904,6 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
         # 這邊改成facet bucket的數量
         count = resp['response']['numFound']
-
-
-
         response = create_facet_data(resp, response, is_chinese)
 
     if count:
@@ -2260,9 +2247,6 @@ def get_taxon_higher(request):
         cursor.execute(query, (taxon_id,))
         path_str = cursor.fetchone()
 
-    # print(path_str)
-
-    # data['higher'] = []
     # 改為預設林奈階層
     # higher = []
     if path_str:
