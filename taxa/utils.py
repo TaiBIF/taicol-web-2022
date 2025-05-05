@@ -290,7 +290,7 @@ def create_conservation_note(data):
             for c in iucn_json:
                 c_str += f"{c['category']}, {c['name']}; "
             data['iucn_note'] = c_str.rstrip(';')
-            data['iucn_url'] = iucn_json['url']
+            data['iucn_url'] = iucn_json[0]['url']
 
     if c_red := data.get('redlist'):
         data['redlist'] =  c_red if get_language() == 'en-us' else redlist_map_c[c_red] + ' ' + c_red
