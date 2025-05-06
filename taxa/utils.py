@@ -927,10 +927,12 @@ def create_view_display(taxon_id, accepted_taxon_name_id, misapplied_names):
 
 
 
-def mark_ambiguous_or_part(names):
+def get_ambiguous_list(names):
 
-    names['marked'] = False
-    names['pro_parte'] = False
+    is_ambiguous_list = []
+
+    # names['marked'] = False
+    # names['pro_parte'] = False
 
     # 先處理同模學名
     conn = pymysql.connect(**db_settings)
@@ -951,9 +953,9 @@ def mark_ambiguous_or_part(names):
             # 排除掉互為上下階層的taxon_id
             excluded_taxon_ids = [r for r in rows_taxon_ids if r not in rows_parent_taxon_ids]
             if len(excluded_taxon_ids) > 1:
-                name_ids = list(rows.taxon_name_id.unique())
-                names.loc[names.taxon_name_id.isin(name_ids),'marked'] = True
-                # per_usages = names[names.taxon_name_id.isin(name_ids)].per_usages.values()
+                is_ambiguous_list += list(rows.taxon_name_id.unique())
+            #     name_ids = list(rows.taxon_name_id.unique())
+            #     names.loc[names.taxon_name_id.isin(name_ids),'marked'] = True
 
 
         # 找單純重複的學名 
@@ -968,19 +970,7 @@ def mark_ambiguous_or_part(names):
         with conn.cursor() as cursor:
             cursor.execute(query, (list(names.taxon_name_id.unique()), ))
             is_ambiguous = cursor.fetchall()
-            is_ambiguous = [i[0] for i in is_ambiguous]
-            names.loc[names.taxon_name_id.isin(is_ambiguous),'marked'] = True
+            is_ambiguous_list += [i[0] for i in is_ambiguous]
             
 
-        # 最後再一起標註
-        # 確認per_usages是否有標註pro parte
-        for name_id in names[names.marked==True].taxon_name_id.unique():
-            for pp in names[names.taxon_name_id==name_id].per_usages.values:
-                try:
-                    for ppp in pp:
-                        if ppp.get('pro_parte') == True:
-                            names.loc[names.taxon_name_id==name_id,'pro_parte'] = True
-                            break
-                except:
-                    pass
-    return names
+    return list(set(is_ambiguous_list))
