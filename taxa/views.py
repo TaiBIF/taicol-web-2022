@@ -613,8 +613,9 @@ def taxon(request, taxon_id):
                     usage_refs = cursor.fetchall()
                     usage_refs = pd.DataFrame(usage_refs, columns=['reference_id','full_ref','publish_year','author','ref','r_type'])
 
-                names = mark_ambiguous_or_part(names=names)
-                is_ambiguous = list(names[names.marked==True].taxon_name_id.unique())
+                is_ambiguous_list = get_ambiguous_list(names=names)
+                # is_ambiguous_list = list(names[names.marked==True].taxon_name_id.unique())
+                # print(is_ambiguous_list)
 
                 # 確認是否為歧異
                 # query = """
@@ -633,31 +634,31 @@ def taxon(request, taxon_id):
                 # 只整理目前usage的
                 name_change_df = names[names.name_source=='from_usages'].reset_index(drop=True)
                 for n in name_change_df.taxon_name_id.unique():
-                    has_original = False
-                    # 如果是動物法規 且有原始組合名 後面要用冒號接文獻
-                    if len(name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.original_taxon_name_id!='')&(name_change_df.nomenclature_id==1)]):
-                        has_original = True
                     ref_list = []
                     ref_str = ''
                     # 如果是誤用名
                     if len(name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.taxon_status=='misapplied')]):
+                        # 誤用學名使用的誤用文獻 (reference_usages資料表的per_usages裡的reference_id)
+                        tmp_ref_list = []
                         for pu in name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.ru_status=='misapplied')].per_usages:
                             for ppu in pu:
-                                # 排除學名本身發表文獻
-                                if not ppu.get('is_from_published_ref', False):
-                                    current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
-                                    current_year = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'publish_year'].values[0]
-                                    current_r_type = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'r_type'].values[0]
-                                    if ppu.get('pro_parte'):
-                                        if current_ref:
-                                            current_ref += ', pro parte'
-                                    if current_ref not in ref_list: 
-                                        ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_r_type])
+                                current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
+                                current_year = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'publish_year'].values[0]
+                                current_r_type = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'r_type'].values[0]
+                                if ppu.get('pro_parte'):
+                                    if current_ref:
+                                        current_ref += ', pro parte'
+                                # if current_ref not in ref_list: 
+                                tmp_ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_r_type,ppu.get('pro_parte')])
+                        # 應該要最後再判斷有沒有pro parte才對? 不然重複出現的reference可能會漏掉pro parte
+                        # 並且一起排除掉重複
+                        if len(tmp_ref_list):
+                            tmp_ref_df = pd.DataFrame(tmp_ref_list, columns=['ref','reference_id','year','r_type','pro_parte'])
+                            tmp_ref_df = tmp_ref_df.sort_values(by='pro_parte', ascending=False)
+                            tmp_ref_df = tmp_ref_df.drop_duplicates(subset='reference_id', keep='first')
+                            ref_list = list(tmp_ref_df[['ref','reference_id','year','r_type']].values)
                         # 排除backbone
                         ref_list = [ r for r in ref_list if r[3] not in [4,6] ]
-                        # 如果不是動物的非原始組合名 排除自己的發表文獻 
-                        if not has_original:
-                            ref_list = [r for r in ref_list if r[1] not in name_change_df[name_change_df.taxon_name_id==n].o_reference_id.to_list()]
                         ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                         min_year = ref_list.year.min()
                         # 決定排序的publish_year
@@ -667,81 +668,53 @@ def taxon(request, taxon_id):
                             name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('誤用')}): {ref_str}", min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                         else:
                             name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('誤用')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
-                    # 歧異名
-                    elif n in is_ambiguous:
-                        # 有效學名使用的發布文獻
-                        if len(name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.ru_status=='accepted')].ref):
-                            for r in name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.ru_status=='accepted')].index:
-                                if name_change_df.loc[r].ref:
-                                    ref_list += [[name_change_df.loc[r].ref, name_change_df.loc[r].reference_id, name_change_df.loc[r].r_publish_year, name_change_df.loc[r].r_type]]
+                    else:
+                        # 是否為動物法規的非原始組合名
+                        is_iczn_not_original = True if len(name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.original_taxon_name_id!='')&(name_change_df.nomenclature_id==1)]) else False
+                        # 先判斷是不是歧異
+                        # 判斷本身是不是有效學名 如果是的話就不標歧異了
+                        is_ambiguous = True if n in is_ambiguous_list and not len(names[(names.taxon_name_id==n)&(names.taxon_status=='accepted')])  else False
                         # 學名使用的相同引用文獻
                         for pu in name_change_df[(name_change_df.taxon_name_id==n)].per_usages:
+                            tmp_ref_list = []
                             for ppu in pu:
-                                # 排除學名本身發表文獻
-                                if not ppu.get('is_from_published_ref', False):
+                                if not is_iczn_not_original or (is_iczn_not_original and not ppu.get('is_from_published_ref', False)): # 排除學名本身發表文獻
+                                    # if not ppu.get('is_from_published_ref', False):
                                     current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
                                     current_year = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'publish_year'].values[0]
                                     current_r_type = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'r_type'].values[0]
                                     if ppu.get('pro_parte'):
                                         if current_ref:
                                             current_ref += ', pro parte'
-                                    if current_ref not in ref_list: 
-                                        ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_r_type])
-                        # 排除backbone
-                        ref_list = [ r for r in ref_list if r[3] not in [4,6] ]
-                        # 如果不是動物的非原始組合名 排除自己的發表文獻 
-                        if not has_original:
-                            ref_list = [r for r in ref_list if r[1] not in name_change_df[name_change_df.taxon_name_id==n].o_reference_id.to_list()]
-                        # else:
-                        ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
-                        min_year = ref_list.year.min()
-                        # 決定排序的publish_year
-                        ref_list = [f"<a href='https://nametool.taicol.tw/{'en-us' if get_language() == 'en-us' else 'zh-tw'}/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
-                        ref_str = ('; ').join(ref_list)
-                        if len(names[(names.taxon_name_id==n)&(names.pro_parte==True)]):
-                            if ref_str:
-                                name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('部分')}): {ref_str}",min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
-                            else:
-                                name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('部分')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
-                        else:
-                            if ref_str:
-                                name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('歧異')}): {ref_str}",min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
-                            else:
-                                name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('歧異')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
-                    # 非誤用名
-                    elif len(name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.taxon_status!='misapplied')]):
-                        # 有效學名使用的發布文獻
-                        if len(name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.ru_status=='accepted')].ref):
-                            for r in name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.ru_status=='accepted')].index:
-                                if name_change_df.loc[r].ref:
-                                    ref_list += [[name_change_df.loc[r].ref, name_change_df.loc[r].reference_id, name_change_df.loc[r].r_publish_year, name_change_df.loc[r].r_type]]
-                        # for pu in names[(names.taxon_name_id==n)&(names.ru_status=='accepted')].per_usages:
-                        # 學名使用的相同引用文獻
-                        for pu in name_change_df[name_change_df.taxon_name_id==n].per_usages:
-                            for ppu in pu:
-                                if not ppu.get('is_from_published_ref', False):
-                                    current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
-                                    current_year = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'publish_year'].values[0]
-                                    current_type = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'r_type'].values[0]
-                                    if ppu.get('pro_parte'):
-                                        if current_ref:
-                                            current_ref += ', pro parte'
-                                    if current_ref not in ref_list:
-                                        ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_type])
+                                    tmp_ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_r_type, ppu.get('pro_parte')])
+                            # 應該要最後再判斷有沒有pro parte才對? 不然重複出現的reference可能會漏掉pro parte
+                            # 並且一起排除掉重複
+                            if len(tmp_ref_list):
+                                tmp_ref_df = pd.DataFrame(tmp_ref_list, columns=['ref','reference_id','year','r_type','pro_parte'])
+                                tmp_ref_df = tmp_ref_df.sort_values(by='pro_parte', ascending=False)
+                                tmp_ref_df = tmp_ref_df.drop_duplicates(subset='reference_id', keep='first')
+                                ref_list = list(tmp_ref_df[['ref','reference_id','year','r_type']].values)
+                        # 有效學名使用的發表文獻
+                        for r in name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.ru_status=='accepted')].index:
+                            if name_change_df.loc[r].ref and name_change_df.loc[r].reference_id not in [rr[1] for rr in ref_list]:
+                                ref_list.append([name_change_df.loc[r].ref, name_change_df.loc[r].reference_id, name_change_df.loc[r].r_publish_year, name_change_df.loc[r].r_type])
                         # 排除backbone & 自己的發表文獻
                         ref_list = [r for r in ref_list if r[3] not in [4,6] ]
                         # 如果不是動物的非原始組合名 排除自己的發表文獻 
-                        if not has_original:
+                        if not is_iczn_not_original:
                             ref_list = [r for r in ref_list if r[1] not in name_change_df[name_change_df.taxon_name_id==n].o_reference_id.to_list()]
                         ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                         # 決定排序的publish_year
                         ref_list = [f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/references/{int(r[1]["ref_id"])}" target="_blank">{r[1]["ref"]}</a>' for r in ref_list.iterrows()]
                         ref_str = ('; ').join(ref_list)
-                        sep = ':' if has_original else ';'
+                        sep = ':' if is_iczn_not_original else ';'
                         if ref_str:
-                            name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]}{sep} {ref_str}",name_change_df[name_change_df.taxon_name_id==n]['publish_year'].min(), name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+
+                            first_part = f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]}{' ' + '(' + {gettext('歧異')}+')' if is_ambiguous else ''}{sep} {ref_str}"
+
                         else:
-                            name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0], name_change_df[name_change_df.taxon_name_id==n]['publish_year'].min(), name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                            first_part = f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]}{ ' (' + {gettext('歧異')} + ')' if is_ambiguous else ''}"
+                        name_changes += [[first_part,name_change_df[name_change_df.taxon_name_id==n]['publish_year'].min(), name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                 
                 if name_changes:
                     name_changes = pd.DataFrame(name_changes, columns=['name_str','year','name'])
