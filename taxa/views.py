@@ -709,11 +709,9 @@ def taxon(request, taxon_id):
                         ref_str = ('; ').join(ref_list)
                         sep = ':' if is_iczn_not_original else ';'
                         if ref_str:
-
-                            first_part = f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]}{' ' + '(' + {gettext('歧異')}+')' if is_ambiguous else ''}{sep} {ref_str}"
-
+                            first_part = f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]}{' ' + '(' + gettext('歧異') +')' if is_ambiguous else ''}{sep} {ref_str}"
                         else:
-                            first_part = f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]}{ ' (' + {gettext('歧異')} + ')' if is_ambiguous else ''}"
+                            first_part = f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]}{' (' + gettext('歧異') + ')' if is_ambiguous else ''}"
                         name_changes += [[first_part,name_change_df[name_change_df.taxon_name_id==n]['publish_year'].min(), name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                 
                 if name_changes:
