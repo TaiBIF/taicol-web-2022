@@ -1114,3 +1114,53 @@ msgstr "Linnaean"
 #:  
 msgid "接受學名"
 msgstr "Accepted Name"
+
+
+#:  
+msgid "進階搜尋"
+msgstr "Advanced Search"
+
+
+#:  
+msgid "登錄物種"
+msgstr "Species Registration"
+
+
+#:  
+msgid "登錄類別"
+msgstr "Registration Type"
+
+
+#:  
+msgid "新種"
+msgstr "New Species"
+
+
+#:  
+msgid "分類訂正"
+msgstr "Taxonomic Revision"
+
+
+#:  
+msgid "漏登物種"
+msgstr "Unrecorded Species"
+
+
+#:  
+msgid "補充資料"
+msgstr "Supplementary Information"
+
+
+#:  
+msgid "生物類群"
+msgstr "Biological Group"
+
+
+#:  
+msgid "SPECIES REGISTRATION"
+msgstr " "
+
+
+#:  
+msgid "登錄物種指引"
+msgstr "Species Registration Instructions"

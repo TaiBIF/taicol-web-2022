@@ -646,3 +646,28 @@ ul.link-left li p {
 /* table tr {
     border-radius: 5px;
 } */
+
+.fa-magnifying-glass:hover {
+    color: #4C8DA7;
+}
+
+
+.box-2 .rightbox .w-box-2 a {
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    color: #4C8DA7
+}
+
+@media only screen and (min-width: 1000px) {
+    .box-2 .rightbox .w-box-2 a:hover {
+        color: #FDD440;
+        transition: all .3s;
+        -moz-transition: all .3s;
+        -o-transition: all .3s;
+        -ms-transition: all .3s;
+        -webkit-transition: all .3s
+    }
+}

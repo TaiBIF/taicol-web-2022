@@ -232,3 +232,29 @@ button.download_check:disabled {
 .right-table .table-style1 td:first-child,  .right-table .table-style1 td:nth-child(2) {
     text-align: left;
 }
+
+.right-table  table a {
+	color: #4C8DA7;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+}
+
+.right-table  table a:hover {
+	color: #FDD440 !important;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+}
+/* 
+.left-cataselect ul li .facet-btn {
+	color: red !important;
+}
+
+.left-cataselect ul li .facet-btn:hover {
+	color: #FDD440 !important;
+} */
