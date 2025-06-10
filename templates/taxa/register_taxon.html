@@ -5,7 +5,7 @@
 {% block head %}
 <script src="{% static 'js/jquery.nice-select.js' %}?v1"></script>
 <link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}?v1">
-<link rel=stylesheet type="text/css" href="{% static 'css/register_taxon.css' %}?v1">
+<link rel=stylesheet type="text/css" href="{% static 'css/register_taxon.css' %}?v2">
 {% endblock head %}
 
 
@@ -68,9 +68,15 @@
 						<option value="病毒">{% trans "病毒" %}</option>
 						<option value="真菌">{% trans "真菌" %}</option>
 						<option value="細菌">{% trans "細菌" %}</option>
+						<option value="其他">{% trans "其他" %}</option>
 						</select>
 					</div>
 				</div>
+				<div class="mark-title">
+					<img src="{% static 'image/title-mark.svg' %}">
+					<p>{% trans "登錄內容簡述" %}</p>
+				</div>
+				<textarea name="description" id="" class="fs-16"></textarea>
 				<div class="mark-title">
 					<img src="{% static 'image/title-mark.svg' %}">
 					<p>{% trans "來源文獻/參考資料" %}</p>
@@ -137,7 +143,7 @@
 			</div>
 			<div class="title-box">
 				<h2>{% trans "登錄物種" %} <span></span></h2>
-				<p>{% trans "SPECIES REGISTRATION" %}</p>
+				<p>{% trans "SUBMIT" %}</p>
 			</div>
 		</div>
 	</div>
@@ -159,9 +165,10 @@
                     There are two ways to register:
                     <br>
                     <br>
-                    1. <a class="register register-btn">Submit literature</a>, and we will assist in completing the registration process.
-                    <br>
-                    2. Register through the <a class="register" href="https://nametool.taicol.tw/" target="_blank">TaiCOL Scientific Name Management Tool</a>to complete the registration yourself. (Basic taxonomic knowledge required)
+					<ol>
+						<li><a class="register register-btn">Submit literature</a>, and we will assist in completing the registration process.</li>
+						<li>Register through the <a class="register" href="https://nametool.taicol.tw/" target="_blank">TaiCOL Scientific Name Management Tool</a> to complete the registration yourself. (Basic taxonomic knowledge required)</li>
+					</ol>
 					{% else %}
                     登錄新種、新組合名、新名，又或是您發現有臺灣物種名錄未收錄到的物種、同物異名、中文名或文獻等。您的貢獻將有助於國內外生物多樣性保育相關工作，並使臺灣物種名錄更加完整。
                     <br>
@@ -169,9 +176,10 @@
                     您可透過以下兩種方式登錄：
                     <br>
                     <br>
-                    1. <a class="register register-btn">提交文獻</a>，後續交由TaiCOL管理員或是志工協助完成登錄。
-                    <br>
-                    2. 註冊<a class="register" href="https://nametool.taicol.tw/" target="_blank">TaiCOL物種學名管理工具</a>自行完成登錄。（需有分類基礎知識）
+					<ol>
+						<li><a class="register register-btn">提交文獻</a>，後續交由TaiCOL管理員或是志工協助完成登錄。</li>
+                    	<li>註冊<a class="register" href="https://nametool.taicol.tw/" target="_blank">TaiCOL物種學名管理工具</a>自行完成登錄。（需有分類基礎知識）</li>
+					</ol>
 					{% endif %}
 				</p>
 			</div>

@@ -140,12 +140,17 @@ msgid "物種樹"
 msgstr "View Tree"
 
 
-
 #: templates/base.html:70 templates/base.html:159
 #: templates/taxa/catalogue.html:75 templates/taxa/catalogue.html:85
 msgctxt "物種名錄-title"
 msgid "物種名錄"
 msgstr "CATALOGUE"
+
+
+#:  
+msgid "登錄物種"
+msgstr "SUBMIT"
+
 
 #: templates/base.html:76 templates/base.html:165
 #: templates/taxa/name_match.html:27
@@ -1102,6 +1107,11 @@ msgstr "Animalia"
 
 
 #:  
+msgid "其他"
+msgstr "Others"
+
+
+#:  
 msgid "完整階層"
 msgstr "Full"
 
@@ -1120,10 +1130,6 @@ msgstr "Accepted Name"
 msgid "進階搜尋"
 msgstr "Advanced Search"
 
-
-#:  
-msgid "登錄物種"
-msgstr "Species Registration"
 
 
 #:  
@@ -1157,10 +1163,15 @@ msgstr "Biological Group"
 
 
 #:  
-msgid "SPECIES REGISTRATION"
+msgid "SUBMIT"
 msgstr " "
 
 
 #:  
 msgid "登錄物種指引"
 msgstr "Species Registration Instructions"
+
+
+#:  
+msgid "登錄內容簡述"
+msgstr " Brief Description"

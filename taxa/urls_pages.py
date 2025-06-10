@@ -8,6 +8,6 @@ urlpatterns = [
     path('taxon/<taxon_id>', views.taxon, name='taxon'),
     path('catalogue', views.catalogue_search, name='catalogue'),
     path('redirect_taicol', views.redirect_taicol, name='redirect_taicol'),
-    path('register_taxon', views.register_taxon, name='register_taxon'),
+    path('submit', views.register_taxon, name='register_taxon'),
     # path('catalogue_search', views.catalogue_search, name='catalogue_search'),
 ]

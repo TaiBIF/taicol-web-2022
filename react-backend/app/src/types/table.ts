@@ -106,6 +106,7 @@ export type RegisterTaxonDataProps = {
 	register_type: number;
 	bio_group: string;
 	reference: string; 
+	description: string; 
 	notify: boolean; 
 	name: string;
 	email: string;

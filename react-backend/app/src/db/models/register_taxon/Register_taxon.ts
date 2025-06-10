@@ -7,6 +7,7 @@ class Register_taxon extends Model {
 	declare register_type: number;
 	declare bio_group: string;
 	declare reference: string; 
+	declare description: string; 
 	declare notify: boolean; 
 	declare name: string;
 	declare email: string;
@@ -33,6 +34,10 @@ Register_taxon.init(
 			allowNull: true,
 		},
 		reference: {
+			type: new DataTypes.TEXT('long'),
+			allowNull: true,
+		},
+		description: {
 			type: new DataTypes.TEXT('long'),
 			allowNull: true,
 		},

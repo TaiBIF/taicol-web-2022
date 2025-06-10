@@ -4,6 +4,7 @@ module.exports = {
         `register_type` tinyint(2) NULL, \
         `bio_group` varchar(20) NULL, \
         `reference` text NULL, \
+        `description` text NULL, \
         `notify` tinyint(1) NOT NULL DEFAULT 1, \
         `name` varchar(1000) NULL, \
         `email` varchar(1000) NULL, \

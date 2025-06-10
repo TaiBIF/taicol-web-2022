@@ -39,3 +39,14 @@ a.register:hover {
     background-color: #FFF
 }
 
+
+
+ol {
+    margin-left: 25px;
+}
+
+.registerpop .rel .w-bg {
+    max-height: 100%;
+    overflow: auto;
+}
+

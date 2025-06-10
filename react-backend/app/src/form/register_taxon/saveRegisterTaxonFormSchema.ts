@@ -5,6 +5,7 @@ const share = {
 	register_type: z.string().transform((val) => parseInt(val, 10)).or(z.number()),
   bio_group: z.string().optional(),
   reference: z.string().optional(),
+  description: z.string().optional(),
   notify: z.boolean().optional(),
   name: z.string().optional(),
   email: z.string().optional(),

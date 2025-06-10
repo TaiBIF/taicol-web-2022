@@ -3,14 +3,35 @@ var $lang = $('[name="lang"]').attr('value');
 
 $(function (){
 
+    var canSearchClick = false;
+
+    $('.search-area-n').on('mouseenter', function() {
+        canSearchClick = false; 
+    });
+
+    $('.search-area-n').on('transitionend', function(e) {
+        canSearchClick = true;
+    });
+
 
     $('.search-area-n button').click(function(){
-		if ($('input[name=topkeyword]').val()==''){
-			$lang == 'en-us' ? alert("Please enter keywords") : alert("請輸入關鍵字");
-		} else {
-			window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=topkeyword]').val()
-		}
+        if (canSearchClick | $('.search-area-n').hasClass('d-block')){
+            if ($('input[name=topkeyword]').val()==''){
+                $lang == 'en-us' ? alert("Please enter keywords") : alert("請輸入關鍵字");
+            } else {
+                window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=topkeyword]').val()
+            }
+        }
 	})
+
+	$('input[name=topkeyword]').on('keypress', function(e) {	
+        if (canSearchClick | $('.search-area-n').hasClass('d-block')){
+            if (e.which === 13 && !$('input[name=topkeyword]').val()==''){	
+                e.preventDefault();
+                window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=topkeyword]').val()
+            }
+        }
+	});
 
 
     $('.go-topbtn').on('click', function(){
@@ -64,25 +85,6 @@ $(function (){
         }
     });
 
-
-    // gsap.registerPlugin(ScrollTrigger);
-
-    // ScrollTrigger.create({
-    //     trigger: ".section-2-statistics",
-    //     start: "top-=60% top",
-    //     // markers: true,
-    //     onEnter:function () {
-    //         $('.section-2-statistics').addClass('vivi')
-    //     }
-    // });
-    // ScrollTrigger.create({
-    //     trigger: ".section-3-news",
-    //     start: "top-=40% top",
-    //     // markers: true,
-    //     onEnter:function () {
-    //         $('.section-3-news').addClass('vivi')
-    //     }
-    // });
 
     $('.language-item').on('click',function (event) {
         document.getElementById("language").setAttribute("value",event.target.getAttribute("value"));

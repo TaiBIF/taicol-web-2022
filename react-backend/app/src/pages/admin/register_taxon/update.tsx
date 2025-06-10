@@ -45,8 +45,9 @@ const SaveRegisterTaxonPage = () => {
 				<p>姓名：<span id="register_taxon-name">{data && data.name }</span></p>
 				<p>email：<span id="register_taxon-email">{data && data.email }</span></p>				
 				<p>類型：<span id="register_taxon-type">{data && register_type_map[data.register_type] }</span></p>
-				<p>類型：<span id="register_taxon-bio_group">{data && data.bio_group }</span></p>
+				<p>生物類群：<span id="register_taxon-bio_group">{data && data.bio_group }</span></p>
 				<p>來源文獻/參考資料：{data && data.reference }</p>
+				<p>登錄內容簡述：{data && data.description }</p>
 			</CardContent>
 			{data && <RegisterTaxonSaveForm defaultValues={data} />}
 		</Card>
