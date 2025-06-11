@@ -115,17 +115,12 @@ $(function (){
 	// 按 enter 直接查詢
 	window.enterPressed = false;
 
-	
-	$('input[name=keyword]').on('keypress', function(e) {			
-		// console.log('hi');
-	
+	$('input[name=keyword]').on('keypress', function(e) {				
 		if (e.which === 13 && !$('input[name=keyword]').val()==''){	
 			e.preventDefault();
 			window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=keyword]').val()
 		}
 	});
-
-
 
 })
 

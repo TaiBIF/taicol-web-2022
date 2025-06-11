@@ -9514,7 +9514,7 @@ body {
     }
 }
 
-.popbox .error-form .input-item2 input, .popbox .error-form .input-item2 select {
+.popbox .error-form .input-item2 input, .popbox .error-form input, .popbox .error-form .input-item2 select {
     width: 100%;
     background: #FFF;
     border-radius: 5px;

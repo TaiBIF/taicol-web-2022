@@ -3,19 +3,19 @@ var $lang = $('[name="lang"]').attr('value');
 
 $(function (){
 
-    var canSearchClick = false;
+    window.canSearchClick = false;
 
     $('.search-area-n').on('mouseenter', function() {
-        canSearchClick = false; 
+        window.canSearchClick = false; 
     });
 
     $('.search-area-n').on('transitionend', function(e) {
-        canSearchClick = true;
+        window.canSearchClick = true;
     });
 
 
     $('.search-area-n button').click(function(){
-        if (canSearchClick | $('.search-area-n').hasClass('d-block')){
+        if (window.canSearchClick | ($(window).width()<999 & $('.search-area-n').hasClass('d-block'))){
             if ($('input[name=topkeyword]').val()==''){
                 $lang == 'en-us' ? alert("Please enter keywords") : alert("請輸入關鍵字");
             } else {
@@ -25,7 +25,7 @@ $(function (){
 	})
 
 	$('input[name=topkeyword]').on('keypress', function(e) {	
-        if (canSearchClick | $('.search-area-n').hasClass('d-block')){
+        if (window.canSearchClick | ($(window).width()<999 & $('.search-area-n').hasClass('d-block'))){
             if (e.which === 13 && !$('input[name=topkeyword]').val()==''){	
                 e.preventDefault();
                 window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=topkeyword]').val()
@@ -96,7 +96,6 @@ $(function (){
 			if($(window).width()<999){
 				$('.search-area-n').toggleClass('d-none')
 				$('.search-area-n').toggleClass('d-block')
-                // .removeClass('d-block');
 			}else{
 				$('.search-area-n').removeClass('d-none').addClass('d-block');
 			}

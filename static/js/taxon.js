@@ -179,22 +179,6 @@ $(function(){
 
 	})
 
-	$(document).on('keypress', function(e) {
-		if (e.which === 13 )
-		{
-			$( ".search" ).trigger( "click" );
-		}
-	});
-
-	$('.search').click(function(){
-		if ($('input[name=keyword]').val()==''){
-			//alert('請輸入關鍵字')
-			$lang == 'en-us' ? alert("Please enter keywords") : alert("請輸入關鍵字");
-
-		} else {
-			window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=keyword]').val()
-		}
-	})
 	// 收和控制
 
 
