@@ -1,0 +1,198 @@
+{% extends 'base.html' %} 
+{% load i18n %}
+{% load static %}
+
+{% block head %}
+<script src="{% static 'js/jquery.nice-select.js' %}?v1"></script>
+<link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}?v1">
+<link rel=stylesheet type="text/css" href="{% static 'css/register_taxon.css' %}?v2">
+{% endblock head %}
+
+
+{% block body %}
+<!--提交文獻彈跳框-->
+<div class="popbox registerpop d-none">
+	<div class="rel">
+		<div class="w-bg">
+			<div class="xx">
+				<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+					<g id="Group_8961" data-name="Group 8961" transform="translate(-1288 -210)">
+						<g id="Ellipse_145" data-name="Ellipse 145" transform="translate(1288 210)" fill="#fff" stroke="#4c8da7" stroke-width="2">
+							<circle cx="25" cy="25" r="25" stroke="none"/>
+							<circle cx="25" cy="25" r="24" fill="none"/>
+						</g>
+						<g id="Group_7748" data-name="Group 7748" transform="translate(100.696 1061.993) rotate(-45)">
+							<line id="Line_265" data-name="Line 265" x2="25" transform="translate(1429.5 271.5)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+							<line id="Line_266" data-name="Line 266" x2="25" transform="translate(1442.5 259.5) rotate(90)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+						</g>
+					</g>
+				</svg>
+			</div>
+			<div class="title-area">
+				<h2>{% trans "登錄物種" %} <span></span></h2>
+			</div>
+			<div class="error-form">
+				<form id="registerTaxonForm">
+				<div class="mark-title">
+					<img src="{% static 'image/title-mark.svg' %}">
+					<p>{% trans "登錄類別" %}</p>
+				</div>
+				<div class="input-item2">
+					<div class="input-item">
+						<select class="subject wide" name="register_type" id="">
+						<option value="1">{% trans "新種" %}</option>
+						<option value="2">{% trans "分類訂正" %}</option>
+						<option value="3">{% trans "漏登物種" %}</option>
+						<option value="4">{% trans "補充資料" %}</option>
+						</select>
+					</div>
+				</div>
+				<div class="mark-title">
+					<img src="{% static 'image/title-mark.svg' %}">
+					<p>{% trans "生物類群" %}</p>
+				</div>
+				<div class="input-item2">
+					<div class="input-item">
+						<select class="subject wide" name="bio_group" id="">
+						<option value="昆蟲">{% trans "昆蟲" %}</option>
+						<option value="蜘蛛">{% trans "蜘蛛" %}</option>
+						<option value="魚類">{% trans "魚類" %}</option>
+						<option value="兩棲類">{% trans "兩棲類" %}</option>
+						<option value="爬蟲類">{% trans "爬蟲類" %}</option>
+						<option value="鳥類">{% trans "鳥類" %}</option>
+						<option value="哺乳類">{% trans "哺乳類" %}</option>
+						<option value="維管束植物">{% trans "維管束植物" %}</option>
+						<option value="蕨類植物">{% trans "蕨類植物" %}</option>
+						<option value="苔蘚植物">{% trans "苔蘚植物" %}</option>
+						<option value="藻類">{% trans "藻類" %}</option>
+						<option value="病毒">{% trans "病毒" %}</option>
+						<option value="真菌">{% trans "真菌" %}</option>
+						<option value="細菌">{% trans "細菌" %}</option>
+						<option value="其他">{% trans "其他" %}</option>
+						</select>
+					</div>
+				</div>
+				<div class="mark-title">
+					<img src="{% static 'image/title-mark.svg' %}">
+					<p>{% trans "登錄內容簡述" %}</p>
+				</div>
+				<textarea name="description" id="" class="fs-16"></textarea>
+				<div class="mark-title">
+					<img src="{% static 'image/title-mark.svg' %}">
+					<p>{% trans "來源文獻/參考資料" %}</p>
+				</div>
+				<textarea name="reference" id="" class="fs-16"></textarea>
+				<div class="notice">
+					<h3>{% trans "更新通知與否" %}</h3>
+					<div class="radiobox">
+						<div class="flex">
+							<input type="radio" name="notify" value="1" checked>
+							<p>{% trans "是" %}</p>
+						</div>
+					</div>
+					<div class="radiobox">
+						<div class="flex">
+							<input type="radio" name="notify" value="0">
+							<p>{% trans "否" %}</p>
+						</div>
+					</div>
+				</div>
+				<div class="input-item2">
+					<div class="input-item">
+						<p>{% trans "聯絡姓名" %}</p>
+						<input type="text" name="name">
+					</div>
+					<div class="input-item">
+						<p>{% trans "聯絡信箱" %}</p>
+						<input type="text" name="email">
+					</div>
+				</div>
+				</form>
+				<button class="send-btn submit-reference">{% trans "確認送出" %}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<div class="page-top">
+	<div class="big-top">
+		<div class="float-dot-yel">
+			<img src="{% static 'image/cir_yel.png' %}">
+		</div>
+		<div class="float-dot-blue4">
+			<img src="{% static 'image/cir_blue.png' %}">
+		</div>
+		<div class="float-bug">
+			<img src="{% static 'image/float_ite02.png' %}">
+		</div>
+		<div class="top-wave"></div>
+		<div class="path">
+			<a href="{% url 'index' %}">{% trans "首頁" %}</a> > <p>{% trans "登錄物種" %}</p>
+		</div>
+		<div class="main-box">
+			<div class="pic-right3">
+				<img src="{% static 'image/cont-rightimg3.png' %}">
+			</div>
+			<div class="float-dot-yel4">
+				<img src="{% static 'image/cir_yel.png' %}">
+			</div>
+			<div class="float-dot-blue5">
+				<img src="{% static 'image/cir_blue.png' %}">
+			</div>
+			<div class="title-box">
+				<h2>{% trans "登錄物種" %} <span></span></h2>
+				<p>{% trans "SUBMIT" %}</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="aobut-1">
+		<div class="main-box">
+			<div class="right-txt">
+				<div class="mark-title">
+					<img src="{% static 'image/title-mark.svg' %}">
+					<p>
+						{% trans "登錄物種指引" %}
+					</p>
+				</div>
+				<p>
+					{% if LANGUAGE_CODE == 'en-us' %} 
+                    You can register new species, new combinations, new names, or report species, synonyms, common names, or references that are currently missing from the Catalogue of Life in Taiwan (TaiCOL). Your contributions will support biodiversity conservation efforts both locally and internationally, and help make TaiCOL more comprehensive.
+                    <br>
+                    <br>
+                    There are two ways to register:
+                    <br>
+                    <br>
+					<ol>
+						<li><a class="register register-btn">Submit literature</a>, and we will assist in completing the registration process.</li>
+						<li>Register through the <a class="register" href="https://nametool.taicol.tw/" target="_blank">TaiCOL Scientific Name Management Tool</a> to complete the registration yourself. (Basic taxonomic knowledge required)</li>
+					</ol>
+					{% else %}
+                    登錄新種、新組合名、新名，又或是您發現有臺灣物種名錄未收錄到的物種、同物異名、中文名或文獻等。您的貢獻將有助於國內外生物多樣性保育相關工作，並使臺灣物種名錄更加完整。
+                    <br>
+                    <br>
+                    您可透過以下兩種方式登錄：
+                    <br>
+                    <br>
+					<ol>
+						<li><a class="register register-btn">提交文獻</a>，後續交由TaiCOL管理員或是志工協助完成登錄。</li>
+                    	<li>註冊<a class="register" href="https://nametool.taicol.tw/" target="_blank">TaiCOL物種學名管理工具</a>自行完成登錄。（需有分類基礎知識）</li>
+					</ol>
+					{% endif %}
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="about-2">
+		<div class="top-bg"></div>
+	</div>
+</div>
+
+{% endblock body %}
+
+{% block script %}
+<script src="{% static 'js/register_taxon.js' %}?v1"></script>
+{% endblock script %}

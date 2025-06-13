@@ -8,11 +8,10 @@
 <link href="/static/fontawesome-free-6.2.1/css/solid.min.css" rel="stylesheet" />
 <script src="/static/fontawesome-free-6.2.1/js/fontawesome.min.js" data-auto-add-css="false"></script>
 <script src="/static/fontawesome-free-6.2.1/js/solid.min.js" data-auto-add-css="false"></script>  
-
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v10">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v11">
 {% endblock style %}
 
 {% block body %}
@@ -194,7 +193,7 @@
 	</div>
 
 	<div class="page-top">
-		<div class="splist-search-box de">
+		{% comment %} <div class="splist-search-box de">
 			<div class="main-box">
 				<div class="cont-search-bar">
 					<input type="text" name="keyword" placeholder="{% trans '請輸入關鍵字' %}">
@@ -212,7 +211,7 @@
 					</button>
 				</div>
 			</div>
-		</div>
+		</div> {% endcomment %}
 
 		<div class="species-de-content">
 			<div class="main-box">
@@ -225,9 +224,9 @@
 					<button class="sticky_btn" data-hash="#taxon-rank">- {% blocktrans context "分類動詞"%}分類階層{% endblocktrans %}</button>
 					<button class="sticky_btn" data-hash="#taxon-info">- {% trans "物種資訊" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-change">- {% trans "學名變遷" %}</button>
-					<button class="sticky_btn" data-hash="#taxon-ref">- {% trans "文獻" %}</button>
-					<button class="sticky_btn" data-hash="#taxon-view">- {% trans "其他分類觀點" %}</button>
-					<button class="sticky_btn" data-hash="#taxon-expert">- {% trans "專家" %}</button>
+					{% if refs|length > 0 %}<button class="sticky_btn" data-hash="#taxon-ref">- {% trans "文獻" %}</button>{% endif %}
+					{% if taxon_views|length > 0 %}<button class="sticky_btn" data-hash="#taxon-view">- {% trans "其他分類觀點" %}</button>{% endif %}
+					{% if experts|length > 0 %}<button class="sticky_btn" data-hash="#taxon-expert">- {% trans "專家" %}</button>{% endif %}
 					<button class="sticky_btn" data-hash="#taxon-link">- {% trans "相關連結" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-version">- {% trans "有效名版本" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-history">- {% trans "變更歷史" %}</button>
@@ -315,13 +314,6 @@
 											<div class="rel">
 												<div class="posa">
 													<div><span class="no-pic">{% trans '無照片' %}</span></div>
-													<!--
-													{% if LANGUAGE_CODE == "en-us" %}
-														<img class="nopic" src="{% static 'image/no_pic.png' %}">
-													{% else %}
-														<img class="nopic" src="{% static 'image/no_pic.png' %}">
-													{% endif %}
-													<div class="text"></div>-->
 												</div>
 											</div>
 										</div>
@@ -530,6 +522,8 @@
 							</div>
 						</div>
 					</div>
+
+					{% if refs|length > 0 %}
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
@@ -555,6 +549,9 @@
 							</ul>
 						</div>
 					</div>
+					{% endif %}
+
+					{% if taxon_views|length > 0 %}
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
@@ -572,10 +569,8 @@
 								</svg>
 							</div>
 						</div>
-
 						<div class="w-content">
 							<div class="scro-m">
-								{% if taxon_views|length > 0 %}
 								<table class="history-edit" cellspacing="0" cellpadding="0" border="0">
 									<tr>
 										<td>{% trans "物種編號" %}</td>
@@ -589,15 +584,16 @@
 											</td>
 											<td>{% if t.refs %}
 												{{ t.refs|safe }}
-												{% comment %} <a target="_blank" href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/references/{{ t.reference_id }}">{{ t.citation|default_if_none:''|safe }}</a> {% endcomment %}
 											{% endif %}</td>
 										</tr>
 									{% endfor %}
 								</table>
-								{% endif %}
 							</div>
 						</div>
 					</div>
+					{% endif %}
+
+					{% if experts|length > 0 %}
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
@@ -629,6 +625,8 @@
 							</div>
 						</div>
 					</div>
+					{% endif %}
+
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
@@ -649,11 +647,12 @@
 						<div class="w-content">
 							<ul class="link-left">
 							{% for l in links %}
-							<li><p>
-									{{ l.title }}
-									<span class="link-tag">/ {% trans l.category %}</span>
-								</p>
-								<a href="{{ l.href }}{{ l.suffix }}" target="_blank">
+							<li>
+								<div class="left-txt">
+									<a href="{{ l.href }}{{ l.suffix }}" target="_blank">{{ l.title }}</a>
+									<span class="link-tag"> / {% trans l.category %}</span>
+								</div>
+								<a class="link-icon" href="{{ l.href }}{{ l.suffix }}" target="_blank">
 									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
 										<defs>
 											<clipPath id="clip-path">
@@ -803,5 +802,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon.js' %}?v10"></script>
+<script src="{% static 'js/taxon.js' %}?v12"></script>
 {% endblock script %}

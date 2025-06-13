@@ -1,7 +1,7 @@
 import React from 'react';
 
 export type ActionTypes = 'info' | 'update' | 'delete';
-export type TableRows = UserData[] | CategoryDataProps[] | NewsDataProps[] | ArticleDataProps[] | ApiResponseDataProps[] | DownloadDataProps[] | ExpertDataProps[] | FeedbackDataProps[];
+export type TableRows = UserData[] | CategoryDataProps[] | NewsDataProps[] | ArticleDataProps[] | ApiResponseDataProps[] | DownloadDataProps[] | ExpertDataProps[] | FeedbackDataProps[] | RegisterTaxonDataProps[];;
 import {CategoryTypes} from 'src/types'
 
 export type UserData = {
@@ -101,6 +101,22 @@ export type FeedbackDataProps = {
 	updatedAt: string;
 };
 
+export type RegisterTaxonDataProps = {
+	id: number;
+	register_type: number;
+	bio_group: string;
+	reference: string; 
+	description: string; 
+	notify: boolean; 
+	name: string;
+	email: string;
+	response: string;
+	is_solved: string;
+	is_sent: string;
+	createdAt: string;
+	updatedAt: string;
+};
+
 export type ExpertListProps = {
 	rows: ExpertDataProps[];
 	count: number;
@@ -108,6 +124,11 @@ export type ExpertListProps = {
 
 export type FeedbackListProps = {
 	rows: FeedbackDataProps[];
+	count: number;
+};
+
+export type RegisterTaxonListProps = {
+	rows: RegisterTaxonDataProps[];
 	count: number;
 };
 

@@ -1,0 +1,52 @@
+
+a.register {
+    color: #4C8DA7;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+    cursor: pointer;
+}
+
+a.register:hover {
+    color: #FDD440;
+    transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    -ms-transition: all .3s;
+    -webkit-transition: all .3s;
+}
+
+
+
+.nice-select.subject {
+    width: 100%;
+    background: #FFF;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 0px 15px;
+    font-size: 16px;
+    height: 40px
+}
+
+.nice-select.subject {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: url("/static/image/ard01.svg") center right 15px no-repeat;
+    background-size: 16px auto;
+    background-color: #FFF
+}
+
+
+
+ol {
+    margin-left: 25px;
+}
+
+.registerpop .rel .w-bg {
+    max-height: 100%;
+    overflow: auto;
+}
+

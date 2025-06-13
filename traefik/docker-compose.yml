@@ -17,6 +17,7 @@ services:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"      
       - "./nametool.yml:/etc/traefik/nametool.yml"  # 工具測試站設定檔
+      - "../tc-web-volumes/logs/nginx-traefik:/var/log/traefik" 
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command:
@@ -28,6 +29,9 @@ services:
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=catalogueoflife.taiwan@gmail.com"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--accesslog=true"
+      - "--accesslog.filepath=/var/log/traefik/access.log"
+      - "--accesslog.format=common"
     networks:
       - traefik-admin
       - traefik-web

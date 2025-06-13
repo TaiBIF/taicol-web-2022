@@ -18,7 +18,7 @@ if (window.location.pathname.includes('zh-hant')){
 i18n.changeLanguage(lang)
 
 
-const homeElement = document.querySelector('#section-1-kv');
+// const homeElement = document.querySelector('#section-1-kv');
 const homeOtherElement = document.querySelector('#home-other');
 const newsElement = document.querySelector('#news-list-container');
 const newsDetailElement = document.querySelector('#news-detail-container');
@@ -98,16 +98,20 @@ function DownloadComponent() {
 }
 
 
-function HomeBannerComponent(){
-    import('./components/frontend/home/Banner').then(module => {
-        const HomeBannerSection = module.default;
-        ReactDOM.render(React.createElement(HomeBannerSection), homeElement);
-    })
-}
+// function HomeBannerComponent(){
+//     import('./components/frontend/home/Banner').then(module => {
+//         const HomeBannerSection = module.default;
+//         ReactDOM.render(React.createElement(HomeBannerSection), homeElement);
+//     })
+// }
 
-if(homeElement){
-    HomeBannerComponent();
-    setTimeout(HomeComponent(), 1000)    
+// if(homeElement){
+//     HomeBannerComponent();
+//     setTimeout(HomeComponent(), 1000)    
+// }
+
+if(homeOtherElement){
+    HomeComponent()
 }
 
 

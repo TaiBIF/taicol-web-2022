@@ -934,19 +934,21 @@
 		// 按 enter 直接查詢
 		window.enterPressed = false;
 
-		
+		// 這邊要排除頂端搜尋欄
 		 $(document).on('keypress', function(e) {			
-	  
-			if (e.which === 13 && !$('.downloadpop').hasClass('d-none')){	
-				e.preventDefault();
-				if (!$('.download_check').is(':disabled')){
-					$('.download_check').trigger('click')
-				}
-			} else if (e.which === 13 && !window.enterPressed ){	
 
-				e.preventDefault();
-				window.enterPressed = true;
-				getData(page=1, from_url=false);
+			if (!(window.canSearchClick |($(window).width()<999 & $('.search-area-n').hasClass('d-block'))) ){
+				if (e.which === 13 && !$('.downloadpop').hasClass('d-none')){	
+					e.preventDefault();
+					if (!$('.download_check').is(':disabled')){
+						$('.download_check').trigger('click')
+					}
+				} else if (e.which === 13 && !window.enterPressed ){	
+
+					e.preventDefault();
+					window.enterPressed = true;
+					getData(page=1, from_url=false);
+				}
 			}
 		});
 		

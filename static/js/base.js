@@ -3,6 +3,37 @@ var $lang = $('[name="lang"]').attr('value');
 
 $(function (){
 
+    window.canSearchClick = false;
+
+    $('.search-area-n').on('mouseenter', function() {
+        window.canSearchClick = false; 
+    });
+
+    $('.search-area-n').on('transitionend', function(e) {
+        window.canSearchClick = true;
+    });
+
+
+    $('.search-area-n button').click(function(){
+        if (window.canSearchClick | ($(window).width()<999 & $('.search-area-n').hasClass('d-block'))){
+            if ($('input[name=topkeyword]').val()==''){
+                $lang == 'en-us' ? alert("Please enter keywords") : alert("請輸入關鍵字");
+            } else {
+                window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=topkeyword]').val()
+            }
+        }
+	})
+
+	$('input[name=topkeyword]').on('keypress', function(e) {	
+        if (window.canSearchClick | ($(window).width()<999 & $('.search-area-n').hasClass('d-block'))){
+            if (e.which === 13 && !$('input[name=topkeyword]').val()==''){	
+                e.preventDefault();
+                window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=topkeyword]').val()
+            }
+        }
+	});
+
+
     $('.go-topbtn').on('click', function(){
         document.body.scrollTop = 0;
         document.documentElement.scrollTop = 0;	  
@@ -55,28 +86,30 @@ $(function (){
     });
 
 
-    // gsap.registerPlugin(ScrollTrigger);
-
-    // ScrollTrigger.create({
-    //     trigger: ".section-2-statistics",
-    //     start: "top-=60% top",
-    //     // markers: true,
-    //     onEnter:function () {
-    //         $('.section-2-statistics').addClass('vivi')
-    //     }
-    // });
-    // ScrollTrigger.create({
-    //     trigger: ".section-3-news",
-    //     start: "top-=40% top",
-    //     // markers: true,
-    //     onEnter:function () {
-    //         $('.section-3-news').addClass('vivi')
-    //     }
-    // });
-
     $('.language-item').on('click',function (event) {
         document.getElementById("language").setAttribute("value",event.target.getAttribute("value"));
         document.getElementById("language-selected").submit();
     });
+
+    		//2025//
+		$('.mb-searchbtn').on('click', function() {
+			if($(window).width()<999){
+				$('.search-area-n').toggleClass('d-none')
+				$('.search-area-n').toggleClass('d-block')
+			}else{
+				$('.search-area-n').removeClass('d-none').addClass('d-block');
+			}
+		});
+		$(window).on('resize', function() {
+			if ($(window).width() >= 999) {
+				$('.search-area-n').removeClass('d-none').addClass('d-block');
+			} else {
+				// 如果你想預設手機版先隱藏（可加判斷）
+				if (!$('.mb-searchbtn').hasClass('active')) {
+					$('.search-area-n').addClass('d-none').removeClass('d-block');
+				}
+			}
+		}).trigger('resize');
+
 
 })

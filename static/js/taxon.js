@@ -149,9 +149,7 @@ $(function(){
 			checked = false;
 		}
 		if (checked){
-			//$('.loadingbox').removeClass('d-none');
 			$.ajax({
-				// url: "http://127.0.0.1:3000/api/admin/feedback/save/",
 				url: "/send_feedback",
 				data:  $('#errorForm').serialize() + '&is_solved=0&csrfmiddlewaretoken=' + $csrf_token,
 				type: 'POST',
@@ -181,22 +179,6 @@ $(function(){
 
 	})
 
-	$(document).on('keypress', function(e) {
-		if (e.which === 13 )
-		{
-			$( ".search" ).trigger( "click" );
-		}
-	});
-
-	$('.search').click(function(){
-		if ($('input[name=keyword]').val()==''){
-			//alert('請輸入關鍵字')
-			$lang == 'en-us' ? alert("Please enter keywords") : alert("請輸入關鍵字");
-
-		} else {
-			window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=keyword]').val()
-		}
-	})
 	// 收和控制
 
 

@@ -84,6 +84,14 @@ const navigation = (): VerticalNavItemsType => {
 			path: '/admin/feedback',
 		},
 		{
+			sectionTitle: '登錄物種列表',
+		},
+		{
+			title: '登錄物種列表',
+			icon: CardOutline,
+			path: '/admin/register_taxon',
+		},
+		{
 			sectionTitle: 'API Doc',
 		},
 		{

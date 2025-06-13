@@ -662,7 +662,8 @@ def taxon(request, taxon_id):
                         ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                         min_year = ref_list.year.min()
                         # 決定排序的publish_year
-                        ref_list = [f"<a href='https://nametool.taicol.tw/{'en-us' if get_language() == 'en-us' else 'zh-tw'}/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
+                        # ref_list = [f"<a href='https://nametool.taicol.tw/{'en-us' if get_language() == 'en-us' else 'zh-tw'}/references/{int(r[1]['ref_id'])}' target='_blank'>{r[1]['ref']}</a>" for r in ref_list.iterrows()]
+                        ref_list = [r[1]['ref'] for r in ref_list.iterrows()]
                         ref_str = ('; ').join(ref_list)
                         if ref_str:
                             name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('誤用')}): {ref_str}", min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
@@ -705,7 +706,8 @@ def taxon(request, taxon_id):
                             ref_list = [r for r in ref_list if r[1] not in name_change_df[name_change_df.taxon_name_id==n].o_reference_id.to_list()]
                         ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                         # 決定排序的publish_year
-                        ref_list = [f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/references/{int(r[1]["ref_id"])}" target="_blank">{r[1]["ref"]}</a>' for r in ref_list.iterrows()]
+                        # ref_list = [f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/references/{int(r[1]["ref_id"])}" target="_blank">{r[1]["ref"]}</a>' for r in ref_list.iterrows()]
+                        ref_list = [r[1]['ref'] for r in ref_list.iterrows()]
                         ref_str = ('; ').join(ref_list)
                         sep = ':' if is_iczn_not_original else ';'
                         if ref_str:
@@ -1794,6 +1796,63 @@ def send_feedback(request):
         return HttpResponse(json.dumps({'status': 'fail'}), content_type='application/json') 
 
 
+register_type_map = {
+    1: '新種',
+    2: '分類訂正',
+    3: '漏登物種',
+    4: '補充資料',
+
+}
+
+def send_register_taxon(request):
+    req = request.POST
+    date_str = timezone.now()+datetime.timedelta(hours=8)
+    date_str = date_str.strftime('%Y/%m/%d')
+    name = req.get('name')
+    register_type = req.get('register_type')
+    bio_group = req.get('bio_group')
+
+    req = dict(req)
+
+    # print(req)
+
+    scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
+
+    url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/register_taxon/save/"
+
+    req['response'] = f"""
+    
+        <p>{name} 先生/小姐您好，</p>
+        <br>
+        <p>收到您 {date_str} 於TaiCOL登錄 {register_type_map[int(register_type)]} {bio_group}</p>
+        <p></p>
+        <br>
+        <p>回覆如下：</p>
+        <br>
+        
+        <br>
+        敬祝   順心<br>
+        <br>
+        臺灣物種名錄<br>
+        臺灣生物多樣性資訊機構<br>
+        中央研究院生物多樣性研究中心<br>
+        <br>
+        TaiCOL<br>
+        Taiwan Biodiversity Information Facility | TaiBIF<br>
+        Biodiversity Research Centre, Academia Sinica<br>
+    """
+
+    resp = requests.post(url, data=req)
+    if resp.status_code == 200:
+
+        email_body = f'您好\n  \n 網站有新的登錄物種\n  \n 請至管理後台查看： {env("REACT_WEB_INTERNAL_API_URL")}/admin/register_taxon/'
+        trigger_send_mail(email_body)
+
+        return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
+    else:
+        return HttpResponse(json.dumps({'status': 'fail'}), content_type='application/json') 
+
+
 
 def trigger_send_mail(email_body):
     task = threading.Thread(target=bk_send_mail, args=(email_body,))
@@ -1803,6 +1862,18 @@ def trigger_send_mail(email_body):
 
 def bk_send_mail(email_body):
     send_mail('[TaiCOL] 網站錯誤回報', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
+
+
+
+
+def trigger_send_register_mail(email_body):
+    task = threading.Thread(target=bk_send_register_mail, args=(email_body,))
+    task.start()
+    return JsonResponse({"status": 'success'}, safe=False)
+
+
+def bk_send_register_mail(email_body):
+    send_mail('[TaiCOL] 登錄物種', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
 
 
 def get_solr_data_search(query_list, offset, response, limit, is_chinese):
@@ -2288,3 +2359,7 @@ def get_taxon_higher(request):
 
 
     return HttpResponse(json.dumps(final_path), content_type='application/json')
+
+
+def register_taxon(request):
+    return render(request, 'taxa/register_taxon.html')
