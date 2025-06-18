@@ -1811,6 +1811,7 @@ def send_register_taxon(request):
     name = req.get('name')
     register_type = req.get('register_type')
     bio_group = req.get('bio_group')
+    description = req.get('description')
 
     req = dict(req)
 
@@ -1824,8 +1825,9 @@ def send_register_taxon(request):
     
         <p>{name} 先生/小姐您好，</p>
         <br>
-        <p>收到您 {date_str} 於TaiCOL登錄 {register_type_map[int(register_type)]} {bio_group}</p>
-        <p></p>
+        <p>收到您 {date_str} 於TaiCOL登錄 {register_type_map[int(register_type)]} {bio_group}：</p>
+        <br>
+        <p>「{description}」</p>
         <br>
         <p>回覆如下：</p>
         <br>
