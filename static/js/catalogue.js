@@ -728,7 +728,7 @@
 					$('.table-style1').append(
 						`<tr>
 							<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['name']}</a></td>
-							<td>${results.data[i]['common_name_c']}</td>
+							<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['common_name_c']}</a></td>
 							<td>${results.data[i]['status']}</td>
 							<td>
 								<div class="tag-green">
