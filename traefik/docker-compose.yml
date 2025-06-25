@@ -17,7 +17,7 @@ services:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"      
       - "./nametool.yml:/etc/traefik/nametool.yml"  # 工具測試站設定檔
-      - "../tc-web-volumes/logs/nginx-traefik:/var/log/traefik" 
+      - "../../tc-web-volumes/logs/nginx-traefik:/var/log/traefik" 
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command:
