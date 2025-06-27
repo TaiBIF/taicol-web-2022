@@ -132,10 +132,28 @@ function getSubList(item){
 
 $(function (){
 
+
     // 如果進入時 帶有hash 打開樹
     if (window.location.hash != null && window.location.hash != '') {
-        searchClick(window.location.hash.substring(1),true)
 
+        query_str = window.location.search;
+
+        let urlParams = new URLSearchParams(query_str);
+        rank_id = urlParams.get('rank_id');
+        console.log(rank_id)
+        if (![50, 49, 3, 12, 18, 22, 26, 30, 34].includes(parseInt(rank_id))){
+            // 強制包含非林奈階層
+            $('input[name=lin_rank]').prop('checked', false);
+        }
+
+        not_official = urlParams.get('is_not_official');
+
+        if (not_official == 'true'){
+            $('input[name=with_not_official]').prop('checked', true);
+        }
+
+
+        searchClick(window.location.hash.substring(1),true)
     };
 
     $('.getSubList').off('click')
@@ -335,12 +353,15 @@ function searchClick(keyword_taxon_id, add_stat){
     // 先查path 如果已經在樹上就不要再查詢
     // 已經有存在 只需要打開
     if ($(`div [data-taxon="${keyword_taxon_id}"]`).length > 0) {
+
         $(`div [data-taxon="${keyword_taxon_id}"]`).parent().parents('ul').addClass('d-block').removeClass('d-none');
         if (!$(`div[data-taxon="${keyword_taxon_id}"]`).hasClass('now')){
             $(`div[data-taxon="${keyword_taxon_id}"]`).addClass('now')}	
         $(`div [data-taxon="${keyword_taxon_id}"]`).nextAll('ul').addClass('d-block').removeClass('d-none');
         document.location=`#${keyword_taxon_id}`
+
     } else {
+
         $('.loadingbox').removeClass('d-none');
         $.ajax({
             url: "/get_taxon_path",
