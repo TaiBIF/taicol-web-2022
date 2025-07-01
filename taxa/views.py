@@ -726,7 +726,7 @@ def taxon(request, taxon_id):
 
         # 文獻
         # 這邊改用 usage_refs 的資料
-        # 1 學名本身的發表文獻(taxon_names資料表的reference_id)
+        # 1 學名本身的發表文獻(taxon_names資料表的reference_id) 要排除誤用
         # names.o_reference_id.to_list()
         # 2 有效學名使用的發布文獻(reference_usages資料表的reference_id)(可能會包含(1))
         # names[names.taxon_status=='accepted'].reference_id.to_list()
@@ -735,9 +735,10 @@ def taxon(request, taxon_id):
         # per_usage_refs
 
         ref_id_list = []
-        ref_id_list += list(names.o_reference_id.unique())
-        ref_id_list += list(per_usage_refs)
-        ref_id_list += list(names[names.taxon_status=='accepted'].reference_id.unique())
+        ref_id_list += list(names[names.taxon_status!='misapplied'].o_reference_id.unique()) # step 1
+        ref_id_list += list(names[names.name_source=='from_usages'].reference_id.unique()) # step 2
+        ref_id_list += list(per_usage_refs) # step 3 & 4
+        # ref_id_list += list(names[names.taxon_status=='accepted'].reference_id.unique())
 
         if len(usage_refs):
             used_refs = [int(str(u).replace('.0','')) for u in ref_id_list if u]
@@ -747,6 +748,7 @@ def taxon(request, taxon_id):
 
         # 取得expert
         if len(refs):
+            
             query = "SELECT person_id FROM person_reference WHERE reference_id in %s"
             person_ids = []
             with conn.cursor() as cursor:
@@ -759,7 +761,7 @@ def taxon(request, taxon_id):
                     person_resp = person_resp.json()
                     experts = person_resp.get('rows')
                 
-            refs = list(refs[['reference_id','full_ref']].drop_duplicates().values)
+            refs = list(refs.sort_values('publish_year')[['reference_id','full_ref']].drop_duplicates().values)
 
 
         data['alien_notes'] = []
@@ -1017,7 +1019,6 @@ def get_taxon_path(request):
 
     resp = {}
     if taxon_id:
-        # print(taxon_id)
         conn = pymysql.connect(**db_settings)
         query = f"SELECT {'lin_path' if lin_rank == 'on' else 'path'} FROM api_taxon_tree WHERE taxon_id = %s;"
         with conn.cursor() as cursor:
@@ -1030,13 +1031,10 @@ def get_taxon_path(request):
                             JOIN `ranks` r ON r.id = at.rank_id
                             WHERE at.taxon_id IN %s {cultured_str} {not_official_str} 
                             ORDER BY r.order DESC;"""
-                # print(query) 
-                # print(path)
                 conn = pymysql.connect(**db_settings)
                 with conn.cursor() as cursor:
                     cursor.execute(query, (path,))
                     t_ids = cursor.fetchall()
-                    # print('t_ids', t_ids)
                     conn.close()
                     resp['path'] = Reverse([t[0] for t in t_ids])
                     resp['rank_id'] = Reverse([t[1] for t in t_ids])

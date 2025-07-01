@@ -349,7 +349,7 @@
 										<div class="grey-tag-box">
 											<div class="item tree-button show-higher-button" data-path="path"><a>{% trans '完整階層' %}</a></div>
 											{% if data.is_in_taiwan == 1 %}
-											<div class="item tree-button"> <a href="/taxon/tree#{{ taxon_id }}" target="_blank">{% blocktrans context "分類階層區塊"%}物種樹{% endblocktrans %}</a> </div>
+											<div class="item tree-button"> <a href="/taxon/tree?rank_id={{ data.rank_id }}{% if data.not_official != 0 %}&is_not_official=true{% endif %}#{{ taxon_id }}" target="_blank">{% blocktrans context "分類階層區塊"%}物種樹{% endblocktrans %}</a> </div>
 											{% endif %}
 										</div>
 									</div>
