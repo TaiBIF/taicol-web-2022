@@ -456,64 +456,52 @@
  <field name="search_name" type="string"/>
  <field name="search_name_wo_rank" type="string"/>
  <field name="formatted_search_name" type="string"/>
-  <!-- <field name="accepted_name" type="string"/> -->
  <field name="taxon_name_id" type="string"/> <!-- 這邊是search name的taxon_name_id 若是中文名則為空值 -->
  <field name="rank_id" type="string"/>
-  
-  
   <!-- 以下為對到taxon的資訊 -->
  <field name="formatted_accepted_name" type="string"/>
  <field name="taxon_id" type="string"/>
  <field name="taxon_rank_id" type="string"/>
-  
  <field name="alien_type" type="string"/>
  <field name="status" type="string"/>
- <field name="taxon_group" type="string"/>
- <field name="taxon_group_c" type="string"/>
+ <field name="taxon_group" type="string" indexed="true" stored="true"/>
+ <field name="taxon_group_c" type="string" indexed="true" stored="true"/>
  <field name="protected" type="string"/>
  <field name="redlist" type="string"/>
  <field name="iucn" type="string"/>
  <field name="cites" type="string"/>
  <field name="sensitive" type="string"/>
-
  <field name="is_endemic" type="boolean"/>
  <field name="is_fossil" type="boolean"/>
  <field name="is_terrestrial" type="boolean"/>
  <field name="is_freshwater" type="boolean"/>
  <field name="is_brackish" type="boolean"/>
  <field name="is_marine" type="boolean"/>
- <field name="is_cultured" type="boolean"/>
- <field name="is_in_taiwan" type="boolean"/>
+ <field name="is_cultured" type="boolean" indexed="true" stored="true"/>
+ <field name="is_in_taiwan" type="boolean" indexed="true" stored="true"/>
  <field name="is_hybrid" type="boolean"/>
-
-
- <field name="not_official" type="boolean"/>
- <field name="is_deleted" type="boolean"/>
- <field name="new_taxon_id" type="string"/>
-
- <field name="path" type="string"/>
- <field name="parent_taxon_id" type="string"/>
- <field name="lin_path" type="string"/>
- <field name="lin_parent_taxon_id" type="string"/>
-
+ <field name="not_official" type="boolean" indexed="true" stored="true"/>
+ <field name="is_deleted" type="boolean" indexed="true" stored="true"/>
+ <field name="new_taxon_id" type="string" indexed="true" stored="true"/>
+ <field name="path" type="string" indexed="true" stored="true"/>
+ <field name="parent_taxon_id" type="string" indexed="true" stored="true"/>
+ <field name="lin_path" type="string" indexed="true" stored="true"/>
+ <field name="lin_parent_taxon_id" type="string" indexed="true" stored="true"/>
  <field name="created_at" type="pdates"/>
- <field name="updated_at" type="pdates"/>
-
+ <field name="updated_at" type="pdates" indexed="true" stored="true"/>
   <field name="is_primary_common_name" type="boolean"/>
-
-  <field name="kingdom" type="string"/>
-  <field name="kingdom_c" type="string"/>
-  <field name="phylum" type="string"/>
-  <field name="phylum_c" type="string"/>
-  <field name="class" type="string"/>
-  <field name="class_c" type="string"/>
-  <field name="order" type="string"/>
-  <field name="order_c" type="string"/>
-  <field name="family" type="string"/>
-  <field name="family_c" type="string"/>
-  <field name="genus" type="string"/>
-  <field name="genus_c" type="string"/>
-
+  <field name="kingdom" type="string" indexed="true" stored="true"/>
+  <field name="kingdom_c" type="string" indexed="true" stored="true"/>
+  <field name="phylum" type="string" indexed="true" stored="true"/>
+  <field name="phylum_c" type="string" indexed="true" stored="true"/>
+  <field name="class" type="string" indexed="true" stored="true"/>
+  <field name="class_c" type="string" indexed="true" stored="true"/>
+  <field name="order" type="string" indexed="true" stored="true"/>
+  <field name="order_c" type="string" indexed="true" stored="true"/>
+  <field name="family" type="string" indexed="true" stored="true"/>
+  <field name="family_c" type="string" indexed="true" stored="true"/>
+  <field name="genus" type="string" indexed="true" stored="true"/>
+  <field name="genus_c" type="string" indexed="true" stored="true"/>
  <field name="accepted_taxon_name_id" type="string"/> <!-- 這邊是accepted_taxon_name_id 若是中文名則為空值 -->
  <field name="simple_name" type="string"/> 
  <field name="name_author" type="string"/> 
@@ -521,7 +509,6 @@
  <field name="formatted_synonyms" type="string"/> 
  <field name="misapplied" type="string"/> 
  <field name="formatted_misapplied" type="string"/> 
-
  <field name="common_name_c" type="string"/>
  <field name="alternative_name_c" type="string"/> 
  <field name="alien_status_note" type="string"/> 
