@@ -254,11 +254,24 @@ def get_autocomplete_taxon_by_solr(request):
         keyword_reg = escape_solr_query(keyword)
         keyword_reg = process_text_variants(keyword_reg)
 
+        keyword_reg_ = ''
+        for j in keyword_reg:
+            keyword_reg_ += f"[{j.upper()}{j.lower()}]" if is_alpha(j) else j
+
+
+        keyword_wo_rank_reg_ = ''
+        for j in keyword_wo_rank_reg:
+            keyword_wo_rank_reg_ += f"[{j.upper()}{j.lower()}]" if is_alpha(j) else j
 
 
     query_str = '&fq='.join(query_list)
 
-    taxa_str = f'search_name:"{keyword}"^5 OR search_name_wo_rank:"{keyword_wo_rank}"^5 OR search_name:/{keyword_reg}.*/^4 OR search_name_wo_rank:/{keyword_wo_rank_reg}.*/^4 OR search_name:/{keyword_reg}/^3 OR search_name_wo_rank:/{keyword_wo_rank_reg}/^3 OR search_name:/{keyword_reg}.*/^2 OR search_name_wo_rank:/{keyword_wo_rank_reg}.*/^2 OR search_name:/.*{keyword_reg}.*/^1 OR search_name_wo_rank:/.*{keyword_wo_rank_reg}.*/^1 OR search_name:/.*{keyword_reg}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank_reg}.*/'
+    taxa_str = f'''search_name:"{keyword}"^5 OR search_name_wo_rank:"{keyword_wo_rank}"^5 
+                OR search_name:/{keyword_reg_}.*/^4 OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/^4 
+                OR search_name:/{keyword_reg_}/^3 OR search_name_wo_rank:/{keyword_wo_rank_reg_}/^3 
+                OR search_name:/{keyword_reg_}.*/^2 OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/^2 
+                OR search_name:/.*{keyword_reg_}.*/^1 OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/^1 
+                OR search_name:/.*{keyword_reg_}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/'''
 
 
     ds = []
@@ -584,16 +597,13 @@ def taxon(request, taxon_id):
                 for pp in names['per_usages']:
                     for p in pp:
                         per_usage_refs.append(p.get('reference_id'))
-                        if p.get('reference_id') not in new_refs:
-                            new_refs.append(p.get('reference_id'))
-
+                        # if p.get('reference_id') not in new_refs:
+                        new_refs.append(p.get('reference_id'))
                 # TODO 這邊縮排的順序可能會有問題 有一些沒有names的可能會跳過 造成沒有進入到這個區塊嗎 ? 還是一定會有names
-
                 new_refs += names.reference_id.to_list()
                 new_refs += names.o_reference_id.to_list()
                 new_refs += [n[2] for n in name_history_list]
                 new_refs = list(dict.fromkeys(new_refs))
-                
                 query = f"""(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), 
                             r.publish_year, c.author, c.short_author, r.type 
                             FROM api_citations c 
@@ -607,30 +617,13 @@ def taxon(request, taxon_id):
                             JOIN `references` r ON c.reference_id = r.id
                             WHERE tn.id IN (SELECT DISTINCT(taxon_name_id) FROM api_taxon_usages WHERE taxon_id = %s))
                             ORDER BY author ASC, publish_year DESC """
-
                 with conn.cursor() as cursor:
                     cursor.execute(query, (new_refs, taxon_id))
                     usage_refs = cursor.fetchall()
                     usage_refs = pd.DataFrame(usage_refs, columns=['reference_id','full_ref','publish_year','author','ref','r_type'])
 
                 is_ambiguous_list = get_ambiguous_list(names=names)
-                # is_ambiguous_list = list(names[names.marked==True].taxon_name_id.unique())
-                # print(is_ambiguous_list)
 
-                # 確認是否為歧異
-                # query = """
-                #         select taxon_name_id from api_taxon_usages 
-                #         where `status` = 'not-accepted' and is_deleted != 1 and taxon_name_id IN %s 
-                #         group by taxon_name_id having count(distinct(taxon_id)) > 1;
-                #         """
-            
-
-                # is_ambiguous = []
-                # with conn.cursor() as cursor:
-                #     cursor.execute(query, (list(names.taxon_name_id.unique()), ))
-                #     is_ambiguous = cursor.fetchall()
-                #     is_ambiguous = [i[0] for i in is_ambiguous]
-                    
                 # 只整理目前usage的
                 name_change_df = names[names.name_source=='from_usages'].reset_index(drop=True)
                 for n in name_change_df.taxon_name_id.unique():
@@ -715,7 +708,6 @@ def taxon(request, taxon_id):
                         else:
                             first_part = f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]}{' (' + gettext('歧異') + ')' if is_ambiguous else ''}"
                         name_changes += [[first_part,name_change_df[name_change_df.taxon_name_id==n]['publish_year'].min(), name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
-                
                 if name_changes:
                     name_changes = pd.DataFrame(name_changes, columns=['name_str','year','name'])
                     name_changes['name'] = name_changes['name'].str.replace('<i>','').str.replace('</i>','')
@@ -778,6 +770,7 @@ def taxon(request, taxon_id):
         # 如果有is_cultured要加上去 如果是backbone不給文獻
         # 因為有些是下階層是栽培豢養才加上is_cultured 會沒有對應的cultured文獻
 
+        # TODO 這邊是不是和create_alien_type_display裡面的重複了
         if not has_cultured and data['is_cultured']:
             data['alien_notes'].append({'alien_type': attr_map_c['cultured'],'note': None})
 
@@ -806,7 +799,7 @@ def taxon(request, taxon_id):
             stat_map_key = 'with_not_official_with_cultured'
             stats = []
             for sl in stat_list:
-                stats.append({'rank_id': sl['rank_id'], 'count': sl['count'].get(stat_map_key)})
+                stats.append({'rank_id': sl['rank_id'], 'count': sl['count'].get(stat_map_key) if sl['count'].get(stat_map_key) else 0})
             stats = pd.DataFrame(stats)
             spp = 0
             if len(stats):
@@ -892,7 +885,7 @@ def get_root_tree(request):
             if sl[0] and sl != '[]':
                 sl_list = json.loads(sl[0])
                 for ssl in sl_list:
-                    total_stats.append({'rank_id': ssl['rank_id'], 'count': ssl['count'].get(stat_map_key), 'kingdom_taxon': sl[1]})
+                    total_stats.append({'rank_id': ssl['rank_id'], 'count': ssl['count'].get(stat_map_key) if ssl['count'].get(stat_map_key) else 0, 'kingdom_taxon': sl[1]})
         total_stats = pd.DataFrame(total_stats)
         if lin_rank == 'on':
             total_stats = total_stats[total_stats.rank_id.isin(lin_ranks+sub_lin_ranks)]
@@ -951,7 +944,7 @@ def taxon_tree(request):
             if sl[0] and sl != '[]':
                 sl_list = json.loads(sl[0])
                 for ssl in sl_list:
-                    total_stats.append({'rank_id': ssl['rank_id'], 'count': ssl['count'].get(stat_map_key), 'kingdom_taxon': sl[1]})
+                    total_stats.append({'rank_id': ssl['rank_id'], 'count': ssl['count'].get(stat_map_key) if ssl['count'].get(stat_map_key) else 0, 'kingdom_taxon': sl[1]})
         total_stats = pd.DataFrame(total_stats)
         # 預設僅顯示林奈階層
         total_stats = total_stats[total_stats.rank_id.isin(lin_ranks+sub_lin_ranks)]
@@ -1178,9 +1171,6 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,with_not
         if lin_ranks.index(rank_id)+1 < len(lin_ranks):
             if lin_ranks[lin_ranks.index(rank_id)+1] < 34 or lin_ranks[lin_ranks.index(rank_id)+1] > 47:
                 next_lin_h = lin_ranks[lin_ranks.index(rank_id)+1]
-    # print('next_lin_h', next_lin_h)
-
-    # print(rank_id, next_lin_h)
 
     uncertains = []
     uncertain_rank_order = []
@@ -1199,7 +1189,7 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,with_not
     sub_stat = []
     for sl in stat_list:
         for ssl in sl[0]:
-            sub_stat.append({'rank_id': ssl['rank_id'], 'count': ssl['count'].get(stat_map_key), 'taxon_id': sl[1], 'rank_order':rank_order_map[ssl['rank_id']]})
+            sub_stat.append({'rank_id': ssl['rank_id'], 'count': ssl['count'].get(stat_map_key) if ssl['count'].get(stat_map_key) else 0, 'taxon_id': sl[1], 'rank_order':rank_order_map[ssl['rank_id']]})
 
     sub_stat = pd.DataFrame(sub_stat, columns=['count','rank_id','taxon_id','rank_order'])
     sub_stat = sub_stat.sort_values('rank_order')
@@ -1224,7 +1214,6 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,with_not
         else:
             rank_color = 'rank-second-gray'
         stat_name = st[2]
-        # cc = time.time()
         for i in stats.index:
             s = stats.iloc[i]
             if s['count'] > 0:
@@ -1268,13 +1257,6 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,with_not
             taxon_info = cursor.fetchone()
             formatted_name = taxon_info[0]
 
-        # if from_search_click == 'true':
-
-        #     for r in lin_map.keys():
-        #         now_order = rank_order_map[r]
-        #         if now_order < min(uncertain_rank_order) and now_order > rank_order_map[rank_id]:
-        #             lack_r.append(r)
-        # else:
         lack_r = [next_lin_h]
         for nlh in lack_r:
             stat_str = ''
@@ -1329,13 +1311,7 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,with_not
 
     # 把補了地位未定的階層拿掉
     if lack_r:
-        # print(lack_r)
-        # print(final_sub_dict)
         final_sub_dict['has_lack'] = True
-        # print(lack_r)
-        # print(total_ranks)
-        # final_sub_dict[rank_map_c[total_ranks[total_ranks.index(max(lack_r)) + 1]]]['parent_rank_id'] = max(lack_r)
-        # if from_search_click == 'false':
         for ur in uncertain_rank:
             if rank_map_c[ur] in final_sub_dict.keys():
                 final_sub_dict.pop(rank_map_c[ur])
@@ -2363,3 +2339,64 @@ def get_taxon_higher(request):
 
 def register_taxon(request):
     return render(request, 'taxa/register_taxon.html')
+
+import subprocess
+
+
+# TODO 這邊再依據claude簡化 ?
+def update_solr(request):
+    # 要包含token才行
+    if not request.GET.get('token') == env('SOLR_UPDATE_TOKEN'):
+        return HttpResponse({'status': 'token error'}, content_type='application/json')
+    taxon_id = request.GET.get('taxon_id')
+    update_type = request.GET.get('update_type')
+    if update_type == 'full':
+        try:
+            conn = pymysql.connect(**db_settings)
+            query = "SELECT content FROM api_for_solr WHERE taxon_id = %s"
+            with conn.cursor() as cursor:
+                cursor.execute(query, (taxon_id, ))
+                data = cursor.fetchone()
+                if data:
+                    data = pd.DataFrame(json.loads(data[0]))        # 從mysql取出資料
+                    now = datetime.datetime.now().strftime("%Y%m%d")
+                    data.to_csv('/bucket/solr_updated_{}_{}.csv'.format(taxon_id, now), index=None, escapechar='\\')
+                    commands = f''' curl http://solr:8983/solr/taxa/update/?commit=true -H "Content-Type: text/xml" --data-binary '<delete><query>taxon_id:{taxon_id}</query></delete>'; ''' 
+                    process = subprocess.Popen(commands, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    a = process.communicate()
+                    updating_csv = '/bucket/solr_updated_{}_{}.csv'.format(taxon_id, now)
+                    commands = f''' curl http://solr:8983/solr/taxa/update/?commit=true -H "Content-Type: text/csv" --data-binary @{updating_csv}; ''' 
+                    process = subprocess.Popen(commands, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    a = process.communicate()
+                    os.remove(updating_csv)
+                    cursor.execute("DELETE FROM api_for_solr WHERE taxon_id = %s", (taxon_id, ))
+                    conn.commit()
+        except:
+            conn.rollback()
+            conn.close()
+            return HttpResponse({'status': 'failed'}, content_type='application/json')
+    elif update_type == 'partial':
+        try:
+            conn = pymysql.connect(**db_settings)
+            query = "SELECT content, updated_at FROM api_for_solr WHERE taxon_id = %s"
+            with conn.cursor() as cursor:
+                cursor.execute(query, (taxon_id, ))
+                data = cursor.fetchone()
+                if data:
+                    updated_data = json.loads(data[0])
+                    updated_data['updated_at'] = data[1].strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                    updater = SolrTaxonUpdater(solr_base_url=env('SOLR_PREFIX'), core_name='taxa')
+                    success = updater.smart_update_by_taxon_id(taxon_id, updated_data)
+                    if success:
+                        updater.commit()
+                        cursor.execute("DELETE FROM api_for_solr WHERE taxon_id = %s", (taxon_id, ))
+                        conn.commit()
+                        return HttpResponse({'status': 'success'}, content_type='application/json')
+                    else:
+                        return HttpResponse({'status': 'failed'}, content_type='application/json')
+                else:
+                    return HttpResponse({'status': 'no data'}, content_type='application/json')
+        except:
+            conn.rollback()
+            conn.close()
+            return HttpResponse({'status': 'failed'}, content_type='application/json')
