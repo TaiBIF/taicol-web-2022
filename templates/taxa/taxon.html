@@ -212,7 +212,6 @@
 				</div>
 			</div>
 		</div> {% endcomment %}
-
 		<div class="species-de-content">
 			<div class="main-box">
 				<div class='sticky-left {% if LANGUAGE_CODE == "en-us" %} sticky-left-en {% endif %} '>
@@ -464,7 +463,7 @@
 										{% endif %}
 										{% if data.iucn  %}
 										<div class="d-flex">
-										<p>IUCN：<a target="_blank" href="{{ data.iucn_url }}">{{ data.iucn }}</a>
+										<p>IUCN：<a target="_blank" {% if data.iucn_url %}href="{{ data.iucn_url }}"{% endif %}>{{ data.iucn }}</a>
 											{% if data.iucn_note %}
 											<div class="tooltip">
 												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle cl-blue" viewBox="0 0 16 16">
