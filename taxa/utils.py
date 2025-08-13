@@ -381,7 +381,7 @@ def return_download_file_by_solr(query_list, is_chinese):
                     "offset": offset,
                     "limit": 1000,
                     "filter": query_list,
-                    "sort": 'search_name asc',
+                    # "sort": 'search_name asc',
                     }
 
             query_req = json.dumps(query)

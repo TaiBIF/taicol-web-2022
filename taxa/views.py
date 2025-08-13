@@ -258,7 +258,6 @@ def get_autocomplete_taxon_by_solr(request):
         for j in keyword_reg:
             keyword_reg_ += f"[{j.upper()}{j.lower()}]" if is_alpha(j) else j
 
-
         keyword_wo_rank_reg_ = ''
         for j in keyword_wo_rank_reg:
             keyword_wo_rank_reg_ += f"[{j.upper()}{j.lower()}]" if is_alpha(j) else j
@@ -272,7 +271,6 @@ def get_autocomplete_taxon_by_solr(request):
                 OR search_name:/{keyword_reg_}.*/^2 OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/^2 
                 OR search_name:/.*{keyword_reg_}.*/^1 OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/^1 
                 OR search_name:/.*{keyword_reg_}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/'''
-
 
     ds = []
     if keyword_reg:
@@ -1911,7 +1909,7 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
           "offset": offset,
           "limit": limit,
           "filter": query_list,
-          "sort": 'search_name asc',
+        #   "sort": 'search_name asc',
           "facet": search_facet
         }
 
@@ -2114,21 +2112,34 @@ def get_conditioned_solr_search(req):
         keyword = unicode_to_plain(keyword)
 
         keyword_wo_rank = remove_rank_char(keyword)
+        keyword_wo_rank = escape_solr_query(keyword_wo_rank)
         keyword_wo_rank = process_text_variants(keyword_wo_rank)
 
         keyword = escape_solr_query(keyword)
         keyword = process_text_variants(keyword)
+
+
+
+        keyword_reg_ = ''
+        for j in keyword:
+            keyword_reg_ += f"[{j.upper()}{j.lower()}]" if is_alpha(j) else j
+
+        keyword_wo_rank_reg_ = ''
+        for j in keyword_wo_rank:
+            keyword_wo_rank_reg_ += f"[{j.upper()}{j.lower()}]" if is_alpha(j) else j
+
+
 
         keyword_type = req.get('name-select','equal')
 
         
         if keyword_type == "equal":
             # 中文名可能有異體字 英文名有大小寫問題 要修改成REGEXP
-            keyword_str = f"search_name:/{keyword}/ OR search_name_wo_rank:/{keyword_wo_rank}/"
+            keyword_str = f"search_name:/{keyword}/ OR search_name_wo_rank:/{keyword_wo_rank}/ OR search_name:/{keyword_reg_}/ OR search_name_wo_rank:/{keyword_wo_rank_reg_}/"
         elif keyword_type == "startwith":
-            keyword_str = f"search_name:/{keyword}.*/ OR search_name_wo_rank:/{keyword_wo_rank}.*/"
+            keyword_str = f"search_name:/{keyword}.*/ OR search_name_wo_rank:/{keyword_wo_rank}.*/ OR search_name:/{keyword_reg_}.*/ OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/"
         else: # contain
-            keyword_str = f"search_name:/.*{keyword}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank}.*/"
+            keyword_str = f"search_name:/.*{keyword}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank}.*/ OR search_name:/.*{keyword_reg_}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/"
 
         query_list.append(keyword_str)
 
