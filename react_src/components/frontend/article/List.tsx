@@ -87,12 +87,12 @@ const ArticleItem: React.FC = () => {
 
       <div className="page-num">
         {total > 0 ?
-          <a href="javascript: void(0)" onClick={() => setPage(1)} className="num">1</a> : ''
+          <a onClick={() => setPage(1)} className="num">1</a> : ''
         }
 
         {total > 0 ?
           <>
-            <a href="javascript: void(0)" onClick={() => {
+            <a onClick={() => {
               if (page > 1)
                 setPage(page - 1)
             }} className="back">
@@ -105,14 +105,14 @@ const ArticleItem: React.FC = () => {
 
         {total > 0 &&
           Array.from(pageList).map((pageNumber: number) => {
-            let link = <a href="javascript: void(0)" onClick={() => setPage(pageNumber)} className={`num ${page == pageNumber ? 'now' : ''}`}>{pageNumber}</a>
+            let link = <a onClick={() => setPage(pageNumber)} className={`num ${page == pageNumber ? 'now' : ''}`}>{pageNumber}</a>
             return link
           })
         }
 
         {total > 0 ?
           <>
-            <a href="javascript: void(0)" onClick={() => {
+            <a onClick={() => {
               if (page < total)
                 setPage(page + 1)
             }} className="next">
@@ -124,7 +124,7 @@ const ArticleItem: React.FC = () => {
         }
 
         {total > 0 ?
-          <a href="javascript: void(0)" onClick={() => setPage(total)} className="num">{total}</a> : ''
+          <a onClick={() => setPage(total)} className="num">{total}</a> : ''
         }
 
       </div>
