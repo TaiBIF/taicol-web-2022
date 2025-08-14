@@ -258,7 +258,6 @@ def get_autocomplete_taxon_by_solr(request):
         for j in keyword_reg:
             keyword_reg_ += f"[{j.upper()}{j.lower()}]" if is_alpha(j) else j
 
-
         keyword_wo_rank_reg_ = ''
         for j in keyword_wo_rank_reg:
             keyword_wo_rank_reg_ += f"[{j.upper()}{j.lower()}]" if is_alpha(j) else j
@@ -272,7 +271,6 @@ def get_autocomplete_taxon_by_solr(request):
                 OR search_name:/{keyword_reg_}.*/^2 OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/^2 
                 OR search_name:/.*{keyword_reg_}.*/^1 OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/^1 
                 OR search_name:/.*{keyword_reg_}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/'''
-
 
     ds = []
     if keyword_reg:
@@ -1911,7 +1909,7 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
           "offset": offset,
           "limit": limit,
           "filter": query_list,
-          "sort": 'search_name asc',
+        #   "sort": 'search_name asc',
           "facet": search_facet
         }
 
@@ -2114,21 +2112,34 @@ def get_conditioned_solr_search(req):
         keyword = unicode_to_plain(keyword)
 
         keyword_wo_rank = remove_rank_char(keyword)
+        keyword_wo_rank = escape_solr_query(keyword_wo_rank)
         keyword_wo_rank = process_text_variants(keyword_wo_rank)
 
         keyword = escape_solr_query(keyword)
         keyword = process_text_variants(keyword)
+
+
+
+        keyword_reg_ = ''
+        for j in keyword:
+            keyword_reg_ += f"[{j.upper()}{j.lower()}]" if is_alpha(j) else j
+
+        keyword_wo_rank_reg_ = ''
+        for j in keyword_wo_rank:
+            keyword_wo_rank_reg_ += f"[{j.upper()}{j.lower()}]" if is_alpha(j) else j
+
+
 
         keyword_type = req.get('name-select','equal')
 
         
         if keyword_type == "equal":
             # 中文名可能有異體字 英文名有大小寫問題 要修改成REGEXP
-            keyword_str = f"search_name:/{keyword}/ OR search_name_wo_rank:/{keyword_wo_rank}/"
+            keyword_str = f"search_name:/{keyword}/ OR search_name_wo_rank:/{keyword_wo_rank}/ OR search_name:/{keyword_reg_}/ OR search_name_wo_rank:/{keyword_wo_rank_reg_}/"
         elif keyword_type == "startwith":
-            keyword_str = f"search_name:/{keyword}.*/ OR search_name_wo_rank:/{keyword_wo_rank}.*/"
+            keyword_str = f"search_name:/{keyword}.*/ OR search_name_wo_rank:/{keyword_wo_rank}.*/ OR search_name:/{keyword_reg_}.*/ OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/"
         else: # contain
-            keyword_str = f"search_name:/.*{keyword}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank}.*/"
+            keyword_str = f"search_name:/.*{keyword}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank}.*/ OR search_name:/.*{keyword_reg_}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/"
 
         query_list.append(keyword_str)
 
@@ -2339,64 +2350,3 @@ def get_taxon_higher(request):
 
 def register_taxon(request):
     return render(request, 'taxa/register_taxon.html')
-
-import subprocess
-
-
-# TODO 這邊再依據claude簡化 ?
-def update_solr(request):
-    # 要包含token才行
-    if not request.GET.get('token') == env('SOLR_UPDATE_TOKEN'):
-        return HttpResponse({'status': 'token error'}, content_type='application/json')
-    taxon_id = request.GET.get('taxon_id')
-    update_type = request.GET.get('update_type')
-    if update_type == 'full':
-        try:
-            conn = pymysql.connect(**db_settings)
-            query = "SELECT content FROM api_for_solr WHERE taxon_id = %s"
-            with conn.cursor() as cursor:
-                cursor.execute(query, (taxon_id, ))
-                data = cursor.fetchone()
-                if data:
-                    data = pd.DataFrame(json.loads(data[0]))        # 從mysql取出資料
-                    now = datetime.datetime.now().strftime("%Y%m%d")
-                    data.to_csv('/bucket/solr_updated_{}_{}.csv'.format(taxon_id, now), index=None, escapechar='\\')
-                    commands = f''' curl http://solr:8983/solr/taxa/update/?commit=true -H "Content-Type: text/xml" --data-binary '<delete><query>taxon_id:{taxon_id}</query></delete>'; ''' 
-                    process = subprocess.Popen(commands, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    a = process.communicate()
-                    updating_csv = '/bucket/solr_updated_{}_{}.csv'.format(taxon_id, now)
-                    commands = f''' curl http://solr:8983/solr/taxa/update/?commit=true -H "Content-Type: text/csv" --data-binary @{updating_csv}; ''' 
-                    process = subprocess.Popen(commands, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    a = process.communicate()
-                    os.remove(updating_csv)
-                    cursor.execute("DELETE FROM api_for_solr WHERE taxon_id = %s", (taxon_id, ))
-                    conn.commit()
-        except:
-            conn.rollback()
-            conn.close()
-            return HttpResponse({'status': 'failed'}, content_type='application/json')
-    elif update_type == 'partial':
-        try:
-            conn = pymysql.connect(**db_settings)
-            query = "SELECT content, updated_at FROM api_for_solr WHERE taxon_id = %s"
-            with conn.cursor() as cursor:
-                cursor.execute(query, (taxon_id, ))
-                data = cursor.fetchone()
-                if data:
-                    updated_data = json.loads(data[0])
-                    updated_data['updated_at'] = data[1].strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-                    updater = SolrTaxonUpdater(solr_base_url=env('SOLR_PREFIX'), core_name='taxa')
-                    success = updater.smart_update_by_taxon_id(taxon_id, updated_data)
-                    if success:
-                        updater.commit()
-                        cursor.execute("DELETE FROM api_for_solr WHERE taxon_id = %s", (taxon_id, ))
-                        conn.commit()
-                        return HttpResponse({'status': 'success'}, content_type='application/json')
-                    else:
-                        return HttpResponse({'status': 'failed'}, content_type='application/json')
-                else:
-                    return HttpResponse({'status': 'no data'}, content_type='application/json')
-        except:
-            conn.rollback()
-            conn.close()
-            return HttpResponse({'status': 'failed'}, content_type='application/json')

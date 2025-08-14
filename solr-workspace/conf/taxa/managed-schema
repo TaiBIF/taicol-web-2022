@@ -466,11 +466,11 @@
  <field name="status" type="string"/>
  <field name="taxon_group" type="string" indexed="true" stored="true"/>
  <field name="taxon_group_c" type="string" indexed="true" stored="true"/>
- <field name="protected" type="string"/>
- <field name="redlist" type="string"/>
- <field name="iucn" type="string"/>
- <field name="cites" type="string"/>
- <field name="sensitive" type="string"/>
+ <field name="protected" type="string" indexed="true" stored="true"/>
+ <field name="redlist" type="string" indexed="true" stored="true"/>
+ <field name="iucn" type="string" indexed="true" stored="true"/>
+ <field name="cites" type="string" indexed="true" stored="true"/>
+ <field name="sensitive" type="string" indexed="true" stored="true"/>
  <field name="is_endemic" type="boolean"/>
  <field name="is_fossil" type="boolean"/>
  <field name="is_terrestrial" type="boolean"/>

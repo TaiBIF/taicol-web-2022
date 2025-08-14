@@ -13,7 +13,7 @@ const DownloadItem: React.FC = () => {
   const [total, setTotal] = React.useState<number>(0)
   const [pageList, setPageList] = React.useState<any[]>([])
 
-  const GET_DOWNLOAD_LIST_URL = `${process.env.REACT_API_URL}/api/download?cid=${selectedCategory}`;
+  const GET_DOWNLOAD_LIST_URL = `${process.env.REACT_API_URL}/api/download?cid=${selectedCategory}&page=${page}`;
   const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/admin/category?type=download`;
   const { data: downloadList } = useSWR<DownloadListProps>(GET_DOWNLOAD_LIST_URL, fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL, fetcher);
@@ -101,12 +101,12 @@ const DownloadItem: React.FC = () => {
       {(selectedCategory != 'all') &&
         <div className="page-num">
           {total > 0 ?
-            <a href="javascript: void(0)" onClick={() => setPage(1)} className="num">1</a> : ''
+            <a  onClick={() => setPage(1)} className="num">1</a> : ''
           }
 
           {total > 0 ?
             <>
-              <a href="javascript: void(0)" onClick={() => {
+              <a  onClick={() => {
                 if (page > 1)
                   setPage(page - 1)
               }} className="back">
@@ -119,14 +119,14 @@ const DownloadItem: React.FC = () => {
 
           {total > 0 &&
             Array.from(pageList).map((pageNumber: number) => {
-              let link = <a href="javascript: void(0)" onClick={() => setPage(pageNumber)} className={`num ${page == pageNumber ? 'now' : ''}`}>{pageNumber}</a>
+              let link = <a  onClick={() => setPage(pageNumber)} className={`num ${page == pageNumber ? 'now' : ''}`}>{pageNumber}</a>
               return link
             })
           }
 
           {total > 0 ?
             <>
-              <a href="javascript: void(0)" onClick={() => {
+              <a  onClick={() => {
                 if (page < total)
                   setPage(page + 1)
               }} className="next">
@@ -138,7 +138,7 @@ const DownloadItem: React.FC = () => {
           }
 
           {total > 0 ?
-            <a href="javascript: void(0)" onClick={() => setPage(total)} className="num">{total}</a> : ''
+            <a  onClick={() => setPage(total)} className="num">{total}</a> : ''
           }
 
         </div>
