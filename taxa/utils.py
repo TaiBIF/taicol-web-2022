@@ -301,11 +301,21 @@ def create_conservation_note(data):
             data['red_note'] = c_str.rstrip(';<br>')
 
     if c_protected := data.get('protected'):
-        data['protected'] =  protected_map[c_protected] if get_language() == 'en-us' else f'第 {c_protected} 級 {protected_map_c[c_protected]}'
+
+        if get_language() == 'en-us':
+            data['protected'] = protected_map[c_protected] 
+        elif c_protected == '1':
+            data['protected'] = protected_map_c[c_protected]
+        else:
+            data['protected'] = f'第 {c_protected} 級 {protected_map_c[c_protected]}'
+
         if data['protected_note']:
             c_str = ''
             for c in json.loads(data['protected_note']):
-                c_str += f"{c['protected_category']}, {c['name']}; "
+                if c['protected_category'] == '1':
+                    c_str += f"{c['name']}; "
+                else:
+                    c_str += f"{c['protected_category']}, {c['name']}; "
             data['protected_note'] = c_str.rstrip(';')
 
     return data
@@ -624,9 +634,22 @@ def create_history_display(taxon_history, lang, names, current_page=1,limit=8):
             if old_value:
                 old_str = old_value if lang == 'en-us' else redlist_map_c[old_value] + ' ' + old_value
         elif source == 'protected_category':
-            content +=  protected_map[value] if get_language() == 'en-us' else f'第 {value} 級 {protected_map_c[value]}'
+
+            if get_language() == 'en-us':
+                content += protected_map[value]
+            elif value == '1':
+                content += protected_map_c[value]
+            else:
+                content += f'第 {value} 級 {protected_map_c[value]}'
+
             if old_value:
-                old_str = protected_map[old_value] if get_language() == 'en-us' else f'第 {old_value} 級 {protected_map_c[old_value]}'
+                if get_language() == 'en-us':
+                    old_str = protected_map[old_value]
+                elif old_value == '1':
+                    old_str = protected_map_c[old_value]
+                else:
+                    old_str = f'第 {old_value} 級 {protected_map_c[old_value]}'
+
         if row.history_type == 13:
             content += f' ({gettext("原類別：")}{old_str})'
         taxon_history.loc[i,'content'] = content
