@@ -762,6 +762,7 @@ def create_link_display(data,taxon_id):
     links += [{'href': link_map['tbia']['url_prefix'], 'title': link_map['tbia']['title'] ,'suffix': taxon_id, 'hidden_name': True, 'category': link_map['tbia']['category']}]
     links += [{'href': link_map['taibif']['url_prefix'], 'title': link_map['taibif']['title'] ,'suffix': taxon_id, 'hidden_name': True, 'category': link_map['taibif']['category']}]
     
+    has_gisd_id = False
 
     if data['links']:
 
@@ -774,9 +775,12 @@ def create_link_display(data,taxon_id):
                 links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('=')[1].split('&')[0], 'category': link_map[t["source"]]['category']}]
             elif t["source"] == 'amphibiansoftheworld':
                 links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'id': t['suffix'].split('/')[-1], 'category': link_map[t["source"]]['category']}]
+            elif t["source"] == 'gisd_id':
+                has_gisd_id = True
+                links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'category': link_map[t["source"]]['category']}]
             elif t["source"] != 'ncbi':
                 links += [{'href': link_map[t["source"]]['url_prefix'], 'title': link_map[t["source"]]['title'], 'suffix': t['suffix'], 'category': link_map[t["source"]]['category']}]
-    
+
     if data['path']:
         # LPSN 
         if 't0000005' in data['path'] or 't0000004' in data['path']:
@@ -802,7 +806,8 @@ def create_link_display(data,taxon_id):
     for s in ['wikispecies','discoverlife','inat','irmng','ncbi']:
         links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'], 'hidden_name': True, 'category': link_map[s]['category']}]
     
-    for s in ['gisd']:
+    if not has_gisd_id:
+        s = 'gisd'
         links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'].replace(' ', '+'), 'hidden_name': True, 'category': link_map[s]['category']}]
 
 
