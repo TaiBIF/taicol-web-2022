@@ -163,7 +163,10 @@ CSP_DEFAULT_SRC = ("'self'", "https://www.google.com/recpatcha/", "https://www.g
 CSP_FRAME_SRC = ("'self'","https://www.google.com/","https://www.youtube.com/") 
 
 # CSP_CONNECT_SRC = ("'self'", "https://data.taieol.tw/eol/endpoint/image/species/") 
-CSP_CONNECT_SRC = ("'self'","https://www.google-analytics.com/","https://analytics.google.com/","https://stats.g.doubleclick.net/","https://accounts.google.com/o/oauth2/auth") 
+CSP_CONNECT_SRC = ("'self'","https://www.google-analytics.com/","https://analytics.google.com/","https://stats.g.doubleclick.net/","https://accounts.google.com/o/oauth2/auth",
+                "https://admin.taicol.tw/", "https://api.taicol.tw/","https://web-admin.taicol.tw/", "https://api-staging.taicol.tw/", "http://127.0.0.1:8005/", "http://127.0.0.1:3000") 
+
+
 
 
 CSP_STYLE_SRC = ["'self'","https://cdn.datatables.net","https://unpkg.com/","http://www.w3.org","https://cdnjs.cloudflare.com","https://fonts.googleapis.com/","https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/"]
