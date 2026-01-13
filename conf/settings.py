@@ -159,17 +159,28 @@ AWS_SES_REGION_ENDPOINT = env('AWS_SES_REGION_ENDPOINT', default='')
 # Content Security Policy 
 CSP_DEFAULT_SRC = ("'self'", "https://www.google.com/recpatcha/", "https://www.google.com/",'http://web-admin.taicol.tw/','http://admin.taicol.tw/','https://web-admin.taicol.tw/',"http://18.183.59.124",
 "https://fonts.googleapis.com/","https://api-staging.taicol.tw/","http://api-staging.taicol.tw/","https://api.taicol.tw/","https://match.taibif.tw/","https://www.google-analytics.com/","http://127.0.0.1:3000",
-"https://www.youtube.com/") 
+"https://www.youtube.com/","https://data.taieol.tw/eol/endpoint/image/species/", "http://127.0.0.1:8005/")
+CSP_FRAME_SRC = ("'self'","https://www.google.com/","https://www.youtube.com/") 
+
+# CSP_CONNECT_SRC = ("'self'", "https://data.taieol.tw/eol/endpoint/image/species/") 
+CSP_CONNECT_SRC = ("'self'","https://www.google-analytics.com/","https://analytics.google.com/","https://stats.g.doubleclick.net/","https://accounts.google.com/o/oauth2/auth") 
+
+
 CSP_STYLE_SRC = ["'self'","https://cdn.datatables.net","https://unpkg.com/","http://www.w3.org","https://cdnjs.cloudflare.com","https://fonts.googleapis.com/","https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/"]
-CSP_IMG_SRC = ("'self'","data: http://www.w3.org","data: https://data.taieol.tw/",'https://web-admin.taicol.tw/',"https://admin.taicol.tw/") 
+CSP_IMG_SRC = ("'self'","data: http://www.w3.org","data: https://data.taieol.tw/",'https://web-admin.taicol.tw/',"https://admin.taicol.tw/", "https://www.googletagmanager.com/",) 
 # CSP_MEDIA_SRC = ("'self'","https://www.youtube.com/") 
 CSP_FONT_SRC = ("'self'","https://fonts.googleapis.com/","https://fonts.gstatic.com/") 
+CSP_FORM_ACTION = ("'self'","https://accounts.google.com/") 
 
-CSP_SCRIPT_SRC = ["'self'", "https://cdnjs.cloudflare.com",
+CSP_SCRIPT_SRC = ["'self'", 
+    "https://cdnjs.cloudflare.com",
     "https://code.jquery.com",
     "https://cdn.datatables.net",
     "https://unpkg.com/", "data: http://www.w3.org", "https://www.google.com", "https://www.gstatic.com",
-    "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/", "https://www.googletagmanager.com"
+    "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/",
+    'https://www.google.com/recaptcha/api.js',
+    "https://www.googletagmanager.com/",
+    "https://www.google-analytics.com/",
 ]
 
 CSRF_TRUSTED_ORIGINS = ['https://web-staging.taicol.tw','https://web-admin.taicol.tw', 'https://taicol.tw','https://admin.taicol.tw']
