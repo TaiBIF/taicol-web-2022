@@ -340,7 +340,6 @@ def taxon(request, taxon_id):
     not_official = 0
     has_taxon = False
 
-
     conn = pymysql.connect(**db_settings)
 
     query = f"""
@@ -738,7 +737,6 @@ def taxon(request, taxon_id):
 
         # 取得expert
         if len(refs):
-            
             query = "SELECT person_id FROM person_reference WHERE reference_id in %s"
             person_ids = []
             with conn.cursor() as cursor:
@@ -750,7 +748,6 @@ def taxon(request, taxon_id):
                     person_resp = requests.get(url)
                     person_resp = person_resp.json()
                     experts = person_resp.get('rows')
-                
             refs = list(refs.sort_values('publish_year')[['reference_id','full_ref']].drop_duplicates().values)
 
 
@@ -809,7 +806,7 @@ def taxon(request, taxon_id):
                     elif sr == 47:
                         if spp > 0:
                             infra_count_str = f'{infra_str} {spp}' if get_language() == 'en-us' else f'{spp}{infra_str}'
-                            stat_str += f"""<a href='{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&higherTaxa={taxon_id}&higherTaxa_str={higherTaxa_str}'>{infra_count_str} </a>"""
+                            stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank=35&rank=36&rank=37&rank=38&rank=39&rank=40&rank=41&rank=42&higherTaxa={taxon_id}&higherTaxa_str={higherTaxa_str}'>{infra_count_str} </a>"""
                         stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&higherTaxa={taxon_id}&higherTaxa_str={higherTaxa_str}'>{count_str} </a>"""
                     else:
                         stat_str += f"""<a href='/{"en-us" if get_language() == "en-us" else "zh-hant"}/catalogue?status=accepted&rank={sr}&higherTaxa={taxon_id}&higherTaxa_str={higherTaxa_str}'>{count_str} </a>"""
@@ -2043,7 +2040,7 @@ def catalogue_search(request):
 
     if request.method == 'POST':
         req = request.POST
-        
+
         # 先確認是不是taxonID 若是的話直接跳轉至物種頁
 
         if req.get('keyword'):
@@ -2092,7 +2089,6 @@ def get_conditioned_solr_search(req):
             facet = 'is_endemic'
         else:
             facet = req.get('facet') 
-            
         query_list.append('{}:{}'.format(facet, req.get('facet_value')))
 
     # NOTE 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1  的資料
