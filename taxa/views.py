@@ -2078,8 +2078,6 @@ def catalogue_search(request):
 
 def get_conditioned_solr_search(req): 
 
-    print(req)
-
     query_list = []
 
     # 如果有facet的話
