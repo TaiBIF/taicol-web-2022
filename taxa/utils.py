@@ -806,9 +806,9 @@ def create_link_display(data,taxon_id):
     for s in ['wikispecies','discoverlife','inat','irmng','ncbi']:
         links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'], 'hidden_name': True, 'category': link_map[s]['category']}]
     
-    if not has_gisd_id:
-        s = 'gisd'
-        links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'].replace(' ', '+'), 'hidden_name': True, 'category': link_map[s]['category']}]
+    # if not has_gisd_id:
+    #     s = 'gisd'
+    #     links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'].replace(' ', '+'), 'hidden_name': True, 'category': link_map[s]['category']}]
 
 
     links = pd.DataFrame(links).drop_duplicates()
