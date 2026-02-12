@@ -29,9 +29,14 @@ services:
     networks:
       - gateway
       - traefik-web
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
   postgres:
     image: postgres:14-alpine
-    shm_size: '1g'
+    shm_size: '256mb'
     container_name: tc-stag-postgres-container
     restart: always
     volumes:
@@ -43,6 +48,11 @@ services:
      - .env
     networks:
       - gateway
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
   mysql-web:
     build: ./scripts/mysql
     container_name: tc-web-mysql-container
@@ -60,9 +70,16 @@ services:
         "mysqld",
         "--character-set-server=utf8mb4",
         "--collation-server=utf8mb4_unicode_ci",
+        "--performance_schema=OFF",
+        "--innodb_buffer_pool_size=64M"
       ]
     networks:
       - gateway
+    deploy:
+      resources:
+        limits:
+          memory: 400M
+
   solr:
     build: ./solr-workspace
     image: taicol-solr-image
@@ -78,6 +95,13 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - gateway
+    environment:
+      - SOLR_JAVA_MEM=-Xms128m -Xmx256m
+    deploy:
+      resources:
+        limits:
+          memory: 400M
+
   nginx-web:
     image: nginx:1.19.10-alpine
     container_name: nginx-web
@@ -95,3 +119,7 @@ services:
       - "traefik.http.routers.nginx-web.rule=Host(`web-staging.taicol.tw`)"
       - "traefik.http.routers.nginx-web.entrypoints=websecure"
       - "traefik.http.routers.nginx-web.tls.certresolver=myresolver"
+    deploy:
+      resources:
+        limits:
+          memory: 64M

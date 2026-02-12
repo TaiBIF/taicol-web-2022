@@ -25,6 +25,11 @@ services:
     networks:
       - gateway
       - traefik-admin
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+
   nginx-admin:
     container_name: nginx-admin
     image: nginx:latest
@@ -34,6 +39,10 @@ services:
       - ./app/public/upload:/upload
     networks:
       - traefik-admin
+    deploy:
+      resources:
+        limits:
+          memory: 64M
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.nginx-admin.rule=Host(`web-admin.taicol.tw`)"
@@ -57,6 +66,12 @@ services:
         "mysqld",
         "--character-set-server=utf8mb4",
         "--collation-server=utf8mb4_unicode_ci",
+        "--performance_schema=OFF",
+        "--innodb_buffer_pool_size=64M"
       ]
     networks:
       - gateway
+    deploy:
+      resources:
+        limits:
+          memory: 300M
