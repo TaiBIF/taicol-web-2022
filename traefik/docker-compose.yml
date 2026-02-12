@@ -39,3 +39,7 @@ services:
       - traefik-web
       - traefik-api
       - traefik-nametool
+    deploy:
+      resources:
+        limits:
+          memory: 128M
