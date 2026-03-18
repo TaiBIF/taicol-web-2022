@@ -24,7 +24,6 @@ stag-up:
 stag-down:
 	docker compose -f staging.yml down
 	docker compose -f react-backend/staging.yml down
-	unlink ~/tc-web-volumes/static/upload
 
 prod-build:
 	docker compose -f production.yml build
@@ -37,5 +36,4 @@ prod-up:
 prod-down:
 	docker compose -f production.yml down
 	docker compose -f react-backend/production.yml down
-	unlink ~/tc-web-volumes/static/upload
-
+# 
