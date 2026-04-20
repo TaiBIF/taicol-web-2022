@@ -970,19 +970,21 @@ def taxon_tree(request):
         kingdom_dict.append({'taxon_id': k, 
                              'name': f"{'Kingdom ' if kingdom_taxon_map[k]['name'] != 'Viruses' else ''}{kingdom_taxon_map[k]['name']}" if get_language()=='en-us' else f"{kingdom_taxon_map[k]['common_name_c']} {'Kingdom ' if kingdom_taxon_map[k]['name'] != 'Viruses' else ''}{kingdom_taxon_map[k]['name']}",
                              'stat': stat_str.strip()})
-    
-    search_stat = SearchStat.objects.all().order_by('-count')[:100]
-    s_taxon = [s.taxon_id for s in search_stat]
+        
     # 要考慮是否已刪除or已被改為不存在於台灣
+    s_taxon = list(SearchStat.objects.order_by('-count').values_list('taxon_id', flat=True)[:100])
+
     if s_taxon:
         query = f"""SELECT DISTINCT(at.taxon_id), acn.name_c as common_name, an.formatted_name
                     FROM api_taxon at
                     JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
                     LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
-                    WHERE at.taxon_id IN %s AND at.is_in_taiwan = 1 AND at.is_deleted = 0 LIMIT 6;"""
+                    WHERE at.taxon_id IN %s AND at.is_in_taiwan = 1 AND at.is_deleted = 0
+                    ORDER BY FIELD(at.taxon_id, {','.join(['%s'] * len(s_taxon))})
+                    LIMIT 6;"""
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
-            cursor.execute(query, (s_taxon, ))
+            cursor.execute(query, (s_taxon, *s_taxon))
             tags = cursor.fetchall()
             conn.close()
             search_stat = []
