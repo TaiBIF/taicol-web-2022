@@ -25,14 +25,7 @@ const RegisterTaxonSubmitPanel: React.VFC<{}> = () => {
 		let register_type = document.querySelector('#register_taxon-type')?.innerHTML;
 		let bio_group = document.querySelector('#register_taxon-bio_group')?.innerHTML;
 
-		let accessKeyId = process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID as string
-		let secretAccessKey = process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY as string
-		var creds = new AWS.Credentials({
-			accessKeyId: accessKeyId,
-			secretAccessKey: secretAccessKey,		  
-		});
-
-		const ses = new SES({ region: process.env.NEXT_PUBLIC_AWS_SES_REGION_NAME, credentials: creds})
+		const ses = new SES({ region: process.env.NEXT_PUBLIC_AWS_SES_REGION_NAME})
 
 		const params = {
 		Source: 'no-reply@taicol.tw',

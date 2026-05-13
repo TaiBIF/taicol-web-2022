@@ -1383,7 +1383,6 @@ def get_match_result(request):
             query_dict['is_in_taiwan'] = True
 
         if request.POST.get('bio_group-select') != 'all':
-            # taxon_group是在NomenaMatch的欄位 -> 改為 bio_group
             query_dict['bio_group'] = request.POST.get('bio_group-select')
         
         if kingdoms := request.POST.getlist('kingdom'):
@@ -2245,7 +2244,7 @@ def get_conditioned_solr_search(req):
         query_list.append(f"({' OR '.join(higher_list)})")
 
 
-    # 常見類群
+    # 生物類群
     if bio_group := req.get('bio_group-select'):
         if bio_group in bio_group_map.keys():
             bio_group_list = []

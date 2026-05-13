@@ -993,12 +993,12 @@ msgstr "Kingdom"
 
 
 #:  
-msgid "比對常見類群"
+msgid "比對生物類群"
 msgstr "Bio-Group"
 
 
 #:  
-msgid "常見類群"
+msgid "生物類群"
 msgstr "Bio-Group"
 
 
@@ -1065,6 +1065,36 @@ msgstr "Viruses"
 #:  
 msgid "細菌"
 msgstr "Bacteria"
+
+
+#:  
+msgid "甲蟲類"
+msgstr "Beetles"
+
+
+#:  
+msgid "蛾類"
+msgstr "Moths"
+
+
+#:  
+msgid "蝶類"
+msgstr "Butterflies"
+
+
+#:  
+msgid "蜻蛉類"
+msgstr "Dragonflies"
+
+
+#:  
+msgid "蝸牛與貝類"
+msgstr "Snails & Shells"
+
+
+#:  
+msgid "蝦蟹類"
+msgstr "Crustaceans"
 
 
 #:  
@@ -1146,11 +1176,6 @@ msgstr "Unrecorded Species"
 #:  
 msgid "補充資料"
 msgstr "Supplementary Information"
-
-
-#:  
-msgid "生物類群"
-msgstr "Biological Group"
 
 
 #:  
