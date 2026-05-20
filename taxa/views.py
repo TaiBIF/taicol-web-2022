@@ -2243,16 +2243,26 @@ def get_conditioned_solr_search(req):
 
         query_list.append(f"({' OR '.join(higher_list)})")
 
-
     # 生物類群
     if bio_group := req.get('bio_group-select'):
-        if bio_group in bio_group_map.keys():
-            bio_group_list = []
+        if bio_group in bio_group_map:
             bio_groups = bio_group_map[bio_group]
-            for b in bio_groups:
-                bio_group_list.append(f'path:/.*{b}.*/')
-            query_list.append(f"({' OR '.join(bio_group_list)})")
 
+            if 'include' in bio_groups:
+                includes = bio_groups['include']
+                excludes = bio_groups.get('exclude', [])
+            else:
+                includes = bio_groups
+                excludes = []
+
+            include_q = ' OR '.join(f'path:/.*{b}.*/' for b in includes)
+            query = f"({include_q})"
+
+            if excludes:
+                exclude_q = ' OR '.join(f'path:/.*{b}.*/' for b in excludes)
+                query = f"({query} AND -({exclude_q}))"
+
+            query_list.append(query)
 
     return query_list, is_chinese
 
