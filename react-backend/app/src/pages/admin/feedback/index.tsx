@@ -14,7 +14,6 @@ import type { GridApi,GridColDef,GridSortModel } from '@mui/x-data-grid';
 import Router from 'next/router';
 import { ActionTypes } from 'src/types';
 import SearchBar from 'src/table/components/SearchBar';
-// import { shortDescription } from 'src/utils/helper';
 
 import type { FeedbackDataProps, FeedbackListProps } from 'src/types';
 import moment from 'moment';
@@ -101,12 +100,9 @@ const getHeadCells = (url: string) => {
       flex: 1,
       renderCell: (params:any) => {
         const onClick = (event: React.MouseEvent<HTMLElement>, action: ActionTypes) => {
-          event.stopPropagation(); // don't select this row after clicking
+          event.stopPropagation();
 
           switch (action) {
-            // case 'info':
-            //   window.open (`/feedback/${params.row.slug}`, '_ blank');
-            //   break;
             case 'update':
               Router.push(`/admin/feedback/update?id=${params.row.id}`);
               break;
@@ -133,9 +129,6 @@ const getHeadCells = (url: string) => {
 
         return (
           <>
-            {/* <IconButton onClick={(e) => onClick(e, 'info')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
-              <InfoIcon />
-            </IconButton> */}
             <IconButton onClick={(e) => onClick(e, 'update')} sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
               <EditIcon />
             </IconButton>
@@ -177,15 +170,10 @@ const FeedbackListPage: React.FC = () => {
 	if (data) {
     rows = data.rows.map((row) => {
 
-      // const category = row?.Category?.name  || '';
-
 			return {
         ...row,
         createdAt: moment(row.createdAt).format('yyyy/MM/DD HH:mm:ss'),
         updatedAt: moment(row.updatedAt).format('yyyy/MM/DD HH:mm:ss'),
-        // is_solved: (row.is_solved == true) ? '是' : '否',
-        // description: shortDescription(row.description, 100),
-        // category: category,
 			};
 		});
   }
@@ -196,11 +184,6 @@ const FeedbackListPage: React.FC = () => {
         <CardHeader title="意見回饋列表" titleTypographyProps={{ variant: 'h6' }} action={
           <>
             <SearchBar handleSearch={(keyword) => setKeyword(keyword)} />
-            {/* <IconButton
-              onClick={(e: React.MouseEvent) => Router.push('/admin/feedback/create')}
-              sx={{ minHeight: 0, minWidth: 0, padding: 2 }}>
-              <AddIcon />
-            </IconButton> */}
           </>
         } />
 
