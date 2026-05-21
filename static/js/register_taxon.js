@@ -26,6 +26,14 @@ $(function(){
 		if (!ValidateEmail($(`.error-form input[name=${c}]`).val())){
 			checked = false;
 		}
+
+		// 檢查 Turnstile token
+		let token = $('#registerTaxonForm input[name="cf-turnstile-response"]').val();
+		if (!token) {
+			$lang == 'en-us' ? alert("Please complete the verification") : alert("請完成人機驗證");
+			return;
+		}
+
 		if (checked){
 			$.ajax({
 				url: "/send_register_taxon",
@@ -35,10 +43,9 @@ $(function(){
 			})
 			.done(function(results) {
 				if (results['status'] == 'done'){
-					//$('.loadingbox').addClass('d-none');
 					$('.registerpop').fadeOut("slow");
-					//alert('回報已送出，謝謝您！');
 					$lang == 'en-us' ? alert("Your feedback has been sent. Thank you!") : alert("回報已送出，謝謝您！");
+					if (window.turnstile) turnstile.reset(); 
 				} else {
 					$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
 				}

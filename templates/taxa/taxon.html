@@ -8,6 +8,7 @@
 <link href="/static/fontawesome-free-6.2.1/css/solid.min.css" rel="stylesheet" />
 <script src="/static/fontawesome-free-6.2.1/js/fontawesome.min.js" data-auto-add-css="false"></script>
 <script src="/static/fontawesome-free-6.2.1/js/solid.min.js" data-auto-add-css="false"></script>  
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 {% endblock head %}
 
 {% block style %}
@@ -127,6 +128,14 @@
 							<input type="text" name="email">
 						</div>
 					</div>
+					<!-- Honeypot field（CSS 隱藏，真人看不到） -->
+					<input type="text" name="web_url" tabindex="-1" autocomplete="off"
+						class="d-none"
+						aria-hidden="true">
+					<!-- Turnstile widget -->
+					<div class="cf-turnstile"
+						data-sitekey="{{ TURNSTILE_SITE_KEY }}"
+						data-theme="light"></div>
 					</form>
 					<button class="send-btn feedback">{% trans "確認送出" %}</button>
 				</div>
