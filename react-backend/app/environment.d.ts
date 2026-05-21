@@ -20,8 +20,8 @@ declare global {
 			NEXT_PUBLIC_PAGINATE_LIMIT: string;
 			NEXT_PUBLIC_API_URL: string;
 			NEXT_PUBLIC_IFRAME_URL: string;
-			NEXT_PUBLIC_AWS_SES_REGION_NAME: string;
-			NEXT_PUBLIC_AWS_SES_REGION_ENDPOINT: string;
+			AWS_SES_REGION_NAME: string;
+			AWS_SES_REGION_ENDPOINT: string;
 		}
 	}
 }
