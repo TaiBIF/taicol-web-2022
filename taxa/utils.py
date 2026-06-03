@@ -764,12 +764,9 @@ def create_link_display(data,taxon_id):
 
     links = []
 
-    # taibif / tbia 接taxonID
+    # tbia 接taxonID
     links += [{'href': link_map['tbia']['url_prefix'], 'title': link_map['tbia']['title'] ,'suffix': taxon_id, 'hidden_name': True, 'category': link_map['tbia']['category']}]
-    links += [{'href': link_map['taibif']['url_prefix'], 'title': link_map['taibif']['title'] ,'suffix': taxon_id, 'hidden_name': True, 'category': link_map['taibif']['category']}]
     
-    has_gisd_id = False
-
     if data['links']:
 
         tmp_links = json.loads(data['links'])
@@ -811,10 +808,6 @@ def create_link_display(data,taxon_id):
     # 全部都接 wikispecies,discoverlife,taibif,inat,irmng
     for s in ['wikispecies','discoverlife','inat','irmng','ncbi']:
         links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'], 'hidden_name': True, 'category': link_map[s]['category']}]
-    
-    # if not has_gisd_id:
-    #     s = 'gisd'
-    #     links += [{'href': link_map[s]['url_prefix'], 'title': link_map[s]['title'] ,'suffix': data['name'].replace(' ', '+'), 'hidden_name': True, 'category': link_map[s]['category']}]
 
 
     links = pd.DataFrame(links).drop_duplicates()
@@ -965,9 +958,6 @@ def get_ambiguous_list(names):
 
     is_ambiguous_list = []
 
-    # names['marked'] = False
-    # names['pro_parte'] = False
-
     # 先處理同模學名
     conn = pymysql.connect(**db_settings)
     object_groups = list(names[names.object_group.notnull()].object_group.unique())
@@ -988,9 +978,6 @@ def get_ambiguous_list(names):
             excluded_taxon_ids = [r for r in rows_taxon_ids if r not in rows_parent_taxon_ids]
             if len(excluded_taxon_ids) > 1:
                 is_ambiguous_list += list(rows.taxon_name_id.unique())
-            #     name_ids = list(rows.taxon_name_id.unique())
-            #     names.loc[names.taxon_name_id.isin(name_ids),'marked'] = True
-
 
         # 找單純重複的學名 
         # 這邊就不會有互為上下階層的問題了
@@ -1006,6 +993,5 @@ def get_ambiguous_list(names):
             is_ambiguous = cursor.fetchall()
             is_ambiguous_list += [i[0] for i in is_ambiguous]
             
-
     return list(set(is_ambiguous_list))
 

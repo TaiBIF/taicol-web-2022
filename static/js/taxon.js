@@ -79,23 +79,6 @@ function controlAll(){
 
 $(function(){
 
-	// // 取得照片
-	// $.ajax({
-	// 	url: 'https://data.taieol.tw/eol/endpoint/image/species/417918',
-	// 	method: 'GET',
-	// 	dataType: 'json',
-	// 	data: '',
-	// 	async: true,　
-	   
-	// 	success: res =>{
-	// 		console.log(res)
-	// 		},
-	// 	error: err =>{
-	// 		console.log(err)
-	// 		},
-	// });
-	
-
 	$('.more-history').on('click', function(){
 		if ($(this).hasClass('now')){
 			$(this).removeClass('now')
@@ -134,7 +117,6 @@ $(function(){
 	})
 
 
-
 	// 照片
 	let cols = ['title','description','notify','name','email']
 	$('.feedback').click(function(){
@@ -148,6 +130,12 @@ $(function(){
 		if (!ValidateEmail($(`.error-form input[name=${c}]`).val())){
 			checked = false;
 		}
+		// 檢查 Turnstile token
+		let token = $('#errorForm input[name="cf-turnstile-response"]').val();
+		if (!token) {
+			$lang == 'en-us' ? alert("Please complete the verification") : alert("請完成人機驗證");
+			return;
+		}
 		if (checked){
 			$.ajax({
 				url: "/send_feedback",
@@ -157,10 +145,9 @@ $(function(){
 			})
 			.done(function(results) {
 				if (results['status'] == 'done'){
-					//$('.loadingbox').addClass('d-none');
 					$('.mistakepop').fadeOut("slow");
-					//alert('回報已送出，謝謝您！');
 					$lang == 'en-us' ? alert("Your feedback has been sent. Thank you!") : alert("回報已送出，謝謝您！");
+					if (window.turnstile) turnstile.reset(); 
 				} else {
 					$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
 				}
@@ -173,8 +160,6 @@ $(function(){
 
 		} else {
 			$lang == 'en-us' ? alert("Please fill out the form completely") : alert("請檢查表格是否填寫完整，或電子郵件格式是否正確");
-
-			//alert('請檢查表格是否填寫完整，或電子郵件格式是否正確')
 		}
 
 	})
@@ -236,23 +221,10 @@ $(function(){
 		$('.imagepop').fadeIn("slow");
 		$('.imagepop #spe-image').attr("src",this.src);
 		$('.imagepop #image_author').html($(this).next('.image_author').html());
-		// $('.imagepop #image_license').html($(this).next('.image_license').html());
 		$('.imagepop #image_provider').html($(this).next().next('.image_provider').html());
 		$('.imagepop #image_permalink').attr("href",$(this).next().next().next('.image_permalink').html());
 
 	});
-
-
-	// 變更歷史頁碼
-
-	// get_taxon_history?taxon_id=t0097239&name_id=137324&current_page=2
-
-	/*
-
-	$(".taxon-history-edit .updateData").prop("onclick", null).off("click");
-	$('.taxon-history-edit .updateData').on('click', function(){
-		updateData(parseInt($(this).data('page')))
-	})*/
 
 	$('.show-higher-button').on('click', function(){		
 
@@ -320,84 +292,3 @@ $(function(){
 	})
 	
 })
-
-
-/*
-function updateData(page){
-	$.ajax({
-		url: `/get_taxon_history?taxon_id=${$('input[name=taxon_id]').val()}&name_id=${$('#name_id').val()}&page=${page}`,
-	})
-	.done(function(results) {
-	
-
-		$('.taxon-history-edit .history-rows').remove()
-
-		for (i of results.taxon_history){
-			$('.taxon-history-edit table').append(`
-				<tr class="history-rows">
-					<td>${i.updated_at}</td>
-					<td>${i.title}${i.content}</td>
-					<td>${i.ref}</td>
-					<td>${i.editor}</td>
-				</tr>
-				`)
-		}
-
-		$('.taxon-history-edit .page-num').remove()
-	
-		// 頁碼
-		if (results.total_page > 1){  // 判斷超過一頁，有才加分頁按鈕
-			$('.taxon-history-edit .scro-m').after(
-			`	<div class="page-num">
-				<!--現在位置加now-->
-				<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
-				<a href="javascript:;" data-page="${results.current_page - 1}" class="back updateData">
-					<img src="/static/image/pagear1.svg">
-					<p>${results.prev}</p>
-				</a>
-				<a href="javascript:;" data-page="${results.current_page + 1}" class="next updateData">
-					<p>${results.next}</p>
-					<img src="/static/image/pagear2.svg">
-				</a>
-				<a href="javascript:;" data-page="${results.total_page}" class="num updateData" id="page-end">${results.total_page}</a>
-			</div>
-			`)
-			$('.taxon-history-edit .page-num').append(`
-				<input type="hidden" name="total_page" value="${results.total_page}">
-			`)
-		}
-
-		if (results.current_page==1){
-			$('.taxon-history-edit .back').removeClass('updateData')
-		} else if (results.current_page==results.total_page){
-			$('.taxon-history-edit .next').removeClass('updateData')
-		}
-			
-		let html = ''
-		for (let i = 0; i < results.page_list.length; i++) {
-			if (results.page_list[i] == results.current_page){
-			html += `<a class="num now updateData" href="javascript:;" data-page="${results.page_list[i]}">${results.page_list[i]}</a> `;
-			} else {
-			html += `<a class="num updateData" href="javascript:;" data-page="${results.page_list[i]}">${results.page_list[i]}</a>  `
-			}
-		}
-		$('.taxon-history-edit .back').after(html)
-
-		$(".taxon-history-edit .updateData").prop("onclick", null).off("click");
-		$('.taxon-history-edit .updateData').on('click', function(){
-			updateData(parseInt($(this).data('page')))
-		})
-	
-	})
-	.fail(function( xhr, status, errorThrown ) {
-	$('.loadingbox').addClass('d-none');
-	//alert('發生未知錯誤！請聯絡管理員')
-	$lang == 'en-us' ? alert('An unexpected error occured! Please contact us.') : alert('發生未知錯誤！請聯絡管理員')
-	//condition ? true_expression : false_expression
-	
-	console.log( 'Error: ' + errorThrown + 'Status: ' + xhr.status)
-	}) 
-	
-	
-
-}*/

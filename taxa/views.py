@@ -20,6 +20,7 @@ import threading
 from django.template.loader import render_to_string
 import html
 from django.utils.translation import get_language, gettext
+from pages.utils import verify_turnstile
 
 search_facet = { "kingdom": { 
                 'type': 'terms',
@@ -1722,6 +1723,16 @@ def download_match_results(request):
 
 
 def send_feedback(request):
+
+    # Honeypot：bot 通常會填這個隱藏欄位
+    if request.POST.get('web_url'):
+        # 假裝成功，bot 收到 fail 會 retry
+        return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json')
+
+    # Turnstile 驗證
+    if not verify_turnstile(request.POST.get('cf-turnstile-response')):
+        return HttpResponse(json.dumps({'status': 'fail'}), content_type='application/json')
+
     req = request.POST
     date_str = timezone.now()+datetime.timedelta(hours=8)
     date_str = date_str.strftime('%Y/%m/%d')
@@ -1775,6 +1786,16 @@ register_type_map = {
 }
 
 def send_register_taxon(request):
+
+    # Honeypot：bot 通常會填這個隱藏欄位
+    if request.POST.get('web_url'):
+        # 假裝成功，bot 收到 fail 會 retry
+        return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json')
+
+    # Turnstile 驗證
+    if not verify_turnstile(request.POST.get('cf-turnstile-response')):
+        return HttpResponse(json.dumps({'status': 'fail'}), content_type='application/json')
+
     req = request.POST
     date_str = timezone.now()+datetime.timedelta(hours=8)
     date_str = date_str.strftime('%Y/%m/%d')
@@ -1784,8 +1805,6 @@ def send_register_taxon(request):
     description = req.get('description')
 
     req = dict(req)
-
-    # print(req)
 
     scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
 
@@ -1823,7 +1842,6 @@ def send_register_taxon(request):
         return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
     else:
         return HttpResponse(json.dumps({'status': 'fail'}), content_type='application/json') 
-
 
 
 def trigger_send_mail(email_body):

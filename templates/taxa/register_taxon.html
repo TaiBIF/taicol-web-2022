@@ -6,8 +6,8 @@
 <script src="{% static 'js/jquery.nice-select.js' %}?v1"></script>
 <link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}?v1">
 <link rel=stylesheet type="text/css" href="{% static 'css/register_taxon.css' %}?v2">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 {% endblock head %}
-
 
 {% block body %}
 <!--提交文獻彈跳框-->
@@ -113,6 +113,14 @@
 						<input type="text" name="email">
 					</div>
 				</div>
+				<!-- Honeypot field（CSS 隱藏，真人看不到） -->
+				<input type="text" name="web_url" tabindex="-1" autocomplete="off"
+					class="d-none"
+					aria-hidden="true">
+				<!-- Turnstile widget -->
+				<div class="cf-turnstile"
+					data-sitekey="{{ TURNSTILE_SITE_KEY }}"
+					data-theme="light"></div>
 				</form>
 				<button class="send-btn submit-reference">{% trans "確認送出" %}</button>
 			</div>
