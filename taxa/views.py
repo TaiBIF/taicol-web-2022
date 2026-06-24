@@ -230,9 +230,6 @@ def get_autocomplete_taxon_by_solr(request):
     # 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1 的資料
     if not request.GET.get('from') == 'nametool':
         query_list.append('is_in_taiwan:true')
-    else:
-        # 工具最高分類群只提供到科
-        query_list.append('rank_id:({})'.format((' OR ').join([str(f) for f in lower_than_family])))
 
     if keyword := request.GET.get('keyword','').strip():
 
