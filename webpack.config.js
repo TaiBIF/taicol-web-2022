@@ -11,6 +11,17 @@ module.exports = {
     index: path.resolve(__dirname, 'react_src', 'index.jsx'),
   },
   devtool: 'inline-source-map',
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        reactVendor: {
+          test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/,
+          name: 'vendor-react',
+          chunks: 'all',
+        },
+      },
+    },
+  },
   module: {
     rules: [
       {
@@ -25,8 +36,6 @@ module.exports = {
     filename: '[name].bundle.js',
     // clean: true, 
   },
-  // 如果是開發模式時打開
-  // watch: true, 
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx", "scss"]
   },

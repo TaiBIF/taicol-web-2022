@@ -5,7 +5,7 @@ const share = {
 	type: z.string().nonempty( { message: errors.NON_EMPTY }),
 	name: z.string().nonempty( { message: errors.NON_EMPTY }),
 	name_eng: z.string().nonempty( { message: errors.NON_EMPTY }),
-	color: z.string(),
+	color: z.string().optional(),
 	sort: z.string().transform((val) => parseInt(val, 10)).or(z.number())
 };
 

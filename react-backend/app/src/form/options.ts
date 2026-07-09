@@ -2,7 +2,7 @@ import type { OptionProp } from 'src/types';
 
 export const roles = ['admin', 'user'] as const;
 export const filetypes = ['csv', 'pdf','doc','txt'] as const;
-export const categoryTypes = ['news', 'article','download'] as const;
+export const categoryTypes = ['news', 'article','download','faq'] as const;
 
 export type Role = typeof roles[number];
 export type FileType = typeof filetypes[number];
@@ -46,6 +46,10 @@ export const CategoryTypeOptions: CategoryOption[] = [
 	{
 		label: 'Download',
 		value: 'download',
+	},
+	{
+		label: 'FAQ',
+		value: 'faq',
 	},
 ];
 

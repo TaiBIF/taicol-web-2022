@@ -161,16 +161,13 @@ CSP_DEFAULT_SRC = ("'self'", "https://www.google.com/recpatcha/", "https://www.g
 "https://www.youtube.com/","https://data.taieol.tw/eol/endpoint/image/species/", "http://127.0.0.1:8005/")
 CSP_FRAME_SRC = ("'self'","https://www.google.com/","https://www.youtube.com/","https://challenges.cloudflare.com/") 
 
-# CSP_CONNECT_SRC = ("'self'", "https://data.taieol.tw/eol/endpoint/image/species/") 
 CSP_CONNECT_SRC = ("'self'","https://www.google-analytics.com/","https://analytics.google.com/","https://stats.g.doubleclick.net/","https://accounts.google.com/o/oauth2/auth",
-                "https://admin.taicol.tw/", "https://api.taicol.tw/","https://web-admin.taicol.tw/", "https://api-staging.taicol.tw/", "http://127.0.0.1:8005/", "http://127.0.0.1:3000") 
+                "https://admin.taicol.tw/", "https://api.taicol.tw/","https://web-admin.taicol.tw/", "https://api-staging.taicol.tw/", "http://127.0.0.1:8005/", "http://127.0.0.1:3000","https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js.map") 
 
 
-
-
-CSP_STYLE_SRC = ["'self'","https://cdn.datatables.net","https://unpkg.com/","http://www.w3.org","https://cdnjs.cloudflare.com","https://fonts.googleapis.com/","https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/"]
+CSP_STYLE_SRC = ["'self'","https://cdn.datatables.net","https://unpkg.com/","http://www.w3.org","https://cdnjs.cloudflare.com",
+                 "https://fonts.googleapis.com/","https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/","https://cdn.jsdelivr.net/npm/swiper@12/"]
 CSP_IMG_SRC = ("'self'","data: http://www.w3.org","data: https://data.taieol.tw/",'https://web-admin.taicol.tw/',"https://admin.taicol.tw/", "https://www.googletagmanager.com/",) 
-# CSP_MEDIA_SRC = ("'self'","https://www.youtube.com/") 
 CSP_FONT_SRC = ("'self'","https://fonts.googleapis.com/","https://fonts.gstatic.com/") 
 CSP_FORM_ACTION = ("'self'","https://accounts.google.com/") 
 
@@ -183,10 +180,20 @@ CSP_SCRIPT_SRC = ["'self'",
     'https://www.google.com/recaptcha/api.js',
     "https://www.googletagmanager.com/",
     "https://www.google-analytics.com/",
-    "https://challenges.cloudflare.com/"
+    "https://challenges.cloudflare.com/",
+    "https://cdn.jsdelivr.net/npm/swiper@12/"
 ]
 
 CSRF_TRUSTED_ORIGINS = ['https://web-staging.taicol.tw','https://web-admin.taicol.tw', 'https://taicol.tw','https://admin.taicol.tw']
 
 TURNSTILE_SITE_KEY = env('TURNSTILE_SITE_KEY')
 TURNSTILE_SECRET_KEY = env('TURNSTILE_SECRET_KEY')
+
+
+# Cookie 安全屬性
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_HTTPONLY = True 
+CSRF_COOKIE_SAMESITE = 'Lax'

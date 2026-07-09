@@ -1191,3 +1191,18 @@ msgstr "Species Registration Instructions"
 #:  
 msgid "登錄內容簡述"
 msgstr " Brief Description"
+
+
+#:  
+msgid "提交文獻"
+msgstr "Submit literature"
+
+
+#:  
+msgid "前往註冊"
+msgstr "Go to Name Management Tool"
+
+
+#:  
+msgid "常見問題"
+msgstr "FAQ"

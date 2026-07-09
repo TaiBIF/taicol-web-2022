@@ -2,7 +2,8 @@
   "name": "ink-react",
   "version": "0.1.0",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "watch": "webpack --watch --mode development"
   },
   "browserslist": {
     "production": [
@@ -57,6 +58,7 @@
     "validate-color": "^2.2.1"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/moment": "^2.13.0",
     "@types/node": "^16.11.65",
     "@types/nprogress": "^0.2.0",

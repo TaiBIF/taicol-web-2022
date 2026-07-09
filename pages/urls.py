@@ -11,6 +11,7 @@ urlpatterns = [
     path('download', views.download, name='download'),
     path('news', views.news, name='news'),
     path('news/<slug>', views.news_detail, name='news_detail'),
+    path('faq', views.faq, name='faq'),
     path('statistics', views.statistics, name='statistics'),
     path('api', views.api, name='api'),
 ]

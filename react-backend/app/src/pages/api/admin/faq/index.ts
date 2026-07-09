@@ -1,0 +1,48 @@
+import {Faq,Category} from 'src/db/models/faq';
+import type { NextApiRequest, NextApiResponse } from 'next/types';
+import { Op } from 'sequelize';
+
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const { page, keyword, sort, field } = req.query;
+
+  const pageNumber: number = page ? parseInt(page as string) : 1;
+  const limit: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
+  const offset = pageNumber > 1 ? (pageNumber - 1) * limit : 0;
+  const sortVar = sort != undefined ? sort as string : 'ASC'
+  let fieldVar = field != undefined ? field as string : 'sort'
+
+  if (fieldVar == 'category'){
+    fieldVar = 'CategoryId'
+  }
+
+  let include = {
+    model: Category,
+    attributes: ['name','name_eng'],
+    required: false
+  }
+
+  let where = {}
+
+  if (keyword) {
+    where = {
+      [Op.or]: [
+        { title: { [Op.like]: `%${keyword}%` } },
+        { description: { [Op.like]: `%${keyword}%` } },
+        { "$Category.name$": { [Op.like]: `%${keyword}%` } },
+      ]
+    }
+  }
+
+
+  const faq = await Faq.findAndCountAll({
+    where: where,
+		include: include,
+    offset: offset,
+		limit: limit,
+    order: [
+      [fieldVar, sortVar]
+    ]
+	});
+
+	res.status(200).json(faq);
+};

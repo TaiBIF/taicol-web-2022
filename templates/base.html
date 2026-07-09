@@ -124,7 +124,12 @@
                             </div>
                         </div>
                     </li>
-
+                    <li>
+                        <a href="{% url 'faq' %}" class="big_title">
+                            {% trans "常見問題" %}
+                            <span></span>
+                        </a>
+                    </li>
                     <li class="mbli rd_mb_two_menu_li">
                         <p class="big_title">
                            {% trans "語言" %}
@@ -200,6 +205,10 @@
                     <a href="{% url 'register_taxon' %}" class="bit-title">
                         <span></span>
                         <p>{% trans "登錄物種" %}</p>
+                    </a>
+                    <a href="{% url 'faq' %}" class="bit-title">
+                        <span></span>
+                        <p>{% trans "常見問題" %}</p>
                     </a>
                 </li>
                 <li>

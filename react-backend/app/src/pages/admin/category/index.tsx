@@ -107,6 +107,8 @@ const CategoryListPage: React.FC = () => {
 		title = '主題文章'
 	} else if (type as string == 'download') {
 		title = '下載'
+	} else if (type as string == 'faq') {
+		title = '常見問題'
 	}
 
 	title += '類別列表';

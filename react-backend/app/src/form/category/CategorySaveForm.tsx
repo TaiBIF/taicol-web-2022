@@ -57,11 +57,15 @@ const SaveCategoryForm: React.VFC<Props> = (props) => {
 	};
 
   console.log('errors', errors);
+	const baseFields = props?.defaultValues?.id ? CategoryUpdateFormFields : CategoryCreateFormFields;
+	// 常見問題類別不需要顏色
+	const fields = props.type === 'faq' ? baseFields.filter((f) => f.name !== 'color') : baseFields;
+
 	return (
 		<CardContent>
 			<FormProvider {...methods}>
 				<form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-					<GenerateFields fields={props?.defaultValues?.id ? CategoryUpdateFormFields : CategoryCreateFormFields} />
+					<GenerateFields fields={fields} />
           <SubmitPanel />
 				</form>
 			</FormProvider>

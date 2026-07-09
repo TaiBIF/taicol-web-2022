@@ -24,6 +24,9 @@ def download(request):
 def news(request):
     return render(request, 'pages/news_list.html')
 
+def faq(request):
+    return render(request, 'pages/faq.html')
+
 
 def news_detail(request, slug):
     context = {'slug': slug}
