@@ -257,8 +257,27 @@ $(function(){
 	});
 
 	$('.album-pop .xx').on('click', function () {
+		closeAlbum();
+	});
+
+	function closeAlbum() {
 		$('.album-pop').fadeOut(300);
 		$('body').css('overflow', 'initial');
+	}
+
+	// 相簿開啟時，用左右方向鍵切換圖片、Esc 關閉
+	$(document).on('keydown', function (e) {
+		if (!$('.album-pop').is(':visible')) return;
+
+		if (e.key === 'ArrowLeft') {
+			e.preventDefault();
+			if (albumMain) albumMain.slidePrev();
+		} else if (e.key === 'ArrowRight') {
+			e.preventDefault();
+			if (albumMain) albumMain.slideNext();
+		} else if (e.key === 'Escape') {
+			closeAlbum();
+		}
 	});
 
 	$('.show-higher-button').on('click', function(){		

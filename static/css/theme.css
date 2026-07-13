@@ -18019,7 +18019,19 @@ body {
     flex-wrap: wrap
 }
 
+/* === album-pop 主圖完整顯示（覆蓋 object-fit:cover，避免寬圖被裁切；縮圖仍維持 cover） === */
+.album-pop .left-box .album-area .main-swiper .swiper-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
 
+.album-pop .left-box .album-area .main-swiper .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 5px
+}
 
 /* === 常見問題 FAQ 頁樣式（整合自 20260423 faq.html） === */
 .faq-search {
