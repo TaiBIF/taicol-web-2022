@@ -192,14 +192,18 @@ $(function(){
 		$('.mistakepop').removeClass('d-none')
 	});
 
-	$( ".species-de-content .right-de-box .box-2 .rignt-pic_area .mistake-btn" ).click(function() {
+	$( ".mistakepop .xx" ).click(function() {
 		$('.mistakepop').fadeOut("slow");
 		$('.mistakepop').addClass('d-none')
 	});
 
 
 	$( ".album-pop .left-box .album-area .mistake-btn" ).click(function() {
-		window.open("https://openmuseum.tw/contact?cid=7&feedback=" + $(this).data('href'), '_blank')
+		let slide = albumMain ? albumMain.slides[albumMain.activeIndex] : null;
+		let pl = slide ? slide.querySelector('.image_permalink') : null;
+		let href = pl ? pl.innerText.trim() : '';
+		if (!href) return;
+		window.open("https://openmuseum.tw/contact?cid=7&feedback=" + encodeURIComponent(href), '_blank');
 	});
 
 	// === 相簿燈箱（Swiper）===
