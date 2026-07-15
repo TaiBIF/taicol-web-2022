@@ -3,18 +3,18 @@
 {% load i18n %}
 
 {% block head %}
-<script src="{% static 'js/jquery.nice-select.js' %}?v1"></script>
-<link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}?v1">
-<link href="/static/fontawesome-free-6.2.1/css/solid.min.css" rel="stylesheet" />
-<script src="/static/fontawesome-free-6.2.1/js/fontawesome.min.js" data-auto-add-css="false"></script>
-<script src="/static/fontawesome-free-6.2.1/js/solid.min.js" data-auto-add-css="false"></script>  
+<script src="{% static 'js/jquery.nice-select.js' %}"></script>
+<link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}">
+<link href="{% static 'fontawesome-free-6.2.1/css/solid.min.css' %}" rel="stylesheet" />
+<script src="{% static 'fontawesome-free-6.2.1/js/fontawesome.min.js' %}" data-auto-add-css="false"></script>
+<script src="{% static 'fontawesome-free-6.2.1/js/solid.min.js' %}" data-auto-add-css="false"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
 <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
 {% endblock head %}
 
 {% block style %}
-<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}?v11">
+<link rel=stylesheet type="text/css" href="{% static 'css/taxon.css' %}">
 {% endblock style %}
 
 {% block body %}
@@ -826,26 +826,6 @@
 							</div>	
 							{% endif %}
 							</div>
-							{% comment %} {% if page_list|length > 1 %}
-							<div class="page-num">
-								<a href="javascript:;" data-page="1" class="num page-start updateData">1</a>
-								<a href="javascript:;" data-page="0" class="back">
-									<img src="/static/image/pagear1.svg">
-									<p>{% trans '上一頁' %}</p>
-								</a>
-								<!-- 中間的page -->
-								{% for p in page_list %}
-									<a class="num {% if p == current_page %} now {% endif %} updateData" href="javascript:;" data-page="{{ p }}">{{ p }}</a> 
-								{% endfor %}
-								<!-- 中間的page -->
-								<a href="javascript:;" data-page="2" class="next updateData">
-									<p>{% trans '下一頁' %}</p>
-									<img src="/static/image/pagear2.svg">
-								</a>
-								<a href="javascript:;" data-page="{{ total_page }}" class="num updateData" id="page-end">{{ total_page }}</a>
-								<input type="hidden" name="total_page" value="{{ total_page }}">
-							</div>
-							{% endif %} {% endcomment %}
 						</div>
 					</div>
 				</div>
@@ -857,5 +837,5 @@
 
 {% endblock body %}
 {% block script %}
-<script src="{% static 'js/taxon.js' %}?v12"></script>
+<script src="{% static 'js/taxon.js' %}"></script>
 {% endblock script %}

@@ -3,9 +3,9 @@
 {% load static %}
 
 {% block head %}
-<script src="{% static 'js/jquery.nice-select.js' %}?v1"></script>
-<link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}?v1">
-<link rel=stylesheet type="text/css" href="{% static 'css/register_taxon.css' %}?v2">
+<script src="{% static 'js/jquery.nice-select.js' %}"></script>
+<link rel=stylesheet type="text/css" href="{% static 'css/nice-select.css' %}">
+<link rel=stylesheet type="text/css" href="{% static 'css/register_taxon.css' %}">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 {% endblock head %}
 
@@ -225,5 +225,5 @@
 {% endblock body %}
 
 {% block script %}
-<script src="{% static 'js/register_taxon.js' %}?v1"></script>
+<script src="{% static 'js/register_taxon.js' %}"></script>
 {% endblock script %}
