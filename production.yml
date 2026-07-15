@@ -29,7 +29,7 @@ services:
   postgres:
     image: postgres:14-alpine
     shm_size: '1g'
-    container_name: tc-stag-postgres-container
+    container_name: tc-prod-postgres-container
     restart: always
     volumes:
       - ../tc-web-volumes/pgdata:/var/lib/postgresql/data/pgdata

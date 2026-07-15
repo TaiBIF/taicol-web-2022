@@ -6,6 +6,8 @@ networks:
   traefik-api:
     external: true
   traefik-nametool:
+    # 供 staging 機上的 taicol-2021 (nametool) 專案使用，
+    # 路由 staging.taicol.tw (nametool 的測試站)
     external: true
 
 services:
@@ -18,14 +20,12 @@ services:
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"      
-      # - "./nametool.yml:/etc/traefik/nametool.yml"  # 工具測試站設定檔
       - "../../tc-web-volumes/logs/nginx-traefik:/var/log/traefik" 
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command:
       - "--api.insecure=false"
       - "--providers.docker=true"
-      # - "--providers.file.filename=/etc/traefik/nametool.yml"  # 工具測試站設定檔
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
