@@ -7,15 +7,15 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="qvqNFLc3zq0aH7Q1x-UW-68Pe8owLafRLowGUDF4YqQ" />
 	<title>臺灣物種名錄 Catalogue of Life in Taiwan</title>
-	<link rel=stylesheet type="text/css" href="{% static 'css/theme.css' %}?v16">
+	<link rel=stylesheet type="text/css" href="{% static 'css/theme.css' %}">
     <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
-	<script src="{% static 'js/gsap.min.js' %}?v1" ></script>
-	<script src="{% static 'js/ScrollTrigger.min.js' %}?v1" ></script>
+	<script src="{% static 'js/gsap.min.js' %}" ></script>
+	<script src="{% static 'js/ScrollTrigger.min.js' %}" ></script>
     <link rel="icon" sizes="32x32" type="image/png" href="{% static 'image/logo.png' %}" />
     {% block head %}{% endblock head %}
-	<link rel=stylesheet type="text/css" href="{% static 'css/base.css' %}?v7">
+	<link rel=stylesheet type="text/css" href="{% static 'css/base.css' %}">
     {% block style %}{% endblock style %}
-	<script src="{% static 'js/gtm.js' %}?v1" ></script>
+	<script src="{% static 'js/gtm.js' %}" ></script>
     <script src="{% url 'javascript-catalog' %}"></script>
 
 </head>
@@ -269,7 +269,7 @@
 	</div>
 
 </body>
-<script src="{% static 'react_component/vendor-react.bundle.js' %}?v1"></script>
-<script src="{% static 'js/base.js' %}?v5"></script>
+<script src="{% static 'react_component/vendor-react.bundle.js' %}"></script>
+<script src="{% static 'js/base.js' %}"></script>
 {% block script %}{% endblock script %}
 </html>

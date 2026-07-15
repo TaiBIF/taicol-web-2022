@@ -38,7 +38,6 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 INSTALLED_APPS = [
     'pages',
     'taxa',
-    'ckeditor',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -127,8 +126,6 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
-
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
@@ -141,48 +138,62 @@ STATIC_URL = '/static/'
 STATIC_ROOT = env('STATIC_ROOT', default=default_static_dir)
 STATICFILES_DIRS = [default_static_dir, ]
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "conf.storage.LenientManifestStaticFilesStorage",
+    },
+}
+ 
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = env('MEDIA_ROOT')
 
-
-# CKEDitor
-CKEDITOR_UPLOAD_PATH = "uploads/"
-CKEDITOR_FILENAME_GENERATOR = 'utils.get_filename'
 
 # EMAIL
 EMAIL_BACKEND = 'django_ses.SESBackend'
 AWS_SES_REGION_NAME = env('AWS_SES_REGION_NAME', default='')
 AWS_SES_REGION_ENDPOINT = env('AWS_SES_REGION_ENDPOINT', default='')
 
-# Content Security Policy 
-CSP_DEFAULT_SRC = ("'self'", "https://www.google.com/recpatcha/", "https://www.google.com/",'http://web-admin.taicol.tw/','http://admin.taicol.tw/','https://web-admin.taicol.tw/',"http://18.183.59.124",
-"https://fonts.googleapis.com/","https://api-staging.taicol.tw/","http://api-staging.taicol.tw/","https://api.taicol.tw/","https://match.taibif.tw/","https://www.google-analytics.com/","http://127.0.0.1:3000",
-"https://www.youtube.com/","https://data.taieol.tw/eol/endpoint/image/species/", "http://127.0.0.1:8005/")
-CSP_FRAME_SRC = ("'self'","https://www.google.com/","https://www.youtube.com/","https://challenges.cloudflare.com/") 
+# Content Security Policy
+from csp.constants import SELF
 
-CSP_CONNECT_SRC = ("'self'","https://www.google-analytics.com/","https://analytics.google.com/","https://stats.g.doubleclick.net/","https://accounts.google.com/o/oauth2/auth",
-                "https://admin.taicol.tw/", "https://api.taicol.tw/","https://web-admin.taicol.tw/", "https://api-staging.taicol.tw/", "http://127.0.0.1:8005/", "http://127.0.0.1:3000","https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js.map") 
+# 正式環境的網域，多個 directive 共用，避免重複打字漏改
+TAICOL_ORIGINS = ("https://api.taicol.tw/", "https://admin.taicol.tw/")
+# 僅本機開發用，正式環境不應該出現在 CSP 清單裡
+CSP_LOCAL_DEV_SOURCES = ("http://127.0.0.1:3000", "http://127.0.0.1:8005/", "https://web-admin.taicol.tw/", "http://api-staging.taicol.tw/") if DEBUG else ()
 
-
-CSP_STYLE_SRC = ["'self'","https://cdn.datatables.net","https://unpkg.com/","http://www.w3.org","https://cdnjs.cloudflare.com",
-                 "https://fonts.googleapis.com/","https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/","https://cdn.jsdelivr.net/npm/swiper@12/"]
-CSP_IMG_SRC = ("'self'","data: http://www.w3.org","data: https://data.taieol.tw/",'https://web-admin.taicol.tw/',"https://admin.taicol.tw/", "https://www.googletagmanager.com/",) 
-CSP_FONT_SRC = ("'self'","https://fonts.googleapis.com/","https://fonts.gstatic.com/") 
-CSP_FORM_ACTION = ("'self'","https://accounts.google.com/") 
-
-CSP_SCRIPT_SRC = ["'self'", 
-    "https://cdnjs.cloudflare.com",
-    "https://code.jquery.com",
-    "https://cdn.datatables.net",
-    "https://unpkg.com/", "data: http://www.w3.org", "https://www.google.com", "https://www.gstatic.com",
-    "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/",
-    'https://www.google.com/recaptcha/api.js',
-    "https://www.googletagmanager.com/",
-    "https://www.google-analytics.com/",
-    "https://challenges.cloudflare.com/",
-    "https://cdn.jsdelivr.net/npm/swiper@12/"
-]
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": (SELF, "https://www.google.com/recpatcha/", "https://www.google.com/",
+            "https://fonts.googleapis.com/",
+            "https://match.taibif.tw/",
+            "https://www.google-analytics.com/", "https://www.youtube.com/",
+            "https://data.taieol.tw/eol/endpoint/image/species/")
+            + TAICOL_ORIGINS + CSP_LOCAL_DEV_SOURCES,
+        "frame-src": (SELF, "https://www.google.com/", "https://www.youtube.com/",
+            "https://challenges.cloudflare.com/"),
+        "connect-src": (SELF, "https://www.google-analytics.com/", "https://analytics.google.com/",
+            "https://stats.g.doubleclick.net/", "https://accounts.google.com/o/oauth2/auth",
+            "https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js.map")
+            + TAICOL_ORIGINS + CSP_LOCAL_DEV_SOURCES,
+        "style-src": [SELF, "https://cdn.datatables.net", "https://unpkg.com/", "http://www.w3.org",
+            "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com/",
+            "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/", "https://cdn.jsdelivr.net/npm/swiper@12/"],
+        "img-src": (SELF, "data: http://www.w3.org", "data: https://data.taieol.tw/",
+            "https://www.googletagmanager.com/") + TAICOL_ORIGINS,
+        "font-src": (SELF, "https://fonts.googleapis.com/", "https://fonts.gstatic.com/"),
+        "form-action": (SELF, "https://accounts.google.com/"),
+        "script-src": [SELF, "https://cdnjs.cloudflare.com", "https://code.jquery.com",
+            "https://cdn.datatables.net", "https://unpkg.com/", "data: http://www.w3.org",
+            "https://www.google.com", "https://www.gstatic.com",
+            "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/", "https://www.google.com/recaptcha/api.js",
+            "https://www.googletagmanager.com/", "https://www.google-analytics.com/",
+            "https://challenges.cloudflare.com/", "https://cdn.jsdelivr.net/npm/swiper@12/"],
+    }
+}
 
 CSRF_TRUSTED_ORIGINS = ['https://web-staging.taicol.tw','https://web-admin.taicol.tw', 'https://taicol.tw','https://admin.taicol.tw']
 

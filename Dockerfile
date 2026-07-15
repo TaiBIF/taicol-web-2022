@@ -1,6 +1,6 @@
-ARG PYTHON_VERSION=3.10
+ARG PYTHON_VERSION=3.12
 
-FROM python:${PYTHON_VERSION}-slim-buster AS builder
+FROM python:${PYTHON_VERSION}-slim-bookworm AS builder
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -27,22 +27,9 @@ ENV TZ=Asia/Taipei
 
 WORKDIR /code
 
-# Install Poetry
-RUN curl -sSL https://install.python-poetry.org| POETRY_HOME=/opt/poetry python && \
-    cd /usr/local/bin && \
-    ln -s /opt/poetry/bin/poetry && \
-    poetry config virtualenvs.create false
-
-# Copy using poetry.lock* in case it doesn't exist yet
-COPY ./pyproject.toml ./poetry.lock* /code/
-
-RUN poetry install --no-root --no-dev
-
-
-# # Package
-# COPY requirements requirements
-# RUN pip install --upgrade pip
-# RUN pip install --no-cache --user -r requirements/base.txt
+COPY ./requirements.txt /code/
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
 COPY ./scripts/entrypoint /srv/entrypoint
 RUN sed -i 's/\r$//g' /srv/entrypoint
