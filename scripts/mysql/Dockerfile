@@ -1,3 +1,3 @@
-FROM mysql
+FROM mysql:8.0.33
 
 ENV MYSQL_ALLOW_EMPTY_PASSWORD true
