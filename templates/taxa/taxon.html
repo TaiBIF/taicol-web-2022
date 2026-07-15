@@ -9,6 +9,8 @@
 <script src="/static/fontawesome-free-6.2.1/js/fontawesome.min.js" data-auto-add-css="false"></script>
 <script src="/static/fontawesome-free-6.2.1/js/solid.min.js" data-auto-add-css="false"></script>  
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
+<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
 {% endblock head %}
 
 {% block style %}
@@ -142,59 +144,105 @@
 			</div>
 		</div>
 	</div>
-	<div class="popbox imagepop d-none">
-		<div class="rel">
-			<div class="w-bg m-auto">
-				<div class="xx">
-					<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
-						<g id="Group_8961" data-name="Group 8961" transform="translate(-1288 -210)">
-							<g id="Ellipse_145" data-name="Ellipse 145" transform="translate(1288 210)" fill="#fff" stroke="#4c8da7" stroke-width="2">
-								<circle cx="25" cy="25" r="25" stroke="none"/>
-								<circle cx="25" cy="25" r="24" fill="none"/>
-							</g>
-							<g id="Group_7748" data-name="Group 7748" transform="translate(100.696 1061.993) rotate(-45)">
-								<line id="Line_265" data-name="Line 265" x2="25" transform="translate(1429.5 271.5)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
-								<line id="Line_266" data-name="Line 266" x2="25" transform="translate(1442.5 259.5) rotate(90)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
-							</g>
-						</g>
-					</svg>
-				</div>
-				<div class="title-area mb-0">
-					<ul class="ls-none">
-						<li><p class="image-title" >{{ data.sci_name|safe }}</p></li>
-						<li>
-							<div class="wrap-box">
-								<div class="r-cir-box {{ data.self.rank_color }}">
-									{{ data.self.rank_c }}
-								</div>
-								<span class="r-name">{{ data.self.name_c|default_if_none:'' }}<span>
+	<!--相簿 pop 打開時隱藏 body 卷軸-->
+	<div class="popbox album-pop">
+		<div class="xx">
+			<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+				<g id="Group_8961" data-name="Group 8961" transform="translate(-1288 -210)">
+					<g id="Ellipse_145" data-name="Ellipse 145" transform="translate(1288 210)" fill="none" stroke="#FFFFFF" stroke-width="2">
+						<circle cx="25" cy="25" r="25" stroke="none"/>
+						<circle cx="25" cy="25" r="24" fill="none"/>
+					</g>
+					<g id="Group_7748" data-name="Group 7748" transform="translate(100.696 1061.993) rotate(-45)">
+						<line id="Line_265" data-name="Line 265" x2="25" transform="translate(1429.5 271.5)" fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-width="2"/>
+						<line id="Line_266" data-name="Line 266" x2="25" transform="translate(1442.5 259.5) rotate(90)" fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-width="2"/>
+					</g>
+				</g>
+			</svg>
+		</div>
+		<div class="flex-box">
+			<div class="left-box">
+				<div class="album-area">
+					<div class="swiper main-swiper">
+						<div class="swiper-wrapper">
+							{% for img in data.images %}
+							<div class="swiper-slide">
+								<img src="{{ img.src|safe }}">
+								<div class="image_author d-none">{{ img.author|safe }}</div>
+								<div class="image_license d-none">{{ img.license|safe }}</div>
+								<div class="image_provider d-none">{{ img.provider|safe }}</div>
+								<div class="image_permalink d-none">{{ img.permalink|safe }}</div>
 							</div>
+							{% endfor %}
+						</div>
+					</div>
+					<div class="mistake-btn" data-href="">{% blocktrans context "回報錯誤"%}回報<br>錯誤{% endblocktrans %}</div>
+					<div class="swiper-pagination"></div>
+					<div class="swiper-button-next"></div>
+					<div class="swiper-button-prev"></div>
+				</div>
+			</div>
+			<div class="right-box">
+				<div class="line"></div>
+				<div class="top-cont-area">
+					<h2 class="title">{{ data.sci_name|safe }}</h2>
+					<div class="rank-area">
+						<div class="r-cir-box {{ data.self.rank_color }}">{{ data.self.rank_c }}</div>
+						<span class="r-name">{{ data.self.name_c|default_if_none:'' }}</span>
+					</div>
+					<ul class="inf-list">
+						<li>
+							<div class="mark">
+								<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+									<path id="Ellipse_82" data-name="Ellipse 82" d="M9.5,3A6.5,6.5,0,1,0,16,9.5,6.507,6.507,0,0,0,9.5,3m0-3A9.5,9.5,0,1,1,0,9.5,9.5,9.5,0,0,1,9.5,0Z" transform="translate(2 2)" fill="#4c8da7"/>
+									<circle id="Ellipse_83" data-name="Ellipse 83" cx="5" cy="5" r="5" fill="#fdd440"/>
+								</svg>
+							</div>
+							<p>{% trans '作者' %}：<span id="image_author"></span></p>
+						</li>
+						<li>
+							<div class="mark">
+								<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+									<path id="Ellipse_82" data-name="Ellipse 82" d="M9.5,3A6.5,6.5,0,1,0,16,9.5,6.507,6.507,0,0,0,9.5,3m0-3A9.5,9.5,0,1,1,0,9.5,9.5,9.5,0,0,1,9.5,0Z" transform="translate(2 2)" fill="#4c8da7"/>
+									<circle id="Ellipse_83" data-name="Ellipse 83" cx="5" cy="5" r="5" fill="#fdd440"/>
+								</svg>
+							</div>
+							<p>{% trans '授權方式' %}：<span id="image_license"></span></p>
+						</li>
+						<li>
+							<div class="mark">
+								<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+									<path id="Ellipse_82" data-name="Ellipse 82" d="M9.5,3A6.5,6.5,0,1,0,16,9.5,6.507,6.507,0,0,0,9.5,3m0-3A9.5,9.5,0,1,1,0,9.5,9.5,9.5,0,0,1,9.5,0Z" transform="translate(2 2)" fill="#4c8da7"/>
+									<circle id="Ellipse_83" data-name="Ellipse 83" cx="5" cy="5" r="5" fill="#fdd440"/>
+								</svg>
+							</div>
+							<p>{% trans '典藏者' %}：<span id="image_provider"></span></p>
+						</li>
+						<li>
+							<div class="mark">
+								<svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+									<path id="Ellipse_82" data-name="Ellipse 82" d="M9.5,3A6.5,6.5,0,1,0,16,9.5,6.507,6.507,0,0,0,9.5,3m0-3A9.5,9.5,0,1,1,0,9.5,9.5,9.5,0,0,1,9.5,0Z" transform="translate(2 2)" fill="#4c8da7"/>
+									<circle id="Ellipse_83" data-name="Ellipse 83" cx="5" cy="5" r="5" fill="#fdd440"/>
+								</svg>
+							</div>
+							<p>{% trans '照片提供' %}：<a target="_blank" id="image_permalink">{% trans '臺灣生命大百科' %}</a></p>
 						</li>
 					</ul>
-					<div class="pic-area">
-						{% if data.images|length > 1 %}
-						<div class="arr-left plusSlides" data-index="-1">
+				</div>
+				<div class="bottom-pic-area">
+					<div class="line2"></div>
+					<div class="scrollbox">
+						<div class="swiper thumbs-swiper">
+							<div class="swiper-wrapper">
+								{% for img in data.images %}
+								<div class="swiper-slide">
+									<div class="pic-box">
+										<img src="{{ img.src|safe }}">
+									</div>
+								</div>
+								{% endfor %}
+							</div>
 						</div>
-						<div class="arr-right plusSlides" data-index="+1">
-						</div>
-						{% endif %}
-						<img id="spe-image" src="">
-					</div>
-					<div class="mark-title">
-						<img src="{% static 'image/title-mark.svg' %}">
-						<p>{% trans '作者' %}：<span id="image_author"></span></p>
-					</div>
-					<div class="mark-title">
-						<img src="{% static 'image/title-mark.svg' %}">
-						<p>{% trans '授權方式' %}：<span id="image_license"></span></p>
-					</div>
-					<div class="mark-title">
-						<img src="{% static 'image/title-mark.svg' %}">
-						<p>{% trans '典藏者' %}：<span id="image_provider"></span></p>
-					</div>
-					<div class="mark-title">
-						<img src="{% static 'image/title-mark.svg' %}">
-						<p>{% trans '照片提供' %}：<a target="_blank" id="image_permalink">{% trans '臺灣生命大百科' %}</a></p>
 					</div>
 				</div>
 			</div>
@@ -291,7 +339,6 @@
 							</div>
 						</div>
 						<div class="rignt-pic_area">
-
 							<button class="mistake-btn">{% blocktrans context "回報錯誤"%}回報<br>錯誤{% endblocktrans %}</button>
 							<div class="pic-area mh-100">
 								{% if data.images|length > 1 %}
@@ -301,7 +348,7 @@
 									</div>
 								{% endif %}
 								<!--套輪播，或淡入淡出換圖，看哪個比較方便-->
-								<div class="picbox-all" >
+								<div class="picbox-all {% if data.images|length > 0 %}album-btn{% endif %}" >
 									<!--一個picbox是一組，建議尺寸為860*560或430*280-->
 									{% if data.images|length > 0  %}
 										{% for img in data.images %}

@@ -671,3 +671,12 @@ ul.link-left li p {
         -webkit-transition: all .3s
     }
 }
+
+#image_permalink {
+    color: #FFF !important;
+}
+
+#image_permalink:hover {
+    color: #4C8DA7 !important;
+    text-decoration: underline;
+}

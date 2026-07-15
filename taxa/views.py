@@ -230,9 +230,6 @@ def get_autocomplete_taxon_by_solr(request):
     # 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1 的資料
     if not request.GET.get('from') == 'nametool':
         query_list.append('is_in_taiwan:true')
-    else:
-        # 工具最高分類群只提供到科
-        query_list.append('rank_id:({})'.format((' OR ').join([str(f) for f in lower_than_family])))
 
     if keyword := request.GET.get('keyword','').strip():
 
@@ -391,8 +388,10 @@ def taxon(request, taxon_id):
 
         name_c_str = solr_resp.get('common_name_c')
         higherTaxa_str = solr_resp.get('simple_name')
+
         if solr_resp.get('alternative_name_c'):
             name_c_str += ',' + solr_resp.get('alternative_name_c')
+            
         if name_c_str:
             higherTaxa_str += ' ' + name_c_str
 
@@ -619,9 +618,7 @@ def taxon(request, taxon_id):
                     cursor.execute(query, (new_refs, taxon_id))
                     usage_refs = cursor.fetchall()
                     usage_refs = pd.DataFrame(usage_refs, columns=['reference_id','full_ref','publish_year','author','ref','r_type'])
-
                 is_ambiguous_list = get_ambiguous_list(names=names)
-
                 # 只整理目前usage的
                 name_change_df = names[names.name_source=='from_usages'].reset_index(drop=True)
                 for n in name_change_df.taxon_name_id.unique():
@@ -638,7 +635,7 @@ def taxon(request, taxon_id):
                                 current_r_type = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'r_type'].values[0]
                                 if ppu.get('pro_parte'):
                                     if current_ref:
-                                        current_ref += ', pro parte'
+                                        current_ref += f' ({gettext("部分")})'
                                 # if current_ref not in ref_list: 
                                 tmp_ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_r_type,ppu.get('pro_parte')])
                         # 應該要最後再判斷有沒有pro parte才對? 不然重複出現的reference可能會漏掉pro parte
@@ -666,18 +663,20 @@ def taxon(request, taxon_id):
                         # 先判斷是不是歧異
                         # 判斷本身是不是有效學名 如果是的話就不標歧異了
                         is_ambiguous = True if n in is_ambiguous_list and not len(names[(names.taxon_name_id==n)&(names.taxon_status=='accepted')])  else False
+                        is_published_part = False
                         # 學名使用的相同引用文獻
                         for pu in name_change_df[(name_change_df.taxon_name_id==n)].per_usages:
                             tmp_ref_list = []
                             for ppu in pu:
                                 if not is_iczn_not_original or (is_iczn_not_original and not ppu.get('is_from_published_ref', False)): # 排除學名本身發表文獻
-                                    # if not ppu.get('is_from_published_ref', False):
                                     current_ref = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'ref'].values[0]
                                     current_year = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'publish_year'].values[0]
                                     current_r_type = usage_refs.loc[usage_refs.reference_id==ppu.get('reference_id'),'r_type'].values[0]
                                     if ppu.get('pro_parte'):
                                         if current_ref:
-                                            current_ref += ', pro parte'
+                                            current_ref += f' ({gettext("部分")})'
+                                        if ppu.get('is_from_published_ref'):
+                                            is_published_part = True
                                     tmp_ref_list.append([current_ref,ppu.get('reference_id'),current_year,current_r_type, ppu.get('pro_parte')])
                             # 應該要最後再判斷有沒有pro parte才對? 不然重複出現的reference可能會漏掉pro parte
                             # 並且一起排除掉重複
@@ -697,14 +696,21 @@ def taxon(request, taxon_id):
                             ref_list = [r for r in ref_list if r[1] not in name_change_df[name_change_df.taxon_name_id==n].o_reference_id.to_list()]
                         ref_list = pd.DataFrame(ref_list,columns=['ref','ref_id','year','r_type']).drop_duplicates().sort_values('year')
                         # 決定排序的publish_year
-                        # ref_list = [f'<a href="https://nametool.taicol.tw/{"en-us" if get_language() == "en-us" else "zh-tw"}/references/{int(r[1]["ref_id"])}" target="_blank">{r[1]["ref"]}</a>' for r in ref_list.iterrows()]
                         ref_list = [r[1]['ref'] for r in ref_list.iterrows()]
                         ref_str = ('; ').join(ref_list)
                         sep = ':' if is_iczn_not_original else ';'
-                        if ref_str:
-                            first_part = f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]}{' ' + '(' + gettext('歧異') +')' if is_ambiguous else ''}{sep} {ref_str}"
+                        # 202606修改: 如果此學名使用的per_usage文獻(3)=原始發表文獻(1)，且per_usages有pro parte，且部分&歧異同時存在 要標示部分
+                        if is_published_part and is_ambiguous:
+                            label = ' (' + gettext('部分') + ')'
+                        elif is_ambiguous:
+                            label = ' (' + gettext('歧異') + ')'
                         else:
-                            first_part = f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]}{' (' + gettext('歧異') + ')' if is_ambiguous else ''}"
+                            label = ''
+                        sci_name_str = name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]
+                        if ref_str:
+                            first_part = f"{sci_name_str}{label}{sep} {ref_str}"
+                        else:
+                            first_part = f"{sci_name_str}{label}"
                         name_changes += [[first_part,name_change_df[name_change_df.taxon_name_id==n]['publish_year'].min(), name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
                 if name_changes:
                     name_changes = pd.DataFrame(name_changes, columns=['name_str','year','name'])

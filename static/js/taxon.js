@@ -46,18 +46,6 @@ function showSlides(n) {
 
 	removeClass(slides[slideIndex-1], 'd-none')
 	addClass(slides[slideIndex-1], 'd-block')
-
-	// 修改彈跳視窗內的照片
-	let current_elem = slides[slideIndex-1];
-	if (current_elem!=undefined){
-		if (current_elem.getElementsByClassName('no-pic').length == 0){
-			$('.imagepop #spe-image').attr("src",current_elem.getElementsByTagName('img')[0].src);
-			$('.imagepop #image_author').html(current_elem.getElementsByClassName('image_author')[0].innerText);
-			$('.imagepop #image_license').html(current_elem.getElementsByClassName('image_license')[0].innerText);
-			$('.imagepop #image_provider').html(current_elem.getElementsByClassName('image_provider')[0].innerText);
-			$('.imagepop #image_permalink').attr("href",current_elem.getElementsByClassName('image_permalink')[0].innerText);
-		}
-	}
 }
 
 
@@ -199,7 +187,7 @@ $(function(){
 	$('select[name=subject-select]').niceSelect();
 
 
-	$( ".mistake-btn" ).click(function() {
+	$( ".species-de-content .right-de-box .box-2 .rignt-pic_area .mistake-btn" ).click(function() {
 		$('.mistakepop').fadeIn("slow");
 		$('.mistakepop').removeClass('d-none')
 	});
@@ -210,20 +198,90 @@ $(function(){
 	});
 
 
-	$( ".imagepop .xx" ).click(function() {
-		$('.imagepop').fadeOut("slow");
-		$('.imagepop').addClass("d-none");
+	$( ".album-pop .left-box .album-area .mistake-btn" ).click(function() {
+		let slide = albumMain ? albumMain.slides[albumMain.activeIndex] : null;
+		let pl = slide ? slide.querySelector('.image_permalink') : null;
+		let href = pl ? pl.innerText.trim() : '';
+		if (!href) return;
+		window.open("https://openmuseum.tw/contact?cid=7&feedback=" + encodeURIComponent(href), '_blank');
 	});
 
+	// === 相簿燈箱（Swiper）===
+	let albumThumbs = null;
+	let albumMain = null;
 
-	$( ".mySlides img" ).not('.nopic').click(function() {
-		$('.imagepop').removeClass('d-none')
-		$('.imagepop').fadeIn("slow");
-		$('.imagepop #spe-image').attr("src",this.src);
-		$('.imagepop #image_author').html($(this).next('.image_author').html());
-		$('.imagepop #image_provider').html($(this).next().next('.image_provider').html());
-		$('.imagepop #image_permalink').attr("href",$(this).next().next().next('.image_permalink').html());
+	function updateAlbumInfo(slide){
+		if (!slide) return;
+		let a  = slide.querySelector('.image_author');
+		let l  = slide.querySelector('.image_license');
+		let p  = slide.querySelector('.image_provider');
+		let pl = slide.querySelector('.image_permalink');
+		$('#image_author').html(a ? a.innerText : '');
+		$('#image_license').html(l ? l.innerText : '');
+		$('#image_provider').html(p ? p.innerText : '');
+		if (pl) $('#image_permalink').attr('href', pl.innerText);
+		if (pl) $('.album-pop .left-box .album-area .mistake-btn ').data('href', pl.innerText);
+	}
 
+	if (document.querySelector('.main-swiper') && typeof Swiper !== 'undefined') {
+		albumThumbs = new Swiper('.thumbs-swiper', {
+			spaceBetween: 0,
+			slidesPerView: 'auto',
+			freeMode: true,
+			watchSlidesProgress: true,
+		});
+		albumMain = new Swiper('.main-swiper', {
+			spaceBetween: 10,
+			navigation: {
+				nextEl: '.swiper-button-next',
+				prevEl: '.swiper-button-prev',
+			},
+			pagination: {
+				el: '.swiper-pagination',
+				type: 'fraction',
+			},
+			thumbs: { swiper: albumThumbs },
+			on: {
+				slideChange: function () {
+					updateAlbumInfo(this.slides[this.activeIndex]);
+				},
+			},
+		});
+	}
+
+	// 點擊頁面預覽圖打開相簿
+	$('.album-btn').on('click', function () {
+		$('.album-pop').fadeIn(300);
+		$('body').css('overflow', 'hidden');
+		if (albumMain) {
+			albumMain.update();
+			if (albumThumbs) albumThumbs.update();
+			updateAlbumInfo(albumMain.slides[albumMain.activeIndex]);
+		}
+	});
+
+	$('.album-pop .xx').on('click', function () {
+		closeAlbum();
+	});
+
+	function closeAlbum() {
+		$('.album-pop').fadeOut(300);
+		$('body').css('overflow', 'initial');
+	}
+
+	// 相簿開啟時，用左右方向鍵切換圖片、Esc 關閉
+	$(document).on('keydown', function (e) {
+		if (!$('.album-pop').is(':visible')) return;
+
+		if (e.key === 'ArrowLeft') {
+			e.preventDefault();
+			if (albumMain) albumMain.slidePrev();
+		} else if (e.key === 'ArrowRight') {
+			e.preventDefault();
+			if (albumMain) albumMain.slideNext();
+		} else if (e.key === 'Escape') {
+			closeAlbum();
+		}
 	});
 
 	$('.show-higher-button').on('click', function(){		

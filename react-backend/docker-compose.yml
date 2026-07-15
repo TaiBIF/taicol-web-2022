@@ -1,5 +1,12 @@
 services:
   react_app:
+    platform: linux/amd64
+    build:
+      context: app
+      dockerfile: Dockerfile
+    command: npm run dev
+    environment:
+      - WATCHPACK_POLLING=true
     links:
       - mysql
     depends_on:
@@ -9,9 +16,6 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    build:
-      context: app
-      dockerfile: Dockerfile
     volumes:
       - ./app:/app
       - ./app/node_modules:/app/node_modules
@@ -20,6 +24,7 @@ services:
     env_file:
       - ./app/.env
   nginx:
+    platform: linux/amd64
     container_name: taicol-react-nginx
     image: nginx:latest
     restart: always
@@ -29,10 +34,11 @@ services:
     ports:
       - 4000:80
   mysql:
+    platform: linux/amd64
     container_name: taicol-react-mysql
     ports:
       - "3308:3306"
-    image: mysql:5.7
+    image: mysql:8.0.37
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
@@ -41,7 +47,6 @@ services:
     volumes:
       - ../../tc-web-volumes/bucket:/bucket
       - ./db:/var/lib/mysql:rw
-      # - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:rw
     command:
       [
         "mysqld",

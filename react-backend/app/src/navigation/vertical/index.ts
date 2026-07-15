@@ -55,6 +55,19 @@ const navigation = (): VerticalNavItemsType => {
 			path: '/admin/category?type=article',
 		},
 		{
+			sectionTitle: 'FAQ',
+		},
+		{
+			title: '常見問題列表',
+			icon: AlertCircleOutline,
+			path: '/admin/faq',
+		},
+		{
+			title: '常見問題類別',
+			icon: CardOutline,
+			path: '/admin/category?type=faq',
+		},
+		{
 			sectionTitle: 'Download',
 		},
 		{

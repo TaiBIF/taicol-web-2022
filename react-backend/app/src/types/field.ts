@@ -2,7 +2,7 @@ import React from 'react';
 import { SxProps } from '@mui/system';
 import type { TextFieldProps, SelectProps } from '@mui/material';
 import type { UseFormGetValues,UseFormSetValue } from 'react-hook-form';
-export type CategoryTypes = 'news' | 'article' | 'download';
+export type CategoryTypes = 'news' | 'article' | 'download' | 'faq';
 
 export type handleOnChange =  (e:React.ChangeEvent<HTMLInputElement>,getValues:UseFormGetValues<any>,setValue:UseFormSetValue<any>, onChange:(value:string) => void) => void
 

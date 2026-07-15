@@ -24,6 +24,7 @@ const newsElement = document.querySelector('#news-list-container');
 const newsDetailElement = document.querySelector('#news-detail-container');
 const articleElement = document.querySelector('#article-list-container');
 const articleDetailElement = document.querySelector('#article-detail-container');
+const faqElement = document.querySelector('#faq-list-container');
 const downloadElement = document.querySelector('#download-list-container');
 const statisticsElement = document.querySelector('#statistics-container');
 const apiElement = document.querySelector('#api-container');
@@ -89,6 +90,15 @@ function ArticleDetailComponent() {
 }
 
 
+function FaqComponent() {
+
+    import('./components/frontend/faq').then(module => {
+        const FaqPage = module.default;
+        ReactDOM.render(React.createElement(FaqPage), faqElement);
+    })
+}
+
+
 function DownloadComponent() {
 
     import('./components/frontend/download').then(module => {
@@ -134,6 +144,11 @@ if(articleElement){
 
 if(articleDetailElement){
     ArticleDetailComponent()
+}
+
+
+if(faqElement){
+    FaqComponent()
 }
 
 if(downloadElement){

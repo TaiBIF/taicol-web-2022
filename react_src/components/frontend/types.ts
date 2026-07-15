@@ -21,6 +21,25 @@ export type NewsDataProps = {
   };
 }
 
+export type FaqDataProps = {
+  id: number,
+  CategoryId: number,
+  title: string,
+  description: string,
+  sort: number,
+  Category: {
+    id: number,
+    name: string,
+    name_eng: string,
+    color: string,
+  };
+}
+
+export type FaqListProps = {
+  rows: FaqDataProps[],
+  count: number,
+}
+
 export type ArticleDataProps = {
   category: string,
   title: string,
