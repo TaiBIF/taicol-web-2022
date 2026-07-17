@@ -13,7 +13,7 @@ networks:
 services:
   reverse-proxy:
     # The official v2 Traefik docker image
-    image: traefik:v2.9
+    image: traefik:2.11
     ports:
       - "80:80"
       - "443:443"
