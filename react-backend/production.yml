@@ -42,7 +42,7 @@ services:
   mysql:
     container_name: taicol-react-mysql
     ports:
-      - 3306:3306
+      - 127.0.0.1:3306:3306
     image: mysql:5.7
     restart: always
     environment:

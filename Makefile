@@ -14,6 +14,9 @@ dev-down:
 dev-build:
 	docker compose build
 
+dev-watch-logs:
+	docker compose logs -f webpack
+
 stag-build:
 	docker compose -f staging.yml build
 
@@ -36,4 +39,3 @@ prod-up:
 prod-down:
 	docker compose -f production.yml down
 	docker compose -f react-backend/production.yml down
-# 
