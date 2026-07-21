@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:18-bookworm-slim
 RUN mkdir /app
 WORKDIR /app
 
