@@ -18033,6 +18033,67 @@ body {
     border-radius: 5px
 }
 
+/* === 物種頁照片 hover 顯示「看更多」遮罩 === */
+.pic-area .picbox-all.album-btn {
+    position: relative;
+    cursor: pointer
+}
+
+.pic-area .picbox-all.album-btn .zoom-hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, .45);
+    opacity: 0;
+    visibility: hidden;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+    z-index: 1;
+    border-radius: 5px;
+    pointer-events: none
+}
+
+.pic-area .picbox-all.album-btn:hover .zoom-hover {
+    opacity: 1;
+    visibility: visible
+}
+
+.pic-area .picbox-all.album-btn .zoom-hover .zoom-hover-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #FFF;
+    font-size: 18px;
+    letter-spacing: 1px;
+    line-height: 1.4
+}
+
+.pic-area .picbox-all.album-btn .zoom-hover .zoom-hover-text button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0 0 6px;
+    line-height: 0;
+    cursor: pointer
+}
+
+.pic-area .picbox-all.album-btn .zoom-hover .zoom-hover-text button svg {
+    display: block
+}
+
+@media only screen and (max-width: 767px) {
+    .pic-area .picbox-all.album-btn .zoom-hover .zoom-hover-text {
+        font-size: 16px
+    }
+}
+
 /* === 常見問題 FAQ 頁樣式（整合自 20260423 faq.html） === */
 .faq-search {
     padding-top: 50px;

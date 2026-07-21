@@ -351,6 +351,16 @@
 								<div class="picbox-all {% if data.images|length > 0 %}album-btn{% endif %}" >
 									<!--一個picbox是一組，建議尺寸為860*560或430*280-->
 									{% if data.images|length > 0  %}
+										<div class="zoom-hover">
+											<span class="zoom-hover-text">
+												<button class="mr-5">
+													<svg xmlns="http://www.w3.org/2000/svg" width="20.731" height="21.605" viewBox="0 0 20.731 21.605">
+														<path id="Union_128" data-name="Union 128" d="M-2730.97,13388.32l-4.985-4.867A8.952,8.952,0,0,1-2741,13385a9,9,0,0,1-9-9,9,9,0,0,1,9-9,9,9,0,0,1,9,9,8.972,8.972,0,0,1-2.427,6.15l4.856,4.743a1,1,0,0,1,.017,1.411.993.993,0,0,1-.716.3A.992.992,0,0,1-2730.97,13388.32ZM-2748,13376a7.008,7.008,0,0,0,7,7,7.008,7.008,0,0,0,7-7,7.007,7.007,0,0,0-7-7A7.007,7.007,0,0,0-2748,13376Z" transform="translate(2750.001 -13367)" fill="#ffffff"/>
+													</svg>
+												</button>
+												{% trans '看更多' %}
+											</span>
+										</div>
 										{% for img in data.images %}
 										<div class="picbox mySlides fade">
 											<div class="rel">

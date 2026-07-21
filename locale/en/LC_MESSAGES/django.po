@@ -1206,3 +1206,8 @@ msgstr "Go to Name Management Tool"
 #:  
 msgid "常見問題"
 msgstr "FAQ"
+
+
+#:  
+msgid "看更多"
+msgstr "See More"
