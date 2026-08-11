@@ -306,3 +306,68 @@ $(function(){
 	})
 
 })
+
+/* ================= 學名比對頁：下載物種名錄（一律離線寄信） ================= */
+
+// 收集比對條件 + 欄位勾選
+function matchCatalogueParams(extra){
+	let arr = $('#matchForm').serializeArray()
+		.concat($('#catalogueForm').serializeArray());
+	arr.push({name: 'csrfmiddlewaretoken', value: $csrf_token});
+	if (extra){
+		for (let k in extra){ arr.push({name: k, value: extra[k]}); }
+	}
+	return arr;
+}
+
+// 開啟 modal（一律離線：信箱恆顯示，下載鍵待驗證通過才啟用）
+$('.catalogueGenBtn').on('click', function(){
+	// 英文頁：階層中文名預設不勾
+	if (typeof $lang !== 'undefined' && $lang == 'en-us'){
+		$('#catalogueForm input[name=col_hier_c]').prop('checked', false);
+	}
+	$('#catalogue_email').val('');
+	$('#catalogue-email-check').removeClass('valid');
+	$('.catalogueProduce').prop('disabled', true);
+	$('.cataloguepop').fadeIn('slow').removeClass('d-none');
+});
+
+// 關閉 modal
+$('.catalogue-xx').on('click', function(){
+	$('.cataloguepop').fadeOut('slow').addClass('d-none');
+});
+
+// email 驗證（與下載CSV一致），通過才可按下載
+function validateCatalogueEmail(inputText){
+	let mailformat = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+	if (inputText.match(mailformat)){
+		$('#catalogue-email-check').addClass('valid');
+		$('.catalogueProduce').prop('disabled', false);
+	} else {
+		$('#catalogue-email-check').removeClass('valid');
+		$('.catalogueProduce').prop('disabled', true);
+	}
+}
+
+$('#catalogue_email').on('keyup', function(){
+	validateCatalogueEmail($(this).val());
+});
+
+// 產出（一律離線寄信）
+$('.catalogueProduce').on('click', function(){
+	let format = $('#catalogueForm input[name=file_format]:checked').val() || 'word';
+	let mailformat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	if (!($('#catalogue_email').val() || '').match(mailformat)){
+		($lang == 'en-us') ? alert('Please enter a valid email.') : alert('請輸入正確的電子郵件');
+		return;
+	}
+	$.ajax({
+		url: '/send_match_catalogue_request',
+		type: 'POST',
+		dataType: 'json',
+		data: $.param(matchCatalogueParams({file_format: format, download_email: $('#catalogue_email').val()})),
+	}).done(function(){
+		($lang == 'en-us') ? alert('Your request has been sent.') : alert('請求已送出');
+		$('.cataloguepop').fadeOut('slow').addClass('d-none');
+	});
+});

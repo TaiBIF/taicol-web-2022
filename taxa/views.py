@@ -21,6 +21,11 @@ from django.template.loader import render_to_string
 import html
 from django.utils.translation import get_language, gettext
 from pages.utils import verify_turnstile
+from taxa.catalogue_generator import (
+    get_catalogue_df, count_catalogue_taxa, parse_options, build_docx, build_xlsx,
+    get_catalogue_df_by_taxon_ids, 
+)
+
 
 search_facet = { "kingdom": { 
                 'type': 'terms',
@@ -313,19 +318,8 @@ def get_autocomplete_taxon_by_solr(request):
     return HttpResponse(names, content_type='application/json')
 
 
-
 def name_match(request):
-    # url = env('REACT_WEB_INTERNAL_API_URL') + '/api/admin/download/'
-    # resp = requests.get(url)
-    # taxon_updated_at = None
-    # if resp.status_code == 200:
-    #     resp = resp.json()['rows']
-    #     resp = [r for r in resp if r['Category']['name'] == '名錄檔案 (物種)']
-    #     data = pd.DataFrame(resp)
-    #     taxon_updated_at = data.publishedDate.max()
-    #     taxon_updated_at = taxon_updated_at.split('T')[0]
-
-    return render(request, 'taxa/name_match.html') #, {'taxon_updated_at': taxon_updated_at})
+    return render(request, 'taxa/name_match.html')
 
 
 def taxon(request, taxon_id):
@@ -2381,3 +2375,162 @@ def get_taxon_higher(request):
 
 def register_taxon(request):
     return render(request, 'taxa/register_taxon.html')
+
+
+# ========== 名錄產生器 ==========
+
+CATALOGUE_TAXA_LIMIT = 1000  # 超過此 taxon 數改離線寄信
+
+
+ 
+def _catalogue_response(df, opts, file_format, ts):
+    if file_format == 'excel':
+        buf = build_xlsx(df, opts)
+        resp = HttpResponse(
+            buf.getvalue(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        resp['Content-Disposition'] = f'attachment; filename=taicol_catalogue_{ts}.xlsx'
+    else:
+        buf = build_docx(df, opts)
+        resp = HttpResponse(
+            buf.getvalue(),
+            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        resp['Content-Disposition'] = f'attachment; filename=taicol_catalogue_{ts}.docx'
+    return resp
+ 
+ 
+def generate_catalogue(request):
+    """同步產生名錄（≤1000 taxa）。check_only=1 時只回傳 taxon 筆數。"""
+    req = request.POST
+    is_english = get_language() == 'en-us'
+ 
+    solr_query_list, _ = get_conditioned_solr_search(req)
+ 
+    # 只回傳筆數，供前端判斷 sync / offline
+    if req.get('check_only'):
+        return JsonResponse({'count': int(count_catalogue_taxa(solr_query_list)),
+                             'limit': CATALOGUE_TAXA_LIMIT}, safe=False)
+ 
+    file_format = req.get('file_format', 'word')  # word / excel
+    opts = parse_options(req, is_english)
+ 
+    df = get_catalogue_df(solr_query_list)
+    if df.empty:
+        return HttpResponse(status=204)
+ 
+    now = datetime.datetime.now() + datetime.timedelta(hours=8)
+    ts = now.strftime("%Y%m%d%H%M%S")
+    return _catalogue_response(df, opts, file_format, ts)
+ 
+ 
+def send_catalogue_request(request):
+    """離線產生名錄（>1000 taxa），背景執行並寄信。"""
+    is_english = get_language() == 'en-us'
+    task = threading.Thread(target=generate_catalogue_offline, args=(request, is_english))
+    task.start()
+    return JsonResponse({"status": 'success'}, safe=False)
+ 
+ 
+def generate_catalogue_offline(request, is_english):
+    req = request.POST
+    solr_query_list, _ = get_conditioned_solr_search(req)
+ 
+    file_format = req.get('file_format', 'word')
+    opts = parse_options(req, is_english)
+    df = get_catalogue_df(solr_query_list)
+ 
+    now = datetime.datetime.now() + datetime.timedelta(hours=8)
+    ts = now.strftime("%Y%m%d%H%M%S")
+    ext = 'xlsx' if file_format == 'excel' else 'docx'
+ 
+    buf = build_xlsx(df, opts) if file_format == 'excel' else build_docx(df, opts)
+ 
+    file_name = f'taicol_catalogue_{ts}.{ext}'
+    out_dir = '/tc-web-volumes/media/catalogue'
+    os.makedirs(out_dir, exist_ok=True)
+    out_path = os.path.join(out_dir, file_name)
+    with open(out_path, 'wb') as f:
+        f.write(buf.getvalue())
+ 
+    scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
+    download_url = scheme + "://" + request.META['HTTP_HOST'] + MEDIA_URL + os.path.join('catalogue', file_name)
+    email_body = render_to_string('taxa/download.html', {'download_url': download_url})
+    send_mail('[TaiCOL] 名錄產生器', email_body, 'no-reply@taicol.tw', [req.get('download_email')])
+
+
+# ========== 學名比對頁：名錄產生器（一律離線寄信） ==========
+
+def send_match_catalogue_request(request):
+    """比對結果 → 產物種名錄，背景執行並寄信。"""
+    is_english = get_language() == 'en-us'
+    task = threading.Thread(target=generate_match_catalogue_offline, args=(request, is_english))
+    task.start()
+    return JsonResponse({"status": 'success'}, safe=False)
+
+
+def _collect_match_taxon_ids(request):
+    """跑 NomenMatch，收集比對到的 namecode（= taxon_id），去重、去 no match。"""
+    name = request.POST.get('name')
+    best = request.POST.get('best', 'yes')
+    if not name:
+        return []
+
+    names = [n.strip() for n in name.splitlines() if n.strip()]
+    uniq = []
+    for n in names:
+        if n not in uniq:
+            uniq.append(n)
+
+    url = env('NOMENMATCH_ROOT')
+    namecodes = []
+    total_page = math.ceil(len(uniq) / 30)
+    for page in range(total_page):
+        chunk = uniq[page * 30:(page + 1) * 30]
+        query_dict = {
+            'names': '|'.join(chunk), 'best': best, 'format': 'json', 'source': 'taicol',
+        }
+        if request.POST.get('is_in_taiwan') == 'true':
+            query_dict['is_in_taiwan'] = True
+        if request.POST.get('bio_group-select') != 'all':
+            query_dict['bio_group'] = request.POST.get('bio_group-select')
+        if kingdoms := request.POST.getlist('kingdom'):
+            if 'all' not in kingdoms:
+                query_dict['kingdom'] = ",".join([f'"{k}"' for k in kingdoms])
+        if ranks := request.POST.getlist('rank'):
+            query_dict['taxon_rank'] = ",".join([f'"{rank_map[int(r)]}"' for r in ranks])
+
+        result = requests.post(url, data=query_dict)
+        if result.status_code == 200:
+            for ddd in result.json()['data']:
+                for dd in ddd:
+                    for d in dd['results']:
+                        nc = d.get('namecode')
+                        if nc and nc != 'no match' and nc not in namecodes:
+                            namecodes.append(nc)
+    return namecodes
+
+
+def generate_match_catalogue_offline(request, is_english):
+    req = request.POST
+    taxon_ids = _collect_match_taxon_ids(request)
+    df = get_catalogue_df_by_taxon_ids(taxon_ids)
+
+    file_format = req.get('file_format', 'word')
+    opts = parse_options(req, is_english)
+
+    now = datetime.datetime.now() + datetime.timedelta(hours=8)
+    ts = now.strftime("%Y%m%d%H%M%S")
+    ext = 'xlsx' if file_format == 'excel' else 'docx'
+
+    buf = build_xlsx(df, opts) if file_format == 'excel' else build_docx(df, opts)
+
+    file_name = f'taicol_catalogue_{ts}.{ext}'
+    out_dir = '/tc-web-volumes/media/catalogue'
+    os.makedirs(out_dir, exist_ok=True)
+    with open(os.path.join(out_dir, file_name), 'wb') as f:
+        f.write(buf.getvalue())
+
+    scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
+    download_url = scheme + "://" + request.META['HTTP_HOST'] + MEDIA_URL + os.path.join('catalogue', file_name)
+    email_body = render_to_string('taxa/download.html', {'download_url': download_url})
+    send_mail('[TaiCOL] 名錄產生器', email_body, 'no-reply@taicol.tw', [req.get('download_email')])

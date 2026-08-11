@@ -9,5 +9,7 @@ urlpatterns = [
     path('catalogue', views.catalogue_search, name='catalogue'),
     path('redirect_taicol', views.redirect_taicol, name='redirect_taicol'),
     path('submit', views.register_taxon, name='register_taxon'),
-    # path('catalogue_search', views.catalogue_search, name='catalogue_search'),
+    path('generate_catalogue', views.generate_catalogue, name='generate_catalogue'),
+    path('send_catalogue_request', views.send_catalogue_request, name='send_catalogue_request'),
+    path('send_match_catalogue_request', views.send_match_catalogue_request, name='send_match_catalogue_request'),
 ]

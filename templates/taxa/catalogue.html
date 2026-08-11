@@ -27,6 +27,168 @@
 	</div>
 </div>
 
+<!--下載物種名錄彈跳框-->
+<div class="popbox cataloguepop d-none">
+	<div class="rel">
+		<div class="w-bg">
+			<div class="xx catalogue-xx">
+				<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+					<g transform="translate(-1288 -210)">
+						<g transform="translate(1288 210)" fill="#fff" stroke="#4c8da7" stroke-width="2">
+							<circle cx="25" cy="25" r="25" stroke="none"/>
+							<circle cx="25" cy="25" r="24" fill="none"/>
+						</g>
+						<g transform="translate(100.696 1061.993) rotate(-45)">
+							<line x2="25" transform="translate(1429.5 271.5)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+							<line x2="25" transform="translate(1442.5 259.5) rotate(90)" fill="none" stroke="#4c8da7" stroke-linecap="round" stroke-width="2"/>
+						</g>
+					</g>
+				</svg>
+			</div>
+			<div class="title-area">
+				<h2>{% trans "下載物種名錄" %}<span></span></h2>
+			</div>
+			<div class="catalogue-scroll">
+			<div class="catalogue-desc">
+				<p>{% trans "本物種名錄產生工具為依照目前頁面上篩選結果，並可依照以下選項產出物種名錄文件。" %}</p>
+			</div>
+
+			<form id="catalogueForm" class="catalogue-form">
+				<!-- 檔案格式 -->
+				<div class="catalogue-group">
+					<div class="catalogue-group-title">{% trans "檔案格式" %}</div>
+					<div class="right-check">
+						<label class="check-item">WORD
+							<input type="radio" name="file_format" value="word" checked>
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">EXCEL
+							<input type="radio" name="file_format" value="excel">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+				</div>
+
+				<!-- 匯出欄位 -->
+				<div class="catalogue-group">
+					<div class="catalogue-group-title">{% trans "匯出欄位" %}</div>
+
+					<div class="right-check">
+						<span class="catalogue-row-hint">{% trans "學名（擇一）" %}</span>
+						<label class="check-item">{% trans "完整學名" %}
+							<input type="radio" name="col_name_type" value="full" checked>
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">{% trans "簡單學名" %}
+							<input type="radio" name="col_name_type" value="simple">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+
+					<div class="right-check">
+						<label class="check-item">{% trans "綱" %}
+							<input type="checkbox" name="hier_class" checked>
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">{% trans "科" %}
+							<input type="checkbox" name="hier_family" checked>
+							<span class="checkmark"></span>
+						</label>
+					</div>
+
+					<div class="right-check">
+						<label class="check-item">{% trans "主要中文名" %}
+							<input type="checkbox" name="col_common_name" checked>
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">{% trans "階層中文名" %}
+							<input type="checkbox" name="col_hier_c" checked>
+							<span class="checkmark"></span>
+						</label>
+					</div>
+
+					<div class="right-check">
+						<label class="check-item">{% trans "原生/外來性" %}
+							<input type="checkbox" name="col_alien" checked>
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">{% trans "特有性" %}
+							<input type="checkbox" name="col_endemic" checked>
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">{% trans "棲地環境" %}
+							<input type="checkbox" name="col_habitat">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+
+					<div class="right-check">
+						<label class="check-item">{% trans "臺灣紅皮書" %}
+							<input type="checkbox" name="col_redlist" checked>
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">{% trans "保育類" %}
+							<input type="checkbox" name="col_protected">
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">IUCN
+							<input type="checkbox" name="col_iucn">
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">CITES
+							<input type="checkbox" name="col_cites">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+
+					<div class="right-check">
+						<label class="check-item">{% trans "界" %}
+							<input type="checkbox" name="hier_kingdom">
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">{% trans "門" %}
+							<input type="checkbox" name="hier_phylum">
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">{% trans "目" %}
+							<input type="checkbox" name="hier_order">
+							<span class="checkmark"></span>
+						</label>
+						<label class="check-item">{% trans "屬" %}
+							<input type="checkbox" name="hier_genus">
+							<span class="checkmark"></span>
+						</label>
+					</div>
+				</div>
+			</form>
+
+			<!-- 超過上限時顯示：離線寄信（樣式同下載CSV彈窗） -->
+			<div class="catalogue-email-area d-none">
+				<div class="error-form">
+					<div class="mark-title">
+						<p>{% trans "檔案為離線產生，處理完成後，系統會寄下載資訊到您輸入的電子郵件信箱。如未收到信件，請聯絡我們。" %}</p>
+					</div>
+					<div class="mark-title">
+						<img src="{% static 'image/title-mark.svg' %}">
+						<span class="ml-5">{% trans "聯絡信箱" %}</span>
+					</div>
+					<div class="d-flex mb-20px">
+						<input type="text" name="catalogue_email" class="w-50" id="catalogue_email">
+						<svg id="catalogue-email-check" xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="bi bi-check my-auto" viewBox="0 0 16 16">
+							<path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
+						</svg>
+					</div>
+				</div>
+			</div>
+
+			<div class="catalogue-btns">
+				<button class="blue-btn catalogueProduce" type="button">{% trans "下載" %}</button>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <!--離線產生彈跳框-->
 <div class="popbox downloadpop d-none">
 	<div class="rel">
@@ -562,6 +724,7 @@
 			<div class="top-infbox">
 				<p class="d-none">{% trans "共" %}<span id="total-count"></span>{% trans "筆" %}</p>
 				<div class="button-two d-none">
+					<button class="catalogueGenBtn" type="button">{% trans "下載物種名錄" %}</button>
 					<button class="downloadData" data-type="csv">{% trans "下載CSV" %}</button>
 					<button class="downloadData" data-type="json">{% trans "下載JSON" %}</button>
 				</div>
