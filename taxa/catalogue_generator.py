@@ -137,58 +137,6 @@ def get_catalogue_df(query_list):
     return get_catalogue_df_by_taxon_ids(taxon_ids)
 
 
-def _fetch_rank_parent(ids):
-    """撈每個 taxon 的 rank 與 parent_taxon_id。回傳 {taxon_id: (rank_int|None, parent_id|None)}。"""
-    import json as _json
-    ids = [i for i in ids if i]
-    out = {}
-    batch = 500
-    for i in range(0, len(ids), batch):
-        chunk = ids[i:i + batch]
-        q = {
-            "query": "*:*",
-            "filter": [f"taxon_id:({' OR '.join(chunk)})", "status:accepted", "taxon_name_id:*"],
-            "fields": "taxon_id,taxon_rank_id,parent_taxon_id", "limit": batch,
-        }
-        resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=_json.dumps(q),
-                             headers={'content-type': 'application/json'}).json()
-        for d in resp['response']['docs']:
-            rid = d.get('taxon_rank_id')
-            rid = int(str(rid).replace('.0', '')) if rid not in (None, '') else None
-            parent = d.get('parent_taxon_id')
-            if isinstance(parent, list):
-                parent = parent[0] if parent else None
-            out[d.get('taxon_id')] = (rid, parent or None)
-    return out
-
-
-def _fill_parents_up_to_species(taxon_ids):
-    """種下(35–46)沿 parent_taxon_id 往上補齊，凡種或種下(34–46)的 parent 都加入；補到種(34)為止（屬以上不補）。"""
-    known = set(taxon_ids)
-    frontier = set(taxon_ids)
-    for _ in range(12):  # 安全上限，避免資料異常造成無限迴圈
-        info = _fetch_rank_parent(frontier)
-        # 只有種下(35–46)才需要往上找 parent
-        candidates = {parent for tid in frontier
-                      for rank, parent in [info.get(tid, (None, None))]
-                      if rank in INFRASPECIFIC_RANK_IDS and parent and parent not in known}
-        if not candidates:
-            break
-        # 查 parent 的 rank，只收種+種下(34–46)
-        pinfo = _fetch_rank_parent(candidates)
-        next_frontier = set()
-        for p in candidates:
-            prank = pinfo.get(p, (None, None))[0]
-            if prank in CHECKLIST_RANK_IDS and prank >= SPECIES_RANK_ID:  # 種(34)或種下
-                known.add(p)
-                if prank in INFRASPECIFIC_RANK_IDS:  # 仍是種下 → 需再往上補
-                    next_frontier.add(p)
-        frontier = next_frontier
-        if not frontier:
-            break
-    return list(known)
-
-
 def get_catalogue_df_by_taxon_ids(taxon_ids):
     """
     給定 taxon_id 清單，抓每個 taxon 的有效名（accepted）資料，只保留物種階層。
@@ -199,9 +147,6 @@ def get_catalogue_df_by_taxon_ids(taxon_ids):
     taxon_ids = [t for t in dict.fromkeys(taxon_ids) if t]  # 去重、去空
     if not taxon_ids:
         return pd.DataFrame()
-
-    # 種下(35–46)沿 parent 往上補齊到種(34)；途中種+種下都納入，屬以上不補
-    taxon_ids = _fill_parents_up_to_species(taxon_ids)
 
     # 分批抓每個 taxon 的有效名資料
     docs = []
@@ -389,11 +334,11 @@ def sort_and_stats(df, opts):
     # 某階層在資料中皆為空則不顯示；種永遠顯示。
     stats = []
     for key, rid, lat, cn, lc, le, ital in HIER_LEVELS:
-        if lat in df.keys():
-            n = df[df[lat].astype(str).str.strip() != ''][lat].nunique()
-        else:
-            n = 0
-        stats.append((lc, le, n))  # 界門綱目科屬固定列出，即使為 0
+        if lat not in df.keys():
+            continue
+        n = df[df[lat].astype(str).str.strip() != ''][lat].nunique()
+        if n > 0:
+            stats.append((lc, le, n))
     # 種：rank=34；種下：rank 35–46（加總，有才顯示）
     if 'rank' in df.keys():
         species_count = int((df['rank'] == SPECIES_RANK_ID).sum())
@@ -430,43 +375,32 @@ def stats_text(stats, is_english):
 # ---------------------------------------------------------------------------
 def build_rows(df, opts):
     hiers = opts['hiers']
-
-    # 若整份名錄實際最深的階層就是某個標題階層（底下沒有更深的種／種下），
-    # 則該階層改以「一般資料列」呈現，而非標題列。
-    leaf_rank_id = None
-    if 'rank' in df.keys():
-        ranks = [r for r in df['rank'].tolist() if isinstance(r, int)]
-        header_rank_ids = {HIER_BY_KEY[h][1] for h in hiers}
-        if ranks and max(ranks) in header_rank_ids:
-            leaf_rank_id = max(ranks)
-
-    # 實際用來產生標題的階層：僅保留比 leaf 階層更高者
-    if leaf_rank_id is not None:
-        header_hiers = [h for h in hiers if HIER_BY_KEY[h][1] < leaf_rank_id]
-    else:
-        header_hiers = list(hiers)
-
-    last_vals = {h: None for h in header_hiers}
-    header_rank_ids = {HIER_BY_KEY[h][1] for h in header_hiers}
+    last_vals = {h: None for h in hiers}
+    # 被選為標題的階層對應的 rank_id；若 taxon 本身 rank 落在其中，只當標題不另成列
+    header_rank_ids = {HIER_BY_KEY[h][1] for h in hiers}
     rows = []
     for _, r in df.iterrows():
         row = r.to_dict()
+        # 檢查每個所選階層是否換值 → 印標題
         changed = False
-        for depth, h in enumerate(header_hiers):
+        for depth, h in enumerate(hiers):
             lat = HIER_BY_KEY[h][2]
             val = str(row.get(lat, '')).strip()
             if changed or val != last_vals[h]:
                 changed = True
                 last_vals[h] = val
-                for lower in header_hiers[depth + 1:]:
+                # 重置更低階層，強制下面重印
+                for lower in hiers[depth + 1:]:
                     last_vals[lower] = None
+                # 該階層無值則略過標題（不印空縮排行）
                 if val:
                     rows.append(('header', h, {'depth': depth, 'row': row}))
-        # taxon 本身即某個標題階層 → 只當標題，不另成列
+        # taxon 本身即某個被選標題階層 → 只當標題，不另成列
         if row.get('rank') in header_rank_ids:
             continue
-        rows.append(('species', None, {'depth': len(header_hiers), 'row': row}))
+        rows.append(('species', None, {'depth': len(hiers), 'row': row}))
     return rows
+
 
 def _header_runs(level_key, row, opts):
     """階層標題的文字 runs：中文名(可選) + 拉丁名(genus 斜體)。"""
@@ -500,8 +434,8 @@ def _full_name_runs(row):
 def _species_name_runs(row, opts):
     if opts['full_name']:
         return _full_name_runs(row)
-    # 簡單學名：斜體依 formatted_name 的 <i> 標籤判斷（不含作者）
-    return parse_formatted_runs(row.get('formatted_name'))
+    return [(str(row.get('simple_name', '')), True)]
+
 
 # ---------------------------------------------------------------------------
 # Word
