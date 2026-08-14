@@ -336,3 +336,160 @@ button.download_check:disabled {
     -ms-transition: all .3s;
     -webkit-transition: all .3s;
 }
+
+/* ===== 下載物種名錄 ===== */
+.cataloguepop .w-bg {
+	max-width: 640px;
+	text-align: left;
+}
+
+/* 內容過長時 y 軸可捲動（標題與關閉鈕固定在外） */
+.catalogue-scroll {
+	max-height: 65vh;
+	overflow-y: auto;
+	padding-right: 6px;
+	margin-top: 4px;
+}
+
+/* email 打勾顏色（改用 class，不用 inline fill） */
+.cataloguepop #catalogue-email-check {
+	fill: lightgrey;
+}
+
+.cataloguepop #catalogue-email-check.valid {
+	fill: green;
+}
+
+.catalogue-desc {
+	font-size: 14px;
+	color: #555;
+	margin-bottom: 16px;
+}
+
+.catalogue-group {
+	margin-bottom: 16px;
+}
+
+.catalogue-group-title {
+	font-weight: bold;
+	color: #4C8DA7;
+	margin-bottom: 8px;
+	border-bottom: 1px solid #e0e0e0;
+	padding-bottom: 4px;
+}
+
+.catalogue-row-hint {
+	color: #888;
+	font-size: 14px;
+	line-height: 20px;
+	margin-right: 12px;
+	align-self: center;
+}
+
+/* 勾選樣式：與進階搜尋一致 */
+.cataloguepop .right-check {
+	display: flex;
+	margin-top: 6px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.cataloguepop .check-item {
+	display: block;
+	position: relative;
+	padding-left: 30px;
+	cursor: pointer;
+	font-size: 16px;
+	line-height: 20px;
+	margin-right: 20px;
+	margin-bottom: 10px;
+	color: #555;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+
+.cataloguepop .check-item input {
+	position: absolute;
+	opacity: 0;
+	cursor: pointer;
+	height: 0;
+	width: 0;
+}
+
+.cataloguepop .checkmark {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 20px;
+	width: 20px;
+	background-color: #FFF;
+	border-radius: 3px;
+	border: 1px solid #ddd;
+}
+
+.cataloguepop .check-item:hover input~.checkmark {
+	border: 1px solid #4C8DA7;
+}
+
+.cataloguepop .check-item input:checked~.checkmark {
+	background-color: #4C8DA7;
+}
+
+.cataloguepop .checkmark:after {
+	content: "";
+	position: absolute;
+	display: none;
+}
+
+.cataloguepop .check-item input:checked~.checkmark:after {
+	display: block;
+}
+
+.cataloguepop .check-item .checkmark:after {
+	left: 6px;
+	top: 1px;
+	width: 5px;
+	height: 10px;
+	border: solid white;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+}
+
+.catalogue-email-area {
+	margin: 12px 0;
+}
+
+/* 下載按鈕：與進階搜尋的搜尋鈕一致 */
+.catalogue-btns {
+	display: flex;
+	justify-content: center;
+	margin-top: 20px;
+}
+
+.cataloguepop .blue-btn {
+	display: block;
+	width: 180px;
+	height: 60px;
+	border-radius: 30px;
+	border: 2px solid #4C8DA7;
+	font-size: 20px;
+	cursor: pointer;
+	background-color: #4C8DA7;
+	color: #FFF;
+	transition: all .3s;
+}
+
+.cataloguepop .blue-btn:hover {
+	border: 2px solid #74BDB6;
+	background-color: #74BDB6;
+	color: #FFF;
+}
+
+/* 觸發按鈕（最左） */
+.catalogueGenBtn {
+	margin-right: 8px;
+}

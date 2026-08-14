@@ -1211,3 +1211,43 @@ msgstr "FAQ"
 #:  
 msgid "看更多"
 msgstr "See More"
+
+#:  
+msgid "下載物種名錄"
+msgstr "⇩Checklist"
+
+#:  
+msgid "學名（擇一）"
+msgstr "Scientific Name (Choose One)"
+
+#:  
+msgid "本物種名錄產生工具為依照目前頁面上篩選結果，並可依照以下選項產出物種名錄文件。"
+msgstr "This checklist generator compiles species list documents based on your current screen filters and selected options below."
+
+#:  
+msgid "檔案格式"
+msgstr "File format"
+
+#:  
+msgid "匯出欄位"
+msgstr "Export Fields"
+
+#:  
+msgid "完整學名"
+msgstr "Complete Scientific Name"
+
+#:  
+msgid "簡單學名"
+msgstr "Simple Scientific Name"
+
+#:  
+msgid "主要中文名"
+msgstr "Primary Chinese Name"
+
+#:  
+msgid "階層中文名"
+msgstr "Taxonomic Rank"
+
+#:  
+msgid "下載"
+msgstr "Download"
