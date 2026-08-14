@@ -70,3 +70,9 @@ services:
       - "traefik.http.routers.nginx-web.rule=Host(`taicol.tw`)"
       - "traefik.http.routers.nginx-web.entrypoints=websecure"
       - "traefik.http.routers.nginx-web.tls.certresolver=myresolver"
+      - "traefik.http.routers.nginx-web.middlewares=ratelimit-web,inflight-web"
+      # 定義 rate limit（per-IP 每秒平均 20、突發 40）
+      - "traefik.http.middlewares.ratelimit-web.ratelimit.average=20"
+      - "traefik.http.middlewares.ratelimit-web.ratelimit.burst=40"
+      # 定義並發上限（同時最多 50 個請求進後端）
+      - "traefik.http.middlewares.inflight-web.inflightreq.amount=50"

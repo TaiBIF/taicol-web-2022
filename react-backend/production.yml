@@ -39,6 +39,8 @@ services:
       - "traefik.http.routers.nginx-admin.rule=Host(`admin.taicol.tw`)"
       - "traefik.http.routers.nginx-admin.entrypoints=websecure"
       - "traefik.http.routers.nginx-admin.tls.certresolver=myresolver"
+      - "traefik.http.routers.nginx-admin.middlewares=inflight-admin"
+      - "traefik.http.middlewares.inflight-admin.inflightreq.amount=30"
   mysql:
     container_name: taicol-react-mysql
     ports:

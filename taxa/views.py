@@ -744,11 +744,14 @@ def taxon(request, taxon_id):
                 cursor.execute(query, (list(refs.reference_id.unique()),))
                 person_ids = cursor.fetchall()
                 person_ids = [str(p[0]) for p in person_ids]
+                person_ids = list(dict.fromkeys(person_ids))  # 去重、保序
                 if len(person_ids):
                     url = f"{env('REACT_WEB_INTERNAL_API_URL')}/api/admin/expert/?person_id={(',').join(person_ids)}"
-                    person_resp = requests.get(url)
-                    person_resp = person_resp.json()
-                    experts = person_resp.get('rows')
+                    try:
+                        person_resp = requests.get(url, timeout=3)
+                        experts = person_resp.json().get('rows')
+                    except requests.RequestException:
+                        experts = []  # 撈不到就空的，頁面照常
             refs = list(refs.sort_values('publish_year')[['reference_id','full_ref']].drop_duplicates().values)
 
 
