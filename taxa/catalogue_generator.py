@@ -84,13 +84,9 @@ HABITAT_COLS = [
 def _count_taxa(query_list):
     """回傳符合搜尋條件的 taxon 數量。"""
     query = {
-        "query": "*:*",
-        "limit": 0,
-        "filter": query_list,
-        "facet": {"taxon_id": {
-            'type': 'terms', 'field': 'taxon_id', 'mincount': 1,
-            'limit': 0, 'numBuckets': True,
-        }},
+        "query": "*:*", "limit": 0, "filter": query_list,
+        "facet": {"taxon_id": {'type': 'terms', 'field': 'taxon_id', 'mincount': 1,
+                               'limit': 0, 'numBuckets': True}},
     }
     resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=__import__('json').dumps(query),
                          headers={'content-type': 'application/json'}).json()
@@ -117,11 +113,9 @@ def get_catalogue_df(query_list):
     while True:
         query = {
             "query": "*:*", "limit": 0, "filter": query_list,
-            "facet": {"taxon_id": {
-                'type': 'terms', 'field': 'taxon_id', 'mincount': 1,
-                'limit': page, 'offset': offset, 'sort': 'index',
-                'numBuckets': True,
-            }},
+            "facet": {"taxon_id": {'type': 'terms', 'field': 'taxon_id', 'mincount': 1,
+                                   'limit': page, 'offset': offset, 'sort': 'index',
+                                   'numBuckets': True}},
         }
         resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=_json.dumps(query),
                              headers={'content-type': 'application/json'}).json()
@@ -133,7 +127,6 @@ def get_catalogue_df(query_list):
         offset += page
         if offset >= total or not buckets:
             break
-
     return get_catalogue_df_by_taxon_ids(taxon_ids)
 
 
@@ -143,8 +136,7 @@ def get_catalogue_df_by_taxon_ids(taxon_ids):
     catalogue 搜尋與學名比對兩頁共用。
     """
     import json as _json
-
-    taxon_ids = [t for t in dict.fromkeys(taxon_ids) if t]  # 去重、去空
+    taxon_ids = [t for t in dict.fromkeys(taxon_ids) if t]
     if not taxon_ids:
         return pd.DataFrame()
 
@@ -171,10 +163,7 @@ def get_catalogue_df_by_taxon_ids(taxon_ids):
     if df.empty:
         return df
 
-    df = df.rename(columns={
-        'formatted_accepted_name': 'formatted_name',
-        'rank_id': 'rank',
-    })
+    df = df.rename(columns={'formatted_accepted_name': 'formatted_name', 'rank_id': 'rank'})
 
     need_cols = ['taxon_id', 'rank', 'formatted_name', 'simple_name', 'name_author', 'common_name_c',
                  'is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater',
@@ -217,7 +206,7 @@ def parse_options(req, is_english):
     if name_type not in ('full', 'simple'):
         name_type = 'full'
 
-    opts = {
+    return {
         'full_name': name_type == 'full',
         'simple_name': name_type == 'simple',
         'common_name': on('col_common_name'),
@@ -226,7 +215,6 @@ def parse_options(req, is_english):
         'hier_c': on('col_hier_c'),
         'is_english': is_english,
     }
-    return opts
 
 
 # ---------------------------------------------------------------------------
@@ -445,7 +433,6 @@ def build_docx(df, opts):
     style = doc.styles['Normal']
     style.font.size = Pt(11)
 
-    stats = None
     df, stats = sort_and_stats(df, opts)
     rows = build_rows(df, opts)
 
@@ -491,14 +478,35 @@ def build_docx(df, opts):
 # Excel
 # ---------------------------------------------------------------------------
 def _rich_from_runs(runs):
-    """把 [(text, italic)] 轉成 openpyxl CellRichText。"""
+    """把 [(text, italic)] 轉成 openpyxl CellRichText；略過空字串 run。"""
     blocks = []
     for text, ital in runs:
-        if ital:
-            blocks.append(TextBlock(InlineFont(i=True), text))
-        else:
-            blocks.append(TextBlock(InlineFont(), text))
+        if not text:
+            continue
+        blocks.append(TextBlock(InlineFont(i=True), text) if ital else TextBlock(InlineFont(), text))
+    if not blocks:
+        return ''
     return CellRichText(*blocks)
+
+
+def _preserve_space_xlsx(buf):
+    """openpyxl 寫 rich text 的 <t> 未帶 xml:space=preserve，Excel 會吃掉前後空白
+    （導致種小名與種下名黏在一起）。存檔後補上 preserve。"""
+    import zipfile
+    buf.seek(0)
+    zin = zipfile.ZipFile(buf, 'r')
+    out = io.BytesIO()
+    zout = zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED)
+    for item in zin.namelist():
+        data = zin.read(item)
+        if (item.startswith('xl/worksheets/') and item.endswith('.xml')) \
+                or item == 'xl/sharedStrings.xml':
+            data = data.decode('utf-8').replace('<t>', '<t xml:space="preserve">').encode('utf-8')
+        zout.writestr(item, data)
+    zout.close()
+    zin.close()
+    out.seek(0)
+    return out
 
 
 def build_xlsx(df, opts):
@@ -547,12 +555,10 @@ def build_xlsx(df, opts):
         else:
             ci = 1
             if opts['full_name']:
-                cell = ws.cell(row=r, column=ci)
-                cell.value = _rich_from_runs(_full_name_runs(row))
+                ws.cell(row=r, column=ci).value = _rich_from_runs(_full_name_runs(row))
                 ci += 1
             if opts['simple_name']:
-                cell = ws.cell(row=r, column=ci)
-                cell.value = _rich_from_runs([(str(row.get('simple_name', '')), True)])
+                ws.cell(row=r, column=ci).value = _rich_from_runs([(str(row.get('simple_name', '')), True)])
                 ci += 1
             if opts['common_name']:
                 ws.cell(row=r, column=ci, value=str(row.get('common_name_c', '')).strip())
@@ -562,7 +568,6 @@ def build_xlsx(df, opts):
                 ci += 1
             r += 1
 
-    # 欄寬
     ws.column_dimensions['A'].width = 42
     for col in range(2, len(headers) + 2):
         ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 16
@@ -570,4 +575,4 @@ def build_xlsx(df, opts):
     buf = io.BytesIO()
     wb.save(buf)
     buf.seek(0)
-    return buf
+    return _preserve_space_xlsx(buf)   # 補 xml:space=preserve

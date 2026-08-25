@@ -355,7 +355,7 @@ $('#catalogue_email').on('keyup', function(){
 
 // 產出（一律離線寄信）
 $('.catalogueProduce').on('click', function(){
-	let format = $('#catalogueForm input[name=file_format]:checked').val() || 'word';
+	let format = $('#catalogueForm input[name=catalogue_file_format]:checked').val() || 'word';
 	let mailformat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	if (!($('#catalogue_email').val() || '').match(mailformat)){
 		($lang == 'en-us') ? alert('Please enter a valid email.') : alert('請輸入正確的電子郵件');

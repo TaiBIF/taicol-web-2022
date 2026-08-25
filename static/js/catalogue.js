@@ -1231,7 +1231,7 @@ function catalogueOfflineDownload(format){
 
 // 產出按鈕（sync/offline 已於開窗時決定）
 $('.catalogueProduce').on('click', function(){
-	let format = $('#catalogueForm input[name=file_format]:checked').val() || 'word';
+	let format = $('#catalogueForm input[name=catalogue_file_format]:checked').val() || 'word';
 
 	if (catalogueOffline){
 		let mailformat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
