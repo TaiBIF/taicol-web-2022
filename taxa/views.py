@@ -1772,7 +1772,7 @@ def send_feedback(request):
     resp = requests.post(url, data=req)
     if resp.status_code == 200:
 
-        email_body = f'您好\n  \n 網站有新的錯誤回報\n  \n 請至管理後台查看： {env("REACT_WEB_INTERNAL_API_URL")}/admin/feedback/'
+        email_body = f'您好\n  \n 網站有新的錯誤回報\n  \n 請至管理後台查看： {env("REACT_WEB_API_URL")}/admin/feedback/'
         trigger_send_mail(email_body)
 
         return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
@@ -1839,7 +1839,7 @@ def send_register_taxon(request):
     resp = requests.post(url, data=req)
     if resp.status_code == 200:
 
-        email_body = f'您好\n  \n 網站有新的登錄物種\n  \n 請至管理後台查看： {env("REACT_WEB_INTERNAL_API_URL")}/admin/register_taxon/'
+        email_body = f'您好\n  \n 網站有新的登錄物種\n  \n 請至管理後台查看： {env("REACT_WEB_API_URL")}/admin/register_taxon/'
         trigger_send_mail(email_body)
 
         return HttpResponse(json.dumps({'status': 'done'}), content_type='application/json') 
