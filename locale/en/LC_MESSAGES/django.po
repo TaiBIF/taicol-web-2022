@@ -1251,3 +1251,6 @@ msgstr "Taxonomic Rank"
 #:  
 msgid "下載"
 msgstr "Download"
+
+msgid "單位：種 / 分類群"
+msgstr "Unit: species / taxa"
