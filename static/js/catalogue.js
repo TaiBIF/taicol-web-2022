@@ -1,5 +1,4 @@
-
-    var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
+var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
     // 要有其中之一存在才送出
 	let params = ['keyword','higherTaxa','bio_group-select','rank','is_endemic',
@@ -91,6 +90,8 @@
 		$('.alread-select').html('')
 		$('#higherTaxa').val('');
 		$('#higherTaxa').trigger('change');
+		$('input[name=sort_by]').val('');
+		$('input[name=sort_order]').val('');
 	}
 
 	function isValidDate(dateString) {
@@ -305,6 +306,10 @@
 				}
 			});
 		
+			// 欄位排序
+			$('input[name=sort_by]').val(urlParams.get('sort_by') || '');
+			$('input[name=sort_order]').val(urlParams.get('sort_order') || '');
+
 			// nice select 系列
 			let ns = ['name-select','date-select','bio_group-select']
 			ns.forEach(function(n) {
@@ -859,6 +864,23 @@
 
 			$('input[name=hidden-facet]').val('');
             getData(page=page, from_url=false)
+        })
+
+        // 表頭欄位排序：升冪 -> 降冪 -> 預設
+        $(document).on('click', '.table-style1 .sortable', function(){
+            let key = $(this).data('sort');
+            let now_key = $('input[name=sort_by]').val();
+            let now_order = $('input[name=sort_order]').val();
+            if (now_key != key) {
+                $('input[name=sort_by]').val(key);
+                $('input[name=sort_order]').val('asc');
+            } else if (now_order == 'asc') {
+                $('input[name=sort_order]').val('desc');
+            } else {
+                $('input[name=sort_by]').val('');
+                $('input[name=sort_order]').val('');
+            }
+            updateData(1);
         })
 
         $('.resetForm').on('click',function(){

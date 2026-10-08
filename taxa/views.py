@@ -178,8 +178,8 @@ def download_search_results_offline(request):
     req = request.POST
     file_format = req.get('file_format','csv')
 
-    solr_query_list, is_chinese = get_conditioned_solr_search(req)
-    df = return_download_file_by_solr(solr_query_list, is_chinese)
+    solr_query_list, is_chinese, boost_query = get_conditioned_solr_search(req)
+    df = return_download_file_by_solr(solr_query_list, is_chinese, boost_query, get_search_sort(req, is_chinese))
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
     if file_format == 'json':
@@ -205,8 +205,8 @@ def download_search_results(request):
     req = request.POST
     file_format = req.get('file_format','csv')
 
-    solr_query_list, is_chinese = get_conditioned_solr_search(req)
-    df = return_download_file_by_solr(solr_query_list, is_chinese)
+    solr_query_list, is_chinese, boost_query = get_conditioned_solr_search(req)
+    df = return_download_file_by_solr(solr_query_list, is_chinese, boost_query, get_search_sort(req, is_chinese))
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
 
@@ -1869,7 +1869,7 @@ def bk_send_register_mail(email_body):
     send_mail('[TaiCOL] 登錄物種', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
 
 
-def get_solr_data_search(query_list, offset, response, limit, is_chinese):
+def get_solr_data_search(query_list, offset, response, limit, is_chinese, boost_query='*:*', sort=SEARCH_SORT):
 
     response['data'] = []
     response['facet'] = {}
@@ -1877,20 +1877,13 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
     if is_chinese:
 
-        now_facet = search_facet
-        now_facet['taxon_id'] = {
-                        'type': 'terms',
-                        'field': 'taxon_id',
-                        'mincount': 1,
-                        'limit': limit,
-                        'offset': offset,
-                        'sort': 'index',
-                        'allBuckets': False,
-                        'numBuckets': True
-                  }
-        query = { "query": "*:*",
-                  "limit": 0,
-                  "filter": query_list,
+        # 同一個 taxon 可能有多個中文名符合 -> 用 collapse 每個 taxon 只留分數最高的一筆
+        query = { "query": boost_query,
+                  "offset": offset,
+                  "limit": limit,
+                  "fields": "taxon_id",
+                  "filter": query_list + [COLLAPSE_TAXON],
+                  "sort": sort,
                   "facet": search_facet
                 }
 
@@ -1901,19 +1894,16 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
         response = create_facet_data(resp, response, is_chinese)
 
-        # 先確認有找到資料
-        if resp['response']['numFound']:
+        # collapse 後 numFound 即為 taxon 數量
+        count = resp['response']['numFound']
 
-            # 這邊改成facet bucket的數量
-            count = resp['facets']['taxon_id']['numBuckets']
+        if count:
 
-            # 先用facet取得taxon_id 再query 相關data
-            taxon_ids = [t.get('val') for t in resp['facets']['taxon_id']['buckets']]
-
-            query_list = [f"taxon_id: ({' OR '.join(taxon_ids)})","is_primary_common_name:true"]
+            # 依排序後的 taxon_id 再 query 主要中文名那筆資料
+            taxon_ids = [t.get('taxon_id') for t in resp['response']['docs']]
 
             query = { "query": "*:*",
-                      "filter": query_list,
+                      "filter": [f"taxon_id: ({' OR '.join(taxon_ids)})","is_primary_common_name:true"],
                       "limit": limit,
                     }
 
@@ -1921,14 +1911,18 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
             resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
             resp = resp.json()
-    
+
+            # 依第一次 query 的順序重新排列
+            order = {t: i for i, t in enumerate(taxon_ids)}
+            resp['response']['docs'] = sorted(resp['response']['docs'], key=lambda d: order.get(d.get('taxon_id'), len(order)))
+
     else:
 
-        query = { "query": "*:*",
+        query = { "query": boost_query,
           "offset": offset,
           "limit": limit,
           "filter": query_list,
-        #   "sort": 'search_name asc',
+          "sort": sort,
           "facet": search_facet
         }
 
@@ -1937,7 +1931,6 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
         resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
         resp = resp.json()
 
-        # 這邊改成facet bucket的數量
         count = resp['response']['numFound']
         response = create_facet_data(resp, response, is_chinese)
 
@@ -2073,18 +2066,18 @@ def catalogue_search(request):
 
         offset = limit * (int(req.get('page',1))-1)
 
-        solr_query_list, is_chinese = get_conditioned_solr_search(req)
-        response = get_solr_data_search(solr_query_list, offset, response, limit, is_chinese)
+        solr_query_list, is_chinese, boost_query = get_conditioned_solr_search(req)
+        response = get_solr_data_search(solr_query_list, offset, response, limit, is_chinese, boost_query, get_search_sort(req, is_chinese))
 
         response['header'] = f"""
             <tr>
-                <td>{gettext('學名')}</td>
-                <td>{gettext('中文名')}</td>
-                <td>{gettext('地位')}</td>
-                <td>{gettext('原生/外來/特有性')}</td>
-                <td>{gettext('階層')}</td>
-                <td>{gettext('所屬類群')}</td>
-                <td>{gettext('界')}</td>
+                {sort_header_td(gettext('學名'), 'name', req)}
+                {sort_header_td(gettext('中文名'), 'common_name', req)}
+                {sort_header_td(gettext('地位'), 'status', req)}
+                <td class="no-sort">{gettext('原生/外來/特有性')}</td>
+                {sort_header_td(gettext('階層'), 'rank', req)}
+                {sort_header_td(gettext('所屬類群'), 'taxon_group', req)}
+                {sort_header_td(gettext('界'), 'kingdom', req)}
             </tr>
             """
         
@@ -2121,6 +2114,7 @@ def get_conditioned_solr_search(req):
     # /.* .*/
 
     is_chinese = False
+    boost_query = '*:*'
 
     if keyword := req.get('keyword','').strip():
 
@@ -2160,6 +2154,11 @@ def get_conditioned_solr_search(req):
             keyword_str = f"search_name:/.*{keyword}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank}.*/ OR search_name:/.*{keyword_reg_}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/"
 
         query_list.append(keyword_str)
+
+        # 排序加權（常數分數）：完全相符 6 分 > 開頭相符 3 分 > 其他 1 分
+        exact_q = f"search_name:/{keyword_reg_}/ OR search_name_wo_rank:/{keyword_wo_rank_reg_}/"
+        prefix_q = f"search_name:/{keyword_reg_}.*/ OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/"
+        boost_query = f"({exact_q})^=3 OR ({prefix_q})^=2 OR (*:*)^=1"
 
     # 如果沒有keyword的話 要排除掉搜尋中文名的資料 不然會有重複的問題
 
@@ -2285,7 +2284,7 @@ def get_conditioned_solr_search(req):
 
             query_list.append(query)
 
-    return query_list, is_chinese
+    return query_list, is_chinese, boost_query
 
 
 # 物種頁階層切換
@@ -2407,7 +2406,7 @@ def generate_catalogue(request):
     req = request.POST
     is_english = get_language() == 'en-us'
  
-    solr_query_list, _ = get_conditioned_solr_search(req)
+    solr_query_list, _, _ = get_conditioned_solr_search(req)
  
     # 只回傳筆數，供前端判斷 sync / offline
     if req.get('check_only'):
@@ -2436,7 +2435,7 @@ def send_catalogue_request(request):
  
 def generate_catalogue_offline(request, is_english):
     req = request.POST
-    solr_query_list, _ = get_conditioned_solr_search(req)
+    solr_query_list, _, _ = get_conditioned_solr_search(req)
  
     file_format = req.get('file_format', 'word')
     opts = parse_options(req, is_english)

@@ -407,3 +407,41 @@ button.download_check:disabled {
 .catalogueGenBtn {
 	margin-right: 8px;
 }
+
+.table-style1 td.sortable {
+    cursor: pointer !important;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.table-style1 td.sortable .sort-icon {
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.table-style1 td.sortable .sort-icon polyline {
+    opacity: 0.35;
+}
+
+.table-style1 td.sortable .sort-icon polyline.active {
+    opacity: 1;
+}
+
+.table-style1 td.sortable:hover .sort-icon polyline {
+    opacity: 0.7;
+}
+
+.table-style1 td.sortable:hover .sort-icon polyline.active {
+    opacity: 1;
+}
+
+.table-style1 td.no-sort {
+    white-space: nowrap;
+}
+
+.table-style1 td.sortable .sort-icon {
+    width: 13px;
+    height: 19px;
+    margin-left: 6px;
+    vertical-align: -0.2em;
+}

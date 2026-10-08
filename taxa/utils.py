@@ -327,7 +327,67 @@ def create_conservation_note(data):
     return data
 
 
-def return_download_file_by_solr(query_list, is_chinese):
+# 查詢結果排序：先依相符程度（score），同分再依名稱字母排序
+SEARCH_SORT = 'score desc, search_name asc'
+# 欄位排序：前端傳入的 sort key -> solr 排序欄位（英文查詢, 中文查詢）
+# 中文查詢顯示的是有效名，所以學名改用 simple_name
+SORT_FIELD_MAP = {
+    'name': ('search_name', 'simple_name'),
+    'common_name': ('common_name_c', 'common_name_c'),
+    'status': (None, None),  # 依 STATUS_ORDER_FUNC
+    'rank': (None, None),  # 依 rank order，見 RANK_ORDER_FUNC
+    'taxon_group': ('taxon_group', 'taxon_group'),
+    'kingdom': ('kingdom', 'kingdom'),
+}
+
+# rank_id 是字串欄位，用 function query 轉成 rank order 排序
+RANK_ORDER_FUNC = 'sum({})'.format(','.join(
+    f"product(termfreq(rank_id,'{k}'),{v})" for k, v in rank_order_map.items()))
+
+# 地位：有效 → 無效 → 誤用 → 未決
+STATUS_ORDER = {'accepted': 1, 'not-accepted': 2, 'misapplied': 3, 'undetermined': 4}
+STATUS_ORDER_FUNC = 'sum({})'.format(','.join(
+    f"product(termfreq(status,'{k}'),{v})" for k, v in STATUS_ORDER.items()))
+
+
+def get_search_sort(req, is_chinese):
+    """依前端選擇的欄位排序，同值再依相符程度與名稱排序"""
+    sort_key = req.get('sort_by', '')
+    sort_order = 'desc' if req.get('sort_order') == 'desc' else 'asc'
+    if sort_key not in SORT_FIELD_MAP:
+        return SEARCH_SORT
+    if sort_key == 'rank':
+        field = RANK_ORDER_FUNC
+    elif sort_key == 'status':
+        field = STATUS_ORDER_FUNC
+    else:
+        field = SORT_FIELD_MAP[sort_key][1 if is_chinese else 0]
+    return f'{field} {sort_order}, {SEARCH_SORT}'
+
+
+def sort_header_td(title, sort_key, req):
+    """產生可點選排序的表頭：上下兩個細箭頭一組，目前排序方向的箭頭亮起"""
+    up_cls, down_cls = '', ''
+    if req.get('sort_by', '') == sort_key:
+        if req.get('sort_order', 'asc') == 'asc':
+            up_cls = 'active'
+        else:
+            down_cls = 'active'
+    icon = (
+        '<svg class="sort-icon" viewBox="0 0 8 12" fill="none" '
+        'stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">'
+        f'<polyline class="{up_cls}" points="1,4.5 4,1.5 7,4.5"/>'
+        f'<polyline class="{down_cls}" points="1,7.5 4,10.5 7,7.5"/>'
+        '</svg>'
+    )
+    return f'<td class="sortable" data-sort="{sort_key}">{title}{icon}</td>'
+
+
+# 中文名查詢時，每個 taxon 只保留分數最高（同分取名稱字母最前）的一筆
+COLLAPSE_TAXON = "{!collapse field=taxon_id sort='score desc,search_name asc'}"
+
+
+def return_download_file_by_solr(query_list, is_chinese, boost_query='*:*', sort=SEARCH_SORT):
     
     # 一次處理一千筆
     taxon = pd.DataFrame()
@@ -342,21 +402,12 @@ def return_download_file_by_solr(query_list, is_chinese):
 
             download_limit = 100
 
-            query = { "query": "*:*",
-                    "limit": 0,
-                    "filter": query_list,
-                    # "sort": 'search_name asc',
-                    "facet": { "taxon_id": { 
-                            'type': 'terms',
-                            'field': 'taxon_id',
-                            'mincount': 1,
-                            'limit': download_limit,
-                            'offset': offset,
-                            'sort': 'index',
-                            'allBuckets': False,
-                            'numBuckets': True
-                            }
-                        }
+            query = { "query": boost_query,
+                    "offset": offset,
+                    "limit": download_limit,
+                    "fields": "taxon_id",
+                    "filter": query_list + [COLLAPSE_TAXON],
+                    "sort": sort,
                     }
 
             query_req = json.dumps(query)
@@ -364,40 +415,39 @@ def return_download_file_by_solr(query_list, is_chinese):
             resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
             resp = resp.json()
 
-            # print(resp)
+            # collapse 後 numFound 即為 taxon 數量
+            total_count = resp['response']['numFound']
 
             # 先確認有沒有資料
-            if resp['response']['numFound']:
+            if total_count:
 
-                # 這邊改成facet bucket的數量
-                total_count = resp['facets']['taxon_id']['numBuckets']
-
-                # 先用facet取得taxon_id 再query 相關data
-                taxon_ids = [t.get('val') for t in resp['facets']['taxon_id']['buckets']]
+                taxon_ids = [t.get('taxon_id') for t in resp['response']['docs']]
 
                 now_query_list = [f"taxon_id: ({' OR '.join(taxon_ids)})","is_primary_common_name:true"]
 
                 query = { "query": "*:*",
                         "filter": now_query_list,
-                        # "sort": 'index asc',
                         "limit": download_limit
                         }
-                
 
                 query_req = json.dumps(query)
 
                 resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
                 resp = resp.json()
 
+                # 依第一次 query 的順序重新排列
+                order = {t: i for i, t in enumerate(taxon_ids)}
+                resp['response']['docs'] = sorted(resp['response']['docs'], key=lambda d: order.get(d.get('taxon_id'), len(order)))
+
         else:
 
             download_limit = 1000
 
-            query = { "query": "*:*",
+            query = { "query": boost_query,
                     "offset": offset,
-                    "limit": 1000,
+                    "limit": download_limit,
                     "filter": query_list,
-                    # "sort": 'search_name asc',
+                    "sort": sort,
                     }
 
             query_req = json.dumps(query)
@@ -994,4 +1044,3 @@ def get_ambiguous_list(names):
             is_ambiguous_list += [i[0] for i in is_ambiguous]
             
     return list(set(is_ambiguous_list))
-
