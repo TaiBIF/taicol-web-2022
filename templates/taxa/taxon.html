@@ -85,8 +85,8 @@
 								<option value="6">{% trans "學名變遷" %}</option>
 								<option value="7">{% trans "文獻" %}</option>
 								<option value="12">{% trans "其他分類觀點" %}</option>
-								<option value="8">{% trans "專家" %}</option>
 								<option value="9">{% trans "相關連結" %}</option>
+								<option value="8">{% trans "專家" %}</option>
 								<option value="11">{% trans "有效名版本紀錄" %}</option>
 								<option value="10">{% trans "變更歷史" %}</option>
 							</select>
@@ -282,8 +282,8 @@
 					<button class="sticky_btn" data-hash="#taxon-change">- {% trans "學名變遷" %}</button>
 					{% if refs|length > 0 %}<button class="sticky_btn" data-hash="#taxon-ref">- {% trans "文獻" %}</button>{% endif %}
 					{% if taxon_views|length > 0 %}<button class="sticky_btn" data-hash="#taxon-view">- {% trans "其他分類觀點" %}</button>{% endif %}
-					{% if experts|length > 0 %}<button class="sticky_btn" data-hash="#taxon-expert">- {% trans "專家" %}</button>{% endif %}
 					<button class="sticky_btn" data-hash="#taxon-link">- {% trans "相關連結" %}</button>
+					{% if experts|length > 0 %}<button class="sticky_btn" data-hash="#taxon-expert">- {% trans "專家" %}</button>{% endif %}
 					<button class="sticky_btn" data-hash="#taxon-version">- {% trans "有效名版本" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-history">- {% trans "變更歷史" %}</button>
 				</div>
@@ -658,40 +658,6 @@
 					</div>
 					{% endif %}
 
-					{% if experts|length > 0 %}
-					<!--展開時加上now-->
-					<div class="w-box marb_20 now">
-						<div class="title-click">
-							<a class="anchor" id="taxon-expert"></a>
-							<div class="mark-title">
-								<img src="{% static 'image/title-mark.svg' %}">
-								<p>{% trans "專家" %}</p>
-							</div>
-							<div class="arr">
-								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
-										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-									</g>
-								</svg>
-							</div>
-						</div>
-
-						<div class="w-content">
-							<div class="scro-m">
-								{% for e in experts %}
-								<ul class="expert-li">
-									<li>{{ e.name|default_if_none:'' }}</li>
-									<li>{{ e.name_e|default_if_none:'' }}</li>
-									<li>{{ e.taxon_group|default_if_none:'' }}</li>
-									<li>{{ e.email|default:'' }}</li>
-								</ul>
-								{% endfor %}
-							</div>
-						</div>
-					</div>
-					{% endif %}
-
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
@@ -737,6 +703,40 @@
 						</ul>
 						</div>
 					</div>
+					{% if experts|length > 0 %}
+					<!--展開時加上now-->
+					<div class="w-box marb_20 now">
+						<div class="title-click">
+							<a class="anchor" id="taxon-expert"></a>
+							<div class="mark-title">
+								<img src="{% static 'image/title-mark.svg' %}">
+								<p>{% trans "專家" %}</p>
+							</div>
+							<div class="arr">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+									</g>
+								</svg>
+							</div>
+						</div>
+
+						<div class="w-content">
+							<div class="scro-m">
+								{% for e in experts %}
+								<ul class="expert-li">
+									<li>{{ e.name|default_if_none:'' }}</li>
+									<li>{{ e.name_e|default_if_none:'' }}</li>
+									<li>{{ e.taxon_group|default_if_none:'' }}</li>
+									<li>{{ e.email|default:'' }}</li>
+								</ul>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+					{% endif %}
+
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">

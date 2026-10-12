@@ -648,9 +648,9 @@ def taxon(request, taxon_id):
                         ref_list = [r[1]['ref'] for r in ref_list.iterrows()]
                         ref_str = ('; ').join(ref_list)
                         if ref_str:
-                            name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('誤用')}): {ref_str}", min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                            name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('誤用')}): {ref_str}", min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0], False]]
                         else:
-                            name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('誤用')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                            name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('誤用')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0], False]]
                     else:
                         # 是否為動物法規的非原始組合名
                         is_iczn_not_original = True if len(name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.original_taxon_name_id!='')&(name_change_df.nomenclature_id==1)]) else False
@@ -705,12 +705,13 @@ def taxon(request, taxon_id):
                             first_part = f"{sci_name_str}{label}{sep} {ref_str}"
                         else:
                             first_part = f"{sci_name_str}{label}"
-                        name_changes += [[first_part,name_change_df[name_change_df.taxon_name_id==n]['publish_year'].min(), name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                        name_changes += [[first_part,name_change_df[name_change_df.taxon_name_id==n]['publish_year'].min(), name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0], n == data['name_id']]]
                 if name_changes:
-                    name_changes = pd.DataFrame(name_changes, columns=['name_str','year','name'])
+                    name_changes = pd.DataFrame(name_changes, columns=['name_str','year','name','is_accepted'])
                     name_changes['name'] = name_changes['name'].str.replace('<i>','').str.replace('</i>','')
                     name_changes['year'] = name_changes.year.replace({'': None}) # 讓年份為空值的在最後面
-                    name_changes = name_changes.sort_values(by=['year','name'], ascending=[True, True])
+                    # 有效名統一放在最下方，其餘依年份、學名排序
+                    name_changes = name_changes.sort_values(by=['is_accepted','year','name'], ascending=[True, True, True], na_position='last')
                     name_changes = name_changes.name_str.to_list()
 
 
@@ -2074,7 +2075,7 @@ def catalogue_search(request):
                 {sort_header_td(gettext('學名'), 'name', req)}
                 {sort_header_td(gettext('中文名'), 'common_name', req)}
                 {sort_header_td(gettext('地位'), 'status', req)}
-                <td class="no-sort">{gettext('原生/外來/特有性')}</td>
+                <td>{gettext('原生/外來/特有性')}</td>
                 {sort_header_td(gettext('階層'), 'rank', req)}
                 {sort_header_td(gettext('所屬類群'), 'taxon_group', req)}
                 {sort_header_td(gettext('界'), 'kingdom', req)}
