@@ -1,5 +1,11 @@
-
 var $lang = $('[name="lang"]').attr('value');
+
+// 站內 ajax 一律加上目前頁面的語言前綴，避免後端依 cookie 判斷語言，造成和頁面語言不一致
+$.ajaxPrefilter(function(options) {
+    if ($lang && /^\/(?!\/)/.test(options.url) && !/^\/(zh-hant|en-us|static|media|jsi18n|i18n)(\/|$)/.test(options.url)) {
+        options.url = '/' + $lang + options.url;
+    }
+});
 
 $(function (){
 
@@ -19,7 +25,7 @@ $(function (){
             if ($('input[name=topkeyword]').val()==''){
                 $lang == 'en-us' ? alert("Please enter keywords") : alert("請輸入關鍵字");
             } else {
-                window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=topkeyword]').val()
+                window.location = '/' + $lang + '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=topkeyword]').val()
             }
         }
 	})
@@ -28,7 +34,7 @@ $(function (){
         if (window.canSearchClick | ($(window).width()<999 & $('.search-area-n').hasClass('d-block'))){
             if (e.which === 13 && !$('input[name=topkeyword]').val()==''){	
                 e.preventDefault();
-                window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=topkeyword]').val()
+                window.location = '/' + $lang + '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=topkeyword]').val()
             }
         }
 	});

@@ -107,7 +107,7 @@ $(function (){
 			$lang == 'en-us' ? alert("Please enter keywords") : alert("請輸入關鍵字");
 
 		} else {
-			window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=keyword]').val()
+			window.location = '/' + $lang + '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=keyword]').val()
 		}
 	})
 
@@ -118,7 +118,7 @@ $(function (){
 	$('input[name=keyword]').on('keypress', function(e) {				
 		if (e.which === 13 && !$('input[name=keyword]').val()==''){	
 			e.preventDefault();
-			window.location = '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=keyword]').val()
+			window.location = '/' + $lang + '/catalogue?filter=0&name-select=contain&keyword=' + $('input[name=keyword]').val()
 		}
 	});
 
