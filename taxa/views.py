@@ -1544,7 +1544,8 @@ def download_match_results_offline(request):
 def download_match_results(request):
 
     # 下載的欄位
-    cols = ["search_term","score","simple_name","name_status","accepted_namecode","accepted_name","common_name_c","kingdom","phylum","class","order","family","genus","rank",
+    cols = ["search_term","score","simple_name","matched_name_id","name_status","accepted_namecode","accepted_name","accepted_name_id","common_name_c",
+            "kingdom","kingdom_c","phylum","phylum_c","class","class_c","order","order_c","family","family_c","genus","genus_c","rank",
             "is_endemic","alien_type","is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","protected_category","red_category","iucn_category","cites_listing",
             "is_in_taiwan","not_official", "match_type"]
     
@@ -1621,10 +1622,11 @@ def download_match_results(request):
                 #JOIN taxon
                 if namecode_list:
                     solr_cols = ['is_in_taiwan', 'not_official', 'is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 
-                                 'taxon_id','protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c', 'accepted_name']
+                                 'taxon_id','protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c', 'accepted_name',
+                                 'kingdom_c', 'phylum_c', 'class_c', 'order_c', 'family_c', 'genus_c']
                     taxon_ids_str = ' OR '.join(namecode_list)
                     # 取有效學名的那筆資料
-                    resp = requests.get(f'{SOLR_PREFIX}taxa/select?fl=is_terrestrial,is_freshwater,is_brackish,is_marine,is_fossil,not_official,is_in_taiwan,is_endemic,alien_type,taxon_id,protected,redlist,iucn,cites,taxon_rank_id,formatted_accepted_name,common_name_c,taxon_id&fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:({taxon_ids_str})&rows=10000000')
+                    resp = requests.get(f'{SOLR_PREFIX}taxa/select?fl=is_terrestrial,is_freshwater,is_brackish,is_marine,is_fossil,not_official,is_in_taiwan,is_endemic,alien_type,taxon_id,protected,redlist,iucn,cites,taxon_rank_id,formatted_accepted_name,common_name_c,kingdom_c,phylum_c,class_c,order_c,family_c,genus_c,taxon_id&fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:({taxon_ids_str})&rows=10000000')
                     solr_resp = resp.json()
                     solr_resp = solr_resp['response']['docs']
                     info = pd.DataFrame(solr_resp)
@@ -1650,6 +1652,23 @@ def download_match_results(request):
 
 
                     df = df.merge(info,how='left',left_on='namecode', right_on='taxon_id')
+
+                    # matched_name_id / accepted_name_id：與 nameMatch API 相同的取法
+                    conn = pymysql.connect(**db_settings)
+                    with conn.cursor() as cursor:
+                        query = """SELECT DISTINCT t.name, t.id, t1.id, atu.taxon_id, atu.status
+                                    FROM api_taxon_usages atu
+                                    JOIN api_taxon at ON atu.taxon_id = at.taxon_id
+                                    JOIN taxon_names t ON atu.taxon_name_id = t.id
+                                    JOIN taxon_names t1 ON at.accepted_taxon_name_id = t1.id
+                                    WHERE atu.taxon_id IN %s AND t.deleted_at IS NULL AND t1.deleted_at IS NULL"""
+                        cursor.execute(query, (list(set(namecode_list)),))
+                        name_ids = pd.DataFrame(cursor.fetchall(), columns=['simple_name', 'matched_name_id', 'accepted_name_id', 'namecode', 'name_status'])
+                    conn.close()
+                    name_ids = name_ids.drop_duplicates(subset=['simple_name', 'namecode', 'name_status'])
+                    df = df.merge(name_ids, how='left', on=['simple_name', 'namecode', 'name_status'])
+                    for c in ['matched_name_id', 'accepted_name_id']:
+                        df[c] = df[c].apply(lambda x: str(int(x)) if pd.notnull(x) and x != '' else '')
                     # # 確認是否有對到多個學名的情況
                     # matched_count = df[['search_term','taxon_id']].groupby('search_term', as_index=False).count()
                     # 如果有多個結果 
