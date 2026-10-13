@@ -1271,5 +1271,5 @@ msgstr "Show all"
 msgid "未定"
 msgstr "Unranked"
 
-msgid "單位：種 / 分類群"
-msgstr "Unit: species / taxa"
+msgid "每個分類群僅顯示一個有效學名"
+msgstr "Display only one accepted name per taxon"

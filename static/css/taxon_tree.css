@@ -242,6 +242,14 @@ visibility: none;
 .tree-area .tree-unit {
     margin-bottom: 10px;
     font-size: 14px;
-    color: #888;
-    text-align: right;
+    color: #4C8DA7;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+}
+
+.tree-area .tree-unit svg {
+    overflow: visible;
+    flex-shrink: 0; /* 避免在容器空間不足時圖示被壓縮變形 */
 }
