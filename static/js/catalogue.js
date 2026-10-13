@@ -1,5 +1,44 @@
 var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 
+	/* ===== 防 XSS：網址參數 / autocomplete 結果不可直接拼進 HTML ===== */
+
+	// 全部跳脫，只放行不帶屬性的 <i></i>（學名斜體用）
+	function escapeHtmlAllowItalic(str){
+		let s = String(str == null ? '' : str)
+			.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+		return s.replace(/&lt;(\/?)i&gt;/gi, '<$1i>');
+	}
+
+	// 已選的較高分類群標籤（網址進入 & autocomplete 選取共用）
+	function appendHigherTaxaItem(taxon_id, text){
+		taxon_id = String(taxon_id == null ? '' : taxon_id);
+		text = (text == null) ? '' : String(text);
+		if (!taxon_id) return;
+		// 用 filter 比對 value，避免把參數塞進 jQuery selector
+		if ($('input[name=higherTaxa]').filter(function(){ return this.value === taxon_id; }).length) return;
+		let $item = $('<div class="item">');
+		$item.append($('<p>').html(escapeHtmlAllowItalic(text)));
+		$item.append($('<input type="hidden" name="higherTaxa">').val(taxon_id));
+		$item.append($('<input type="hidden" name="higherTaxa_str">').val(text));
+		$item.append('<button type="button" class="removeHigherTaxaItem"><img src="/static/image/w-xx.svg"></button>');
+		$('.higherTaxa-alread-select').append($item);
+	}
+
+	// 已選的分類階層標籤：rank 必須是頁面上存在的選項
+	function appendRankItem(rank_id){
+		rank_id = String(rank_id);
+		if (!/^\d+$/.test(rank_id)) return;
+		let $opt = $('select[name=rank-select] option').filter(function(){ return this.value === rank_id; });
+		if (!$opt.length) return;
+		if ($('input[name=rank]').filter(function(){ return this.value === rank_id; }).length) return;
+		let $item = $('<div class="item">');
+		$item.append($('<p>').text($opt.first().text()));
+		$item.append($('<input type="hidden" name="rank">').val(rank_id));
+		$item.append('<button type="button" class="removeRankItem"><img src="/static/image/w-xx.svg"></button>');
+		$('.rank-alread-select').append($item);
+	}
+
     // 要有其中之一存在才送出
 	let params = ['keyword','higherTaxa','bio_group-select','rank','is_endemic',
 				  'alien_type','is_terrestrial','is_freshwater','is_brackish','is_marine','is_fossil',
@@ -211,17 +250,8 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 				if (urlParams.getAll(m)) {
 					if (m=='rank'){
 						urlParams.getAll(m).forEach(function(me){
-							// 先確認是不是存在
-							if (!$(`input[name=rank][value="${me}"]`).length){
-								$('.rank-alread-select').append(
-								`<div class="item">
-									<p>${$(`option[value="${me}"]`).html()}</p>
-									<input type="hidden" name="rank" value="${me}">
-									<button type="button" class="removeRankItem">
-										<img src="/static/image/w-xx.svg">
-									</button>
-								</div>`)
-							}
+							// 網址參數不可直接拼進 HTML（DOM XSS），改用 DOM API 建立
+							appendRankItem(me)
 						})
 					// } else if (m=='bio_group'){
 					// 	urlParams.getAll(m).forEach(function(me){
@@ -239,7 +269,8 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 					// 	})
 					} else {
 						urlParams.getAll(m).forEach(function(me){
-							$(`input[name=${m}][value="${me}"]`).prop('checked', true)
+							// 用 filter 比對 value，避免把網址參數塞進 jQuery selector
+							$(`input[name=${m}]`).filter(function(){ return this.value === me; }).prop('checked', true)
 						})
 					}
 				}
@@ -274,22 +305,9 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 				higherTaxa_str_list = urlParams.getAll('higherTaxa_str')
 
 				for (let i = 0; i < higherTaxa_list.length; i++) {
-
-					if ($(`input[name=higherTaxa][value=${higherTaxa_list[i]}]`).length == 0){
-						$('.higherTaxa-alread-select').append(
-		
-							`<div class="item">
-								<p>${higherTaxa_str_list[i]}</p>
-								<input type="hidden" name="higherTaxa" value="${higherTaxa_list[i]}">
-								<input type="hidden" name="higherTaxa_str" value="${higherTaxa_str_list[i]}">
-								<button type="button" class="removeHigherTaxaItem">
-									<img src="/static/image/w-xx.svg">
-								</button>
-							</div>`)
-		
-					}
-
-				}	
+					// 網址參數不可直接拼進 HTML（DOM XSS），改用 DOM API 建立
+					appendHigherTaxaItem(higherTaxa_list[i], higherTaxa_str_list[i])
+				}
 				
 				$(".removeHigherTaxaItem").prop("onclick", null).off("click");
 
@@ -1062,24 +1080,13 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 			// Do something
 			var data = e.params.data;
 
-			if ($(`input[name=higherTaxa][value=${data.id}]`).length == 0){
-				$('.higherTaxa-alread-select').append(
+			appendHigherTaxaItem(String(data.id), data.text)
 
-					`<div class="item">
-						<p>${data.text}</p>
-						<input type="hidden" name="higherTaxa" value="${data.id}">
-						<input type="hidden" name="higherTaxa_str" value="${data.text}">
-						<button type="button" class="removeHigherTaxaItem">
-							<img src="/static/image/w-xx.svg">
-						</button>
-					</div>`)
+			$(".removeHigherTaxaItem").prop("onclick", null).off("click");
 
-					$(".removeHigherTaxaItem").prop("onclick", null).off("click");
-
-					$('.removeHigherTaxaItem').on('click',function(){
-						removeHigherTaxaItem($(this))
-					})		
-			}
+			$('.removeHigherTaxaItem').on('click',function(){
+				removeHigherTaxaItem($(this))
+			})
 
 	
 		  });
@@ -1093,6 +1100,7 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 	function offlineDownloadData(){
 		$('.downloadpop').fadeIn("slow");
 		$('.downloadpop').removeClass("d-none");
+		tsRender('.download-ts');
 	}
 
 
@@ -1104,15 +1112,22 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 					"&download_email=" + $('input[name=download_email]').val()
 
 		query_str += '&facet=' + $('input[name=hidden-facet]').val() + '&facet_value=' + $('input[name=hidden-value]').val();
+		query_str += '&cf-turnstile-response=' + encodeURIComponent(tsToken('.download-ts'));
 
 		$.ajax({
 			url: "/send_download_request",
-			data: $('form#moreForm').serialize() + query_str + '&csrfmiddlewaretoken=' + $csrf_token,		
+			data: $('form#moreForm').serialize() + query_str + '&csrfmiddlewaretoken=' + $csrf_token,
 			type: 'POST',
 			dataType : 'json',
 		})
 		.done(function(results) {
-			console.log(results)
+			$lang == 'en-us' ? alert('Your request has been sent.') : alert('請求已送出')
+			$('.downloadpop').fadeOut("slow");
+			$('.downloadpop').addClass('d-none')
+		})
+		.fail(function(xhr) {
+			offlineRequestFail(xhr)
+			tsRender('.download-ts')  // token 只能用一次，失敗後重置
 		})
 	}
 
@@ -1141,14 +1156,12 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 	}
 
 	$('.download_check').on('click', function(){
+		if (!tsToken('.download-ts')){
+			$lang == 'en-us' ? alert("Please complete the verification") : alert("請完成人機驗證");
+			return;
+		}
+		// 成功 / 失敗訊息改在 sendOfflineDownloadData 收到回應後顯示
 		sendOfflineDownloadData($(this).data('type'))
-		// alert('請求已送出')
-		$lang == 'en-us' ? alert('Your request has been sent.') : alert('請求已送出')
-
-		$('.downloadpop').fadeOut("slow");
-		$('.downloadpop').addClass('d-none')
-
-		
 	})
 
 /* ================= 名錄產生器 ================= */
@@ -1198,6 +1211,7 @@ $('.catalogueGenBtn').on('click', function(){
 			$('#catalogue_email').val('');
 			$('#catalogue-email-check').removeClass('valid');
 			$('.catalogue-email-area').removeClass('d-none');
+			tsRender('.catalogue-ts');
 		}
 	}).always(function(){
 		// 離線模式：需先通過 email 驗證才可下載；否則直接可下載
@@ -1244,10 +1258,14 @@ function catalogueOfflineDownload(format){
 		url: '/send_catalogue_request',
 		type: 'POST',
 		dataType: 'json',
-		data: $.param(catalogueParams({file_format: format, download_email: $('#catalogue_email').val()})),
+		data: $.param(catalogueParams({file_format: format, download_email: $('#catalogue_email').val(),
+		                               'cf-turnstile-response': tsToken('.catalogue-ts')})),
 	}).done(function(){
 		($lang == 'en-us') ? alert('Your request has been sent.') : alert('請求已送出');
 		$('.cataloguepop').fadeOut('slow').addClass('d-none');
+	}).fail(function(xhr){
+		offlineRequestFail(xhr);
+		tsRender('.catalogue-ts');  // token 只能用一次，失敗後重置
 	});
 }
 
@@ -1259,6 +1277,10 @@ $('.catalogueProduce').on('click', function(){
 		let mailformat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		if (!($('#catalogue_email').val() || '').match(mailformat)){
 			($lang == 'en-us') ? alert('Please enter a valid email.') : alert('請輸入正確的電子郵件');
+			return;
+		}
+		if (!tsToken('.catalogue-ts')){
+			($lang == 'en-us') ? alert("Please complete the verification") : alert("請完成人機驗證");
 			return;
 		}
 		catalogueOfflineDownload(format);

@@ -167,11 +167,11 @@
 						<div class="swiper-wrapper">
 							{% for img in data.images %}
 							<div class="swiper-slide">
-								<img src="{{ img.src|safe }}">
+								<img src="{{ img.src }}">
 								<div class="image_author d-none">{{ img.author|safe }}</div>
 								<div class="image_license d-none">{{ img.license|safe }}</div>
 								<div class="image_provider d-none">{{ img.provider|safe }}</div>
-								<div class="image_permalink d-none">{{ img.permalink|safe }}</div>
+								<div class="image_permalink d-none">{{ img.permalink }}</div>
 							</div>
 							{% endfor %}
 						</div>
@@ -237,7 +237,7 @@
 								{% for img in data.images %}
 								<div class="swiper-slide">
 									<div class="pic-box">
-										<img src="{{ img.src|safe }}">
+										<img src="{{ img.src }}">
 									</div>
 								</div>
 								{% endfor %}
@@ -365,11 +365,11 @@
 										<div class="picbox mySlides fade">
 											<div class="rel">
 												<div class="posa">
-													<img src="{{ img.src|safe }}">
+													<img src="{{ img.src }}">
 													<div class="text image_author" >{{ img.author|safe }}</div>
 													<div class="image_license d-none" >{{ img.license|safe }}</div>
 													<div class="image_provider d-none">{{ img.provider|safe }}</div>
-													<div class="image_permalink d-none">{{ img.permalink|safe }}</div>
+													<div class="image_permalink d-none">{{ img.permalink }}</div>
 												</div>
 											</div>
 										</div>

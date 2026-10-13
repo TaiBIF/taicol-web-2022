@@ -869,16 +869,27 @@ def create_link_display(data,taxon_id):
 
 
 
-spe_chars = ['+','-', '&','&&', '||', '!','(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '/', '.']
+# 補上 \ | < > @ #：\ 未跳脫可吃掉後面的 / 跳出 regex；其餘為 Lucene regex 運算子
+spe_chars = ['\\', '+','-', '&', '|', '!','(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '/', '.', '<', '>', '@', '#']
 
 def escape_solr_query(string):
+    # 只用在 regex（/.../）內
     final_string = ''
     for s in string:
-        if s in spe_chars:
+        if s == '\\':
+            # 反斜線用字元類別 [\\] 表示：若寫成 \\，接在 regex 結尾時會變成 \\/，
+            # Lucene 會把 \/ 當成跳脫的斜線，regex 無法結束而報錯
+            final_string += '[\\\\]'
+        elif s in spe_chars:
             final_string += f'\\{s}'
         else:
             final_string += s
     return final_string
+
+
+def solr_quote(value):
+    """包成 Solr 片語字串 "..."，跳脫反斜線與雙引號，避免使用者輸入跳出引號"""
+    return '"' + str(value).replace('\\', '\\\\').replace('"', '\\"') + '"'
 
 
 
