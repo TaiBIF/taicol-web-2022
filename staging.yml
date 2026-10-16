@@ -58,6 +58,7 @@ services:
     container_name: tc-web-mysql-container
     ports:
       - "127.0.0.1:3307:3306"
+      - "${MYSQL_PRIVATE_BIND:-127.0.0.1}:3307:3306" # 開放內網連線
     image: tc-web-mysql-image
     restart: always
     environment:
