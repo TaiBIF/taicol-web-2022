@@ -23,12 +23,19 @@ function downloadData(format){
 
 	$.ajax({
 		url: "/download_match_results_offline",
-		data: $('form#matchForm').serialize() + "&download_email=" + $('input[name=download_email]').val(),		
+		data: $('form#matchForm').serialize() + "&download_email=" + $('input[name=download_email]').val() +
+		      "&cf-turnstile-response=" + encodeURIComponent(tsToken('.download-ts')),
 		type: 'POST',
 		dataType : 'json',
 	})
 	.done(function(results) {
 		$lang == 'en-us' ? alert('Your request has been sent.') : alert('請求已送出')
+		$('.downloadpop').fadeOut("slow");
+		$('.downloadpop').addClass('d-none')
+	})
+	.fail(function(xhr) {
+		offlineRequestFail(xhr)
+		tsRender('.download-ts')  // token 只能用一次，失敗後重置
 	})
 
 	// $('form').submit()	
@@ -275,6 +282,7 @@ $(function(){
 
 		$('.downloadpop').fadeIn("slow");
 		$('.downloadpop').removeClass("d-none");
+		tsRender('.download-ts');
 
 	})
 
@@ -291,10 +299,12 @@ $(function(){
 
 
 	$('.download_check').on('click', function(){
+		if (!tsToken('.download-ts')){
+			$lang == 'en-us' ? alert("Please complete the verification") : alert("請完成人機驗證");
+			return;
+		}
+		// 關閉彈窗改在 downloadData 收到成功回應後處理
 		downloadData($(this).data('type'))
-
-		$('.downloadpop').fadeOut("slow");
-		$('.downloadpop').addClass('d-none')
 	})
 
 	$('.search').click(function (){
@@ -330,6 +340,7 @@ $('.catalogueGenBtn').on('click', function(){
 	$('#catalogue-email-check').removeClass('valid');
 	$('.catalogueProduce').prop('disabled', true);
 	$('.cataloguepop').fadeIn('slow').removeClass('d-none');
+	tsRender('.catalogue-ts');
 });
 
 // 關閉 modal
@@ -361,13 +372,21 @@ $('.catalogueProduce').on('click', function(){
 		($lang == 'en-us') ? alert('Please enter a valid email.') : alert('請輸入正確的電子郵件');
 		return;
 	}
+	if (!tsToken('.catalogue-ts')){
+		($lang == 'en-us') ? alert("Please complete the verification") : alert("請完成人機驗證");
+		return;
+	}
 	$.ajax({
 		url: '/send_match_catalogue_request',
 		type: 'POST',
 		dataType: 'json',
-		data: $.param(matchCatalogueParams({file_format: format, download_email: $('#catalogue_email').val()})),
+		data: $.param(matchCatalogueParams({file_format: format, download_email: $('#catalogue_email').val(),
+		                                    'cf-turnstile-response': tsToken('.catalogue-ts')})),
 	}).done(function(){
 		($lang == 'en-us') ? alert('Your request has been sent.') : alert('請求已送出');
 		$('.cataloguepop').fadeOut('slow').addClass('d-none');
+	}).fail(function(xhr){
+		offlineRequestFail(xhr);
+		tsRender('.catalogue-ts');  // token 只能用一次，失敗後重置
 	});
 });

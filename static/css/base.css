@@ -1,3 +1,10 @@
+/* 避免 iOS Safari 在可橫向捲動的表格內自動放大文字（font boosting），造成字級不一致 */
+html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
 .disabled-a-link {
     pointer-events: none;
 }

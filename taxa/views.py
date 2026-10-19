@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from taxa.utils import *
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 import json
 from conf.settings import env, MEDIA_URL, SOLR_PREFIX
 import pymysql
@@ -21,6 +21,12 @@ from django.template.loader import render_to_string
 import html
 from django.utils.translation import get_language, gettext
 from pages.utils import verify_turnstile
+import uuid
+import logging
+from concurrent.futures import ThreadPoolExecutor
+from django.core.cache import cache
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from taxa.catalogue_generator import (
     get_catalogue_df, count_catalogue_taxa, parse_options, build_docx, build_xlsx,
     get_catalogue_df_by_taxon_ids, 
@@ -130,6 +136,63 @@ db_settings = {
 }
 
 
+logger = logging.getLogger(__name__)
+
+# ========== 離線產檔 / 寄信請求的防濫用 ==========
+
+# 背景工作池：每個 gunicorn worker 最多同時跑 2 個離線產檔，其餘排隊（原本每個請求都開新 thread、沒有上限）
+OFFLINE_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix='offline')
+
+# 頻率限制（每個時間窗內的上限）
+OFFLINE_LIMIT_WINDOW = 60 * 60     # 1 小時
+OFFLINE_LIMIT_PER_IP = 10          # 同一 IP 最多送出幾次離線請求
+OFFLINE_LIMIT_PER_EMAIL = 10       # 同一信箱最多收幾封
+
+
+def get_client_ip(request):
+    # Traefik 會丟掉使用者自帶的 X-Forwarded-For 並寫入真實 IP，nginx 再附加 Traefik 的 IP，所以取第一個
+    xff = request.META.get('HTTP_X_FORWARDED_FOR', '')
+    if xff:
+        return xff.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', '')
+
+
+def _over_limit(key, limit):
+    """計數 +1，超過上限回傳 True"""
+    cache.add(key, 0, OFFLINE_LIMIT_WINDOW)
+    try:
+        count = cache.incr(key)
+    except ValueError:  # key 剛好過期
+        cache.set(key, 1, OFFLINE_LIMIT_WINDOW)
+        count = 1
+    return count > limit
+
+
+def check_offline_request(request):
+    """離線寄信請求共用檢查。通過回傳 None，否則回傳 JsonResponse（前端依 reason 顯示訊息）"""
+    if not verify_turnstile(request.POST.get('cf-turnstile-response')):
+        return JsonResponse({'status': 'fail', 'reason': 'turnstile'}, status=400)
+    email = (request.POST.get('download_email') or '').strip()
+    try:
+        validate_email(email)
+    except ValidationError:
+        return JsonResponse({'status': 'fail', 'reason': 'email'}, status=400)
+    if _over_limit(f'offline:ip:{get_client_ip(request)}', OFFLINE_LIMIT_PER_IP) or \
+       _over_limit(f'offline:email:{email.lower()}', OFFLINE_LIMIT_PER_EMAIL):
+        return JsonResponse({'status': 'fail', 'reason': 'rate_limit'}, status=429)
+    return None
+
+
+def submit_offline(fn, *args):
+    """丟進背景工作池執行，例外寫進 log（避免 thread 內錯誤無聲消失）"""
+    def run():
+        try:
+            fn(*args)
+        except Exception:
+            logger.exception('offline task failed: %s', fn.__name__)
+    OFFLINE_EXECUTOR.submit(run)
+
+
 # 舊網站redirect
 def redirect_taicol(request):
     if request.method == 'GET':
@@ -168,9 +231,9 @@ def redirect_taicol(request):
 
 
 def send_download_request(request):
-    task = threading.Thread(target=download_search_results_offline, args=(request,))
-    # task.daemon = True
-    task.start()
+    if error := check_offline_request(request):
+        return error
+    submit_offline(download_search_results_offline, request)
     return JsonResponse({"status": 'success'}, safe=False)
 
 
@@ -178,20 +241,20 @@ def download_search_results_offline(request):
     req = request.POST
     file_format = req.get('file_format','csv')
 
-    solr_query_list, is_chinese = get_conditioned_solr_search(req)
-    df = return_download_file_by_solr(solr_query_list, is_chinese)
+    solr_query_list, is_chinese, boost_query = get_conditioned_solr_search(req)
+    df = return_download_file_by_solr(solr_query_list, is_chinese, boost_query, get_search_sort(req, is_chinese))
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
     if file_format == 'json':
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
         compression_options = dict(method='zip', archive_name=df_file_name)
-        zip_file_name = df_file_name.replace("json","zip")
+        zip_file_name = df_file_name.replace(".json", f"_{uuid.uuid4().hex}.zip")  # 加隨機碼：避免同秒覆蓋、檔名被猜到
         df.to_json(f'/tc-web-volumes/media/download/{zip_file_name}', orient='records', compression=compression_options)
 
     else:
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
         compression_options = dict(method='zip', archive_name=df_file_name)
-        zip_file_name = df_file_name.replace("csv","zip")
+        zip_file_name = df_file_name.replace(".csv", f"_{uuid.uuid4().hex}.zip")  # 加隨機碼：避免同秒覆蓋、檔名被猜到
         df.to_csv(f'/tc-web-volumes/media/download/{zip_file_name}', compression=compression_options, index=False, escapechar='\\')
 
     scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
@@ -205,8 +268,8 @@ def download_search_results(request):
     req = request.POST
     file_format = req.get('file_format','csv')
 
-    solr_query_list, is_chinese = get_conditioned_solr_search(req)
-    df = return_download_file_by_solr(solr_query_list, is_chinese)
+    solr_query_list, is_chinese, boost_query = get_conditioned_solr_search(req)
+    df = return_download_file_by_solr(solr_query_list, is_chinese, boost_query, get_search_sort(req, is_chinese))
 
     now = datetime.datetime.now()+datetime.timedelta(hours=8)
 
@@ -250,7 +313,8 @@ def get_autocomplete_taxon_by_solr(request):
         keyword = unicode_to_plain(keyword)
 
         keyword_wo_rank = remove_rank_char(keyword)
-        keyword_wo_rank_reg = process_text_variants(keyword_wo_rank)
+        # 與 catalogue 搜尋一致：先跳脫再組 regex，避免 / ( ) 等字元跳出或改變 regex
+        keyword_wo_rank_reg = process_text_variants(escape_solr_query(keyword_wo_rank))
 
         keyword = html.unescape(keyword)
 
@@ -266,19 +330,19 @@ def get_autocomplete_taxon_by_solr(request):
             keyword_wo_rank_reg_ += f"[{j.upper()}{j.lower()}]" if is_alpha(j) else j
 
 
-    query_str = '&fq='.join(query_list)
-
-    taxa_str = f'''search_name:"{keyword}"^5 OR search_name_wo_rank:"{keyword_wo_rank}"^5 
-                OR search_name:/{keyword_reg_}.*/^4 OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/^4 
-                OR search_name:/{keyword_reg_}/^3 OR search_name_wo_rank:/{keyword_wo_rank_reg_}/^3 
-                OR search_name:/{keyword_reg_}.*/^2 OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/^2 
-                OR search_name:/.*{keyword_reg_}.*/^1 OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/^1 
-                OR search_name:/.*{keyword_reg_}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/'''
-
     ds = []
     if keyword_reg:
 
-        response = requests.get(f'{SOLR_PREFIX}taxa/select?q.op=OR&q={taxa_str}&fq={query_str}&rows=50')
+        taxa_str = f'''search_name:{solr_quote(keyword)}^5 OR search_name_wo_rank:{solr_quote(keyword_wo_rank)}^5
+                OR search_name:/{keyword_reg_}.*/^4 OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/^4
+                OR search_name:/{keyword_reg_}/^3 OR search_name_wo_rank:/{keyword_wo_rank_reg_}/^3
+                OR search_name:/{keyword_reg_}.*/^2 OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/^2
+                OR search_name:/.*{keyword_reg_}.*/^1 OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/^1
+                OR search_name:/.*{keyword_reg_}.*/ OR search_name_wo_rank:/.*{keyword_wo_rank_reg_}.*/'''
+
+        # 用 params 交給 requests 編碼，避免 & # % + 等字元注入額外 Solr 參數或截斷網址
+        params = [('q.op', 'OR'), ('q', taxa_str)] + [('fq', fq) for fq in query_list] + [('rows', 50)]
+        response = requests.get(f'{SOLR_PREFIX}taxa/select', params=params)
         taxa_list = response.json()['response']['docs']
 
         ds = pd.DataFrame(taxa_list)
@@ -334,7 +398,7 @@ def taxon(request, taxon_id):
 
     conn = pymysql.connect(**db_settings)
 
-    query = f"""
+    query = """
                 SELECT at.is_deleted, at.is_in_taiwan, at.not_official,
                     ac.cites_note, ac.iucn_note, ac.iucn_taxon_id, 
                     ac.red_note, ac.protected_note, tn.original_taxon_name_id, 
@@ -363,7 +427,7 @@ def taxon(request, taxon_id):
     if has_taxon:
 
         # 取有效學名的那筆資料
-        response = requests.get(f'{SOLR_PREFIX}taxa/select?fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:{taxon_id}')
+        response = requests.get(f'{SOLR_PREFIX}taxa/select', params=[('fq', 'status:accepted'), ('fq', 'taxon_name_id:*'), ('q', f'taxon_id:{solr_quote(taxon_id)}')])
         solr_resp = response.json()
         solr_resp = solr_resp['response']['docs'][0]
 
@@ -395,7 +459,7 @@ def taxon(request, taxon_id):
         # 學名
         if data['rank_id'] == 47:
             # 不會超過上限 group concat維持
-            query = f"""WITH view as (SELECT tnhp.taxon_name_id, CONCAT_WS(' ',an.formatted_name, an.name_author ) as sci_name 
+            query = """WITH view as (SELECT tnhp.taxon_name_id, CONCAT_WS(' ',an.formatted_name, an.name_author ) as sci_name 
                                     FROM taxon_name_hybrid_parent tnhp 
                                     JOIN api_names an ON tnhp.parent_taxon_name_id = an.taxon_name_id 
                                     WHERE tnhp.taxon_name_id = %s 
@@ -494,7 +558,7 @@ def taxon(request, taxon_id):
 
 
         # 變更歷史 + 學名變遷
-        query = f"""SELECT ath.type, ath.content, ac.short_author, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), usr.name, ath.reference_id, ath.note, r.type, ath.is_deleted
+        query = """SELECT ath.type, ath.content, ac.short_author, DATE_FORMAT(ath.updated_at, "%%Y-%%m-%%d"), usr.name, ath.reference_id, ath.note, r.type, ath.is_deleted
                         FROM api_taxon_history ath 
                         LEFT JOIN users usr ON usr.id = ath.user_id
                         LEFT JOIN api_citations ac ON ac.reference_id = ath.reference_id
@@ -509,7 +573,7 @@ def taxon(request, taxon_id):
 
         # 取得names的時候要包含taxon_history裡面提到的name
 
-        query = f""" WITH base_name AS (
+        query = """ WITH base_name AS (
                         SELECT JSON_EXTRACT(note, "$.taxon_name_id") as taxon_name_id FROM api_taxon_history WHERE `type` IN (1,17) AND taxon_id = %s
                         UNION
                         SELECT JSON_EXTRACT(note, "$.old_taxon_name_id") as taxon_name_id FROM api_taxon_history WHERE `type` = 0 AND taxon_id = %s
@@ -595,7 +659,7 @@ def taxon(request, taxon_id):
                 new_refs += names.o_reference_id.to_list()
                 new_refs += [n[2] for n in name_history_list]
                 new_refs = list(dict.fromkeys(new_refs))
-                query = f"""(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), 
+                query = """(SELECT distinct(r.id), CONCAT_WS(' ' ,c.author, c.content), 
                             r.publish_year, c.author, c.short_author, r.type 
                             FROM api_citations c 
                             JOIN `references` r ON c.reference_id = r.id 
@@ -648,9 +712,9 @@ def taxon(request, taxon_id):
                         ref_list = [r[1]['ref'] for r in ref_list.iterrows()]
                         ref_str = ('; ').join(ref_list)
                         if ref_str:
-                            name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('誤用')}): {ref_str}", min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                            name_changes += [[f"{name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0]} ({gettext('誤用')}): {ref_str}", min_year, name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0], False]]
                         else:
-                            name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('誤用')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                            name_changes += [[name_change_df[name_change_df.taxon_name_id==n]['sci_name'].values[0] + f" ({gettext('誤用')})", '', name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0], False]]
                     else:
                         # 是否為動物法規的非原始組合名
                         is_iczn_not_original = True if len(name_change_df[(name_change_df.taxon_name_id==n)&(name_change_df.original_taxon_name_id!='')&(name_change_df.nomenclature_id==1)]) else False
@@ -705,12 +769,13 @@ def taxon(request, taxon_id):
                             first_part = f"{sci_name_str}{label}{sep} {ref_str}"
                         else:
                             first_part = f"{sci_name_str}{label}"
-                        name_changes += [[first_part,name_change_df[name_change_df.taxon_name_id==n]['publish_year'].min(), name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0]]]
+                        name_changes += [[first_part,name_change_df[name_change_df.taxon_name_id==n]['publish_year'].min(), name_change_df[name_change_df.taxon_name_id==n]['sci_name_ori_1'].values[0], n == data['name_id']]]
                 if name_changes:
-                    name_changes = pd.DataFrame(name_changes, columns=['name_str','year','name'])
+                    name_changes = pd.DataFrame(name_changes, columns=['name_str','year','name','is_accepted'])
                     name_changes['name'] = name_changes['name'].str.replace('<i>','').str.replace('</i>','')
                     name_changes['year'] = name_changes.year.replace({'': None}) # 讓年份為空值的在最後面
-                    name_changes = name_changes.sort_values(by=['year','name'], ascending=[True, True])
+                    # 有效名統一放在最下方，其餘依年份、學名排序
+                    name_changes = name_changes.sort_values(by=['is_accepted','year','name'], ascending=[True, True, True], na_position='last')
                     name_changes = name_changes.name_str.to_list()
 
 
@@ -822,7 +887,7 @@ def taxon(request, taxon_id):
         if is_deleted:
             data['rank_d'] = 'Deleted' if get_language() == 'en-us' else '已刪除 Deleted'
             new_taxon_name = '', ''
-            query = f"""SELECT tn.name, at.taxon_id FROM api_taxon at
+            query = """SELECT tn.name, at.taxon_id FROM api_taxon at
                     JOIN taxon_names tn ON tn.id = at.accepted_taxon_name_id
                     WHERE at.taxon_id = %s
                     """
@@ -873,7 +938,7 @@ def get_root_tree(request):
 
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
-        query = f"""SELECT att.tree_stat, at.taxon_id FROM api_taxon_tree att 
+        query = """SELECT att.tree_stat, at.taxon_id FROM api_taxon_tree att 
                 JOIN api_taxon at ON att.taxon_id = at.taxon_id
                 WHERE at.rank_id = 3 OR at.rank_id = 50; """
         cursor.execute(query)
@@ -932,7 +997,7 @@ def taxon_tree(request):
     conn = pymysql.connect(**db_settings)
     with conn.cursor() as cursor:
         # 要加上病毒的unranked
-        query = f"""SELECT att.tree_stat, at.taxon_id FROM api_taxon_tree att 
+        query = """SELECT att.tree_stat, at.taxon_id FROM api_taxon_tree att 
                 JOIN api_taxon at ON att.taxon_id = at.taxon_id
                 WHERE at.rank_id = 3 OR at.rank_id = 50; """
         cursor.execute(query)
@@ -978,20 +1043,25 @@ def taxon_tree(request):
     # 要考慮是否已刪除or已被改為不存在於台灣
     s_taxon = list(SearchStat.objects.order_by('-count').values_list('taxon_id', flat=True)[:100])
 
+    search_stat = []
     if s_taxon:
-        query = f"""SELECT DISTINCT(at.taxon_id), acn.name_c as common_name, an.formatted_name
+        # 原本用 ORDER BY FIELD(...) 動態產生佔位符，改為在 Python 依熱門順序排序後取前 6 筆
+        query = """SELECT DISTINCT(at.taxon_id), acn.name_c as common_name, an.formatted_name
                     FROM api_taxon at
-                    JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
+                    JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id
                     LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
-                    WHERE at.taxon_id IN %s AND at.is_in_taiwan = 1 AND at.is_deleted = 0
-                    ORDER BY FIELD(at.taxon_id, {','.join(['%s'] * len(s_taxon))})
-                    LIMIT 6;"""
+                    WHERE at.taxon_id IN %s AND at.is_in_taiwan = 1 AND at.is_deleted = 0;"""
         conn = pymysql.connect(**db_settings)
         with conn.cursor() as cursor:
-            cursor.execute(query, (s_taxon, *s_taxon))
+            cursor.execute(query, (s_taxon,))
             tags = cursor.fetchall()
             conn.close()
-            search_stat = []
+            # 比對方式同 MySQL collation（不分大小寫、忽略尾端空白）
+            norm = lambda x: str(x).rstrip().lower()
+            order = {}
+            for i, t in enumerate(s_taxon):
+                order.setdefault(norm(t), i)
+            tags = sorted(tags, key=lambda t: order.get(norm(t[0]), len(order)))[:6]
             for t in tags:
                 if t[1] and get_language() == 'zh-hant':
                     search_stat.append({'taxon_id': t[0], 'name': t[1]})
@@ -1008,26 +1078,32 @@ def get_taxon_path(request):
     with_not_official = request.POST.get('with_not_official')
     with_cultured = request.POST.get('with_cultured')
 
-    not_official_str = ' AND at.not_official = 0' if with_not_official == 'off' else ''
-    cultured_str = ' AND at.is_cultured != 1 ' if with_cultured != 'on' else '' # 排除栽培豢養
+    # 條件改用參數控制：1 = 不套用該條件, 0 = 套用
+    include_not_official = 0 if with_not_official == 'off' else 1
+    include_cultured = 1 if with_cultured == 'on' else 0 # 0: 排除栽培豢養
 
     resp = {}
     if taxon_id:
         conn = pymysql.connect(**db_settings)
-        query = f"SELECT {'lin_path' if lin_rank == 'on' else 'path'} FROM api_taxon_tree WHERE taxon_id = %s;"
+        if lin_rank == 'on':
+            query = "SELECT lin_path FROM api_taxon_tree WHERE taxon_id = %s;"
+        else:
+            query = "SELECT path FROM api_taxon_tree WHERE taxon_id = %s;"
         with conn.cursor() as cursor:
             cursor.execute(query, (taxon_id, ))
             ps = cursor.fetchone()
             conn.close()
             if ps:
                 path = ps[0].split('>')
-                query = f"""SELECT at.taxon_id, at.rank_id FROM api_taxon at
+                query = """SELECT at.taxon_id, at.rank_id FROM api_taxon at
                             JOIN `ranks` r ON r.id = at.rank_id
-                            WHERE at.taxon_id IN %s {cultured_str} {not_official_str} 
+                            WHERE at.taxon_id IN %s
+                            AND (%s OR at.is_cultured != 1)
+                            AND (%s OR at.not_official = 0)
                             ORDER BY r.order DESC;"""
                 conn = pymysql.connect(**db_settings)
                 with conn.cursor() as cursor:
-                    cursor.execute(query, (path,))
+                    cursor.execute(query, (path, include_cultured, include_not_official))
                     t_ids = cursor.fetchall()
                     conn.close()
                     resp['path'] = Reverse([t[0] for t in t_ids])
@@ -1037,6 +1113,71 @@ def get_taxon_path(request):
                 resp['rank_id'] = []
 
     return HttpResponse(json.dumps(resp), content_type='application/json') 
+
+
+# 參數順序：(parent taxon_id 清單, is_cultured 清單, include_not_official, show_name_c)
+# include_not_official = 0 時套用 at.not_official = 0；show_name_c = 0 時不加中文名（CONCAT_WS 會略過 NULL）
+SUB_TREE_SQL = """
+                WITH base_query AS (
+                    SELECT att.taxon_id, att.tree_stat,
+                    att.parent_taxon_id as parent_taxon_id
+                    FROM api_taxon_tree att
+                    JOIN api_taxon at ON at.taxon_id = att.taxon_id
+                    WHERE att.parent_taxon_id IN %s
+                    AND at.is_in_taiwan = 1
+                    AND at.is_deleted != 1 AND at.is_cultured IN %s
+                    AND (%s OR at.not_official = 0)
+                )
+                SELECT
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                        'taxon_id', at.taxon_id,
+                        'rank_id', at.rank_id,
+                        'name_for_order', an.formatted_name,
+                        'formatted_name', CONCAT_WS(' ', IF(%s, acn.name_c, NULL), r.display ->> '$."en-us"', an.formatted_name) ,
+                        'rank', r.display ->> '$."zh-tw"',
+                        'tree_stat', bq.tree_stat,
+                        'rank_order', r.order
+                        )
+                    ), bq.parent_taxon_id
+                FROM api_taxon at
+                JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id
+                JOIN base_query bq ON bq.taxon_id = at.taxon_id
+                LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
+                JOIN ranks r ON at.rank_id = r.id
+                GROUP BY bq.parent_taxon_id """
+
+# 林奈階層版：parent 改用 lin_parent_taxon_id，並只取林奈階層
+SUB_TREE_LIN_SQL = """
+                WITH base_query AS (
+                    SELECT att.taxon_id, att.tree_stat,
+                    att.lin_parent_taxon_id as parent_taxon_id
+                    FROM api_taxon_tree att
+                    JOIN api_taxon at ON at.taxon_id = att.taxon_id
+                    WHERE att.lin_parent_taxon_id IN %s
+                    AND at.is_in_taiwan = 1
+                    AND at.is_deleted != 1 AND at.is_cultured IN %s
+                    AND (%s OR at.not_official = 0)
+                    AND at.rank_id in (50,49,3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)
+                )
+                SELECT
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                        'taxon_id', at.taxon_id,
+                        'rank_id', at.rank_id,
+                        'name_for_order', an.formatted_name,
+                        'formatted_name', CONCAT_WS(' ', IF(%s, acn.name_c, NULL), r.display ->> '$."en-us"', an.formatted_name) ,
+                        'rank', r.display ->> '$."zh-tw"',
+                        'tree_stat', bq.tree_stat,
+                        'rank_order', r.order
+                        )
+                    ), bq.parent_taxon_id
+                FROM api_taxon at
+                JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id
+                JOIN base_query bq ON bq.taxon_id = at.taxon_id
+                LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
+                JOIN ranks r ON at.rank_id = r.id
+                GROUP BY bq.parent_taxon_id """
 
 
 def get_sub_tree_list(request):
@@ -1052,7 +1193,8 @@ def get_sub_tree_list(request):
     from_search_click = request.POST.get('from_search_click')
 
     # time_s = time.time()
-    not_official_str = ' AND at.not_official = 0' if with_not_official == 'off' else ''
+    include_not_official = 0 if with_not_official == 'off' else 1  # 0: 排除未經正式紀錄
+    show_name_c = 0 if lang == 'en-us' else 1  # 名稱前是否加中文名
 
     # cultured_condition = ''
     if with_cultured != 'on': # 排除栽培豢養
@@ -1068,40 +1210,12 @@ def get_sub_tree_list(request):
 
     # time_s = time.time()
 
-    query = f"""
-                WITH base_query AS (
-                    SELECT att.taxon_id, att.tree_stat, 
-                    {'att.lin_parent_taxon_id' if lin_rank == 'on' else 'att.parent_taxon_id'} as parent_taxon_id 
-                    FROM api_taxon_tree att
-                    JOIN api_taxon at ON at.taxon_id = att.taxon_id
-                    WHERE {'att.lin_parent_taxon_id' if lin_rank == 'on' else 'att.parent_taxon_id'} IN %s
-                    AND at.is_in_taiwan = 1 
-                    AND at.is_deleted != 1 AND at.is_cultured IN %s {not_official_str}
-                    {'AND at.rank_id in (50,49,3,12,18,22,26,30,34,35,36,37,38,39,40,41,42,43,44,45,46)' if lin_rank == 'on' else ''} 
-                )
-                SELECT 
-                    JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                        'taxon_id', at.taxon_id,
-                        'rank_id', at.rank_id,
-                        'name_for_order', an.formatted_name,
-                        'formatted_name', CONCAT_WS(' ', {'acn.name_c,' if lang != 'en-us' else ''} r.display ->> '$."en-us"', an.formatted_name) ,
-                        'rank', r.display ->> '$."zh-tw"',
-                        'tree_stat', bq.tree_stat,
-                        'rank_order', r.order
-                        ) 
-                    ), bq.parent_taxon_id
-                FROM api_taxon at
-                JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
-                JOIN base_query bq ON bq.taxon_id = at.taxon_id 
-                LEFT JOIN api_common_name acn ON acn.taxon_id = at.taxon_id AND acn.is_primary = 1
-                JOIN ranks r ON at.rank_id = r.id
-                GROUP BY bq.parent_taxon_id """
-
+    # 林奈階層 / 完整階層 使用不同的 parent 欄位，分成兩個固定 SQL（欄位名稱不能參數化）
+    query = SUB_TREE_LIN_SQL if lin_rank == 'on' else SUB_TREE_SQL
 
     # print(query)
     with conn.cursor() as cursor:
-        cursor.execute(query, (taxon_id, is_cultured, ))
+        cursor.execute(query, (taxon_id, is_cultured, include_not_official, show_name_c))
         infos = cursor.fetchall()
         # print(infos)
         infos = pd.DataFrame(infos, columns=['info', 'taxon_id'])
@@ -1249,7 +1363,7 @@ def get_tree_stat(taxon_id,with_cultured,rank_id,from_search_click,lang,with_not
     if uncertains:
 
         # 當前的階層
-        query = f"""SELECT an.formatted_name 
+        query = """SELECT an.formatted_name 
                     FROM api_taxon at
                     JOIN api_names an ON at.accepted_taxon_name_id = an.taxon_name_id 
                     WHERE at.taxon_id = %s"""
@@ -1534,8 +1648,9 @@ def get_match_result(request):
 
 
 def download_match_results_offline(request):
-    task = threading.Thread(target=download_match_results, args=(request,))
-    task.start()
+    if error := check_offline_request(request):
+        return error
+    submit_offline(download_match_results, request)
     return JsonResponse({"status": 'success'}, safe=False)
 
 
@@ -1543,7 +1658,8 @@ def download_match_results_offline(request):
 def download_match_results(request):
 
     # 下載的欄位
-    cols = ["search_term","score","simple_name","name_status","accepted_namecode","accepted_name","common_name_c","kingdom","phylum","class","order","family","genus","rank",
+    cols = ["search_term","score","simple_name","matched_name_id","name_status","accepted_namecode","accepted_name","accepted_name_id","common_name_c",
+            "kingdom","kingdom_c","phylum","phylum_c","class","class_c","order","order_c","family","family_c","genus","genus_c","rank",
             "is_endemic","alien_type","is_terrestrial","is_freshwater","is_brackish","is_marine","is_fossil","protected_category","red_category","iucn_category","cites_listing",
             "is_in_taiwan","not_official", "match_type"]
     
@@ -1620,10 +1736,11 @@ def download_match_results(request):
                 #JOIN taxon
                 if namecode_list:
                     solr_cols = ['is_in_taiwan', 'not_official', 'is_endemic', 'alien_type', 'is_terrestrial', 'is_freshwater', 'is_brackish', 'is_marine', 'is_fossil', 
-                                 'taxon_id','protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c', 'accepted_name']
+                                 'taxon_id','protected_category', 'red_category', 'iucn_category', 'cites_listing', 'rank_id', 'formatted_name', 'common_name_c', 'accepted_name',
+                                 'kingdom_c', 'phylum_c', 'class_c', 'order_c', 'family_c', 'genus_c']
                     taxon_ids_str = ' OR '.join(namecode_list)
                     # 取有效學名的那筆資料
-                    resp = requests.get(f'{SOLR_PREFIX}taxa/select?fl=is_terrestrial,is_freshwater,is_brackish,is_marine,is_fossil,not_official,is_in_taiwan,is_endemic,alien_type,taxon_id,protected,redlist,iucn,cites,taxon_rank_id,formatted_accepted_name,common_name_c,taxon_id&fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:({taxon_ids_str})&rows=10000000')
+                    resp = requests.get(f'{SOLR_PREFIX}taxa/select?fl=is_terrestrial,is_freshwater,is_brackish,is_marine,is_fossil,not_official,is_in_taiwan,is_endemic,alien_type,taxon_id,protected,redlist,iucn,cites,taxon_rank_id,formatted_accepted_name,common_name_c,kingdom_c,phylum_c,class_c,order_c,family_c,genus_c,taxon_id&fq=status:accepted&fq=taxon_name_id:*&q=taxon_id:({taxon_ids_str})&rows=10000000')
                     solr_resp = resp.json()
                     solr_resp = solr_resp['response']['docs']
                     info = pd.DataFrame(solr_resp)
@@ -1649,6 +1766,23 @@ def download_match_results(request):
 
 
                     df = df.merge(info,how='left',left_on='namecode', right_on='taxon_id')
+
+                    # matched_name_id / accepted_name_id：與 nameMatch API 相同的取法
+                    conn = pymysql.connect(**db_settings)
+                    with conn.cursor() as cursor:
+                        query = """SELECT DISTINCT t.name, t.id, t1.id, atu.taxon_id, atu.status
+                                    FROM api_taxon_usages atu
+                                    JOIN api_taxon at ON atu.taxon_id = at.taxon_id
+                                    JOIN taxon_names t ON atu.taxon_name_id = t.id
+                                    JOIN taxon_names t1 ON at.accepted_taxon_name_id = t1.id
+                                    WHERE atu.taxon_id IN %s AND t.deleted_at IS NULL AND t1.deleted_at IS NULL"""
+                        cursor.execute(query, (list(set(namecode_list)),))
+                        name_ids = pd.DataFrame(cursor.fetchall(), columns=['simple_name', 'matched_name_id', 'accepted_name_id', 'namecode', 'name_status'])
+                    conn.close()
+                    name_ids = name_ids.drop_duplicates(subset=['simple_name', 'namecode', 'name_status'])
+                    df = df.merge(name_ids, how='left', on=['simple_name', 'namecode', 'name_status'])
+                    for c in ['matched_name_id', 'accepted_name_id']:
+                        df[c] = df[c].apply(lambda x: str(int(x)) if pd.notnull(x) and x != '' else '')
                     # # 確認是否有對到多個學名的情況
                     # matched_count = df[['search_term','taxon_id']].groupby('search_term', as_index=False).count()
                     # 如果有多個結果 
@@ -1707,14 +1841,14 @@ def download_match_results(request):
         final_df[is_list] = final_df[is_list].replace({0: False, 1: True, '0': False, '1': True})
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.json'
         compression_options = dict(method='zip', archive_name=df_file_name)
-        zip_file_name = df_file_name.replace("json","zip")
+        zip_file_name = df_file_name.replace(".json", f"_{uuid.uuid4().hex}.zip")  # 加隨機碼：避免同秒覆蓋、檔名被猜到
         final_df.to_json(f'/tc-web-volumes/media/match_result/{zip_file_name}', orient='records', compression=compression_options)
     else:
         # 改成字串true false
         final_df[is_list] = final_df[is_list].replace({0: 'false', 1: 'true', '0': 'false', '1': 'true'})
         df_file_name = f'taicol_download_{now.strftime("%Y%m%d%H%M%s")}.csv'
         compression_options = dict(method='zip', archive_name=df_file_name)
-        zip_file_name = df_file_name.replace("csv","zip")
+        zip_file_name = df_file_name.replace(".csv", f"_{uuid.uuid4().hex}.zip")  # 加隨機碼：避免同秒覆蓋、檔名被猜到
         final_df.to_csv(f'/tc-web-volumes/media/match_result/{zip_file_name}', compression=compression_options, index=False, escapechar='\\')
 
     scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
@@ -1723,6 +1857,11 @@ def download_match_results(request):
     email_body = render_to_string('taxa/download.html', {'download_url': download_url, })
     send_mail('[TaiCOL] 下載比對結果', email_body, 'no-reply@taicol.tw', [download_email])
 
+
+
+# 轉發給後台 API 的欄位白名單（對應 taxon.html #errorForm / register_taxon.html #registerTaxonForm）
+FEEDBACK_FIELDS = ['title', 'feedback_type', 'taxon_id', 'description', 'reference', 'notify', 'name', 'email']
+REGISTER_TAXON_FIELDS = ['register_type', 'bio_group', 'description', 'reference', 'notify', 'name', 'email']
 
 
 def send_feedback(request):
@@ -1739,11 +1878,14 @@ def send_feedback(request):
     req = request.POST
     date_str = timezone.now()+datetime.timedelta(hours=8)
     date_str = date_str.strftime('%Y/%m/%d')
-    name = req.get('name')
-    description = req.get('description')
-    taxon_id = req.get('taxon_id')
+    # 使用者輸入要放進 HTML 回覆範本，先跳脫避免 HTML injection
+    name = html.escape(req.get('name') or '')
+    description = html.escape(req.get('description') or '')
+    taxon_id = html.escape(req.get('taxon_id') or '')
 
-    req = dict(req)
+    # 只轉發表單上的欄位給後台 API，避免使用者自行加欄位（mass assignment）
+    req = {k: req.getlist(k) for k in FEEDBACK_FIELDS if k in req}
+    req['is_solved'] = ['0']
 
     scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
 
@@ -1802,12 +1944,15 @@ def send_register_taxon(request):
     req = request.POST
     date_str = timezone.now()+datetime.timedelta(hours=8)
     date_str = date_str.strftime('%Y/%m/%d')
-    name = req.get('name')
+    # 使用者輸入要放進 HTML 回覆範本，先跳脫避免 HTML injection
+    name = html.escape(req.get('name') or '')
     register_type = req.get('register_type')
-    bio_group = req.get('bio_group')
-    description = req.get('description')
+    bio_group = html.escape(req.get('bio_group') or '')
+    description = html.escape(req.get('description') or '')
 
-    req = dict(req)
+    # 只轉發表單上的欄位給後台 API，避免使用者自行加欄位（mass assignment）
+    req = {k: req.getlist(k) for k in REGISTER_TAXON_FIELDS if k in req}
+    req['is_solved'] = ['0']
 
     scheme = 'http' if env('WEB_ENV') == 'dev' else 'https'
 
@@ -1869,7 +2014,7 @@ def bk_send_register_mail(email_body):
     send_mail('[TaiCOL] 登錄物種', email_body, 'no-reply@taicol.tw', ['catalogueoflife.taiwan@gmail.com'])
 
 
-def get_solr_data_search(query_list, offset, response, limit, is_chinese):
+def get_solr_data_search(query_list, offset, response, limit, is_chinese, boost_query='*:*', sort=SEARCH_SORT):
 
     response['data'] = []
     response['facet'] = {}
@@ -1877,20 +2022,13 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
     if is_chinese:
 
-        now_facet = search_facet
-        now_facet['taxon_id'] = {
-                        'type': 'terms',
-                        'field': 'taxon_id',
-                        'mincount': 1,
-                        'limit': limit,
-                        'offset': offset,
-                        'sort': 'index',
-                        'allBuckets': False,
-                        'numBuckets': True
-                  }
-        query = { "query": "*:*",
-                  "limit": 0,
-                  "filter": query_list,
+        # 同一個 taxon 可能有多個中文名符合 -> 用 collapse 每個 taxon 只留分數最高的一筆
+        query = { "query": boost_query,
+                  "offset": offset,
+                  "limit": limit,
+                  "fields": "taxon_id",
+                  "filter": query_list + [COLLAPSE_TAXON],
+                  "sort": sort,
                   "facet": search_facet
                 }
 
@@ -1901,19 +2039,16 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
         response = create_facet_data(resp, response, is_chinese)
 
-        # 先確認有找到資料
-        if resp['response']['numFound']:
+        # collapse 後 numFound 即為 taxon 數量
+        count = resp['response']['numFound']
 
-            # 這邊改成facet bucket的數量
-            count = resp['facets']['taxon_id']['numBuckets']
+        if count:
 
-            # 先用facet取得taxon_id 再query 相關data
-            taxon_ids = [t.get('val') for t in resp['facets']['taxon_id']['buckets']]
-
-            query_list = [f"taxon_id: ({' OR '.join(taxon_ids)})","is_primary_common_name:true"]
+            # 依排序後的 taxon_id 再 query 主要中文名那筆資料
+            taxon_ids = [t.get('taxon_id') for t in resp['response']['docs']]
 
             query = { "query": "*:*",
-                      "filter": query_list,
+                      "filter": [f"taxon_id: ({' OR '.join(taxon_ids)})","is_primary_common_name:true"],
                       "limit": limit,
                     }
 
@@ -1921,14 +2056,18 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
 
             resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
             resp = resp.json()
-    
+
+            # 依第一次 query 的順序重新排列
+            order = {t: i for i, t in enumerate(taxon_ids)}
+            resp['response']['docs'] = sorted(resp['response']['docs'], key=lambda d: order.get(d.get('taxon_id'), len(order)))
+
     else:
 
-        query = { "query": "*:*",
+        query = { "query": boost_query,
           "offset": offset,
           "limit": limit,
           "filter": query_list,
-        #   "sort": 'search_name asc',
+          "sort": sort,
           "facet": search_facet
         }
 
@@ -1937,7 +2076,6 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese):
         resp = requests.post(f'{SOLR_PREFIX}taxa/select?', data=query_req, headers={'content-type': "application/json" })
         resp = resp.json()
 
-        # 這邊改成facet bucket的數量
         count = resp['response']['numFound']
         response = create_facet_data(resp, response, is_chinese)
 
@@ -2066,25 +2204,25 @@ def catalogue_search(request):
         # 先確認是不是taxonID 若是的話直接跳轉至物種頁
 
         if req.get('keyword'):
-            taxon_resp = requests.get('{}taxa/select?q=taxon_id:{}'.format(SOLR_PREFIX, req.get('keyword')))
+            taxon_resp = requests.get(f'{SOLR_PREFIX}taxa/select', params={'q': f"taxon_id:{solr_quote(req.get('keyword'))}"})
             taxon_resp = taxon_resp.json()
             if taxon_resp['response']['numFound']:
                 return HttpResponse(json.dumps({'is_taxon_id': True, 'taxon_id': req.get('keyword')},cls=NpEncoder))
 
         offset = limit * (int(req.get('page',1))-1)
 
-        solr_query_list, is_chinese = get_conditioned_solr_search(req)
-        response = get_solr_data_search(solr_query_list, offset, response, limit, is_chinese)
+        solr_query_list, is_chinese, boost_query = get_conditioned_solr_search(req)
+        response = get_solr_data_search(solr_query_list, offset, response, limit, is_chinese, boost_query, get_search_sort(req, is_chinese))
 
         response['header'] = f"""
             <tr>
-                <td>{gettext('學名')}</td>
-                <td>{gettext('中文名')}</td>
-                <td>{gettext('地位')}</td>
+                {sort_header_td(gettext('學名'), 'name', req)}
+                {sort_header_td(gettext('中文名'), 'common_name', req)}
+                {sort_header_td(gettext('地位'), 'status', req)}
                 <td>{gettext('原生/外來/特有性')}</td>
-                <td>{gettext('階層')}</td>
-                <td>{gettext('所屬類群')}</td>
-                <td>{gettext('界')}</td>
+                {sort_header_td(gettext('階層'), 'rank', req)}
+                {sort_header_td(gettext('所屬類群'), 'taxon_group', req)}
+                {sort_header_td(gettext('界'), 'kingdom', req)}
             </tr>
             """
         
@@ -2104,14 +2242,12 @@ def get_conditioned_solr_search(req):
 
     # 如果有facet的話
 
-    if req.get('facet') and req.get('facet_value'):
-        if req.get('facet') == 'rank':
-            facet = 'rank_id'
-        elif req.get('facet') == 'endemic':
-            facet = 'is_endemic'
-        else:
-            facet = req.get('facet') 
-        query_list.append('{}:{}'.format(facet, req.get('facet_value')))
+    # facet 欄位只允許白名單（對應 search_facet），值用引號包起來
+    facet_field_map = {'rank': 'rank_id', 'endemic': 'is_endemic',
+                       'kingdom': 'kingdom', 'status': 'status', 'rank_id': 'rank_id',
+                       'is_endemic': 'is_endemic', 'alien_type': 'alien_type'}
+    if (facet := facet_field_map.get(req.get('facet'))) and req.get('facet_value'):
+        query_list.append(f"{facet}:{solr_quote(req.get('facet_value'))}")
 
     # NOTE 這邊是一定要加的 在網站的查詢一律只回傳 is_in_taiwan=1  的資料
     query_list.append('is_in_taiwan:true')
@@ -2121,6 +2257,7 @@ def get_conditioned_solr_search(req):
     # /.* .*/
 
     is_chinese = False
+    boost_query = '*:*'
 
     if keyword := req.get('keyword','').strip():
 
@@ -2161,6 +2298,11 @@ def get_conditioned_solr_search(req):
 
         query_list.append(keyword_str)
 
+        # 排序加權（常數分數）：完全相符 6 分 > 開頭相符 3 分 > 其他 1 分
+        exact_q = f"search_name:/{keyword_reg_}/ OR search_name_wo_rank:/{keyword_wo_rank_reg_}/"
+        prefix_q = f"search_name:/{keyword_reg_}.*/ OR search_name_wo_rank:/{keyword_wo_rank_reg_}.*/"
+        boost_query = f"({exact_q})^=3 OR ({prefix_q})^=2 OR (*:*)^=1"
+
     # 如果沒有keyword的話 要排除掉搜尋中文名的資料 不然會有重複的問題
 
     if not is_chinese:
@@ -2171,7 +2313,7 @@ def get_conditioned_solr_search(req):
         if len(status) < 3:
             ss_list = []
             for ss in status:
-                ss_list.append(f'status:"{ss}"')
+                ss_list.append(f'status:{solr_quote(ss)}')
             query_list.append(f"({' OR '.join(ss_list)})")
 
     # is_ 系列
@@ -2209,14 +2351,15 @@ def get_conditioned_solr_search(req):
         # c = 1
         aa_list = []
         for a in alien_type:
-            aa_list.append(f'alien_type:"{a}"')
+            aa_list.append(f'alien_type:{solr_quote(a)}')
         query_list.append(f"({' OR '.join(aa_list)})")
 
 
     # 日期
     # 不用考慮時差 已經是 UTC +8
 
-    if date := req.get('date'):
+    # 只接受 YYYY-MM-DD，其他格式原本就會讓 Solr 報錯
+    if (date := req.get('date')) and re.fullmatch(r'\d{4}-\d{2}-\d{2}', date):
         date_type = req.get('date-select','gl')
         
         if date_type == "gl":
@@ -2237,7 +2380,7 @@ def get_conditioned_solr_search(req):
                 if css == 'none':
                     cs_list.append(f'-{con}:*')
                 else:
-                    cs_list.append(f'{con}:"{css}"')
+                    cs_list.append(f'{con}:{solr_quote(css)}')
             if cs_list:
                 c_str = f"({' OR '.join(cs_list)})"
                 query_list.append(c_str)
@@ -2250,7 +2393,7 @@ def get_conditioned_solr_search(req):
             if css == 'none':
                 cs_list.append(f'-cites:*')
             else:
-                cs_list.append(f'cites:/.*{css}.*/')
+                cs_list.append(f'cites:/.*{escape_solr_query(css)}.*/')
         if cs_list:
             c_str = f"({' OR '.join(cs_list)})"
             query_list.append(c_str)
@@ -2260,7 +2403,7 @@ def get_conditioned_solr_search(req):
     if higher_taxon_ids := req.getlist('higherTaxa'):
         higher_list = []
         for h in higher_taxon_ids:
-            higher_list.append(f'path:/.*{h}.*/')
+            higher_list.append(f'path:/.*{escape_solr_query(h)}.*/')
 
         query_list.append(f"({' OR '.join(higher_list)})")
 
@@ -2285,7 +2428,7 @@ def get_conditioned_solr_search(req):
 
             query_list.append(query)
 
-    return query_list, is_chinese
+    return query_list, is_chinese, boost_query
 
 
 # 物種頁階層切換
@@ -2294,11 +2437,17 @@ def get_taxon_higher(request):
     final_path = []
     taxon_id = request.GET.get('taxon_id')
     selected_path = request.GET.get('path')
+    # 欄位名稱無法參數化，只允許白名單
+    if selected_path not in ('path', 'lin_path'):
+        return HttpResponseBadRequest()
     rank_id = int(request.GET.get('rank_id'))
     path_str = ''
 
     conn = pymysql.connect(**db_settings)
-    query = "SELECT {} FROM api_taxon_tree WHERE taxon_id = %s".format(selected_path)
+    if selected_path == 'lin_path':
+        query = "SELECT lin_path FROM api_taxon_tree WHERE taxon_id = %s"
+    else:
+        query = "SELECT path FROM api_taxon_tree WHERE taxon_id = %s"
 
     with conn.cursor() as cursor:
         cursor.execute(query, (taxon_id,))
@@ -2407,7 +2556,7 @@ def generate_catalogue(request):
     req = request.POST
     is_english = get_language() == 'en-us'
  
-    solr_query_list, _ = get_conditioned_solr_search(req)
+    solr_query_list, _, _ = get_conditioned_solr_search(req)
  
     # 只回傳筆數，供前端判斷 sync / offline
     if req.get('check_only'):
@@ -2428,15 +2577,16 @@ def generate_catalogue(request):
  
 def send_catalogue_request(request):
     """離線產生名錄（>1000 taxa），背景執行並寄信。"""
+    if error := check_offline_request(request):
+        return error
     is_english = get_language() == 'en-us'
-    task = threading.Thread(target=generate_catalogue_offline, args=(request, is_english))
-    task.start()
+    submit_offline(generate_catalogue_offline, request, is_english)
     return JsonResponse({"status": 'success'}, safe=False)
  
  
 def generate_catalogue_offline(request, is_english):
     req = request.POST
-    solr_query_list, _ = get_conditioned_solr_search(req)
+    solr_query_list, _, _ = get_conditioned_solr_search(req)
  
     file_format = req.get('file_format', 'word')
     opts = parse_options(req, is_english)
@@ -2448,7 +2598,7 @@ def generate_catalogue_offline(request, is_english):
  
     buf = build_xlsx(df, opts) if file_format == 'excel' else build_docx(df, opts)
  
-    file_name = f'taicol_catalogue_{ts}.{ext}'
+    file_name = f'taicol_catalogue_{ts}_{uuid.uuid4().hex}.{ext}'  # 加隨機碼：避免同秒覆蓋、檔名被猜到
     out_dir = '/tc-web-volumes/media/catalogue'
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, file_name)
@@ -2465,9 +2615,10 @@ def generate_catalogue_offline(request, is_english):
 
 def send_match_catalogue_request(request):
     """比對結果 → 產物種名錄，背景執行並寄信。"""
+    if error := check_offline_request(request):
+        return error
     is_english = get_language() == 'en-us'
-    task = threading.Thread(target=generate_match_catalogue_offline, args=(request, is_english))
-    task.start()
+    submit_offline(generate_match_catalogue_offline, request, is_english)
     return JsonResponse({"status": 'success'}, safe=False)
 
 
@@ -2527,7 +2678,7 @@ def generate_match_catalogue_offline(request, is_english):
 
     buf = build_xlsx(df, opts) if file_format == 'excel' else build_docx(df, opts)
 
-    file_name = f'taicol_catalogue_{ts}.{ext}'
+    file_name = f'taicol_catalogue_{ts}_{uuid.uuid4().hex}.{ext}'  # 加隨機碼：避免同秒覆蓋、檔名被猜到
     out_dir = '/tc-web-volumes/media/catalogue'
     os.makedirs(out_dir, exist_ok=True)
     with open(os.path.join(out_dir, file_name), 'wb') as f:

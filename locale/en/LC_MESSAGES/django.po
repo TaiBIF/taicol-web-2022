@@ -1251,3 +1251,25 @@ msgstr "Taxonomic Rank"
 #:  
 msgid "下載"
 msgstr "Download"
+#:  
+msgid "填寫問卷"
+msgstr "Fill out the survey"
+
+#:  
+msgid "下載比對結果"
+msgstr "Download matching results"
+
+#:  
+msgid "授權方式"
+msgstr "License"
+
+#:  
+msgid "顯示全部"
+msgstr "Show all"
+
+#:  
+msgid "未定"
+msgstr "Unranked"
+
+msgid "每個分類群僅顯示一個有效學名"
+msgstr "Display only one accepted name per taxon"

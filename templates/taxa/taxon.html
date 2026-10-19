@@ -85,8 +85,8 @@
 								<option value="6">{% trans "學名變遷" %}</option>
 								<option value="7">{% trans "文獻" %}</option>
 								<option value="12">{% trans "其他分類觀點" %}</option>
-								<option value="8">{% trans "專家" %}</option>
 								<option value="9">{% trans "相關連結" %}</option>
+								<option value="8">{% trans "專家" %}</option>
 								<option value="11">{% trans "有效名版本紀錄" %}</option>
 								<option value="10">{% trans "變更歷史" %}</option>
 							</select>
@@ -167,11 +167,11 @@
 						<div class="swiper-wrapper">
 							{% for img in data.images %}
 							<div class="swiper-slide">
-								<img src="{{ img.src|safe }}">
+								<img src="{{ img.src }}">
 								<div class="image_author d-none">{{ img.author|safe }}</div>
 								<div class="image_license d-none">{{ img.license|safe }}</div>
 								<div class="image_provider d-none">{{ img.provider|safe }}</div>
-								<div class="image_permalink d-none">{{ img.permalink|safe }}</div>
+								<div class="image_permalink d-none">{{ img.permalink }}</div>
 							</div>
 							{% endfor %}
 						</div>
@@ -237,7 +237,7 @@
 								{% for img in data.images %}
 								<div class="swiper-slide">
 									<div class="pic-box">
-										<img src="{{ img.src|safe }}">
+										<img src="{{ img.src }}">
 									</div>
 								</div>
 								{% endfor %}
@@ -282,8 +282,8 @@
 					<button class="sticky_btn" data-hash="#taxon-change">- {% trans "學名變遷" %}</button>
 					{% if refs|length > 0 %}<button class="sticky_btn" data-hash="#taxon-ref">- {% trans "文獻" %}</button>{% endif %}
 					{% if taxon_views|length > 0 %}<button class="sticky_btn" data-hash="#taxon-view">- {% trans "其他分類觀點" %}</button>{% endif %}
-					{% if experts|length > 0 %}<button class="sticky_btn" data-hash="#taxon-expert">- {% trans "專家" %}</button>{% endif %}
 					<button class="sticky_btn" data-hash="#taxon-link">- {% trans "相關連結" %}</button>
+					{% if experts|length > 0 %}<button class="sticky_btn" data-hash="#taxon-expert">- {% trans "專家" %}</button>{% endif %}
 					<button class="sticky_btn" data-hash="#taxon-version">- {% trans "有效名版本" %}</button>
 					<button class="sticky_btn" data-hash="#taxon-history">- {% trans "變更歷史" %}</button>
 				</div>
@@ -310,7 +310,7 @@
 									<p>{% if not data.is_deleted %}
 										{{ data.status|safe }}
 										{% elif data.new_taxon_id %}
-										{% trans '請參見' %} <a class="new_taxon_a" href="/taxon/{{ data.new_taxon_id }}">{% if data.new_taxon_name %} {{ data.new_taxon_name }} {% else %} {{ data.new_taxon_id }} {% endif %}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
+										{% trans '請參見' %} <a class="new_taxon_a" href="/{{ LANGUAGE_CODE }}/taxon/{{ data.new_taxon_id }}">{% if data.new_taxon_name %} {{ data.new_taxon_name }} {% else %} {{ data.new_taxon_id }} {% endif %}<svg class="fa_size" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
 											<defs>
 												<clipPath id="clip-path">
 													<rect id="Rectangle_3657" data-name="Rectangle 3657" width="19" height="19" transform="translate(0 -0.359)" fill="#fff"></rect>
@@ -365,11 +365,11 @@
 										<div class="picbox mySlides fade">
 											<div class="rel">
 												<div class="posa">
-													<img src="{{ img.src|safe }}">
+													<img src="{{ img.src }}">
 													<div class="text image_author" >{{ img.author|safe }}</div>
 													<div class="image_license d-none" >{{ img.license|safe }}</div>
 													<div class="image_provider d-none">{{ img.provider|safe }}</div>
-													<div class="image_permalink d-none">{{ img.permalink|safe }}</div>
+													<div class="image_permalink d-none">{{ img.permalink }}</div>
 												</div>
 											</div>
 										</div>
@@ -414,7 +414,7 @@
 										<div class="grey-tag-box">
 											<div class="item tree-button show-higher-button" data-path="path"><a>{% trans '完整階層' %}</a></div>
 											{% if data.is_in_taiwan == 1 %}
-											<div class="item tree-button"> <a href="/taxon/tree?rank_id={{ data.rank_id }}{% if data.not_official != 0 %}&is_not_official=true{% endif %}#{{ taxon_id }}" target="_blank">{% blocktrans context "分類階層區塊"%}物種樹{% endblocktrans %}</a> </div>
+											<div class="item tree-button"> <a href="/{{ LANGUAGE_CODE }}/taxon/tree?rank_id={{ data.rank_id }}{% if data.not_official != 0 %}&is_not_official=true{% endif %}#{{ taxon_id }}" target="_blank">{% blocktrans context "分類階層區塊"%}物種樹{% endblocktrans %}</a> </div>
 											{% endif %}
 										</div>
 									</div>
@@ -644,7 +644,7 @@
 									</tr>
 									{% for t in taxon_views %}
 										<tr>
-											<td><a href="/taxon/{{ t.taxon_id }} ">{{ t.taxon_id }}</a></td>
+											<td><a href="/{{ LANGUAGE_CODE }}/taxon/{{ t.taxon_id }}">{{ t.taxon_id }}</a></td>
 											<td><a target="_blank" href="https://nametool.taicol.tw/{% if LANGUAGE_CODE == 'en-us' %}en-us{% else %}zh-tw{% endif %}/taxon-names/{{ t.name_id }}">{{ t.formatted_name|default_if_none:''|safe }}</a>
 											</td>
 											<td>{% if t.refs %}
@@ -653,40 +653,6 @@
 										</tr>
 									{% endfor %}
 								</table>
-							</div>
-						</div>
-					</div>
-					{% endif %}
-
-					{% if experts|length > 0 %}
-					<!--展開時加上now-->
-					<div class="w-box marb_20 now">
-						<div class="title-click">
-							<a class="anchor" id="taxon-expert"></a>
-							<div class="mark-title">
-								<img src="{% static 'image/title-mark.svg' %}">
-								<p>{% trans "專家" %}</p>
-							</div>
-							<div class="arr">
-								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
-									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
-										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
-									</g>
-								</svg>
-							</div>
-						</div>
-
-						<div class="w-content">
-							<div class="scro-m">
-								{% for e in experts %}
-								<ul class="expert-li">
-									<li>{{ e.name|default_if_none:'' }}</li>
-									<li>{{ e.name_e|default_if_none:'' }}</li>
-									<li>{{ e.taxon_group|default_if_none:'' }}</li>
-									<li>{{ e.email|default:'' }}</li>
-								</ul>
-								{% endfor %}
 							</div>
 						</div>
 					</div>
@@ -737,6 +703,40 @@
 						</ul>
 						</div>
 					</div>
+					{% if experts|length > 0 %}
+					<!--展開時加上now-->
+					<div class="w-box marb_20 now">
+						<div class="title-click">
+							<a class="anchor" id="taxon-expert"></a>
+							<div class="mark-title">
+								<img src="{% static 'image/title-mark.svg' %}">
+								<p>{% trans "專家" %}</p>
+							</div>
+							<div class="arr">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20.828" height="11.828" viewBox="0 0 20.828 11.828">
+									<g id="tree-arr" transform="translate(-1545.086 -550.086)">
+										<line id="Line_177" data-name="Line 177" x2="9" y2="9" transform="translate(1546.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+										<line id="Line_178" data-name="Line 178" x1="9" y2="9" transform="translate(1555.5 551.5)" fill="none" stroke="#888" stroke-linecap="round" stroke-width="2"/>
+									</g>
+								</svg>
+							</div>
+						</div>
+
+						<div class="w-content">
+							<div class="scro-m">
+								{% for e in experts %}
+								<ul class="expert-li">
+									<li>{{ e.name|default_if_none:'' }}</li>
+									<li>{{ e.name_e|default_if_none:'' }}</li>
+									<li>{{ e.taxon_group|default_if_none:'' }}</li>
+									<li>{{ e.email|default:'' }}</li>
+								</ul>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+					{% endif %}
+
 					<!--展開時加上now-->
 					<div class="w-box marb_20 now">
 						<div class="title-click">
@@ -826,7 +826,7 @@
 
 							{% if taxon_history|length > 3 %}
 							<div class="more-option-button more-history">
-								<p>顯示全部</p>
+								<p>{% trans "顯示全部" %}</p>
 								<svg xmlns="http://www.w3.org/2000/svg" width="15.043" height="15.043" viewBox="0 0 15.043 15.043">
 									<g id="plussvg" transform="translate(-1553.5 -534.5)">
 										<line id="Line_211" data-name="Line 211" x1="13.043" transform="translate(1554.5 542.021)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>

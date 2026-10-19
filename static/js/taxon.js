@@ -216,11 +216,14 @@ $(function(){
 		let l  = slide.querySelector('.image_license');
 		let p  = slide.querySelector('.image_provider');
 		let pl = slide.querySelector('.image_permalink');
-		$('#image_author').html(a ? a.innerText : '');
-		$('#image_license').html(l ? l.innerText : '');
-		$('#image_provider').html(p ? p.innerText : '');
-		if (pl) $('#image_permalink').attr('href', pl.innerText);
-		if (pl) $('.album-pop .left-box .album-area .mistake-btn ').data('href', pl.innerText);
+		// innerText 已是純文字，用 .text() 寫回；用 .html() 會把被跳脫的 &lt;...&gt; 還原成 HTML 而執行
+		$('#image_author').text(a ? a.innerText : '');
+		$('#image_license').text(l ? l.innerText : '');
+		$('#image_provider').text(p ? p.innerText : '');
+		// permalink 只接受 http(s)，避免 javascript: 連結
+		let permalink = pl ? pl.innerText : '';
+		if (pl) $('#image_permalink').attr('href', /^https?:\/\//i.test(permalink.trim()) ? permalink : '#');
+		if (pl) $('.album-pop .left-box .album-area .mistake-btn ').data('href', permalink);
 	}
 
 	if (document.querySelector('.main-swiper') && typeof Swiper !== 'undefined') {
