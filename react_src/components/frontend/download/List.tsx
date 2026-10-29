@@ -14,7 +14,7 @@ const DownloadItem: React.FC = () => {
   const [pageList, setPageList] = React.useState<any[]>([])
 
   const GET_DOWNLOAD_LIST_URL = `${process.env.REACT_API_URL}/api/download?cid=${selectedCategory}&page=${page}`;
-  const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/admin/category?type=download`;
+  const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/category?type=download`;
   const { data: downloadList } = useSWR<DownloadListProps>(GET_DOWNLOAD_LIST_URL, fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL, fetcher);
   const pageSize: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);

@@ -9,3 +9,5 @@ NEXT_PUBLIC_DOMAIN=http://127.0.0.1:4000
 SECRET=
 NEXTAUTH_SECRET=
 NEXT_PUBLIC_PAGINATE_LIMIT=10
+# 版本名錄發佈 API（/api/publish/release）的 token：與更新服務 .env 的 RELEASE_PUBLISH_TOKEN 相同（openssl rand -hex 32）
+RELEASE_PUBLISH_TOKEN=

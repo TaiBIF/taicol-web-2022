@@ -23,7 +23,7 @@ const FaqList: React.FC = () => {
   }
 
   const GET_FAQ_LIST_URL = `${process.env.REACT_API_URL}/api/faq?page=${page}&cid=${selectedCategory}&keyword=${encodeURIComponent(keyword)}${lang_filter}`;
-  const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/admin/category?type=faq`;
+  const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/category?type=faq`;
   const { data: faqList } = useSWR<FaqListProps>(GET_FAQ_LIST_URL, fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL, fetcher);
   const pageSize: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);

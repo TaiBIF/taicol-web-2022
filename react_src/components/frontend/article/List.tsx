@@ -21,7 +21,7 @@ const ArticleItem: React.FC = () => {
   }
 
   const GET_ARTICLE_LIST_URL = `${process.env.REACT_API_URL}/api/article?page=${page}&cid=${selectedCategory}${lang_filter}`;
-  const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/admin/category?type=article`;
+  const GET_CATEGORY_LIST_URL = `${process.env.REACT_API_URL}/api/category?type=article`;
   const { data: articleList } = useSWR<ArticleListProps>(GET_ARTICLE_LIST_URL, fetcher);
   const { data: categories } = useSWR<CategoryDataProps[]>(GET_CATEGORY_LIST_URL, fetcher);
   const pageSize: number = parseInt(process.env.NEXT_PUBLIC_PAGINATE_LIMIT as string);
