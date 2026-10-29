@@ -12,7 +12,9 @@ export async  function middleware(req: NextRequest) {
 
   // 後台 API：未登入一律 401（原本 matcher 沒涵蓋 /api，未登入也能上傳、新增或刪除資料）
   if (pathname.startsWith('/api/admin')) {
-    if (req.method === 'GET' && PUBLIC_ADMIN_API.includes(pathname)) return NextResponse.next();
+    // next.config.js 設了 trailingSlash，實際路徑會是 /api/admin/category/：比對前去掉結尾的 /
+    const path = pathname.replace(/\/+$/, '');
+    if (req.method === 'GET' && PUBLIC_ADMIN_API.includes(path)) return NextResponse.next();
     if (!secret_key || !token) return NextResponse.rewrite(new URL('/api/unauthorized', req.url));
     return NextResponse.next();
   }
