@@ -81,7 +81,7 @@ rsync -aRv --no-perms --delete react-backend/app/.next "$TARGET:$REMOTE_PATH" -e
 rsync -aRv --no-perms static/react_component/*.js "$TARGET:$REMOTE_PATH" -e "$SSH_OPT"
 
 echo ""
-echo "部署完成。接著登入 $TARGET，於專案目錄執行："
+echo "部署完成。接著登入 ${TARGET}，於專案目錄執行："
 if [ "$ENV" == "production" ]; then
   echo "  make prod-up   （必要時先 make prod-build）"
 else
