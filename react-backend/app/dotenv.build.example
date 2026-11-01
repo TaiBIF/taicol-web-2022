@@ -1,0 +1,7 @@
+# build_deploy.sh 用的 build 設定（next build 時把 NEXT_PUBLIC_* 寫死進 .next）
+# 複製成 .env.staging、.env.production（已在 .gitignore），各填該環境的值
+# DB、SECRET、RELEASE_PUBLISH_TOKEN 等執行時才讀的值不用放這裡，照舊放在伺服器的 app/.env
+NEXT_PUBLIC_DOMAIN=
+NEXT_PUBLIC_WEB_PUBLIC_DOMAIN=
+NEXT_PUBLIC_PAGINATE_LIMIT=10
+NEXT_PUBLIC_TAICOL_API_URL=

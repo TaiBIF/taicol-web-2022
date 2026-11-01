@@ -5,7 +5,8 @@ const Dotenv = require('dotenv-webpack');
 module.exports = {
   // mode: 'development', // 使用開發模式
   plugins: [
-   new Dotenv()
+   // build_deploy.sh 用 ENV_FILE 指定 .env.staging／.env.production；沒設時（本機 docker 的 watch）照舊讀 .env
+   new Dotenv({ path: process.env.ENV_FILE || './.env' })
   ],
   entry: {
     index: path.resolve(__dirname, 'react_src', 'index.jsx'),

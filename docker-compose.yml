@@ -1,15 +1,4 @@
 services:
-  webpack:
-    image: node:20-alpine
-    container_name: tc-web-webpack-watch
-    working_dir: /code
-    volumes:
-      - .:/code
-      - /code/node_modules
-    command: sh -c "npm install && npm run watch"
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    restart: unless-stopped
   django:
     platform: linux/amd64
     build: .
@@ -25,7 +14,6 @@ services:
       - ../tc-web-volumes/media:/tc-web-volumes/media
       - ../tc-web-volumes/bucket:/bucket
     command: /srv/start
-    restart: always
     env_file:
       - .env
   postgres:
@@ -34,7 +22,6 @@ services:
     image: tc-web-psql-dev-image
     shm_size: '1g'
     container_name: tc-web-postgres-container
-    restart: always
     volumes:
       - ../tc-web-volumes/pgdata:/var/lib/postgresql/data/pgdata
       - ../tc-web-volumes/bucket:/bucket
@@ -43,13 +30,12 @@ services:
     env_file:
      - .env
   mysql:
-    platform: linux/amd64
+    # platform: linux/amd64
     build: ./scripts/mysql
     container_name: tc-web-mysql-container
     ports:
       - "3307:3306"
     image: tc-web-mysql-image
-    restart: always
     volumes:
       - ../tc-web-volumes/mysql:/var/lib/mysql:rw
       - ../tc-web-volumes/bucket:/bucket
@@ -60,12 +46,12 @@ services:
         "--collation-server=utf8mb4_unicode_ci",
       ]
   solr:
+    platform: linux/amd64
     build: ./solr-workspace
     image: taicol-solr-image
     container_name: taicol-solr-container
     ports:
       - "8983:8983"
-    restart: always
     volumes:
       - ../tc-web-volumes/solr:/var/solr
       - ../tc-web-volumes/bucket:/bucket

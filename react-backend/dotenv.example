@@ -1,0 +1,4 @@
+# docker compose 讀的變數（放在 staging.yml／production.yml 同一層，檔名 .env）
+# 跟 app/.env 不同：這裡的值只用在 yml 裡的 ${...}，不會傳進容器
+# 版本名錄發佈 API 只允許這些來源（更新服務 EC2 的內部 IP；多個用逗號分隔，例如 172.31.37.6/32,10.0.0.5/32）
+RELEASE_PUBLISH_ALLOW_IP=172.31.37.6/32

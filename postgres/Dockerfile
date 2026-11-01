@@ -1,0 +1,1 @@
+FROM --platform=linux/amd64 postgres:14-alpine

@@ -1,0 +1,5 @@
+# build_deploy.sh 用的 build 設定（webpack 打包 react_src 時寫死進 JS）
+# 複製成 .env.staging、.env.production（已在 .gitignore），各填該環境的值；跟伺服器上 Django 用的 .env 無關
+REACT_API_URL=
+TAICOL_API_URL=
+NEXT_PUBLIC_PAGINATE_LIMIT=10

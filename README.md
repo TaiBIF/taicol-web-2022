@@ -27,6 +27,18 @@ React backend (`react-backend/app/`):
 
 > **Note** `.env` is for local dev and is read automatically by `npm run watch` / `next dev`. The `.staging` / `.production` files are only selected explicitly at build time (see Deployment) and never overwrite your local `.env`.
 
+The `.staging` / `.production` files only need the values that are **baked in at build time**. Create them from the templates (all `.env.*` files are git-ignored):
+
+| Layer | Template | Required variables |
+|---|---|---|
+| Root (webpack) | `dotenv.build.example` | `REACT_API_URL`, `TAICOL_API_URL`, `NEXT_PUBLIC_PAGINATE_LIMIT` |
+| `react-backend/app/` (Next.js) | `react-backend/app/dotenv.build.example` | `NEXT_PUBLIC_DOMAIN`, `NEXT_PUBLIC_WEB_PUBLIC_DOMAIN`, `NEXT_PUBLIC_PAGINATE_LIMIT` |
+
+Runtime settings (DB, secrets, `RELEASE_PUBLISH_TOKEN`) are **not** part of the build; they stay in the `.env` / `react-backend/app/.env` on each host.
+
+On each host, `react-backend/.env` (next to `staging.yml` / `production.yml`, separate from `app/.env`) holds values that docker compose substitutes into the compose file itself. Template: `react-backend/dotenv.example`.
+- `RELEASE_PUBLISH_ALLOW_IP` — source IP(s) allowed to call `/api/publish` (the update service's private IP, e.g. `172.31.37.6/32`; comma-separated for several). Required: compose refuses to start without it.
+
 ## Local development
 
 `make dev-up` brings up the whole local stack in Docker — Django, Postgres, MySQL, Solr, **and** a webpack watch container. One command starts everything; `make dev-down` stops it all.
@@ -57,17 +69,33 @@ The `webpack` service (in `docker-compose.yml`) runs `npm run watch`, so the bun
 
 ## Deployment (staging/prod)
 
-`./scripts/build_deploy.sh` handles both **building the frontend assets with the right env** and **rsync-ing them to the matching host**. The target host is derived from the environment argument, so you can't accidentally build one environment and ship it to the other.
+`./build_deploy.sh` handles both **building the frontend assets with the right env** and **rsync-ing them to the matching host**. The target host is derived from the environment argument, so you can't accidentally build one environment and ship it to the other.
+
+### 0. First-time setup (once per checkout)
+
+```
+nvm install 16                      # the build runs on Node 16 (.nvmrc)
+npm ci                              # root: webpack
+(cd react-backend/app && npm ci)    # React backend: next
+cp dotenv.build.example .env.staging                                       # then fill in staging values
+cp dotenv.build.example .env.production                                    # then fill in production values
+cp react-backend/app/dotenv.build.example react-backend/app/.env.staging
+cp react-backend/app/dotenv.build.example react-backend/app/.env.production
+```
+
+`node_modules` lives in each checkout, so a new clone (or a copy without `node_modules`) needs `npm ci` again — otherwise the build fails with `next: command not found`. Install on the Mac itself: a `node_modules` created inside the dev container holds Linux binaries.
 
 ### 1. Build + sync from your local machine
 
 ```
-./scripts/build_deploy.sh staging       # builds with .env.staging, syncs to tcweb-stag
-./scripts/build_deploy.sh production     # builds with .env.production, syncs to tcweb-prod
+./build_deploy.sh staging       # builds with .env.staging, syncs to tcweb-stag
+./build_deploy.sh production    # builds with .env.production, syncs to tcweb-prod
 ```
 
 What it does:
-- Selects `.env.staging` / `.env.production` for **both** layers (root webpack + `react-backend/app`) without touching your local `.env`, so you can go straight back to `npm run watch` afterwards.
+- Switches to the Node version in `.nvmrc` (16) via nvm — no need to run `nvm use` first. If nvm isn't in `~/.nvm`, set `NVM_DIR`.
+- Checks that both `.env.<env>` files exist and contain the required variables (see Environment files), and prints the values that will be baked in. A missing variable stops the build instead of silently falling back to `undefined` or to your local `react-backend/app/.env`.
+- Selects `.env.staging` / `.env.production` for **both** layers (root webpack via `ENV_FILE`, `react-backend/app` via `dotenv-cli`) without touching your local `.env`, so you can go straight back to `npm run watch` afterwards.
 - Always removes any previous `.next` and rebuilds a clean production build. A dev build (`next dev`) writes a dev-mode `.next` that crashes under `next start` (e.g. `jsxDEV is not a function`).
 - Shows a **dry-run of the `--delete`** for the React backend `.next` and waits for you to confirm before the real sync.
 - Syncs the Django frontend bundles (`static/react_component/*.js`) too.
@@ -81,6 +109,13 @@ SSH into the target host, then from the project directory:
 ```
 make stag-build && make stag-up        # staging
 make prod-build && make prod-up         # production
+```
+
+`make *-up` does not recreate a running container whose `env_file` content changed. After editing `react-backend/app/.env` or `react-backend/.env`, recreate the React backend explicitly:
+
+```
+cd react-backend
+docker compose -f staging.yml up -d --force-recreate react_app nginx-admin      # production.yml on prod
 ```
 
 Building images does **not** touch data: the React backend MySQL and Postgres both use host bind-mounts (`react-backend/db`, `tc-web-volumes/pgdata`), so rebuilding or recreating containers keeps the data. (Backing up the DB before a rebuild is still good practice.)

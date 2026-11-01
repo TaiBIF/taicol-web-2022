@@ -40,7 +40,19 @@ services:
       - "traefik.http.routers.nginx-admin.entrypoints=websecure"
       - "traefik.http.routers.nginx-admin.tls.certresolver=myresolver"
       - "traefik.http.routers.nginx-admin.middlewares=inflight-admin"
+      - "traefik.http.routers.nginx-admin.service=nginx-admin"
       - "traefik.http.middlewares.inflight-admin.inflightreq.amount=30"
+      - "traefik.http.services.nginx-admin.loadbalancer.server.port=80"
+      # 版本名錄發佈 API（Step 10）：只允許更新服務（同 VPC 內部 IP）呼叫；其他來源回 403
+      # 允許的來源寫在這個 yml 同一層的 .env（不是 app/.env）：RELEASE_PUBLISH_ALLOW_IP=172.31.37.6/32
+      # 沒設時 docker compose 直接報錯，不會變成全部開放
+      - "traefik.http.routers.nginx-admin-publish.rule=Host(`admin.taicol.tw`) && PathPrefix(`/api/publish`)"
+      - "traefik.http.routers.nginx-admin-publish.priority=100"
+      - "traefik.http.routers.nginx-admin-publish.entrypoints=websecure"
+      - "traefik.http.routers.nginx-admin-publish.tls.certresolver=myresolver"
+      - "traefik.http.routers.nginx-admin-publish.middlewares=publish-ipallow"
+      - "traefik.http.routers.nginx-admin-publish.service=nginx-admin"
+      - "traefik.http.middlewares.publish-ipallow.ipallowlist.sourcerange=${RELEASE_PUBLISH_ALLOW_IP:?請在 .env 設定 RELEASE_PUBLISH_ALLOW_IP}"
   mysql:
     container_name: taicol-react-mysql
     ports:
