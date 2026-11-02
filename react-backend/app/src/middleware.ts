@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from "next-auth/jwt";
 
-// 不用登入的後台 API：taicol.tw 前台的文章／消息／下載／FAQ 列表目前直接讀分類（GET /api/admin/category?type=…）。
-// 前台改用 /api/category（內容相同）並部署後，就可以把這個例外拿掉（陣列改成空的）。
-const PUBLIC_ADMIN_API = ['/api/admin/category'];
+// 不用登入的後台 API：taicol.tw 前台的文章／消息／下載／FAQ/分類。
+const PUBLIC_ADMIN_API: string[] = [];
 
 export async  function middleware(req: NextRequest) {
   const secret_key = process.env.NEXTAUTH_SECRET;
