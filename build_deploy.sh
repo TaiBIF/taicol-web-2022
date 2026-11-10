@@ -12,15 +12,15 @@ if [[ "$ENV" != "staging" && "$ENV" != "production" ]]; then
   exit 1
 fi
 if [[ "$TARGET_PART" != "web" && "$TARGET_PART" != "admin" && "$TARGET_PART" != "all" ]]; then
-  echo "第二參數需為 web / admin / all，收到: $TARGET_PART"
+  echo "第二參數需為 web / admin / all, 收到: $TARGET_PART"
   exit 1
 fi
 
 # 依環境綁定目標主機，避免 build 了某環境卻 rsync 到另一台
 if [ "$ENV" == "production" ]; then
-  TARGET="tcweb-prod"
+  TARGET="tc-prod"
 else
-  TARGET="tcweb-stag"
+  TARGET="tc-stag"
 fi
 REMOTE_PATH="~/taicol-web-2022/"
 SSH_OPT="ssh -p 22 -i ~/.ssh/aws-taibif-21.pem"
@@ -60,9 +60,9 @@ if [[ "$TARGET_PART" == "web" || "$TARGET_PART" == "all" ]]; then
 fi
 
 echo ""
-echo "部署完成。接著登入 $TARGET，於專案目錄執行："
+echo "部署完成。接著登入 $TARGET, 於專案目錄執行:"
 if [ "$ENV" == "production" ]; then
-  echo "  make prod-up   （必要時先 make prod-build）"
+  echo "  make prod-up   (必要時先 make prod-build)"
 else
-  echo "  make stag-up   （必要時先 make stag-build）"
+  echo "  make stag-up   (必要時先 make stag-build)"
 fi
