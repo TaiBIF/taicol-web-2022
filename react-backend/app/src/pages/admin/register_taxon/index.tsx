@@ -18,7 +18,8 @@ import SearchBar from 'src/table/components/SearchBar';
 
 import type { RegisterTaxonDataProps, RegisterTaxonListProps } from 'src/types';
 import moment from 'moment';
-import { saveAs } from 'file-saver'; 
+import { saveAs } from 'file-saver';
+import CircularProgress from '@mui/material/CircularProgress'; 
 
 
 const register_type_map: {[key: number]: string}  = {
@@ -46,47 +47,26 @@ const convertToCSV = (data: RegisterTaxonDataProps[]) => {
     moment(item.updatedAt).format('yyyy/MM/DD HH:mm:ss'),
   ]);
 
+  // 內容的雙引號要跳脫，null/undefined 轉空字串
+  const escape = (field: any) => `"${String(field ?? '').replace(/"/g, '""')}"`;
+
   const csvContent = [
     header.join(','),
-    ...rows.map(r => r.map(field => `"${field}"`).join(',')),
+    ...rows.map(r => r.map(escape).join(',')),
   ].join('\n');
 
   return csvContent;
 };
 
 const handleDownload = async () => {
-  try {
-    const allRows: RegisterTaxonDataProps[] = [];
-    let currentPage = 1;
-    let totalCount = 0;
+  const res = await fetch('/api/admin/register_taxon/export');
+  if (!res.ok) throw new Error('下載失敗');
+  const allRows: RegisterTaxonDataProps[] = await res.json();
 
-    do {
-      const url = `/api/admin/register_taxon?page=${currentPage}`;
-
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('下載失敗');
-      const result: RegisterTaxonListProps = await res.json();
-
-      if (result.rows && result.rows.length > 0) {
-        allRows.push(...result.rows);
-      }
-
-      totalCount = result.count || 0;
-      currentPage++;
-
-      // 假設每頁10筆，當抓取到的資料數 >= totalCount就停止
-    } while (allRows.length < totalCount);
-
-    // 轉成 CSV
-    const csv = convertToCSV(allRows);
-
-    // 產生並下載檔案
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    saveAs(blob, `登錄物種清單_${moment().format('YYYYMMDD_HHmmss')}.csv`);
-  } catch (error) {
-    alert('下載失敗，請稍後再試');
-    console.error(error);
-  }
+  const csv = convertToCSV(allRows);
+  // 加 BOM 讓 Excel 正確辨識 UTF-8 中文
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  saveAs(blob, `登錄物種清單_${moment().format('YYYYMMDD_HHmmss')}.csv`);
 };
 
 // get head cells function with swr url
@@ -224,6 +204,20 @@ const getHeadCells = (url: string) => {
 }
 const RegisterTaxonListPage: React.FC = () => {
 	const [page, setPage] = useState<number>(1);
+  const [downloading, setDownloading] = useState<boolean>(false);
+
+  const onDownload = async () => {
+    if (downloading) return;
+    setDownloading(true);
+    try {
+      await handleDownload();
+    } catch (error) {
+      alert('下載失敗，請稍後再試');
+      console.error(error);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const [sort, setSort] = useState<string>('desc');
   const [field, setField] = useState<string>('createdAt');
@@ -275,11 +269,12 @@ const RegisterTaxonListPage: React.FC = () => {
               <AddIcon />
             </IconButton> */}
             <IconButton
-              onClick={handleDownload}
+              onClick={onDownload}
+              disabled={downloading}
               sx={{ minHeight: 0, minWidth: 0, padding: 2 }}
-              title="下載清單"
+              title={downloading ? '下載中...' : '下載清單'}
             >
-              <DownloadIcon />
+              {downloading ? <CircularProgress size={24} /> : <DownloadIcon />}
             </IconButton>
 
           </>
