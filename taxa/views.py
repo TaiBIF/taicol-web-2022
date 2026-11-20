@@ -2217,7 +2217,7 @@ def catalogue_search(request):
         response['header'] = f"""
             <tr>
                 {sort_header_td(gettext('學名'), 'name', req)}
-                <td>{gettext('學名作者')}</td>
+                {sort_header_td(gettext('學名作者'), 'name_author', req)}
                 {sort_header_td(gettext('中文名'), 'common_name', req)}
                 {sort_header_td(gettext('地位'), 'status', req)}
                 <td>{gettext('原生/外來/特有性')}</td>
