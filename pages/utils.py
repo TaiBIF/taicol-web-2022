@@ -98,8 +98,15 @@ def article_meta(kind, slug):
             m = re.search(r'<img\b[^>]*?(?<![\w-])src="([^"]+)"', current.get('description') or '')
             if m:
                 src = m.group(1)
-                if src.startswith('/'):
-                    src = api + src
+                # 後台上傳的圖片改用前台網址（與 React 詳細頁相同：把 REACT_API_URL 換成 /static），
+                # 避免後台 /upload 轉址，Facebook 也較不會卡在舊快取
+                from django.conf import settings
+                site = settings.SITE_URL.rstrip('/')
+                api_base = api.rstrip('/')
+                if api_base and src.startswith(api_base + '/'):
+                    src = site + '/static' + src[len(api_base):]
+                elif src.startswith('/'):
+                    src = site + '/static' + src
                 meta['og_image'] = quote(src, safe=':/%?=&#')
 
     # 成功快取 10 分鐘；連線失敗或查無文章快取 1 分鐘（避免 API 掛掉時每次都等逾時，新文章也能很快出現）
