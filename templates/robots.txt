@@ -37,6 +37,13 @@ Disallow: /
 User-agent: PetalBot
 Disallow: /
 
+# 分享預覽爬蟲：只在有人分享連結時才抓取，允許所有頁面與 /static 的預覽圖
+User-agent: facebookexternalhit
+User-agent: Facebot
+User-agent: Twitterbot
+User-agent: LinkedInBot
+User-agent: Slackbot-LinkExpanding
+Allow: /
 User-agent: *
 
 # Directories
@@ -55,4 +62,3 @@ Disallow: /zh-hant/catalogue
 Disallow: /zh-hant/taxon/tree
 Disallow: /zh-hant/taxon
 Disallow: /redirect_taicol
-
