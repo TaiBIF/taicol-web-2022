@@ -73,6 +73,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'conf.context_processors.turnstile',
+                'conf.context_processors.site',
             ],
         },
     },
@@ -198,6 +199,7 @@ CONTENT_SECURITY_POLICY = {
 CSRF_TRUSTED_ORIGINS = ['https://web-staging.taicol.tw','https://web-admin.taicol.tw', 'https://taicol.tw','https://admin.taicol.tw']
 
 TURNSTILE_SITE_KEY = env('TURNSTILE_SITE_KEY')
+SITE_URL = env('SITE_URL', default='https://taicol.tw')
 TURNSTILE_SECRET_KEY = env('TURNSTILE_SECRET_KEY')
 
 

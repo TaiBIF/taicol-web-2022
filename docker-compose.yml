@@ -16,6 +16,19 @@ services:
     command: /srv/start
     env_file:
       - .env
+  # 本機開發用：監看 react_src，存檔後自動重新 build 到 static/react_component/
+  webpack:
+    image: node:16-bullseye-slim
+    container_name: tc-web-webpack-dev-container
+    working_dir: /code
+    # 依 package-lock.json 安裝且不改寫它（npm ci）；沒有 lock 檔時也不產生
+    # --legacy-peer-deps：eslint-config-next@12 的 peer 會抓到最新 next 而與 react 17 衝突
+    command: sh -c "if [ -f package-lock.json ]; then npm ci --legacy-peer-deps; else npm install --legacy-peer-deps --no-package-lock; fi && npm run watch"
+    environment:
+      - WATCHPACK_POLLING=true   # webpack 5 讀這個變數；macOS 的 Docker 需要輪詢才偵測得到存檔
+    volumes:
+      - .:/code
+      - /code/node_modules   # 容器自己的 node_modules，不和主機的混用
   postgres:
     platform: linux/amd64
     build: ./postgres/

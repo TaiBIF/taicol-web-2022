@@ -1,6 +1,9 @@
 {% extends 'base.html' %} 
 {% load static %}
 {% load i18n %}
+{% block title %}{% if data.sci_name %}{% if data.common_name_c %}{% blocktrans with sci=data.sci_name|striptags common=data.common_name_c %}{{ sci }} {{ common }} | 物種資訊頁{% endblocktrans %}{% else %}{% blocktrans with sci=data.sci_name|striptags %}{{ sci }} | 物種資訊頁{% endblocktrans %}{% endif %}{% else %}{{ block.super }}{% endif %}{% endblock title %}
+{% block og_title %}{% if data.sci_name %}{% if data.common_name_c %}{% blocktrans with sci=data.sci_name|striptags common=data.common_name_c %}{{ sci }} {{ common }} | 物種資訊頁{% endblocktrans %}{% else %}{% blocktrans with sci=data.sci_name|striptags %}{{ sci }} | 物種資訊頁{% endblocktrans %}{% endif %}{% else %}{{ block.super }}{% endif %}{% endblock og_title %}
+{% block og_image %}{% if data.images %}{{ data.images.0.src }}{% else %}{{ SITE_URL }}{% static 'image/og-logo.png' %}{% endif %}{% endblock og_image %}
 
 {% block head %}
 <script src="{% static 'js/jquery.nice-select.js' %}"></script>

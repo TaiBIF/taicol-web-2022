@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
+{% block title %}{% trans "主題文章 | 臺灣物種名錄 Catalogue of Life in Taiwan" %}{% endblock title %}
+{% block og_title %}{% trans "主題文章 | 臺灣物種名錄 Catalogue of Life in Taiwan" %}{% endblock og_title %}
 
 {% block body %}
 <div data-slug="{{ slug }}" id="article-list-container"></div>

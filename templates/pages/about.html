@@ -1,6 +1,9 @@
 {% extends 'base.html' %} 
 {% load i18n %}
 {% load static %}
+{% block title %}{% trans "關於TaiCOL | 臺灣物種名錄 Catalogue of Life in Taiwan" %}{% endblock title %}
+{% block og_title %}{% trans "關於TaiCOL | 臺灣物種名錄 Catalogue of Life in Taiwan" %}{% endblock og_title %}
+{% block og_image %}{{ SITE_URL }}{% static 'image/og-logo.png' %}{% endblock og_image %}
 
 {% block body %}
 <div class="page-top">

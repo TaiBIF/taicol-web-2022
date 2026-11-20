@@ -1,6 +1,8 @@
 from django.shortcuts import render
+from django.http import Http404
 from django.utils import timezone
 from datetime import datetime, timedelta
+from pages.utils import article_meta
 
 
 def index(request):
@@ -12,7 +14,10 @@ def article(request):
 
 
 def article_detail(request, slug):
-    context = {'slug': slug}
+    meta = article_meta('article', slug)
+    if meta.get('not_found'):
+        raise Http404
+    context = {'slug': slug, **meta}
 
     return render(request, 'pages/article_de.html', context)
 
@@ -29,7 +34,10 @@ def faq(request):
 
 
 def news_detail(request, slug):
-    context = {'slug': slug}
+    meta = article_meta('news', slug)
+    if meta.get('not_found'):
+        raise Http404
+    context = {'slug': slug, **meta}
 
     return render(request, 'pages/news_de.html', context)
 
@@ -45,11 +53,11 @@ def api(request):
 # ----- DONE ----- #
 
 def custom_page_not_found_view(request, exception):
-    return render(request, "404.html")
+    return render(request, "404.html", status=404)
 
 
 def custom_error_view(request, exception=None):
-    return render(request, "404.html")
+    return render(request, "404.html", status=500)
 
 
 def about(request):

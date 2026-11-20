@@ -20,6 +20,13 @@ const News: React.FC = () => {
   const encoded = decodeURI(slug as string);
   const { data, error } = useSWR(`${process.env.REACT_API_URL}/api/news/info?slug=${encoded}`,fetcher)
 
+  React.useEffect(() => {
+    if (data?.current?.title) {
+      const site = i18n.language == 'en-us' ? 'Catalogue of Life in Taiwan' : '臺灣物種名錄 Catalogue of Life in Taiwan';
+      document.title = `${data.current.title} | ${site}`;
+    }
+  }, [data, i18n.language]);
+
   const categoryBackgroundColor = data?.current?.Category?.color  && validateColor( data.current?.Category?.color) ?  data.current?.Category?.color : "black"
 
   const breadcrumbs = [

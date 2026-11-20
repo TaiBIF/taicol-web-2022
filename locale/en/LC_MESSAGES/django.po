@@ -1273,3 +1273,49 @@ msgstr "Unranked"
 
 msgid "每個分類群僅顯示一個有效學名"
 msgstr "Display only one accepted name per taxon"
+#: templates/taxa/taxon_tree.html templates/pages/download.html templates/pages/api.html
+msgid "物種樹 | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "Taxon | Catalogue of Life in Taiwan"
+
+msgid "資料下載 | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "Download | Catalogue of Life in Taiwan"
+
+msgid "API | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "API | Catalogue of Life in Taiwan"
+
+msgid "學名比對工具 | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "Name Match | Catalogue of Life in Taiwan"
+
+msgid "資料統計 | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "Statistics | Catalogue of Life in Taiwan"
+
+msgid "最新消息 | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "News | Catalogue of Life in Taiwan"
+
+msgid "主題文章 | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "Articles | Catalogue of Life in Taiwan"
+
+msgid "關於TaiCOL | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "About TaiCOL | Catalogue of Life in Taiwan"
+
+msgid "資料與隱私政策 | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "Data & Privacy Policy | Catalogue of Life in Taiwan"
+
+msgid "常見問題 | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "FAQ | Catalogue of Life in Taiwan"
+
+msgid "登錄物種 | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "Submit | Catalogue of Life in Taiwan"
+
+msgid "錯誤頁面 | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "Page Not Found | Catalogue of Life in Taiwan"
+
+#: templates/taxa/taxon.html
+msgid "%(sci)s %(common)s | 物種資訊頁"
+msgstr "%(sci)s | Taxon"
+
+msgid "物種名錄 | 臺灣物種名錄 Catalogue of Life in Taiwan"
+msgstr "Catalogue | Catalogue of Life in Taiwan"
+
+msgid "%(sci)s | 物種資訊頁"
+msgstr "%(sci)s | Taxon"

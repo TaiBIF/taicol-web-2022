@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
+{% block title %}{% trans "資料統計 | 臺灣物種名錄 Catalogue of Life in Taiwan" %}{% endblock title %}
+{% block og_title %}{% trans "資料統計 | 臺灣物種名錄 Catalogue of Life in Taiwan" %}{% endblock og_title %}
 
 {% block head %}
 <link href="{% static 'css/statistics.css' %}" rel="stylesheet">

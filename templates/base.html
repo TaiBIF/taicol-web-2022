@@ -6,7 +6,11 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="qvqNFLc3zq0aH7Q1x-UW-68Pe8owLafRLowGUDF4YqQ" />
-	<title>臺灣物種名錄 Catalogue of Life in Taiwan</title>
+	<title>{% block title %}臺灣物種名錄 Catalogue of Life in Taiwan{% endblock title %}</title>
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="臺灣物種名錄 Catalogue of Life in Taiwan">
+	<meta property="og:title" content="{% block og_title %}臺灣物種名錄 Catalogue of Life in Taiwan{% endblock og_title %}">
+	<meta property="og:image" content="{% block og_image %}{{ SITE_URL }}{% static 'image/og-home.png' %}{% endblock og_image %}">
 	<link rel=stylesheet type="text/css" href="{% static 'css/theme.css' %}">
     <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
 	<script src="{% static 'js/gsap.min.js' %}" ></script>

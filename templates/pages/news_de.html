@@ -1,5 +1,9 @@
 {% extends 'base.html' %} 
 {% load static %}
+{% load i18n %}
+{% block title %}{% if og_title %}{{ og_title }}{% else %}{% trans "最新消息 | 臺灣物種名錄 Catalogue of Life in Taiwan" %}{% endif %}{% endblock title %}
+{% block og_title %}{% if og_title %}{{ og_title }}{% else %}{% trans "最新消息 | 臺灣物種名錄 Catalogue of Life in Taiwan" %}{% endif %}{% endblock og_title %}
+{% block og_image %}{% if og_image %}{{ og_image }}{% else %}{{ SITE_URL }}{% static 'image/og-logo.png' %}{% endif %}{% endblock og_image %}
 
 {% block body %}
 <div data-slug="{{ slug }}" id="news-detail-container"></div>
