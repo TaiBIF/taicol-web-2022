@@ -38,10 +38,9 @@ make dev-admin-up    # 需要改或看管理後台時才啟動
 
 1. 本機修改、測試完成
 2. `git commit`，`git push`
-3. `nvm use 16`
-4. 先部署測試站：`./build_deploy.sh staging <範圍>`
-5. 到 https://web-staging.taicol.tw 檢查（見「部署後檢查」）
-6. 沒問題再部署正式站：`./build_deploy.sh production <範圍>`
+3. 先部署測試站：`./build_deploy.sh staging <範圍>`
+4. 到 https://web-staging.taicol.tw 檢查（見「部署後檢查」）
+5. 沒問題再部署正式站：`./build_deploy.sh production <範圍>`
 
 ## 範圍怎麼選
 
@@ -77,7 +76,7 @@ make dev-admin-up    # 需要改或看管理後台時才啟動
 
 ## 第一次使用前的設定（只需做一次）
 
-- [ ] 安裝 nvm 與 Node 16：`nvm install 16`
+- [ ] 安裝 nvm 與 Node 16：`nvm install 16`（部署時腳本會自動 `nvm use`）
 - [ ] 取得 SSH 金鑰 `~/.ssh/aws-taibif-21.pem`，並在 `~/.ssh/config` 設定 `tc-prod`、`tc-stag` 兩台主機
 - [ ] 專案根目錄放 `.env.staging`、`.env.production`（前台 build 用，參考 `dotenv.build.example`）
 - [ ] `react-backend/app/` 放 `.env.staging`、`.env.production`（後台 build 用，參考 `react-backend/app/dotenv.build.example`）
@@ -87,7 +86,7 @@ make dev-admin-up    # 需要改或看管理後台時才啟動
 
 | 錯誤訊息 | 處理方式 |
 |---|---|
-| 需要 Node 16 | 執行 `nvm use 16` |
+| 需要 Node 16 | 執行 `nvm install 16`（腳本會依 `.nvmrc` 自動切換版本） |
 | 有尚未 push 的 commit | 執行 `git push` |
 | 本機落後遠端 | 執行 `git pull` |
 | 伺服器 `git pull` 失敗（Not possible to fast-forward、local changes） | 伺服器上有人直接改了檔案。請勿在伺服器上修改檔案，聯絡 Kim 處理 |

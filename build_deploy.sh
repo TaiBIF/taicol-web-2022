@@ -53,16 +53,24 @@ if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
   confirm "確定要繼續？"
 fi
 
-# 2) build 一律用 Node 16（前台與後台相同）
+# 2) build 一律用 Node 16（前台與後台相同）：自動依 .nvmrc 切換
 if $DO_WEB || $DO_ADMIN; then
+  NVM_SH="${NVM_DIR:-$HOME/.nvm}/nvm.sh"
+  if [ -s "$NVM_SH" ]; then
+    set +eu            # nvm.sh 不相容 set -e / set -u
+    . "$NVM_SH"
+    nvm use >/dev/null # 讀取專案根目錄的 .nvmrc
+    set -eu
+  fi
   NODE_MAJOR=$(node -v 2>/dev/null | sed -E 's/^v([0-9]+).*/\1/' || true)
   if [[ "$NODE_MAJOR" != "16" ]]; then
-    echo "錯誤：需要 Node 16，目前是 $(node -v 2>/dev/null || echo '未安裝')。請先執行 nvm use 16"; exit 1
+    echo "錯誤：需要 Node 16，目前是 $(node -v 2>/dev/null || echo '未安裝')。請先執行 nvm install 16"; exit 1
   fi
+  echo "使用 Node $(node -v)"
 fi
 
 if [ "$ENV" == "production" ]; then
-  confirm "即將部署到【正式站】($TARGET)，範圍：$TARGET_PART。"
+  confirm "即將部署到【正式站】(${TARGET})，範圍：${TARGET_PART}。"
 fi
 
 # ===== build =====
@@ -110,4 +118,4 @@ echo "=== 在 $TARGET 執行：$REMOTE_CMD ==="
 $SSH_OPT -t "$TARGET" "$REMOTE_CMD"
 
 echo ""
-echo "部署完成（$ENV / $TARGET_PART）。請依 DEPLOY.md 的「部署後檢查」確認網站正常。"
+echo "部署完成（${ENV} / ${TARGET_PART}）。請依 DEPLOY.md 的「部署後檢查」確認網站正常。"
