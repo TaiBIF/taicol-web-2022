@@ -5,9 +5,9 @@ set -o pipefail
 set -o nounset
 
 if [ "$WEB_ENV" == "prod" ] || [ "$WEB_ENV" == "staging" ]; then
+    python scripts/fetch_char_maps.py
     python manage.py migrate --no-input
     python manage.py collectstatic --no-input
-    python scripts/fetch_char_maps.py
     gunicorn --bind 0.0.0.0:8001 \
     --workers 4 \
     --threads 2 \
@@ -16,8 +16,8 @@ if [ "$WEB_ENV" == "prod" ] || [ "$WEB_ENV" == "staging" ]; then
     --max-requests-jitter 100 \
     conf.wsgi
 else
+    python scripts/fetch_char_maps.py
     python manage.py migrate
     python manage.py collectstatic --no-input
-    python scripts/fetch_char_maps.py
     python manage.py runserver 0.0.0.0:8007
 fi
