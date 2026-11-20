@@ -203,11 +203,13 @@ lin_ranks = [50, 49, 3, 12, 18, 22, 26, 30, 34]
 sub_lin_ranks = [35,36,37,38,39,40,41,42,43,44,45,46]
 
 
-var_dict = requests.get("https://raw.githubusercontent.com/TaiBIF/tbia-portal/main/data/variants.json")
-var_dict = var_dict.json()
-
-comp_dict = requests.get("https://raw.githubusercontent.com/TaiBIF/tbia-portal/main/data/composites.json")
-comp_dict = comp_dict.json()
+# 由 scripts/fetch_char_maps.py 在容器啟動時從 tbia-portal 抓取並快取（來源仍是 tbia-portal repo）
+from conf.settings import BASE_DIR
+_CHAR_MAP_DIR = BASE_DIR / 'data' / 'cache'
+with open(_CHAR_MAP_DIR / 'variants.json', encoding='utf-8') as _fp:
+    var_dict = json.load(_fp)
+with open(_CHAR_MAP_DIR / 'composites.json', encoding='utf-8') as _fp:
+    comp_dict = json.load(_fp)
 
 # 1. 異體字群組
 
