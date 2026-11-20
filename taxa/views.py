@@ -2085,7 +2085,7 @@ def get_solr_data_search(query_list, offset, response, limit, is_chinese, boost_
         results = results.rename(columns={'common_name': 'common_name_c', 'rank_id': 'rank'})
 
         # 一定要有的欄位
-        musthave_cols = ['formatted_search_name','taxon_name_id','formatted_accepted_name','common_name_c','rank','status',
+        musthave_cols = ['formatted_search_name','taxon_name_id','formatted_accepted_name','name_author','common_name_c','rank','status',
                         'kingdom', 'kingdom_c', 'taxon_group', 'taxon_group_c', 'is_endemic', 'alien_type']
 
         for m in musthave_cols:
@@ -2217,6 +2217,7 @@ def catalogue_search(request):
         response['header'] = f"""
             <tr>
                 {sort_header_td(gettext('學名'), 'name', req)}
+                <td>{gettext('學名作者')}</td>
                 {sort_header_td(gettext('中文名'), 'common_name', req)}
                 {sort_header_td(gettext('地位'), 'status', req)}
                 <td>{gettext('原生/外來/特有性')}</td>

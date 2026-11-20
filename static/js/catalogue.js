@@ -558,6 +558,7 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 								`
 								<tr>
 									<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['name']}</a></td>
+									<td>${escapeHtmlAllowItalic(results.data[i]['name_author'])}</td>
 									<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['common_name_c']}</a></td>
 									<td>${results.data[i]['status']}</td>
 									<td>
@@ -749,6 +750,7 @@ var $csrf_token = $('[name="csrfmiddlewaretoken"]').attr('value');
 					$('.table-style1').append(
 						`<tr>
 							<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['name']}</a></td>
+							<td>${escapeHtmlAllowItalic(results.data[i]['name_author'])}</td>
 							<td><a href="/${$lang}/taxon/${results.data[i]['taxon_id']}">${results.data[i]['common_name_c']}</a></td>
 							<td>${results.data[i]['status']}</td>
 							<td>

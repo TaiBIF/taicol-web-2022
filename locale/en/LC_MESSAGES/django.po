@@ -1319,3 +1319,6 @@ msgstr "Catalogue | Catalogue of Life in Taiwan"
 
 msgid "%(sci)s | 物種資訊頁"
 msgstr "%(sci)s | Taxon"
+
+msgid "學名作者"
+msgstr "Name author(s)"
