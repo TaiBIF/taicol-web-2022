@@ -335,7 +335,6 @@ SEARCH_SORT = 'score desc, search_name asc'
 # 中文查詢顯示的是有效名，所以學名改用 simple_name
 SORT_FIELD_MAP = {
     'name': ('search_name', 'simple_name'),
-    'name_author': ('name_author', 'name_author'),
     'common_name': ('common_name_c', 'common_name_c'),
     'status': (None, None),  # 依 STATUS_ORDER_FUNC
     'rank': (None, None),  # 依 rank order，見 RANK_ORDER_FUNC
